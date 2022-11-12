@@ -3,7 +3,7 @@ export default function Footer({}) {
     <div className="footer">
       <div className=""></div>
       <div className="">
-        <span className="text-sm">Powered by</span>
+        <span className="text-sm">Testing: this is Powered by</span>
         <img src="logo.png" />
       </div>
       <div className="flex-end flex">
