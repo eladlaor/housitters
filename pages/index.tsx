@@ -3,6 +3,8 @@ import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Account from '../components/Account'
 import Footer from '../components/Footer'
+import Link from 'next/link'
+import { useNavigate } from 'react-router-dom'
 
 const Home: NextPage = () => {
   const session = useSession()
@@ -13,14 +15,20 @@ const Home: NextPage = () => {
       {!session ? (
         <div className="row">
           <div className="col-6">
-            <h1 className="header">Supabase Auth + Storage</h1>
-            <p className="">
+            <h1 className="header">Supabase Auth + Storage!</h1>
+            <p>
               Experience our Auth and Storage through a simple profile management example. Create a
               user profile and upload an avatar image. Fast, simple, secure.
             </p>
           </div>
           <div className="col-6 auth-widget">
             <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} theme="dark" />
+          </div>
+
+          <div>
+            <button>
+              <Link href="test/something">jumping to a page</Link>
+            </button>
           </div>
         </div>
       ) : (
