@@ -236,9 +236,37 @@ input[disabled] {
 
 /* Button */
 
+
+
+/* TODO: NOTIC THESE 4 */
+a:link { 
+  text-decoration: none; 
+  color: red;
+  /* background-color: blue; */
+}
+
+
+a:visited { text-decoration: none; 
+  color: red;}
+
+
+a:hover { text-decoration: none; 
+  color: red;
+}
+
+
+a:active { 
+  text-decoration: none; 
+  color: red;
+}
+
+
+/* TODO: NOTIC THESE 4 */
+
+
 button,
 .button {
-  color: var(--custom-color);
+  color: red;
   border: var(--custom-border);
   background-color: var(--custom-bg-color);
   display: inline-block;
@@ -247,8 +275,8 @@ button,
   padding: 0.5rem 1rem;
   cursor: pointer;
   text-align: center;
-  font-size: 0.9rem;
-  text-transform: uppercase;
+  font-size: 1.9rem;
+  text-transform: lowercase;
 }
 
 button.primary,
@@ -431,3 +459,6 @@ button.primary,
   margin-bottom: 10px;
   text-decoration: none;
 }
+
+/* testing */
+
