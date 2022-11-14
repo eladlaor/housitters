@@ -186,7 +186,11 @@ export default function Account({ session }: { session: Session }) {
               avatar_url,
             })
 
-            router.push(`/housitters/Home?username=${username}&firstName=${first_name}`)
+            if (primary_use === UserType.Housitter) {
+              router.push(`/housitters/Home?username=${username}&firstName=${first_name}`)
+            } else {
+              router.push(`/house-owners/Home?username=${username}&firstName=${first_name}`)
+            }
           }}
           disabled={loading}
         >
