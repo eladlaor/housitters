@@ -186,7 +186,7 @@ export default function Account({ session }: { session: Session }) {
               avatar_url,
             })
 
-            router.push('/test/goody') // TODO: should be changed to redirect back home, to a personalized page.
+            router.push(`/housitters/Home?username=${username}&firstName=${first_name}`)
           }}
           disabled={loading}
         >

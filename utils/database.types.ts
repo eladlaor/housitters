@@ -8,7 +8,8 @@ export type Json =
 
 export enum UserType {
   HouseOwner,
-  Housitter
+  Housitter,
+  None
 }
 
 export interface Database {
@@ -22,8 +23,8 @@ export interface Database {
           first_name: string | null
           last_name: string | null
           avatar_url: string | null
-          primary_use: UserType | null // TODO: type this to userType
-          secondary_use: UserType | null
+          primary_use: UserType // TODO: type this to userType
+          secondary_use: UserType
         }
         Insert: {
           id: string
@@ -32,8 +33,8 @@ export interface Database {
           first_name?: string | null
           last_name?: string | null
           avatar_url?: string | null
-          primary_use?: string | null
-          secondary_use?: string | null
+          primary_use?: UserType
+          secondary_use?: UserType
         }
         Update: {
           id?: string
@@ -42,8 +43,8 @@ export interface Database {
           first_name?: string | null
           last_name?: string | null          
           avatar_url?: string | null
-          primary_use?: string | null
-          secondary_use?: string | null
+          primary_use?: UserType
+          secondary_use?: UserType
         }
       }
     }
