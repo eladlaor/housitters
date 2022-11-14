@@ -6,12 +6,6 @@ export type Json =
   | { [key: string]: Json }
   | Json[]
 
-export enum UserType {
-  HouseOwner,
-  Housitter,
-  None
-}
-
 export interface Database {
   public: {
     Tables: {
@@ -23,8 +17,8 @@ export interface Database {
           first_name: string | null
           last_name: string | null
           avatar_url: string | null
-          primary_use: UserType // TODO: type this to userType
-          secondary_use: UserType
+          primary_use: string 
+          secondary_use: string
         }
         Insert: {
           id: string
@@ -33,8 +27,8 @@ export interface Database {
           first_name?: string | null
           last_name?: string | null
           avatar_url?: string | null
-          primary_use?: UserType
-          secondary_use?: UserType
+          primary_use?: string
+          secondary_use?: string
         }
         Update: {
           id?: string
@@ -43,8 +37,8 @@ export interface Database {
           first_name?: string | null
           last_name?: string | null          
           avatar_url?: string | null
-          primary_use?: UserType
-          secondary_use?: UserType
+          primary_use?: string
+          secondary_use?: string
         }
       }
     }

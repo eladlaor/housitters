@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
 import Avatar from './Avatar'
-import { UserType } from '../utils/database.types'
 import { useRouter } from 'next/router'
 
 import { Database } from '../utils/database.types'
+import { HOUSITTERS_ROUTES, HOUSEOWNERS_ROUTES, USER_TYPE } from '../utils/constants'
+
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export default function Account({ session }: { session: Session }) {
@@ -15,8 +16,8 @@ export default function Account({ session }: { session: Session }) {
   const [username, setUsername] = useState<Profiles['username']>(null)
   const [first_name, setFirstName] = useState<Profiles['first_name']>(null)
   const [last_name, setLastName] = useState<Profiles['last_name']>(null)
-  const [primary_use, setPrimaryUse] = useState<Profiles['primary_use']>(UserType.HouseOwner)
-  const [secondary_use, setSecondaryUse] = useState<Profiles['secondary_use']>(UserType.None)
+  const [primary_use, setPrimaryUse] = useState<Profiles['primary_use']>(USER_TYPE.None)
+  const [secondary_use, setSecondaryUse] = useState<Profiles['secondary_use']>(USER_TYPE.None)
   const [avatar_url, setAvatarUrl] = useState<Profiles['avatar_url']>(null)
 
   useEffect(() => {
@@ -24,27 +25,36 @@ export default function Account({ session }: { session: Session }) {
   }, [session])
 
   async function getProfile() {
+    // TODO: take it out to utils
     try {
       setLoading(true)
-      if (!user) throw new Error('No user')
+      if (!user) {
+        throw new Error('No user')
+      } else {
+        let { data, error, status } = await supabase
+          .from('profiles')
+          .select(`username, first_name, last_name, primary_use, secondary_use, avatar_url`)
+          .eq('id', user.id)
+          .single()
 
-      let { data, error, status } = await supabase
-        .from('profiles')
-        .select(`username, first_name, last_name, primary_use, secondary_use, avatar_url`)
-        .eq('id', user.id)
-        .single()
+        if (error && status !== 406) {
+          throw error
+        }
 
-      if (error && status !== 406) {
-        throw error
-      }
+        if (data) {
+          setUsername(data.username)
+          setFirstName(data.first_name)
+          setLastName(data.last_name)
+          setPrimaryUse(data.primary_use)
+          setSecondaryUse(data.secondary_use)
+          setAvatarUrl(data.avatar_url)
 
-      if (data) {
-        setUsername(data.username)
-        setFirstName(data.first_name)
-        setLastName(data.last_name)
-        setPrimaryUse(data.primary_use)
-        setSecondaryUse(data.secondary_use)
-        setAvatarUrl(data.avatar_url)
+          // if (data.primary_use === USER_TYPE.Housitter) {
+          //   router.push(`${HOUSITTERS_ROUTES.HOME}?firstName=${data.first_name}`)
+          // } else if (primary_use === USER_TYPE.HouseOwner) {
+          //   router.push(`${HOUSEOWNERS_ROUTES}?firstName=${data.first_name}`)
+          // }
+        }
       }
     } catch (error) {
       alert('Error loading user data!')
@@ -154,22 +164,34 @@ export default function Account({ session }: { session: Session }) {
           type="radio"
           value="housitter"
           name="primary_use"
-          defaultChecked={primary_use === UserType.Housitter ? true : false}
+          defaultChecked={primary_use === USER_TYPE.Housitter ? true : false}
         />{' '}
         Housitter
         <input
           type="radio"
           value="houseowner"
           name="primary_use"
-          defaultChecked={primary_use === UserType.HouseOwner ? true : false}
-        />{' '}
+          defaultChecked={primary_use === USER_TYPE.HouseOwner ? true : false}
+        />
         HouseOwner
       </div>
 
       <div onChange={handleSecondaryUseChange}>
         <h2>Secondary Use:</h2>
-        <input type="radio" value="housitter" name="secondary_use" /> Housitter
-        <input type="radio" value="houseowner" name="secondary_use" /> HouseOwner
+        <input
+          type="radio"
+          value="housitter"
+          name="secondary_use"
+          disabled={primary_use === USER_TYPE.Housitter ? true : false}
+        />{' '}
+        Housitter
+        <input
+          type="radio"
+          value="houseowner"
+          name="secondary_use"
+          disabled={primary_use === USER_TYPE.HouseOwner ? true : false}
+        />{' '}
+        HouseOwner
         <input type="radio" value="none" name="secondary_use" defaultChecked={false} /> None
       </div>
 
@@ -186,7 +208,9 @@ export default function Account({ session }: { session: Session }) {
               avatar_url,
             })
 
-            if (primary_use === UserType.Housitter) {
+            console.log(`primary use is: ${primary_use}`)
+
+            if (primary_use === USER_TYPE.Housitter) {
               router.push(`/housitters/Home?username=${username}&firstName=${first_name}`)
             } else {
               router.push(`/house-owners/Home?username=${username}&firstName=${first_name}`)
