@@ -8,8 +8,10 @@ import { HOUSITTERS_ROUTES, HOUSEOWNERS_ROUTES, USER_TYPE } from '../utils/const
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectFirstNameState,
+  selectLastNameState,
   selectPrimaryUseState,
   setFirstName,
+  setLastName,
   setPrimaryUse,
 } from '../slices/userSlice'
 
@@ -19,17 +21,17 @@ export default function Account() {
   const router = useRouter()
   const supabase = useSupabaseClient<Database>()
   const user = useUser()
+  const dispatch = useDispatch()
+
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState<Profiles['username']>(null)
-  // const [first_name, setFirstName] = useState<Profiles['first_name']>(null)
-  const [last_name, setLastName] = useState<Profiles['last_name']>(null)
-  // const [primary_use, setPrimaryUse] = useState<Profiles['primary_use']>(USER_TYPE.None)
   const [secondary_use, setSecondaryUse] = useState<Profiles['secondary_use']>(USER_TYPE.None)
   const [avatar_url, setAvatarUrl] = useState<Profiles['avatar_url']>(null)
 
-  const dispatch = useDispatch()
   const primary_use = useSelector(selectPrimaryUseState)
   const first_name = useSelector(selectFirstNameState)
+  const last_name = useSelector(selectLastNameState)
+
   // const primaryUseSelector = useSelector(selectPrimaryUseState)
 
   useEffect(() => {
@@ -55,14 +57,13 @@ export default function Account() {
 
         if (data) {
           setUsername(data.username)
-          // setFirstName(data.first_name)
-          setLastName(data.last_name)
           setSecondaryUse(data.secondary_use)
           setAvatarUrl(data.avatar_url)
 
           //
           dispatch(setFirstName(data.first_name))
           dispatch(setPrimaryUse(data.primary_use))
+          dispatch(setLastName(data.last_name))
         }
       }
     } catch (error) {
@@ -163,7 +164,7 @@ export default function Account() {
           id="first_name"
           type="text"
           value={first_name || ''}
-          onChange={(e) => setFirstName(e.target.value)}
+          onChange={(e) => dispatch(setFirstName(e.target.value))}
         />
       </div>
       <div>
@@ -172,7 +173,7 @@ export default function Account() {
           id="last_name"
           type="text"
           value={last_name || ''}
-          onChange={(e) => setLastName(e.target.value)}
+          onChange={(e) => dispatch(setLastName(e.target.value))}
         />
       </div>
 
