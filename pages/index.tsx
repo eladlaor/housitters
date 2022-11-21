@@ -9,14 +9,22 @@ import { useRouter } from 'next/router'
 import { HOUSEOWNERS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
 import HousitterAccount from './housitters/HousitterAccount'
 
-
 const Home: NextPage = () => {
   const router = useRouter()
-  const session = useSession()
-  const supabase = useSupabaseClient()
   const user = useUser()
 
+  useEffect(() => {
+    if (!user) {
+      router.push('Login')
+    }
+  })
+  // const session = useSession()
+  // const supabase = useSupabaseClient()
+  // const user = useUser() // thanks to the config in _app.tsx, i can now determine if a user is logged in or not.
+
   /*
+
+  
 
 todo:
 
@@ -40,6 +48,8 @@ you can use router.push.
 */
 
   // it's just that we have some race condition here between the two useEffects so we negated user in both.
+
+  /*
   useEffect(() => {
     // TODO: this would be a bad practice.
     if (!user) {
@@ -88,34 +98,39 @@ you can use router.push.
     goToPersonalizedHomePageIfLoggedIn()
   }, [user, session]) // TODO: once user changes (i.e, actually gets the user), then rerun useEffect.
 
-  return (
-    <div className="container" style={{ padding: '50px 0 100px 0' }}>
-      {!session ? (
-        <div className="row">
-          <div className="col-6">
-            <h1 className="header">The best housitting website ever!</h1>
-            <p>Coming Soon :)</p>
-          </div>
-          <div className="col-6 auth-widget">
-            <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} theme="dark" />
-          </div>
 
-          <div>
-            <button>
-              <Link href="test/something">jumping to a page</Link>
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* <h3>Account</h3>
-          <Account session={session} /> */}
-        </>
-      )}
+  */
 
-      <Footer />
-    </div>
-  )
+  // return (
+  //   <div className="container" style={{ padding: '50px 0 100px 0' }}>
+  //     {!session ? (
+  //       <div className="row">
+  //         <div className="col-6">
+  //           <h1 className="header">The best housitting website ever!</h1>
+  //           <p>Coming Soon :)</p>
+  //         </div>
+  //         <div className="col-6 auth-widget">
+  //           <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} theme="dark" />
+  //         </div>
+
+  //         <div>
+  //           <button>
+  //             <Link href="test/something">jumping to a page</Link>
+  //           </button>
+  //         </div>
+  //       </div>
+  //     ) : (
+  //       <>
+  //         <h3>Account</h3>
+  //         <Account session={session} />
+  //       </>
+  //     )}
+
+  //     <Footer />
+  //   </div>
+  // )
+
+  return <div>index page</div>
 }
 
 export default Home

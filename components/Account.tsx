@@ -8,16 +8,10 @@ import { HOUSITTERS_ROUTES, HOUSEOWNERS_ROUTES, USER_TYPE } from '../utils/const
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
-export default function Account({
-  session,
-  userFromQuery,
-}: {
-  session: Session
-  userFromQuery: any
-}) {
+export default function Account() {
   const router = useRouter()
   const supabase = useSupabaseClient<Database>()
-  const user = useUser() ? useUser() : userFromQuery
+  const user = useUser()
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState<Profiles['username']>(null)
   const [first_name, setFirstName] = useState<Profiles['first_name']>(null)
@@ -28,10 +22,10 @@ export default function Account({
 
   useEffect(() => {
     getProfile()
-  }, [session, primary_use])
+  }, [primary_use])
 
   async function getProfile() {
-    // TODO: take it out to utils
+    // TODO: maybe refactor, make a util func
     try {
       setLoading(true)
       if (!user) {
@@ -108,6 +102,13 @@ export default function Account({
     }
   }
 
+  if (!user) {
+    router.push('/index')
+
+    // TODO: need to get rid of this shit
+    return <div>there is no user and no way to reach here. for compilataion</div>
+  }
+
   return (
     <div className="form-widget">
       <Avatar
@@ -128,7 +129,7 @@ export default function Account({
       />
       <div>
         <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={session.user.email} disabled />
+        <input id="email" type="text" value={user.email} disabled />
       </div>
       <div>
         <label htmlFor="username">Username</label>
