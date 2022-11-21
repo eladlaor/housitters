@@ -5,7 +5,7 @@ import { Router, useRouter } from 'next/router'
 import Link from 'next/link'
 import { HOUSEOWNERS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAuthState, setFirstName } from '../slices/userSlice'
+import { selectAuthState, setAuthState, setFirstName } from '../slices/userSlice'
 
 const LoginPage = () => {
   const { isLoading, session, error, supabaseClient } = useSessionContext()
@@ -34,13 +34,13 @@ const LoginPage = () => {
 
         if (data) {
           const { first_name, primary_use } = data
-
+          dispatch(setAuthState(true))
           dispatch(setFirstName(first_name))
 
           if (primary_use === USER_TYPE.Housitter) {
             router.push(`${HOUSITTERS_ROUTES.HOME}`)
           } else if (primary_use === USER_TYPE.HouseOwner) {
-            router.push(`${HOUSEOWNERS_ROUTES}`)
+            router.push(`${HOUSEOWNERS_ROUTES.HOME}`)
           }
         }
       } catch (e) {
@@ -62,11 +62,6 @@ const LoginPage = () => {
           <pre>{user ? user : 'user is indeed not logged in, yaani not authenticated'}</pre>
           {error && <p>{error.message}</p>}
           <div className="col-6 auth-widget">
-            /** Auth is just a component. it makes the user - from useUser - become authenticated,
-            instead of undefined. you can check the docs in the readme file of the node modules of
-            it. but you can control the behavior, by checking for defined or undefined user. I'm
-            sure you can also just define a button here, if you really want, simply using the
-            supabaseClient.auth.signinWith... */
             <Auth
               appearance={{ theme: ThemeSupa }}
               theme="dark"
@@ -79,7 +74,11 @@ const LoginPage = () => {
       </div>
     )
   }
-
+  /* Auth is just a component. it makes the user - from useUser - become authenticated,
+            instead of undefined. you can check the docs in the readme file of the node modules of
+            it. but you can control the behavior, by checking for defined or undefined user. I'm
+            sure you can also just define a button here, if you really want, simply using the
+            supabaseClient.auth.signinWith... */
   return (
     <>
       <p>login page</p>

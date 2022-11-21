@@ -1,14 +1,15 @@
-
 export const USER_TYPE = {
-    HouseOwner:'houseowner',
-    Housitter: 'housitter',
-    None: 'none'
-  }
+  HouseOwner: 'houseowner',
+  Housitter: 'housitter',
+  None: 'none',
+}
 
 export const HOUSITTERS_ROUTES = {
-    HOME: '/housitters/Home'
+  HOME: '/housitters/Home',
+  ACCOUNT: '/housitters/HousitterAccount',
 }
 
 export const HOUSEOWNERS_ROUTES = {
-    HOME: '/house-owners/Home'
+  HOME: '/house-owners/Home',
+  ACCOUNT: '/house-owners/HouseOwnerAccount',
 }

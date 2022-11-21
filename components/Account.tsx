@@ -5,6 +5,13 @@ import { useRouter } from 'next/router'
 
 import { Database } from '../utils/database.types'
 import { HOUSITTERS_ROUTES, HOUSEOWNERS_ROUTES, USER_TYPE } from '../utils/constants'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  selectFirstNameState,
+  selectPrimaryUseState,
+  setFirstName,
+  setPrimaryUse,
+} from '../slices/userSlice'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
@@ -14,22 +21,27 @@ export default function Account() {
   const user = useUser()
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState<Profiles['username']>(null)
-  const [first_name, setFirstName] = useState<Profiles['first_name']>(null)
+  // const [first_name, setFirstName] = useState<Profiles['first_name']>(null)
   const [last_name, setLastName] = useState<Profiles['last_name']>(null)
-  const [primary_use, setPrimaryUse] = useState<Profiles['primary_use']>(USER_TYPE.None)
+  // const [primary_use, setPrimaryUse] = useState<Profiles['primary_use']>(USER_TYPE.None)
   const [secondary_use, setSecondaryUse] = useState<Profiles['secondary_use']>(USER_TYPE.None)
   const [avatar_url, setAvatarUrl] = useState<Profiles['avatar_url']>(null)
 
+  const dispatch = useDispatch()
+  const primary_use = useSelector(selectPrimaryUseState)
+  const first_name = useSelector(selectFirstNameState)
+  // const primaryUseSelector = useSelector(selectPrimaryUseState)
+
   useEffect(() => {
     getProfile()
-  }, [primary_use])
+  }, [user])
 
   async function getProfile() {
     // TODO: maybe refactor, make a util func
     try {
       setLoading(true)
       if (!user) {
-        throw new Error('No user')
+        return
       } else {
         let { data, error, status } = await supabase
           .from('profiles')
@@ -43,11 +55,14 @@ export default function Account() {
 
         if (data) {
           setUsername(data.username)
-          setFirstName(data.first_name)
+          // setFirstName(data.first_name)
           setLastName(data.last_name)
-          setPrimaryUse(data.primary_use)
           setSecondaryUse(data.secondary_use)
           setAvatarUrl(data.avatar_url)
+
+          //
+          dispatch(setFirstName(data.first_name))
+          dispatch(setPrimaryUse(data.primary_use))
         }
       }
     } catch (error) {
@@ -93,6 +108,11 @@ export default function Account() {
         throw error
       } else {
         alert('Profile successfully updated!')
+        if (primary_use === USER_TYPE.Housitter) {
+          router.push(`/housitters/Home`)
+        } else {
+          router.push(`/house-owners/Home`)
+        }
       }
     } catch (error) {
       alert('Error updating the data!')
@@ -103,10 +123,7 @@ export default function Account() {
   }
 
   if (!user) {
-    router.push('/index')
-
-    // TODO: need to get rid of this shit
-    return <div>there is no user and no way to reach here. for compilataion</div>
+    return <div>no user</div>
   }
 
   return (
@@ -171,9 +188,10 @@ export default function Account() {
         Housitter
         <input
           type="radio"
-          value="houseowner"
+          value={USER_TYPE.HouseOwner}
           name="primary_use"
           checked={primary_use === USER_TYPE.HouseOwner ? true : false}
+          onChange={handlePrimayUseChange}
         />
         HouseOwner
       </div>
@@ -190,7 +208,7 @@ export default function Account() {
         Housitter
         <input
           type="radio"
-          value="houseowner"
+          value={USER_TYPE.HouseOwner}
           name="secondary_use"
           disabled={primary_use === USER_TYPE.HouseOwner ? true : false}
         />{' '}
@@ -212,12 +230,6 @@ export default function Account() {
             })
 
             console.log(`primary use is: ${primary_use}`)
-
-            if (primary_use === USER_TYPE.Housitter) {
-              router.push(`/housitters/Home?username=${username}&firstName=${first_name}`)
-            } else {
-              router.push(`/house-owners/Home?username=${username}&firstName=${first_name}`)
-            }
           }}
           disabled={loading}
         >
@@ -240,10 +252,10 @@ export default function Account() {
   )
 
   function handlePrimayUseChange(event: any) {
-    setPrimaryUse(event.target.value)
+    dispatch(setPrimaryUse(event.target.value))
   }
 
   function handleSecondaryUseChange(event: any) {
-    setSecondaryUse(event.target.value)
+    dispatch(setSecondaryUse(event.target.value))
   }
 }

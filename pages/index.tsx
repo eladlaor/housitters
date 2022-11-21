@@ -14,9 +14,7 @@ const Home: NextPage = () => {
   const user = useUser()
 
   useEffect(() => {
-    if (!user) {
-      router.push('Login')
-    }
+    router.push('Login')
   })
   // const session = useSession()
   // const supabase = useSupabaseClient()
@@ -130,7 +128,7 @@ you can use router.push.
   //   </div>
   // )
 
-  return <div>index page</div>
+  return <div>index pagasae</div>
 }
 
 export default Home
