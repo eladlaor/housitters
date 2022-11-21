@@ -8,10 +8,16 @@ import { HOUSITTERS_ROUTES, HOUSEOWNERS_ROUTES, USER_TYPE } from '../utils/const
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
-export default function Account({ session }: { session: Session }) {
+export default function Account({
+  session,
+  userFromQuery,
+}: {
+  session: Session
+  userFromQuery: any
+}) {
   const router = useRouter()
   const supabase = useSupabaseClient<Database>()
-  const user = useUser()
+  const user = useUser() ? useUser() : userFromQuery
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState<Profiles['username']>(null)
   const [first_name, setFirstName] = useState<Profiles['first_name']>(null)
@@ -22,7 +28,7 @@ export default function Account({ session }: { session: Session }) {
 
   useEffect(() => {
     getProfile()
-  }, [session])
+  }, [session, primary_use])
 
   async function getProfile() {
     // TODO: take it out to utils
@@ -48,12 +54,6 @@ export default function Account({ session }: { session: Session }) {
           setPrimaryUse(data.primary_use)
           setSecondaryUse(data.secondary_use)
           setAvatarUrl(data.avatar_url)
-
-          // if (data.primary_use === USER_TYPE.Housitter) {
-          //   router.push(`${HOUSITTERS_ROUTES.HOME}?firstName=${data.first_name}`)
-          // } else if (primary_use === USER_TYPE.HouseOwner) {
-          //   router.push(`${HOUSEOWNERS_ROUTES}?firstName=${data.first_name}`)
-          // }
         }
       }
     } catch (error) {
@@ -158,31 +158,33 @@ export default function Account({ session }: { session: Session }) {
         />
       </div>
 
-      <div onChange={handlePrimayUseChange}>
+      <div>
         <h2>Primary Use:</h2>
         <input
           type="radio"
           value="housitter"
           name="primary_use"
-          defaultChecked={primary_use === USER_TYPE.Housitter ? true : false}
+          checked={primary_use === USER_TYPE.Housitter ? true : false}
+          onChange={handlePrimayUseChange}
         />{' '}
         Housitter
         <input
           type="radio"
           value="houseowner"
           name="primary_use"
-          defaultChecked={primary_use === USER_TYPE.HouseOwner ? true : false}
+          checked={primary_use === USER_TYPE.HouseOwner ? true : false}
         />
         HouseOwner
       </div>
 
-      <div onChange={handleSecondaryUseChange}>
+      <div>
         <h2>Secondary Use:</h2>
         <input
           type="radio"
           value="housitter"
           name="secondary_use"
           disabled={primary_use === USER_TYPE.Housitter ? true : false}
+          onChange={handleSecondaryUseChange}
         />{' '}
         Housitter
         <input
@@ -223,7 +225,13 @@ export default function Account({ session }: { session: Session }) {
       </div>
 
       <div>
-        <button className="button block" onClick={() => supabase.auth.signOut()}>
+        <button
+          className="button block"
+          onClick={() => {
+            supabase.auth.signOut()
+            router.push('/')
+          }}
+        >
           Sign Out
         </button>
       </div>
