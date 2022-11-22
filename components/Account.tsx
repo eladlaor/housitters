@@ -286,9 +286,7 @@ export default function Account() {
         <button
           className="button block"
           onClick={() => {
-            supabase.auth.signOut()
-            clearUserState()
-            router.push('/')
+            userLogout()
           }}
         >
           Sign Out
@@ -314,14 +312,20 @@ export default function Account() {
     return type === typeToCompare
   }
 
-  function clearUserState() {
-    dispatch(setUsername(''))
-    dispatch(setFirstName(''))
-    dispatch(setLastName(''))
-    dispatch(setPrimaryUse(''))
-    dispatch(setSecondaryUse(''))
-    dispatch(setAvatarUrl('')) // TODO: default
-    dispatch(setBirthday(null))
-    dispatch(setAuthState(false))
+  async function userLogout() {
+    const clearUserState = async () => {
+      dispatch(setUsername(''))
+      dispatch(setFirstName(''))
+      dispatch(setLastName(''))
+      dispatch(setPrimaryUse(''))
+      dispatch(setSecondaryUse(''))
+      dispatch(setAvatarUrl('')) // TODO: default
+      dispatch(setBirthday(null))
+      dispatch(setAuthState(false))
+    }
+
+    await clearUserState()
+    await supabase.auth.signOut()
+    router.push('/')
   }
 }
