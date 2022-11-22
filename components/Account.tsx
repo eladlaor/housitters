@@ -7,12 +7,18 @@ import { Database } from '../utils/database.types'
 import { HOUSITTERS_ROUTES, HOUSEOWNERS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
+  selectAvatarUrlState,
   selectFirstNameState,
   selectLastNameState,
   selectPrimaryUseState,
+  selectSecondaryUseState,
+  selectUsernameState,
+  setAvatarUrl,
   setFirstName,
   setLastName,
   setPrimaryUse,
+  setSecondaryUse,
+  setUsername,
 } from '../slices/userSlice'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
@@ -24,13 +30,13 @@ export default function Account() {
   const dispatch = useDispatch()
 
   const [loading, setLoading] = useState(true)
-  const [username, setUsername] = useState<Profiles['username']>(null)
-  const [secondary_use, setSecondaryUse] = useState<Profiles['secondary_use']>(USER_TYPE.None)
-  const [avatar_url, setAvatarUrl] = useState<Profiles['avatar_url']>(null)
 
-  const primary_use = useSelector(selectPrimaryUseState)
   const first_name = useSelector(selectFirstNameState)
   const last_name = useSelector(selectLastNameState)
+  const username = useSelector(selectUsernameState)
+  const primary_use = useSelector(selectPrimaryUseState)
+  const secondary_use = useSelector(selectSecondaryUseState)
+  const avatar_url = useSelector(selectAvatarUrlState)
 
   // const primaryUseSelector = useSelector(selectPrimaryUseState)
 
@@ -56,14 +62,12 @@ export default function Account() {
         }
 
         if (data) {
-          setUsername(data.username)
-          setSecondaryUse(data.secondary_use)
-          setAvatarUrl(data.avatar_url)
-
-          //
+          dispatch(setSecondaryUse(data.secondary_use))
           dispatch(setFirstName(data.first_name))
+          dispatch(setUsername(data.username))
           dispatch(setPrimaryUse(data.primary_use))
           dispatch(setLastName(data.last_name))
+          dispatch(setAvatarUrl(data.avatar_url))
         }
       }
     } catch (error) {
@@ -134,7 +138,7 @@ export default function Account() {
         url={avatar_url}
         size={150}
         onUpload={(url) => {
-          setAvatarUrl(url)
+          dispatch(setAvatarUrl(url))
           updateProfile({
             username,
             first_name,
@@ -155,7 +159,7 @@ export default function Account() {
           id="username"
           type="text"
           value={username || ''}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => dispatch(setUsername(e.target.value))}
         />
       </div>
       <div>
@@ -181,9 +185,10 @@ export default function Account() {
         <h2>Primary Use:</h2>
         <input
           type="radio"
-          value="housitter"
+          value={USER_TYPE.Housitter}
           name="primary_use"
-          checked={primary_use === USER_TYPE.Housitter ? true : false}
+          disabled={handleButtonMark(secondary_use, USER_TYPE.Housitter)}
+          checked={handleButtonMark(primary_use, USER_TYPE.Housitter)}
           onChange={handlePrimayUseChange}
         />{' '}
         Housitter
@@ -191,7 +196,8 @@ export default function Account() {
           type="radio"
           value={USER_TYPE.HouseOwner}
           name="primary_use"
-          checked={primary_use === USER_TYPE.HouseOwner ? true : false}
+          disabled={handleButtonMark(secondary_use, USER_TYPE.HouseOwner)}
+          checked={handleButtonMark(primary_use, USER_TYPE.HouseOwner)}
           onChange={handlePrimayUseChange}
         />
         HouseOwner
@@ -201,20 +207,30 @@ export default function Account() {
         <h2>Secondary Use:</h2>
         <input
           type="radio"
-          value="housitter"
+          value={USER_TYPE.Housitter}
           name="secondary_use"
-          disabled={primary_use === USER_TYPE.Housitter ? true : false}
+          disabled={handleButtonMark(primary_use, USER_TYPE.Housitter)}
+          checked={handleButtonMark(secondary_use, USER_TYPE.Housitter)}
           onChange={handleSecondaryUseChange}
-        />{' '}
+        />
         Housitter
         <input
           type="radio"
           value={USER_TYPE.HouseOwner}
           name="secondary_use"
-          disabled={primary_use === USER_TYPE.HouseOwner ? true : false}
-        />{' '}
+          disabled={handleButtonMark(primary_use, USER_TYPE.HouseOwner)}
+          checked={handleButtonMark(secondary_use, USER_TYPE.HouseOwner)}
+          onChange={handleSecondaryUseChange}
+        />
         HouseOwner
-        <input type="radio" value="none" name="secondary_use" defaultChecked={false} /> None
+        <input
+          type="radio"
+          value="none"
+          name="secondary_use"
+          checked={handleButtonMark(secondary_use, USER_TYPE.None)}
+          onChange={handleSecondaryUseChange}
+        />{' '}
+        None
       </div>
 
       <div>
@@ -258,5 +274,9 @@ export default function Account() {
 
   function handleSecondaryUseChange(event: any) {
     dispatch(setSecondaryUse(event.target.value))
+  }
+
+  function handleButtonMark(type: string, typeToCompare: string) {
+    return type === typeToCompare
   }
 }

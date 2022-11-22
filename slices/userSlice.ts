@@ -1,19 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import { USER_TYPE } from '../utils/constants'
 
 export interface UserState {
   isLogged: boolean
   firstName: string
-  primaryUse: string
   lastName: string
+  username: string
+  primaryUse: string
+  secondaryUse: string
+  avatarUrl: string
 }
 
 const initialState: UserState = {
   isLogged: false,
   firstName: '',
-  primaryUse: '',
   lastName: '',
+  username: '',
+  primaryUse: '',
+  secondaryUse: USER_TYPE.None,
+  avatarUrl: '', // TODO: add some default image here
 }
 
 export const userSlice = createSlice({
@@ -38,21 +45,50 @@ export const userSlice = createSlice({
         lastName: action.payload,
       }
     },
+    setUsername(state = initialState, action) {
+      return {
+        ...state,
+        username: action.payload,
+      }
+    },
     setPrimaryUse(state = initialState, action) {
       return {
         ...state,
         primaryUse: action.payload,
       }
     },
+    setSecondaryUse(state = initialState, action) {
+      return {
+        ...state,
+        secondaryUse: action.payload,
+      }
+    },
+    setAvatarUrl(state = initialState, action) {
+      return {
+        ...state,
+        avatarUrl: action.payload,
+      }
+    },
   },
 })
 
 // Action creators are generated (automatically) for each case reducer function
-export const { setAuthState, setFirstName, setLastName, setPrimaryUse } = userSlice.actions
+export const {
+  setAuthState,
+  setFirstName,
+  setLastName,
+  setUsername,
+  setPrimaryUse,
+  setSecondaryUse,
+  setAvatarUrl,
+} = userSlice.actions
 
 export const selectAuthState = (state: RootState) => state.user.isLogged
 export const selectFirstNameState = (state: RootState) => state.user.firstName
 export const selectLastNameState = (state: RootState) => state.user.lastName
+export const selectUsernameState = (state: RootState) => state.user.username
 export const selectPrimaryUseState = (state: RootState) => state.user.primaryUse
+export const selectSecondaryUseState = (state: RootState) => state.user.secondaryUse
+export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
 
 export default userSlice.reducer
