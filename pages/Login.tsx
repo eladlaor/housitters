@@ -37,7 +37,6 @@ const LoginPage = () => {
           dispatch(setAuthState(true))
           dispatch(setFirstName(first_name))
 
-          debugger
           if (primary_use === USER_TYPE.Housitter) {
             router.push(`${HOUSITTERS_ROUTES.HOME}`)
           } else if (primary_use === USER_TYPE.HouseOwner) {
@@ -56,7 +55,6 @@ const LoginPage = () => {
     }
   }, [user])
 
-  // debugger
   if (!user) {
     return (
       <div className="container" style={{ padding: '50px 0 100px 0' }}>
