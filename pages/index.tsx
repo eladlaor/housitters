@@ -128,7 +128,7 @@ you can use router.push.
   //   </div>
   // )
 
-  return <div>index pagasae</div>
+  return <div>index page</div>
 }
 
 export default Home

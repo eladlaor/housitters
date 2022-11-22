@@ -11,6 +11,7 @@ export interface UserState {
   primaryUse: string
   secondaryUse: string
   avatarUrl: string
+  birthday: Date | null
 }
 
 const initialState: UserState = {
@@ -21,6 +22,7 @@ const initialState: UserState = {
   primaryUse: '',
   secondaryUse: USER_TYPE.None,
   avatarUrl: '', // TODO: add some default image here
+  birthday: null,
 }
 
 export const userSlice = createSlice({
@@ -69,6 +71,12 @@ export const userSlice = createSlice({
         avatarUrl: action.payload,
       }
     },
+    setBirthday(state = initialState, action) {
+      return {
+        ...state,
+        birthday: action.payload,
+      }
+    },
   },
 })
 
@@ -81,6 +89,7 @@ export const {
   setPrimaryUse,
   setSecondaryUse,
   setAvatarUrl,
+  setBirthday,
 } = userSlice.actions
 
 export const selectAuthState = (state: RootState) => state.user.isLogged
@@ -90,5 +99,6 @@ export const selectUsernameState = (state: RootState) => state.user.username
 export const selectPrimaryUseState = (state: RootState) => state.user.primaryUse
 export const selectSecondaryUseState = (state: RootState) => state.user.secondaryUse
 export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
+export const selectBirthdayState = (state: RootState) => state.user.birthday
 
 export default userSlice.reducer

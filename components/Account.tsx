@@ -13,12 +13,16 @@ import {
   selectPrimaryUseState,
   selectSecondaryUseState,
   selectUsernameState,
+  selectBirthdayState,
   setAvatarUrl,
   setFirstName,
   setLastName,
   setPrimaryUse,
   setSecondaryUse,
   setUsername,
+  setBirthday,
+  selectAuthState,
+  setAuthState,
 } from '../slices/userSlice'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
@@ -31,12 +35,14 @@ export default function Account() {
 
   const [loading, setLoading] = useState(true)
 
+  const isLogged = useSelector(selectAuthState)
   const first_name = useSelector(selectFirstNameState)
   const last_name = useSelector(selectLastNameState)
   const username = useSelector(selectUsernameState)
   const primary_use = useSelector(selectPrimaryUseState)
   const secondary_use = useSelector(selectSecondaryUseState)
   const avatar_url = useSelector(selectAvatarUrlState)
+  const birthday = useSelector(selectBirthdayState)
 
   // const primaryUseSelector = useSelector(selectPrimaryUseState)
 
@@ -53,7 +59,15 @@ export default function Account() {
       } else {
         let { data, error, status } = await supabase
           .from('profiles')
-          .select(`username, first_name, last_name, primary_use, secondary_use, avatar_url`)
+          .select(
+            `username, 
+            first_name, 
+            last_name, 
+            primary_use, 
+            secondary_use, 
+            avatar_url, 
+            birthday`
+          )
           .eq('id', user.id)
           .single()
 
@@ -68,6 +82,7 @@ export default function Account() {
           dispatch(setPrimaryUse(data.primary_use))
           dispatch(setLastName(data.last_name))
           dispatch(setAvatarUrl(data.avatar_url))
+          dispatch(setBirthday(data.birthday))
         }
       }
     } catch (error) {
@@ -85,6 +100,7 @@ export default function Account() {
     primary_use,
     secondary_use,
     avatar_url,
+    birthday,
   }: {
     username: Profiles['username']
     first_name: Profiles['first_name']
@@ -92,6 +108,7 @@ export default function Account() {
     primary_use: Profiles['primary_use']
     secondary_use: Profiles['secondary_use']
     avatar_url: Profiles['avatar_url']
+    birthday: Profiles['birthday']
   }) {
     try {
       setLoading(true)
@@ -99,13 +116,14 @@ export default function Account() {
 
       const updates = {
         id: user.id,
+        updated_at: new Date().toISOString(),
         username,
         first_name,
         last_name,
         primary_use,
         secondary_use,
         avatar_url,
-        updated_at: new Date().toISOString(),
+        birthday,
       }
 
       let { error } = await supabase.from('profiles').upsert(updates)
@@ -146,6 +164,7 @@ export default function Account() {
             primary_use,
             secondary_use,
             avatar_url: url,
+            birthday,
           })
         }}
       />
@@ -167,7 +186,7 @@ export default function Account() {
         <input
           id="first_name"
           type="text"
-          value={first_name || ''}
+          value={first_name}
           onChange={(e) => dispatch(setFirstName(e.target.value))}
         />
       </div>
@@ -176,7 +195,7 @@ export default function Account() {
         <input
           id="last_name"
           type="text"
-          value={last_name || ''}
+          value={last_name}
           onChange={(e) => dispatch(setLastName(e.target.value))}
         />
       </div>
@@ -225,12 +244,22 @@ export default function Account() {
         HouseOwner
         <input
           type="radio"
-          value="none"
+          value={USER_TYPE.None}
           name="secondary_use"
           checked={handleButtonMark(secondary_use, USER_TYPE.None)}
           onChange={handleSecondaryUseChange}
-        />{' '}
+        />
         None
+      </div>
+
+      <div>
+        <h2>Birthday</h2>
+        <input
+          type="date"
+          name="birthday" // TODO: use these names in handlers
+          value={birthday ? birthday.toString() : undefined}
+          onChange={handleBirthdayChange}
+        />
       </div>
 
       <div>
@@ -244,9 +273,8 @@ export default function Account() {
               primary_use,
               secondary_use,
               avatar_url,
+              birthday,
             })
-
-            console.log(`primary use is: ${primary_use}`)
           }}
           disabled={loading}
         >
@@ -259,6 +287,7 @@ export default function Account() {
           className="button block"
           onClick={() => {
             supabase.auth.signOut()
+            clearUserState()
             router.push('/')
           }}
         >
@@ -268,6 +297,7 @@ export default function Account() {
     </div>
   )
 
+  // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
   function handlePrimayUseChange(event: any) {
     dispatch(setPrimaryUse(event.target.value))
   }
@@ -276,7 +306,22 @@ export default function Account() {
     dispatch(setSecondaryUse(event.target.value))
   }
 
+  function handleBirthdayChange(event: any) {
+    dispatch(setBirthday(event.target.value))
+  }
+
   function handleButtonMark(type: string, typeToCompare: string) {
     return type === typeToCompare
+  }
+
+  function clearUserState() {
+    dispatch(setUsername(''))
+    dispatch(setFirstName(''))
+    dispatch(setLastName(''))
+    dispatch(setPrimaryUse(''))
+    dispatch(setSecondaryUse(''))
+    dispatch(setAvatarUrl('')) // TODO: default
+    dispatch(setBirthday(null))
+    dispatch(setAuthState(false))
   }
 }
