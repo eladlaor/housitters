@@ -2,19 +2,12 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { USER_TYPE } from '../utils/constants'
+import { User } from '@supabase/supabase-js'
+import { keys } from 'ts-transformer-keys'
+import { debug } from 'node:console'
+import { initScriptLoader } from 'next/script'
 
-export interface UserState {
-  isLogged: boolean
-  firstName: string
-  lastName: string
-  username: string
-  primaryUse: string
-  secondaryUse: string
-  avatarUrl: string
-  birthday: Date | null
-}
-
-const initialState: UserState = {
+export const initialState = {
   isLogged: false,
   firstName: '',
   lastName: '',
@@ -22,14 +15,16 @@ const initialState: UserState = {
   primaryUse: '',
   secondaryUse: USER_TYPE.None,
   avatarUrl: '', // TODO: add some default image here
-  birthday: null,
+  birthday: new Date(0),
 }
+
+export type UserState = typeof initialState
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setAuthState(state = initialState, action) {
+    setIsLoggedState(state = initialState, action) {
       return {
         ...state,
         isLogged: action.payload,
@@ -82,7 +77,7 @@ export const userSlice = createSlice({
 
 // Action creators are generated (automatically) for each case reducer function
 export const {
-  setAuthState,
+  setIsLoggedState,
   setFirstName,
   setLastName,
   setUsername,
@@ -92,7 +87,7 @@ export const {
   setBirthday,
 } = userSlice.actions
 
-export const selectAuthState = (state: RootState) => state.user.isLogged
+export const selectIsLoggedState = (state: RootState) => state.user.isLogged
 export const selectFirstNameState = (state: RootState) => state.user.firstName
 export const selectLastNameState = (state: RootState) => state.user.lastName
 export const selectUsernameState = (state: RootState) => state.user.username
@@ -100,5 +95,25 @@ export const selectPrimaryUseState = (state: RootState) => state.user.primaryUse
 export const selectSecondaryUseState = (state: RootState) => state.user.secondaryUse
 export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
 export const selectBirthdayState = (state: RootState) => state.user.birthday
+
+export type SettersToInitialStates = {
+  matchingSetter: any
+  initialState: any
+}[]
+
+export const settersToInitialStates: SettersToInitialStates = Object.keys(initialState).map(
+  (key) => {
+    let matchingSetter
+    const matchingActionName = Object.keys(userSlice.actions).find((actionName) => {
+      return actionName.toLowerCase().includes(key.toLowerCase())
+    })
+    matchingSetter = userSlice.actions[matchingActionName as keyof typeof userSlice.actions]
+
+    return {
+      matchingSetter: matchingSetter,
+      initialState: initialState[key as keyof UserState],
+    }
+  }
+)
 
 export default userSlice.reducer

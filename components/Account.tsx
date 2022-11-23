@@ -21,21 +21,22 @@ import {
   setSecondaryUse,
   setUsername,
   setBirthday,
-  selectAuthState,
-  setAuthState,
+  selectIsLoggedState,
+  setIsLoggedState,
 } from '../slices/userSlice'
+import SignOut from './Buttons/SignOut'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export default function Account() {
   const router = useRouter()
-  const supabase = useSupabaseClient<Database>()
+  const supabaseClient = useSupabaseClient<Database>()
   const user = useUser()
   const dispatch = useDispatch()
 
   const [loading, setLoading] = useState(true)
 
-  const isLogged = useSelector(selectAuthState)
+  const isLogged = useSelector(selectIsLoggedState)
   const first_name = useSelector(selectFirstNameState)
   const last_name = useSelector(selectLastNameState)
   const username = useSelector(selectUsernameState)
@@ -57,7 +58,7 @@ export default function Account() {
       if (!user) {
         return
       } else {
-        let { data, error, status } = await supabase
+        let { data, error, status } = await supabaseClient
           .from('profiles')
           .select(
             `username, 
@@ -126,7 +127,7 @@ export default function Account() {
         birthday,
       }
 
-      let { error } = await supabase.from('profiles').upsert(updates)
+      let { error } = await supabaseClient.from('profiles').upsert(updates)
       if (error) {
         throw error
       } else {
@@ -283,14 +284,7 @@ export default function Account() {
       </div>
 
       <div>
-        <button
-          className="button block"
-          onClick={() => {
-            userLogout()
-          }}
-        >
-          Sign Out
-        </button>
+        <SignOut />
       </div>
     </div>
   )
@@ -310,22 +304,5 @@ export default function Account() {
 
   function handleButtonMark(type: string, typeToCompare: string) {
     return type === typeToCompare
-  }
-
-  async function userLogout() {
-    const clearUserState = async () => {
-      dispatch(setUsername(''))
-      dispatch(setFirstName(''))
-      dispatch(setLastName(''))
-      dispatch(setPrimaryUse(''))
-      dispatch(setSecondaryUse(''))
-      dispatch(setAvatarUrl('')) // TODO: default
-      dispatch(setBirthday(null))
-      dispatch(setAuthState(false))
-    }
-
-    await clearUserState()
-    await supabase.auth.signOut()
-    router.push('/')
   }
 }

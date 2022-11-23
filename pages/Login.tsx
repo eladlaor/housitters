@@ -5,14 +5,14 @@ import { Router, useRouter } from 'next/router'
 import Link from 'next/link'
 import { HOUSEOWNERS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAuthState, setAuthState, setFirstName } from '../slices/userSlice'
+import { selectIsLoggedState, setIsLoggedState, setFirstName } from '../slices/userSlice'
 
 const LoginPage = () => {
   const { isLoading, session, error, supabaseClient } = useSessionContext()
   const user = useUser()
   const router = useRouter()
   const dispatch = useDispatch()
-  const authState = useSelector(selectAuthState)
+  const isLoggedState = useSelector(selectIsLoggedState)
 
   useEffect(() => {
     if (!user) {
@@ -34,7 +34,8 @@ const LoginPage = () => {
 
         if (data) {
           const { first_name, primary_use } = data
-          dispatch(setAuthState(true))
+
+          dispatch(setIsLoggedState(true))
           dispatch(setFirstName(first_name))
 
           if (primary_use === USER_TYPE.Housitter) {
