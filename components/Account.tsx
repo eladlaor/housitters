@@ -1,3 +1,7 @@
+import { DateRangePicker } from 'react-date-range'
+import 'react-date-range/dist/styles.css'
+import 'react-date-range/dist/theme/default.css' // theme css file
+
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
 import Avatar from './Avatar'
@@ -150,6 +154,12 @@ export default function Account() {
     return <div>no user</div>
   }
 
+  const selectionRange = {
+    startDate: new Date(0),
+    endDate: new Date(),
+    key: 'selection',
+  }
+
   return (
     <div className="form-widget">
       <Avatar
@@ -264,6 +274,12 @@ export default function Account() {
       </div>
 
       <div>
+        <h2>Availability</h2>
+        <p>this is not looking great because no styles are applied</p>
+        <DateRangePicker ranges={[selectionRange]} onChange={handleDatesChange} color="red" />
+      </div>
+
+      <div>
         <button
           className="button primary block"
           onClick={() => {
@@ -300,6 +316,10 @@ export default function Account() {
 
   function handleBirthdayChange(event: any) {
     dispatch(setBirthday(event.target.value))
+  }
+
+  function handleDatesChange(ranges: any) {
+    console.log(ranges)
   }
 
   function handleButtonMark(type: string, typeToCompare: string) {
