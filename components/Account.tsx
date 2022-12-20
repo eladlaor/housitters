@@ -1,6 +1,5 @@
-import { DateRangePicker } from 'react-date-range'
-import 'react-date-range/dist/styles.css'
-import 'react-date-range/dist/theme/default.css' // theme css file
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
@@ -275,8 +274,16 @@ export default function Account() {
 
       <div>
         <h2>Availability</h2>
-        <p>this is not looking great because no styles are applied</p>
-        <DateRangePicker ranges={[selectionRange]} onChange={handleDatesChange} color="red" />
+        <p>i should make the availability section a component, to add more</p>
+        <p>i should add an onSelect and onSelectOutside event handler here</p>
+        <p>start date</p>
+        <DatePicker selected={new Date()} onChange={handleDatesChange} />
+        <p>end date</p>
+        <DatePicker selected={new Date()} onChange={handleDatesChange} />
+      </div>
+
+      <div>
+        <h2>Preferred Location</h2>
       </div>
 
       <div>
