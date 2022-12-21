@@ -13,8 +13,6 @@ export default function SignOut() {
   async function userLogout() {
     const clearUserState = async () => {
       settersToInitialStates.forEach((attributeSetterAndInitialState) => {
-        console.log('hi')
-
         dispatch(
           attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
         )

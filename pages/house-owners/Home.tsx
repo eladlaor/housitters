@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <div>
       <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
-      <GoToProfileButton baseRoute={HOUSEOWNERS_ROUTES.ACCOUNT} />
+      <GoToProfileButton accountRoute={HOUSEOWNERS_ROUTES.ACCOUNT} />
     </div>
   )
 }

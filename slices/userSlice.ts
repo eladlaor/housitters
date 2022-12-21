@@ -16,6 +16,12 @@ export const initialState = {
   secondaryUse: USER_TYPE.None,
   avatarUrl: '', // TODO: add some default image here
   birthday: new Date(0),
+  availability: [
+    {
+      startDate: new Date(0),
+      endDate: new Date(0),
+    },
+  ],
 }
 
 export type UserState = typeof initialState
@@ -72,6 +78,12 @@ export const userSlice = createSlice({
         birthday: action.payload,
       }
     },
+    setAvailability(state = initialState, action) {
+      return {
+        ...state,
+        availability: action.payload,
+      }
+    },
   },
 })
 
@@ -85,6 +97,7 @@ export const {
   setSecondaryUse,
   setAvatarUrl,
   setBirthday,
+  setAvailability,
 } = userSlice.actions
 
 export const selectIsLoggedState = (state: RootState) => state.user.isLogged
@@ -95,6 +108,7 @@ export const selectPrimaryUseState = (state: RootState) => state.user.primaryUse
 export const selectSecondaryUseState = (state: RootState) => state.user.secondaryUse
 export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
 export const selectBirthdayState = (state: RootState) => state.user.birthday
+export const selectAvailabilityState = (state: RootState) => state.user.availability
 
 export type SettersToInitialStates = {
   matchingSetter: any

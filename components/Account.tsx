@@ -1,10 +1,9 @@
-import DatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
 import Avatar from './Avatar'
 import { useRouter } from 'next/router'
+
+import AvailabilityPeriod from '../components/AvailabilityPeriod'
 
 import { Database } from '../utils/database.types'
 import { HOUSITTERS_ROUTES, HOUSEOWNERS_ROUTES, USER_TYPE } from '../utils/constants'
@@ -24,8 +23,7 @@ import {
   setSecondaryUse,
   setUsername,
   setBirthday,
-  selectIsLoggedState,
-  setIsLoggedState,
+  setAvailability,
 } from '../slices/userSlice'
 import SignOut from './Buttons/SignOut'
 
@@ -39,7 +37,6 @@ export default function Account() {
 
   const [loading, setLoading] = useState(true)
 
-  const isLogged = useSelector(selectIsLoggedState)
   const first_name = useSelector(selectFirstNameState)
   const last_name = useSelector(selectLastNameState)
   const username = useSelector(selectUsernameState)
@@ -87,6 +84,14 @@ export default function Account() {
           dispatch(setLastName(data.last_name))
           dispatch(setAvatarUrl(data.avatar_url))
           dispatch(setBirthday(data.birthday))
+          dispatch(
+            setAvailability([
+              {
+                startDate: new Date(0),
+                endDate: new Date(0),
+              },
+            ])
+          )
         }
       }
     } catch (error) {
@@ -147,6 +152,23 @@ export default function Account() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
+  function handlePrimayUseChange(event: any) {
+    dispatch(setPrimaryUse(event.target.value))
+  }
+
+  function handleSecondaryUseChange(event: any) {
+    dispatch(setSecondaryUse(event.target.value))
+  }
+
+  function handleBirthdayChange(event: any) {
+    dispatch(setBirthday(event.target.value))
+  }
+
+  function handleButtonMark(type: string, typeToCompare: string) {
+    return type === typeToCompare
   }
 
   if (!user) {
@@ -274,12 +296,7 @@ export default function Account() {
 
       <div>
         <h2>Availability</h2>
-        <p>i should make the availability section a component, to add more</p>
-        <p>i should add an onSelect and onSelectOutside event handler here</p>
-        <p>start date</p>
-        <DatePicker selected={new Date()} onChange={handleDatesChange} />
-        <p>end date</p>
-        <DatePicker selected={new Date()} onChange={handleDatesChange} />
+        <AvailabilityPeriod />
       </div>
 
       <div>
@@ -302,7 +319,7 @@ export default function Account() {
           }}
           disabled={loading}
         >
-          {loading ? 'Loading ...' : 'Update'}
+          {loading ? 'loading ...' : 'update'}
         </button>
       </div>
 
@@ -311,25 +328,4 @@ export default function Account() {
       </div>
     </div>
   )
-
-  // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
-  function handlePrimayUseChange(event: any) {
-    dispatch(setPrimaryUse(event.target.value))
-  }
-
-  function handleSecondaryUseChange(event: any) {
-    dispatch(setSecondaryUse(event.target.value))
-  }
-
-  function handleBirthdayChange(event: any) {
-    dispatch(setBirthday(event.target.value))
-  }
-
-  function handleDatesChange(ranges: any) {
-    console.log(ranges)
-  }
-
-  function handleButtonMark(type: string, typeToCompare: string) {
-    return type === typeToCompare
-  }
 }

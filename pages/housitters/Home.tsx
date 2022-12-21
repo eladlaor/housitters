@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div>
       <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
-      <GoToProfileButton baseRoute={HOUSITTERS_ROUTES.ACCOUNT} />
+      <GoToProfileButton accountRoute={HOUSITTERS_ROUTES.ACCOUNT} />
       <SignOut />
     </div>
   )
