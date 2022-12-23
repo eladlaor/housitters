@@ -13,7 +13,7 @@ export interface Database {
           primary_use: string
           secondary_use: string
           avatar_url: string | null
-          birthday: Date | null
+          birthday: Date | string | null
         }
         Insert: {
           id: string
@@ -24,7 +24,7 @@ export interface Database {
           avatar_url?: string | null
           primary_use?: string
           secondary_use?: string
-          birthday?: Date | null
+          birthday?: Date | string | null
         }
         Update: {
           id?: string
@@ -35,21 +35,18 @@ export interface Database {
           primary_use?: string
           secondary_use?: string
           avatar_url?: string | null
-          birthday?: Date | null
+          birthday?: Date | string | null
         }
       }
       housitters: {
         Row: {
-          user_id: any
-          free_dates: any
+          availability: string | null
         }
         Insert: {
-          user_id: any
-          free_dates: any
+          availability: string | null
         }
         Update: {
-          user_id: any
-          free_dates: any
+          availability: string | null
         }
       }
     }

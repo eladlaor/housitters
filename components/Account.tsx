@@ -16,6 +16,7 @@ import {
   selectSecondaryUseState,
   selectUsernameState,
   selectBirthdayState,
+  selectAvailabilityState,
   setAvatarUrl,
   setFirstName,
   setLastName,
@@ -43,6 +44,7 @@ export default function Account() {
   const secondary_use = useSelector(selectSecondaryUseState)
   const avatar_url = useSelector(selectAvatarUrlState)
   const birthday = useSelector(selectBirthdayState)
+  const availability = useSelector(selectAvailabilityState)
 
   useEffect(() => {
     getProfile()
@@ -124,6 +126,9 @@ export default function Account() {
         birthday,
       }
 
+      // TODO: i need to move the whole availability thing to the housitter home page.
+      await updateAvailability(availability, user.id)
+
       let { error } = await supabaseClient.from('profiles').upsert(updates)
       if (error) {
         throw error
@@ -160,14 +165,41 @@ export default function Account() {
     return type === typeToCompare
   }
 
-  if (!user) {
-    return <div>no user</div>
+  async function updateAvailability(availability: any, userId: any) {
+    let modifiedAvailability = convertAvailabilityObjToMultiRange(availability)
+
+    // TODO: update vs upsert
+    let { error: housittersError } = await supabaseClient
+      .from('housitters')
+      .update({
+        availability: modifiedAvailability,
+      })
+      .eq('user_id', userId)
+
+    if (housittersError) {
+      throw housittersError
+    }
   }
 
-  const selectionRange = {
-    startDate: new Date(0),
-    endDate: new Date(),
-    key: 'selection',
+  function convertAvailabilityObjToMultiRange(availability: any[]): string {
+    let dateMultiRange = '{'
+
+    availability.forEach((period) => {
+      let startDate = period.startDate.toString()
+      let endDate = period.endDate.toString()
+
+      dateMultiRange = dateMultiRange.concat('[' + startDate + ', ' + endDate + '], ')
+    })
+
+    dateMultiRange = dateMultiRange.slice(0, dateMultiRange.length - 2)
+
+    dateMultiRange += '}'
+
+    return dateMultiRange
+  }
+
+  if (!user) {
+    return <div>no user</div>
   }
 
   return (
