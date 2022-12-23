@@ -15,11 +15,11 @@ export const initialState = {
   primaryUse: '',
   secondaryUse: USER_TYPE.None,
   avatarUrl: '', // TODO: add some default image here
-  birthday: new Date(0),
+  birthday: new Date(0).toISOString(),
   availability: [
     {
-      startDate: new Date(0),
-      endDate: new Date(0),
+      startDate: new Date(0).toISOString(),
+      endDate: new Date(0).toISOString(),
     },
   ],
 }
@@ -87,7 +87,7 @@ export const userSlice = createSlice({
   },
 })
 
-// Action creators are generated (automatically) for each case reducer function
+// Action creators (userSlice.action) are generated (automatically) for each case reducer function
 export const {
   setIsLoggedState,
   setFirstName,

@@ -38,6 +38,20 @@ export interface Database {
           birthday?: Date | null
         }
       }
+      housitters: {
+        Row: {
+          user_id: any
+          free_dates: any
+        }
+        Insert: {
+          user_id: any
+          free_dates: any
+        }
+        Update: {
+          user_id: any
+          free_dates: any
+        }
+      }
     }
     Views: {
       [_ in never]: never

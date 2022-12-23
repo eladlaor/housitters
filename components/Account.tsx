@@ -23,7 +23,6 @@ import {
   setSecondaryUse,
   setUsername,
   setBirthday,
-  setAvailability,
 } from '../slices/userSlice'
 import SignOut from './Buttons/SignOut'
 
@@ -45,8 +44,6 @@ export default function Account() {
   const avatar_url = useSelector(selectAvatarUrlState)
   const birthday = useSelector(selectBirthdayState)
 
-  // const primaryUseSelector = useSelector(selectPrimaryUseState)
-
   useEffect(() => {
     getProfile()
   }, [user])
@@ -61,13 +58,13 @@ export default function Account() {
         let { data, error, status } = await supabaseClient
           .from('profiles')
           .select(
-            `username, 
-            first_name, 
-            last_name, 
-            primary_use, 
-            secondary_use, 
-            avatar_url, 
-            birthday`
+            `username,
+              first_name,
+              last_name,
+              primary_use,
+              secondary_use,
+              avatar_url,
+              birthday`
           )
           .eq('id', user.id)
           .single()
@@ -84,14 +81,6 @@ export default function Account() {
           dispatch(setLastName(data.last_name))
           dispatch(setAvatarUrl(data.avatar_url))
           dispatch(setBirthday(data.birthday))
-          dispatch(
-            setAvailability([
-              {
-                startDate: new Date(0),
-                endDate: new Date(0),
-              },
-            ])
-          )
         }
       }
     } catch (error) {
