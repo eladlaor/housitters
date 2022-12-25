@@ -24,6 +24,7 @@ import {
   setSecondaryUse,
   setUsername,
   setBirthday,
+  setAvailability,
 } from '../slices/userSlice'
 import SignOut from './Buttons/SignOut'
 
@@ -84,6 +85,8 @@ export default function Account() {
           dispatch(setAvatarUrl(data.avatar_url))
           dispatch(setBirthday(data.birthday))
         }
+
+        getAvailabilityFromDbAndSetInRedux()
       }
     } catch (error) {
       alert('Error loading user data!')
@@ -148,6 +151,60 @@ export default function Account() {
     }
   }
 
+  // a getter should not set
+  async function getAvailabilityFromDbAndSetInRedux() {
+    if (!user) {
+      return
+    }
+
+    let { data, error } = await supabaseClient
+      .from('housitters')
+      .select('availability')
+      .eq('user_id', user.id)
+      .single()
+
+    if (error) {
+      throw error
+    }
+
+    if (data) {
+      const modifiedAvailability = parseDateMultiRange(data.availability)
+      dispatch(setAvailability(modifiedAvailability))
+    }
+
+    // const { data: upsertData, error: upsertError } = await supabaseClient
+    //   .from('housitters')
+    //   .update([
+    //     {
+    //       availability: '{[2022-12-01, 2022-12-11]}',
+    //     },
+    //   ])
+    //   .eq('user_id', user.id)
+    // if (upsertError) {
+    // }
+  }
+
+  function parseDateMultiRange(dateRange: string | null): any {
+    // maybe regex
+    // does dateRange hold the same reference of the original obj ?
+
+    if (!dateRange) {
+      return
+    }
+
+    let modifiedAvailability: typeof availability = []
+
+    let startDate = dateRange.substring(2, 12)
+    let endDate = dateRange.substring(13, 23)
+
+    modifiedAvailability.push({
+      startDate: startDate,
+      endDate: endDate,
+    })
+
+    return modifiedAvailability
+  }
+
   // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
   function handlePrimayUseChange(event: any) {
     dispatch(setPrimaryUse(event.target.value))
@@ -196,6 +253,21 @@ export default function Account() {
     dateMultiRange += '}'
 
     return dateMultiRange
+  }
+
+  function addAvailabilityPeriod() {
+    let modifiedAvailability = JSON.parse(JSON.stringify(availability))
+
+    let defaultStartDate = new Date()
+    let defaultEndDate = new Date()
+    defaultEndDate.setDate(defaultStartDate.getDate() + 1)
+
+    modifiedAvailability.push({
+      startDate: defaultStartDate.toISOString(),
+      endDate: defaultEndDate.toISOString(),
+    })
+
+    dispatch(setAvailability(modifiedAvailability))
   }
 
   if (!user) {
@@ -317,7 +389,11 @@ export default function Account() {
 
       <div>
         <h2>Availability</h2>
-        <AvailabilityPeriod />
+        {availability.map((period, index) => (
+          <AvailabilityPeriod period={period} index={index} />
+        ))}
+
+        <button onClick={addAvailabilityPeriod}>add period</button>
       </div>
 
       <div>
