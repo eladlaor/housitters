@@ -27,7 +27,8 @@ const LoginPage = () => {
           .eq('id', userId)
           .single()
 
-        // TODO: check what is 406
+        // TODO: HyperText Transfer Protocol (HTTP) 406 Not Acceptable client error response code indicates that the server cannot produce a response matching the list of acceptable values defined in the request's proactive content negotiation headers, and that the server is unwilling to supply a default representatio
+        // why 406
         if (error && status !== 406) {
           throw error
         }
@@ -38,6 +39,7 @@ const LoginPage = () => {
           dispatch(setIsLoggedState(true))
           dispatch(setFirstName(first_name))
 
+          // TODO: shouldnt route in a loadUserData func.
           if (primary_use === USER_TYPE.Housitter) {
             router.push(`${HOUSITTERS_ROUTES.HOME}`)
           } else if (primary_use === USER_TYPE.HouseOwner) {
@@ -46,7 +48,7 @@ const LoginPage = () => {
         }
       } catch (e) {
         console.log('error: ', e)
-        // TODO: throw errors in a nicer way
+        // TODO: should throw errors better
         throw e
       }
     }
@@ -60,7 +62,7 @@ const LoginPage = () => {
     return (
       <div className="container" style={{ padding: '50px 0 100px 0' }}>
         <>
-          <pre>{user ? user : 'user is indeed not logged in, yaani not authenticated'}</pre>
+          {/* why user check? maybe just testing purpose <pre>{user ? user : 'user is indeed not logged in, yaani not authenticated'}</pre> */}
           {error && <p>{error.message}</p>}
           <div className="col-6 auth-widget">
             <Auth
@@ -75,7 +77,7 @@ const LoginPage = () => {
       </div>
     )
   }
-  /* Auth is just a component. it makes the user - from useUser - become authenticated,
+  /* Auth is just a component. it makes the user - which is retrireved from useUser() - become authenticated,
             instead of undefined. you can check the docs in the readme file of the node modules of
             it. but you can control the behavior, by checking for defined or undefined user. I'm
             sure you can also just define a button here, if you really want, simply using the
