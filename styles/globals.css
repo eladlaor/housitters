@@ -238,7 +238,7 @@ input[disabled] {
 
 
 
-/* TODO: NOTIC THESE 4 */
+/* TODO: NOTICE THESE 4 */
 a:link { 
   text-decoration: none; 
   color: red;
@@ -261,7 +261,7 @@ a:active {
 }
 
 
-/* TODO: NOTIC THESE 4 */
+/* TODO: NOTICE THESE 4 */
 
 
 button,
@@ -277,6 +277,14 @@ button,
   text-align: center;
   font-size: 1.9rem;
   text-transform: lowercase;
+}
+
+.front-page-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 600px;
+  text-align: center;
 }
 
 button.primary,

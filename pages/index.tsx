@@ -18,16 +18,30 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <div
-        style={{
-          zIndex: 0,
-          position: 'fixed',
-          width: '100vw',
-          height: '100vh',
-        }}
-      >
+      <div className="front-page-buttons">
         <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
-        <button style={{ position: 'relative' }}>test</button>
+        <div
+          style={{
+            marginRight: '30px',
+          }}
+        >
+          <button
+            style={{ position: 'relative' }}
+            onClick={() => {
+              router.push(`Login`)
+            }}
+          >
+            I want to be a housitter
+          </button>
+        </div>
+        <button
+          style={{ position: 'relative' }}
+          onClick={() => {
+            router.push(`Login`)
+          }}
+        >
+          I am looking for a housitter
+        </button>
       </div>
     </>
   )
