@@ -10,7 +10,7 @@ import { HOUSEOWNERS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/const
 import HousitterAccount from './housitters/HousitterAccount'
 import Image from 'next/image'
 import cuteDog from '../public/cuteDog.jpg'
-import Button from '../components/ui/Button'
+import NewUserTeaser from '../components/Buttons/NewUserTeaser'
 
 const Home: NextPage = () => {
   const router = useRouter()
@@ -25,23 +25,9 @@ const Home: NextPage = () => {
             marginRight: '30px',
           }}
         >
-          <button
-            style={{ position: 'relative' }}
-            onClick={() => {
-              router.push(`Login`)
-            }}
-          >
-            I want to be a housitter
-          </button>
+          <NewUserTeaser primaryUse={USER_TYPE.Housitter} />
         </div>
-        <button
-          style={{ position: 'relative' }}
-          onClick={() => {
-            router.push(`Login`)
-          }}
-        >
-          I am looking for a housitter
-        </button>
+        <NewUserTeaser primaryUse={USER_TYPE.HouseOwner} />
       </div>
     </>
   )

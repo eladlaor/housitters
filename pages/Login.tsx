@@ -7,7 +7,7 @@ import { HOUSEOWNERS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/const
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsLoggedState, setIsLoggedState, setFirstName } from '../slices/userSlice'
 
-const LoginPage = () => {
+export default function LoginPage() {
   const { isLoading, session, error, supabaseClient } = useSessionContext()
   const user = useUser()
   const router = useRouter()
@@ -88,5 +88,3 @@ const LoginPage = () => {
     </>
   )
 }
-
-export default LoginPage
