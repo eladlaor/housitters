@@ -1,61 +1,179 @@
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import Dropdown from 'react-bootstrap/Dropdown'
+import DropdownButton from 'react-bootstrap/DropdownButton'
+
+import { useState } from 'react'
+
+/*
+  Additions:
+    what if endDate is selected to be before today (should disable)
+    what if endDate is before startDate (should update startDate)
+
+    Must be more effective with the way i handle the formatting of the dates between operations
+
+    Is the motivation behind using react hooks here (rather than redux store values) good justified?
+      (i don't 'need' these flags in different pages, so i don't want to have a heavy system)
+*/
 
 import { selectAvailabilityState, setAvailability } from '../slices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect } from 'react'
-import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+
 import moment from 'moment'
+
+const EVENT_KEYS = {
+  ANYTIME: 'anytime',
+  CUSTOM_RANGE: 'custom-range',
+}
 
 export default function AvailabilityPeriod({ period, index }: { period: any; index: number }) {
   const dispatch = useDispatch()
-  const supabaseClient = useSupabaseClient()
   const availability = useSelector(selectAvailabilityState)
-  const user = useUser()
+
+  const [shouldShowEndDateRange, setShouldShowEndDateRange] = useState(
+    availability[index].endDate !== new Date(0).toISOString()
+  )
+  const [endDateCurrentSelection, setEndDateCurrentSelection] = useState(
+    shouldShowEndDateRange ? 'custom range' : 'anytime'
+  )
 
   function handleDatesChange(changedDate: Date, isStart: boolean) {
-    debugger
-    let modifiedAvailability = JSON.parse(JSON.stringify(availability))
-    let parsedDate = moment(changedDate).format('YYYY-MM-DD')
+    // all formatting can be done at the end
+
+    let availabilityToModify = JSON.parse(JSON.stringify(availability))
+    let formattedChangedDate = moment(changedDate).format('YYYY-MM-DD')
+    let periodBorderType = ''
 
     if (isStart) {
-      modifiedAvailability[index] = {
-        startDate: parsedDate,
-        endDate: availability[index].endDate,
+      periodBorderType = 'startDate'
+      availabilityToModify[index] = {
+        startDate: formattedChangedDate,
+        endDate: moment(availability[index].endDate).format('YYYY-MM-DD'),
+      }
+
+      const { startDate: modifiedStart, endDate: modifiedEnd } = availabilityToModify[index]
+
+      if (modifiedEnd <= modifiedStart) {
+        let copyOfStartDate = new Date(modifiedStart)
+        copyOfStartDate.setDate(copyOfStartDate.getDate() + 1)
+        availabilityToModify[index].endDate = moment(copyOfStartDate).format('YYYY-MM-DD')
       }
     } else {
-      modifiedAvailability[index] = {
-        startDate: availability[index].startDate,
-        endDate: parsedDate,
+      periodBorderType = 'endDate'
+      availabilityToModify[index] = {
+        startDate: moment(availability[index].startDate).format('YYYY-MM-DD'),
+        endDate: formattedChangedDate,
+      }
+
+      const { startDate: modifiedStart, endDate: modifiedEnd } = availabilityToModify[index]
+
+      if (modifiedStart <= modifiedEnd) {
+        let startDateToModify = new Date(modifiedEnd)
+        startDateToModify.setDate(startDateToModify.getDate() - 1)
+        availabilityToModify[index].startDate = moment(startDateToModify).format('YYYY-MM-DD')
       }
     }
 
-    dispatch(setAvailability(modifiedAvailability))
+    dispatch(setAvailability(availabilityToModify))
   }
+
+  // function handleDatesChange(changedDate: Date, isStart: boolean) {
+  //   debugger
+
+  //   // let [dateType, dateTypeInverse] = isStart ? ['startDate', 'endDate'] : ['endDate', 'startDate']
+
+  //   let dateType
+  //   let dateTypeInverse
+
+  //   if (isStart) {
+  //     dateType = 'startDate'
+  //     dateTypeInverse = 'endDate'
+  //   } else {
+  //     dateTypeInverse = 'startDate'
+  //     dateDate = 'endDate'
+  //   }
+
+  //   console.log(dateType, dateTypeInverse)
+  //   let availabilityToModify = JSON.parse(JSON.stringify(availability))
+
+  //   availabilityToModify[index][dateType] = changedDate
+  //   availabilityToModify[index][dateTypeInverse] =
+  //     availability[index][dateTypeInverse as keyof typeof availability[0]]
+
+  //   if (availabilityToModify[index][dateTypeInverse] < availabilityToModify[index][dateType]) {
+  //     let inversedDateToModify = new Date(availabilityToModify[index][dateTypeInverse])
+  //     inversedDateToModify.setDate(
+  //       isStart
+  //         ? new Date(inversedDateToModify).getDate() + 1
+  //         : new Date(inversedDateToModify).getDate() - 1
+  //     )
+
+  //     availabilityToModify[index][dateTypeInverse] = inversedDateToModify
+  //   }
+
+  //   // formatting for db compatibility
+  //   availabilityToModify[index].startDate = moment(availabilityToModify[index].startDate).format(
+  //     'YYYY-MM-DD'
+  //   )
+  //   availabilityToModify[index].endDate = moment(availabilityToModify[index].endDate).format(
+  //     'YYYY-MM-DD'
+  //   )
+
+  //   dispatch(setAvailability(availabilityToModify))
+  // }
 
   function handleDateSelect(date: any) {
-    console.log('handleDateSelect is triggered')
+    // TODO: just understand the diff between select and change
   }
 
-  // useEffect(() => {}, [user])
+  function handleEndDateSelection(e: any) {
+    if (e === EVENT_KEYS.CUSTOM_RANGE) {
+      setShouldShowEndDateRange(true)
+      setEndDateCurrentSelection('custom date') // TODO: can also make a const enum for messages
+    } else if (e === EVENT_KEYS.ANYTIME) {
+      setShouldShowEndDateRange(false)
+      setEndDateCurrentSelection('anytime')
+      handleDatesChange(new Date(0), false)
+    }
+  }
 
   // TODO: what if availability is not rendered yet? (in 'selected')
   return (
     <div>
-      <p>startDate</p>
+      <div>
+        <p>start Date:</p>
+      </div>
       <DatePicker
         selected={new Date(period.startDate)}
         openToDate={new Date()}
         onChange={(date: Date) => handleDatesChange(date, true)}
         onSelect={(date: Date) => handleDateSelect(date)}
       />
-      <p>endDate</p>
-      <DatePicker
-        selected={new Date(period.endDate)}
-        openToDate={new Date(period.startDate)}
-        onChange={(date: Date) => handleDatesChange(date, false)}
-        onSelect={handleDateSelect}
-      />
+      <div>
+        <p>end Date:</p>
+        <DropdownButton
+          id="dropdown-basic-button"
+          title={endDateCurrentSelection}
+          onSelect={handleEndDateSelection}
+        >
+          <Dropdown.Item eventKey={EVENT_KEYS.ANYTIME}>Anytime</Dropdown.Item>
+          <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_RANGE}>Custom Range</Dropdown.Item>
+        </DropdownButton>
+        {shouldShowEndDateRange ? (
+          <DatePicker
+            selected={
+              new Date(period.endDate).getFullYear() == 1970
+                ? new Date(period.startDate)
+                : new Date(period.endDate)
+            }
+            openToDate={new Date(period.startDate)}
+            onChange={(date: Date) => handleDatesChange(date, false)}
+            onSelect={handleDateSelect}
+          />
+        ) : (
+          <p>if you don't know your dates yet, you can add multiple periods later</p>
+        )}
+      </div>
     </div>
   )
 }

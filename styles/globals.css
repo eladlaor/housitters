@@ -1,3 +1,6 @@
+
+
+
 html,
 body {
   --custom-font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
@@ -241,23 +244,22 @@ input[disabled] {
 /* TODO: NOTICE THESE 4 */
 a:link { 
   text-decoration: none; 
-  color: red;
+  color: black;
   /* background-color: blue; */
 }
 
 
 a:visited { text-decoration: none; 
-  color: red;}
+  color: black;}
 
 
 a:hover { text-decoration: none; 
-  color: red;
+  color: white;
 }
-
 
 a:active { 
   text-decoration: none; 
-  color: red;
+  color: green;
 }
 
 
@@ -277,6 +279,10 @@ button,
   text-align: center;
   font-size: 1.9rem;
   text-transform: lowercase;
+}
+
+.link-test {
+  position: relative;
 }
 
 .front-page-buttons {
@@ -467,6 +473,4 @@ button.primary,
   margin-bottom: 10px;
   text-decoration: none;
 }
-
-/* testing */
 

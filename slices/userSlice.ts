@@ -18,7 +18,8 @@ export const initialState = {
   birthday: new Date(0).toISOString(),
   availability: [
     {
-      startDate: new Date(0).toISOString(),
+      // TODO: why not change to 'now'?
+      startDate: new Date().toISOString(),
       endDate: new Date(0).toISOString(),
     },
   ],

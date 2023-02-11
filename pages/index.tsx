@@ -3,7 +3,6 @@ import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
 import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import Account from '../components/Account'
 import Footer from '../components/Footer'
-import Link from 'next/link'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { HOUSEOWNERS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
@@ -15,6 +14,10 @@ import NewUserTeaser from '../components/Buttons/NewUserTeaser'
 const Home: NextPage = () => {
   const router = useRouter()
   const user = useUser()
+
+  /*
+i can just use links with some ui lib for a button.
+*/
 
   return (
     <>

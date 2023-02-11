@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { selectPrimaryUseState, setPrimaryUse } from '../../slices/userSlice.ts'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 /*
 
@@ -31,35 +32,36 @@ export default function NewUserTeaser({ primaryUse }: { primaryUse: string }) {
   dispatch(setPrimaryUse(primaryUse))
 
   let message = ''
-  let action
+  let route = ''
 
-  useEffect(() => {
-    console.log('hi')
-  }, [message])
+  //   useEffect(() => {
+  //     console.log('hi')
+  //   }, [message])
 
-  async function housitterIntro() {
-    console.log('activating SITTER flow')
+  //   async function housitterIntro() {
+  //     console.log('activating SITTER flow')
 
-    router.push('/housitters/Intro')
-  }
+  //   }
 
-  async function houseOwnerIntro() {
-    console.log('activating OWNER flow')
-    router.push('/house-owners/Intro')
-  }
+  //   async function houseOwnerIntro() {
+  //     console.log('activating OWNER flow')
+  //     route.push('/house-owners/Intro')
+  //   }
 
   if (primaryUse === USER_TYPE.Housitter) {
     message = 'I am a sitter, find me a house'
-    action = housitterIntro
+    route = '/housitters/Intro'
   } else {
     message = 'I am going away, find me a sitter'
-    action = houseOwnerIntro
+    route = '/house-owners/Intro'
   }
 
   return (
     <div className="front-page-buttons">
-      <div style={{ position: 'relative' }}>
-        <button onClick={action}>{message}</button>
+      <div className="link-test">
+        <button type="button" className="btn btn-primary btn-lg">
+          <Link href={route}>{message}</Link>
+        </button>
       </div>
     </div>
   )

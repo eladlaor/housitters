@@ -1,5 +1,6 @@
-import '../styles/globals.css'
-import { useState } from 'react'
+import 'bootstrap/dist/css/bootstrap.css'
+import '../styles/globals.css' /* I think the idea here is to allow myself to define additional css classes */
+import { useState, useEffect } from 'react'
 import type { AppProps } from 'next/app'
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { SessionContextProvider, Session } from '@supabase/auth-helpers-react'
@@ -16,6 +17,14 @@ function MyApp({
 }>) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient())
   let persistor = persistStore(store)
+
+  /* the following import in order to to only import js when the page is loaded on the browser,
+  and avoid trying to use 'window' and 'document' objects on ssr (done by nextjs),
+  which would cause errors as they are only client-side objects.
+  */
+  useEffect(() => {
+    require('bootstrap/dist/js/bootstrap')
+  }, [])
 
   return (
     <Provider store={store}>
