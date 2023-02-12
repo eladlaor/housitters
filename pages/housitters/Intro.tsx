@@ -1,15 +1,11 @@
 import { useRouter } from 'next/router'
 import AvailabilityPeriod from '../../components/AvailabilityPeriod'
-import {
-  selectAvailabilityState,
-  selectFirstNameState,
-  setFirstName,
-  setAvailability,
-} from '../../slices/userSlice'
+import { selectAvailabilityState, setFirstName } from '../../slices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import moment from 'moment'
+import LocationSelector from '../../components/LocationSelector'
 
 export default function HousitterIntro() {
   const router = useRouter()
@@ -25,10 +21,16 @@ export default function HousitterIntro() {
   return (
     <div>
       <p>ok lets find you a house</p>
-      <p>WHEN are we talking about here?</p>
-      {availability.map((period, index) => (
-        <AvailabilityPeriod key={index} period={period} index={index} />
-      ))}
+      <div>
+        <h1>WHEN are we talking about here?</h1>
+        {availability.map((period, index) => (
+          <AvailabilityPeriod key={index} period={period} index={index} />
+        ))}
+      </div>
+      <div>
+        <h1>Where?</h1>
+        <LocationSelector />
+      </div>
     </div>
   )
 }
