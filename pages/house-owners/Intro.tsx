@@ -2,6 +2,11 @@ import { useRouter } from 'next/router'
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
 import { createClient } from '@supabase/supabase-js'
 
+// TODO: i think change so you ask only where (one location), and what pets.
+// availability will be set later.
+
+// add an ANYWHERE option.
+
 import AvailabilityPeriod from '../../components/AvailabilityPeriod'
 import {
   selectAvailabilityState,

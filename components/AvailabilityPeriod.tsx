@@ -171,7 +171,7 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
             onSelect={handleDateSelect}
           />
         ) : (
-          <p>if you don't know your dates yet, you can add multiple periods later</p>
+          <></>
         )}
       </div>
     </div>
