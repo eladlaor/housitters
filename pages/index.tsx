@@ -1,19 +1,46 @@
 import type { NextPage } from 'next'
-import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import Account from '../components/Account'
-import Footer from '../components/Footer'
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { HOUSEOWNERS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
-import HousitterAccount from './housitters/HousitterAccount'
+import { USER_TYPE } from '../utils/constants'
 import Image from 'next/image'
 import cuteDog from '../public/cuteDog.jpg'
 import NewUserTeaser from '../components/Buttons/NewUserTeaser'
+import { settersToInitialStates } from '../slices/userSlice'
+import { useDispatch } from 'react-redux'
+
+import { userLogout } from '../utils/auth/userLogout'
 
 const Home: NextPage = () => {
   const router = useRouter()
   const user = useUser()
+  const supabaseClient = useSupabaseClient()
+
+  const dispatch = useDispatch()
+
+  async function userLogout() {
+    const clearUserState = async () => {
+      settersToInitialStates.forEach((attributeSetterAndInitialState) => {
+        dispatch(
+          attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
+        )
+      })
+    }
+
+    await clearUserState()
+    await supabaseClient.auth.signOut()
+    router.push('/')
+  }
+
+  useEffect(() => {
+    if (!user) {
+      userLogout()
+    } else {
+      // TODO: go straight into action.
+      debugger
+    }
+  })
 
   /*
 i can just use links with some ui lib for a button.

@@ -14,6 +14,7 @@ export interface Database {
           secondary_use: string
           avatar_url: string | null
           birthday: Date | string | null
+          visible: boolean
         }
         Insert: {
           id: string
@@ -25,6 +26,7 @@ export interface Database {
           primary_use?: string
           secondary_use?: string
           birthday?: Date | string | null
+          visible?: boolean
         }
         Update: {
           id?: string
@@ -36,6 +38,7 @@ export interface Database {
           secondary_use?: string
           avatar_url?: string | null
           birthday?: Date | string | null
+          visible?: boolean
         }
       }
       housitters: {

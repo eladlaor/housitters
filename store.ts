@@ -3,6 +3,10 @@ import counterReducer from './slices/counterSlice'
 import { counterSlice } from './slices/counterSlice'
 import { userSlice } from './slices/userSlice'
 import userReducer from './slices/userSlice'
+import { houseOwnerSlice } from './slices/houseOwnerSlice'
+import houseOwnerReducer from './slices/houseOwnerSlice'
+import { housitterSlice } from './slices/housitterSlice'
+import housitterReducer from './slices/housitterSlice'
 import storage from 'redux-persist/lib/storage'
 import { combineReducers } from 'redux'
 import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
@@ -15,6 +19,8 @@ const persistConfig = {
 const reducers = combineReducers({
   [counterSlice.name]: counterReducer,
   [userSlice.name]: userReducer,
+  [houseOwnerSlice.name]: houseOwnerReducer,
+  [housitterSlice.name]: housitterReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers)

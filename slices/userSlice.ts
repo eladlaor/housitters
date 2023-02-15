@@ -17,18 +17,6 @@ export const initialState = {
       endDate: new Date(0).toISOString(),
     },
   ],
-  locations: {
-    north: false,
-    haifa: false,
-    pardesHana: false,
-    hasharon: false,
-    ta: false,
-    nearTa: false,
-    RishonToAshkelon: false,
-    ashkelonToBeerSheva: false,
-    beerSheva: false,
-    eilat: false,
-  },
 }
 
 export type UserState = typeof initialState
@@ -91,12 +79,6 @@ export const userSlice = createSlice({
         availability: action.payload,
       }
     },
-    setLocations(state = initialState, action) {
-      return {
-        ...state,
-        locations: action.payload,
-      }
-    },
   },
 })
 
@@ -111,7 +93,6 @@ export const {
   setAvatarUrl,
   setBirthday,
   setAvailability,
-  setLocations,
 } = userSlice.actions
 
 export const selectIsLoggedState = (state: RootState) => state.user.isLogged
@@ -123,7 +104,6 @@ export const selectSecondaryUseState = (state: RootState) => state.user.secondar
 export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
 export const selectBirthdayState = (state: RootState) => state.user.birthday
 export const selectAvailabilityState = (state: RootState) => state.user.availability
-export const selectLocationsState = (state: RootState) => state.user.locations
 
 export type SettersToInitialStates = {
   matchingSetter: any

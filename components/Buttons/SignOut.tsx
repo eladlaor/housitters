@@ -5,24 +5,12 @@ import { settersToInitialStates } from '../../slices/userSlice'
 import { useDispatch } from 'react-redux'
 import { useRouter } from 'next/router'
 
+import { userLogout } from '../../utils/auth/userLogout'
+
 export default function SignOut() {
   const { supabaseClient } = useSessionContext()
   const router = useRouter()
   const dispatch = useDispatch()
-
-  async function userLogout() {
-    const clearUserState = async () => {
-      settersToInitialStates.forEach((attributeSetterAndInitialState) => {
-        dispatch(
-          attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
-        )
-      })
-    }
-
-    await clearUserState()
-    await supabaseClient.auth.signOut()
-    router.push('/')
-  }
 
   return (
     <button

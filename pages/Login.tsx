@@ -58,6 +58,8 @@ export default function LoginPage() {
     }
   }, [user])
 
+  // TODO: should get rid of this Auth component and make a better sign in.
+
   if (!user) {
     return (
       <div className="container" style={{ padding: '50px 0 100px 0' }}>
@@ -66,8 +68,22 @@ export default function LoginPage() {
           {error && <p>{error.message}</p>}
           <div className="col-6 auth-widget">
             <Auth
-              appearance={{ theme: ThemeSupa }}
-              theme="dark"
+              appearance={{
+                theme: ThemeSupa,
+                variables: {
+                  default: {
+                    colors: {
+                      brand: 'red',
+                      inputBackground: 'white',
+                      inputText: 'black',
+                      defaultButtonBackground: 'white',
+                      anchorTextColor: 'pink',
+                      anchorTextHoverColor: 'blue',
+                    },
+                  },
+                },
+              }}
+              theme="default"
               supabaseClient={supabaseClient}
               providers={['google', 'github']}
               socialLayout="horizontal"

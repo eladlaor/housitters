@@ -28,6 +28,8 @@ import {
 } from '../slices/userSlice'
 import SignOut from './Buttons/SignOut'
 
+import { parseDateMultiRange } from '../utils/dates'
+
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export default function Account() {
@@ -182,27 +184,6 @@ export default function Account() {
     //   .eq('user_id', user.id)
     // if (upsertError) {
     // }
-  }
-
-  function parseDateMultiRange(dateRange: string | null): any {
-    // maybe regex
-    // does dateRange hold the same reference of the original obj ?
-
-    if (!dateRange) {
-      return
-    }
-
-    let modifiedAvailability: typeof availability = []
-
-    let startDate = dateRange.substring(2, 12)
-    let endDate = dateRange.substring(13, 23)
-
-    modifiedAvailability.push({
-      startDate: startDate,
-      endDate: endDate,
-    })
-
-    return modifiedAvailability
   }
 
   // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
