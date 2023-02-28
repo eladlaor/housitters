@@ -34,20 +34,6 @@ export default function NewUserTeaser({ primaryUse }: { primaryUse: string }) {
   let message = ''
   let route = ''
 
-  //   useEffect(() => {
-  //     console.log('hi')
-  //   }, [message])
-
-  //   async function housitterIntro() {
-  //     console.log('activating SITTER flow')
-
-  //   }
-
-  //   async function houseOwnerIntro() {
-  //     console.log('activating OWNER flow')
-  //     route.push('/house-owners/Intro')
-  //   }
-
   if (primaryUse === USER_TYPE.Housitter) {
     message = 'I am a sitter, find me a house'
     route = '/housitters/Intro'

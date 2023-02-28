@@ -1,5 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.css'
-import '../styles/globals.css' /* I think the idea here is to allow myself to define additional css classes */
+import '../styles/main.css'
 import { useState, useEffect } from 'react'
 import type { AppProps } from 'next/app'
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
