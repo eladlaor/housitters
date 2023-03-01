@@ -50,9 +50,10 @@ export default function LocationSelector({
         {Object.values(LocationIds).map((loc) => (
           <Form.Check
             type={selectionType}
+            key={loc}
             id={loc}
             label={LocationDescriptions[loc]}
-            checked={
+            defaultChecked={
               housitter
                 ? ((locations as Record<string, boolean>)[loc] as unknown as boolean)
                 : loc === locations

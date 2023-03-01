@@ -4,7 +4,7 @@ export default function GoToProfileButton(props: any) {
   return (
     <div>
       <button>
-        <Link href={props.accountRoute}>go to account</Link>
+        <Link href={props.accountRoute}>edit account</Link>
       </button>
     </div>
   )

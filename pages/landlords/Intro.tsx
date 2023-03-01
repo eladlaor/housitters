@@ -14,7 +14,7 @@ import {
 } from '../../slices/userSlice'
 import { selectLocationState } from '../../slices/landlordSlice'
 import { useDispatch, useSelector } from 'react-redux'
-
+import { useEffect } from 'react'
 import moment from 'moment'
 import LocationSelector from '../../components/LocationSelector'
 import { USER_TYPE, SIGNUP_FORM_PROPS } from '../../utils/constants'
@@ -44,7 +44,10 @@ export default function landlordIntro() {
   const primaryUse = useSelector(selectPrimaryUseState)
   const location = useSelector(selectLocationState)
 
-  dispatch(setPrimaryUse(USER_TYPE.landlord))
+  // running just once ([]), to prevent the warning: updating a component while rendering a different one
+  useEffect(() => {
+    dispatch(setPrimaryUse(USER_TYPE.landlord))
+  }, [])
 
   const [show, setShow] = useState(false)
 
@@ -77,6 +80,7 @@ export default function landlordIntro() {
 
   async function handleSignUp(e: any) {
     e.preventDefault()
+    setShow(false) // TODO: should probably add another kind of signifier to wait until registration completes, but twice alert is no good. maybe a route to a differnet page.
 
     let { data, error } = await supabaseClient.auth.signUp({
       email: form[SIGNUP_FORM_PROPS.EMAIL],
@@ -84,6 +88,8 @@ export default function landlordIntro() {
       options: {
         // in supabase backend i defined a trigger: after a new user is added, a function is run, which upserts the following to the 'profiles' table
         data: {
+          first_name: form[SIGNUP_FORM_PROPS.FIRST_NAME],
+          last_name: form[SIGNUP_FORM_PROPS.LAST_NAME],
           visible: form[SIGNUP_FORM_PROPS.VISIBLE],
           primary_use: primaryUse,
           // locations: locationsDb, TODO: i need supabase assitacne to complete this one, as the jsonb object comes with invalid format.
@@ -122,6 +128,7 @@ export default function landlordIntro() {
 
       let { error } = await supabaseClient.from('landlords').upsert(newlandlord)
       if (error) {
+        debugger
         console.log('the error object:', error)
         throw error
       } else {

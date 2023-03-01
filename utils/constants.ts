@@ -39,7 +39,7 @@ export const LocationIds = {
 }
 
 export const LocationDescriptions = {
-  [LocationIds.Abroad]: 'outside Israel',
+  [LocationIds.Abroad]: 'Outside Israel',
   [LocationIds.North]: 'Northern than Haifa',
   [LocationIds.Haifa]: 'Haifa and around',
   [LocationIds.PardesHana]: 'Pardes-hana and around',

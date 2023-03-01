@@ -28,6 +28,8 @@ export default function HousitterIntro() {
   const supabaseClient = useSupabaseClient()
 
   const [form, setForm] = useState({
+    [SIGNUP_FORM_PROPS.FIRST_NAME]: '',
+    [SIGNUP_FORM_PROPS.LAST_NAME]: '',
     [SIGNUP_FORM_PROPS.EMAIL]: '',
     [SIGNUP_FORM_PROPS.PASSWORD]: '',
     [SIGNUP_FORM_PROPS.VISIBLE]: true,
@@ -86,9 +88,14 @@ export default function HousitterIntro() {
       password: form[SIGNUP_FORM_PROPS.PASSWORD],
       options: {
         data: {
+          // in a postgres stored procedure (in supabase backend) named 'handle_new_user', with a trigger defined there as well.
+          // https://app.supabase.com/project/rssznetfvuqctnxfwvzr/database/functions
+          first_name: form[SIGNUP_FORM_PROPS.FIRST_NAME],
+          last_name: form[SIGNUP_FORM_PROPS.LAST_NAME],
+          username: form.email.substring(0, form.email.indexOf('@')),
           visible: form[SIGNUP_FORM_PROPS.VISIBLE],
           primary_use: primaryUse,
-          // locations: locationsDb, TODO: i need supabase assitacne to complete this one, as the jsonb object comes with invalid format.
+          // locations: locationsDb, TODO: i need supabase assitacne to complete this one, if i want to insert into a different table as well, as the jsonb object comes with invalid format.
         },
       },
     })
@@ -99,16 +106,15 @@ export default function HousitterIntro() {
 
     console.log('data:', data)
 
-    // TODO: if I'll be able to properly cast in the above call, the following won't be needed.
+    // TODO: if I'll be able to properly send to multiple tables (with correctly parsing the types i send), the following won't be needed.
     if (data && data.user) {
       let userId = data.user.id
 
+      // TODO: this variable key names should be replaced with simple type safety
       const newHousitter = {
         user_id: userId,
-        // TODO: this variable key names should be replaced with simple type safety
-        // username: form.email.substring(0, form.email.indexOf('@')),
-        // availability,
         locations: locationsDb,
+        // availability,
       }
 
       let { error } = await supabaseClient.from('housitters').upsert(newHousitter)
@@ -146,6 +152,28 @@ export default function HousitterIntro() {
           </Modal.Header>
           <Modal.Body>
             <Form>
+              <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
+                <Form.Label>First Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder=""
+                  value={form[SIGNUP_FORM_PROPS.FIRST_NAME]}
+                  onChange={(e) => {
+                    setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
+                  }}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder=""
+                  value={form[SIGNUP_FORM_PROPS.LAST_NAME]}
+                  onChange={(e) => {
+                    setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
+                  }}
+                />
+              </Form.Group>
               <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
                 <Form.Label>Email</Form.Label>
                 <Form.Control
