@@ -1,21 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { USER_TYPE, Locations } from '../utils/constants'
+import { LocationIds } from '../utils/constants'
+
+const locations: Record<string, boolean> = {}
+
+Object.values(LocationIds).forEach((loc) => {
+  locations[loc] = false
+})
 
 export const initialState = {
-  locations: {
-    north: false,
-    haifa: false,
-    pardesHana: false,
-    hasharon: false,
-    ta: false,
-    nearTa: false,
-    rishonToAshkelon: false,
-    ashkelonToBeerSheva: false,
-    beerSheva: false,
-    eilat: false,
-  },
-  // locations: [] as Array<typeof Locations | undefined>, // how to define an array with either no values or enum values
+  locations,
 }
 
 export type HousitterState = typeof initialState

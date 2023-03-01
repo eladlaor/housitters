@@ -22,15 +22,30 @@ export const SIGNUP_FORM_PROPS = {
   VISIBLE: 'visible',
 }
 
-export const Locations = {
+export const LocationIds = {
+  Abroad: 'abroad',
   North: 'north',
   Haifa: 'haifa',
   PardesHana: 'pardesHana',
   Hasharon: 'hasharon',
   TelAviv: 'ta',
   NearTa: 'nearTa',
+  Jerusalem: 'jerusalem',
   RishonToAshkelon: 'rishonToAshkelon',
   AshkelonToBash: 'ashkelonToBash',
-  Bash: 'bash',
   Eilat: 'eilat',
+}
+
+export const LocationDescriptions = {
+  [LocationIds.Abroad]: 'outside Israel',
+  [LocationIds.North]: 'Northern than Haifa',
+  [LocationIds.Haifa]: 'Haifa and around',
+  [LocationIds.PardesHana]: 'Pardes-hana and around',
+  [LocationIds.Hasharon]: 'Hasharon',
+  [LocationIds.TelAviv]: 'Tel Aviv',
+  [LocationIds.NearTa]: 'Near Tel Aviv',
+  [LocationIds.Jerusalem]: 'Jerusalem',
+  [LocationIds.RishonToAshkelon]: 'Between Rishon and Ashkelon',
+  [LocationIds.AshkelonToBash]: 'Between Rishon and Ashkelon',
+  [LocationIds.Eilat]: 'Eilat',
 }

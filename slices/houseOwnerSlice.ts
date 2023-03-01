@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { USER_TYPE, Locations } from '../utils/constants'
+import { USER_TYPE, LocationIds } from '../utils/constants'
 
 export const initialState = {
   location: '',
@@ -9,7 +9,7 @@ export const initialState = {
     cats: 0,
     other: '',
   },
-  // locations: [] as Array<typeof Locations | undefined>, // how to define an array with either no values or enum values
+  // locations: [] as Array<typeof LocationIds | undefined>, // how to define an array with either no values or enum values
 }
 
 export type HouseOwnerState = typeof initialState
