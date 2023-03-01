@@ -94,11 +94,9 @@ export default function HousitterIntro() {
     })
 
     if (error) {
-      debugger
       throw error
     }
 
-    debugger
     console.log('data:', data)
 
     // TODO: if I'll be able to properly cast in the above call, the following won't be needed.
@@ -136,7 +134,7 @@ export default function HousitterIntro() {
       </div>
       <div>
         <h1>Where?</h1>
-        <LocationSelector />
+        <LocationSelector selectionType="checkbox" housitter={true} />
       </div>
       <div>
         <Button variant="primary" onClick={handleShow}>

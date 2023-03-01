@@ -14,7 +14,7 @@ import {
   setIsLoggedState,
   selectPrimaryUseState,
 } from '../../slices/userSlice'
-import { selectLocationsState } from '../../slices/housitterSlice'
+import { selectLocationsState } from '../../slices/housitterSlice' // TODO: no
 import { useDispatch, useSelector } from 'react-redux'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
@@ -28,7 +28,7 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Form from 'react-bootstrap/Form'
 import { useState } from 'react'
 
-export default function HousitterIntro() {
+export default function HouseOwnerIntro() {
   const router = useRouter()
   const dispatch = useDispatch()
   const supabaseClient = useSupabaseClient()
@@ -45,7 +45,7 @@ export default function HousitterIntro() {
   const primaryUse = useSelector(selectPrimaryUseState)
   const locations = useSelector(selectLocationsState)
 
-  dispatch(setPrimaryUse(USER_TYPE.Housitter))
+  dispatch(setPrimaryUse(USER_TYPE.HouseOwner))
 
   const [show, setShow] = useState(false)
 
@@ -104,14 +104,13 @@ export default function HousitterIntro() {
       throw error
     }
 
-    debugger
     console.log('data:', data)
 
     // TODO: if I'll be able to properly cast in the above call, the following won't be needed.
     if (data && data.user) {
       let userId = data.user.id
 
-      const newHousitter = {
+      const newHouseOwner = {
         user_id: userId,
         // TODO: this variable key names should be replaced with simple type safety
         // username: form.email.substring(0, form.email.indexOf('@')),
@@ -119,7 +118,7 @@ export default function HousitterIntro() {
         locations: locationsDb,
       }
 
-      let { error } = await supabaseClient.from('housitters').upsert(newHousitter)
+      let { error } = await supabaseClient.from('house_owners').upsert(newHouseOwner)
       if (error) {
         console.log('the error object:', error)
         throw error
@@ -143,7 +142,7 @@ export default function HousitterIntro() {
       </div>
       <div>
         <h1>Where?</h1>
-        <LocationSelector />
+        <LocationSelector selectionType="radio" housitter={false} />
       </div>
       <div>
         <Button variant="primary" onClick={handleShow}>

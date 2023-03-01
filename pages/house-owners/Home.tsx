@@ -35,7 +35,6 @@ export default function Home() {
       }
 
       reader.onerror = () => {
-        debugger
         console.log(reader.error)
         throw reader.error
       }

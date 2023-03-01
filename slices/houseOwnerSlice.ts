@@ -9,7 +9,6 @@ export const initialState = {
     cats: 0,
     other: '',
   },
-  // locations: [] as Array<typeof LocationIds | undefined>, // how to define an array with either no values or enum values
 }
 
 export type HouseOwnerState = typeof initialState
@@ -18,23 +17,23 @@ export const houseOwnerSlice = createSlice({
   name: 'houseOwner',
   initialState,
   reducers: {
-    setLocation(state = initialState, action) {
+    setLocationState(state = initialState, action) {
       return {
         ...state,
-        isLogged: action.payload,
+        location: action.payload,
       }
     },
-    setPets(state = initialState, action) {
+    setPetsState(state = initialState, action) {
       return {
         ...state,
-        firstName: action.payload,
+        pets: action.payload,
       }
     },
   },
 })
 
 // Action creators (houseOwnerSlice.action) are generated (automatically) for each case reducer function
-export const { setLocation, setPets } = houseOwnerSlice.actions
+export const { setLocationState, setPetsState } = houseOwnerSlice.actions
 
 export const selectLocationState = (state: RootState) => state.houseOwner.location
 export const selectPetsState = (state: RootState) => state.houseOwner.pets
