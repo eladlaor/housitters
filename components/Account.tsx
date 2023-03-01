@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import AvailabilityPeriod from '../components/AvailabilityPeriod'
 
 import { Database } from '../utils/database.types'
-import { HOUSITTERS_ROUTES, HOUSEOWNERS_ROUTES, USER_TYPE } from '../utils/constants'
+import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectAvatarUrlState,

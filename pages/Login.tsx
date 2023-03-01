@@ -3,7 +3,7 @@ import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { Router, useRouter } from 'next/router'
 import Link from 'next/link'
-import { HOUSEOWNERS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
+import { LANDLORDS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsLoggedState, setIsLoggedState, setFirstName } from '../slices/userSlice'
 
@@ -43,7 +43,7 @@ export default function LoginPage() {
           if (primary_use === USER_TYPE.Housitter) {
             router.push(`${HOUSITTERS_ROUTES.HOME}`)
           } else if (primary_use === USER_TYPE.landlord) {
-            router.push(`${HOUSEOWNERS_ROUTES.HOME}`)
+            router.push(`${LANDLORDS_ROUTES.HOME}`)
           }
         }
       } catch (e) {

@@ -11,7 +11,7 @@ export const HOUSITTERS_ROUTES = {
   ACCOUNT: '/housitters/HousitterAccount',
 }
 
-export const HOUSEOWNERS_ROUTES = {
+export const LANDLORDS_ROUTES = {
   HOME: '/house-owners/Home',
   ACCOUNT: '/house-owners/landlordAccount',
 }
