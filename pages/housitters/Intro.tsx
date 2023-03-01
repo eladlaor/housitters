@@ -8,7 +8,7 @@ import {
   selectPrimaryUseState,
 } from '../../slices/userSlice'
 
-import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
+import { selectLocationsState } from '../../slices/housitterSlice'
 
 import { useDispatch, useSelector } from 'react-redux'
 import Dropdown from 'react-bootstrap/Dropdown'

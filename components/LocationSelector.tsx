@@ -14,19 +14,19 @@ export default function LocationSelector() {
     let locationsToModify = JSON.parse(
       JSON.stringify(
         locations
-          ? locations
-          : {
-              north: false,
-              haifa: false,
-              pardesHana: false,
-              hasharon: false,
-              ta: false,
-              nearTa: false,
-              rishonToAshkelon: false,
-              ashkelonToBeerSheva: false,
-              beerSheva: false,
-              eilat: false,
-            }
+        // ? locations
+        // : {
+        //     north: false,
+        //     haifa: false,
+        //     pardesHana: false,
+        //     hasharon: false,
+        //     ta: false,
+        //     nearTa: false,
+        //     rishonToAshkelon: false,
+        //     ashkelonToBeerSheva: false,
+        //     beerSheva: false,
+        //     eilat: false,
+        //   }
       )
     ) as typeof locations
 
