@@ -1,7 +1,7 @@
 // rename all to be PascalCase
 
 export const USER_TYPE = {
-  HouseOwner: 'houseowner',
+  landlord: 'landlord',
   Housitter: 'housitter',
   None: 'none',
 }
@@ -13,7 +13,7 @@ export const HOUSITTERS_ROUTES = {
 
 export const HOUSEOWNERS_ROUTES = {
   HOME: '/house-owners/Home',
-  ACCOUNT: '/house-owners/HouseOwnerAccount',
+  ACCOUNT: '/house-owners/landlordAccount',
 }
 
 export const SIGNUP_FORM_PROPS = {
@@ -46,6 +46,6 @@ export const LocationDescriptions = {
   [LocationIds.NearTa]: 'Near Tel Aviv',
   [LocationIds.Jerusalem]: 'Jerusalem',
   [LocationIds.RishonToAshkelon]: 'Between Rishon and Ashkelon',
-  [LocationIds.AshkelonToBash]: 'Between Rishon and Ashkelon',
+  [LocationIds.AshkelonToBash]: 'Ashkelon to Bash',
   [LocationIds.Eilat]: 'Eilat',
 }

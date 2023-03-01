@@ -3,9 +3,9 @@ import {
   setLocationsState as setHousitterLocationsState,
 } from '../slices/housitterSlice'
 import {
-  selectLocationState as selectHouseOwnerLocationState,
-  setLocationState as setHouseOwnerLocationState,
-} from '../slices/houseOwnerSlice'
+  selectLocationState as selectlandlordLocationState,
+  setLocationState as setlandlordLocationState,
+} from '../slices/landlordSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import Form from 'react-bootstrap/Form'
 import { LocationIds, LocationDescriptions } from '../utils/constants'
@@ -21,13 +21,13 @@ export default function LocationSelector({
   const dispatch = useDispatch()
   const locations = housitter
     ? useSelector(selectHousitterLocationsState)
-    : useSelector(selectHouseOwnerLocationState)
+    : useSelector(selectlandlordLocationState)
 
   // TODO: there is a bug on page refresh!
   // also, think of how to create initialState in a better way.
 
-  function handleHouseOwnerSelectedLocation(e: any) {
-    dispatch(setHouseOwnerLocationState(e.target.id))
+  function handlelandlordSelectedLocation(e: any) {
+    dispatch(setlandlordLocationState(e.target.id))
   }
 
   function handleHousitterSelectedLocation(e: any) {
@@ -45,7 +45,7 @@ export default function LocationSelector({
   // TODO: to display properly, would need to search the array every time.
   // change hard coded ids to the enum.
   return (
-    <Form onChange={housitter ? handleHousitterSelectedLocation : handleHouseOwnerSelectedLocation}>
+    <Form onChange={housitter ? handleHousitterSelectedLocation : handlelandlordSelectedLocation}>
       <div key={`default-${selectionType}`} className="mb-3">
         {Object.values(LocationIds).map((loc) => (
           <Form.Check

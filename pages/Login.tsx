@@ -42,7 +42,7 @@ export default function LoginPage() {
           // TODO: shouldnt route in a loadUserData func.
           if (primary_use === USER_TYPE.Housitter) {
             router.push(`${HOUSITTERS_ROUTES.HOME}`)
-          } else if (primary_use === USER_TYPE.HouseOwner) {
+          } else if (primary_use === USER_TYPE.landlord) {
             router.push(`${HOUSEOWNERS_ROUTES.HOME}`)
           }
         }

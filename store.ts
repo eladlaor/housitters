@@ -2,8 +2,8 @@ import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 
 import { userSlice } from './slices/userSlice'
 import userReducer from './slices/userSlice'
-import { houseOwnerSlice } from './slices/houseOwnerSlice'
-import houseOwnerReducer from './slices/houseOwnerSlice'
+import { landlordSlice } from './slices/landlordSlice'
+import landlordReducer from './slices/landlordSlice'
 import { housitterSlice } from './slices/housitterSlice'
 import housitterReducer from './slices/housitterSlice'
 import storage from 'redux-persist/lib/storage'
@@ -17,7 +17,7 @@ const persistConfig = {
 
 const reducers = combineReducers({
   [userSlice.name]: userReducer,
-  [houseOwnerSlice.name]: houseOwnerReducer,
+  [landlordSlice.name]: landlordReducer,
   [housitterSlice.name]: housitterReducer,
 })
 

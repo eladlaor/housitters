@@ -57,7 +57,7 @@ i can just use links with some ui lib for a button.
         >
           <NewUserTeaser primaryUse={USER_TYPE.Housitter} />
         </div>
-        <NewUserTeaser primaryUse={USER_TYPE.HouseOwner} />
+        <NewUserTeaser primaryUse={USER_TYPE.landlord} />
       </div>
     </>
   )

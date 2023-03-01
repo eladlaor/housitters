@@ -9,7 +9,7 @@ import Link from 'next/link'
 /*
 
 a function for a housitter
-a function for a houseowner
+a function for a landlord
 
 a functional component that 
     receives:
