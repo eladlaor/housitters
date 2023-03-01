@@ -1,7 +1,7 @@
-import { USER_TYPE } from '../../utils/constants.ts'
+import { USER_TYPE } from '../../utils/constants'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { selectPrimaryUseState, setPrimaryUse } from '../../slices/userSlice.ts'
+import { selectPrimaryUseState, setPrimaryUse } from '../../slices/userSlice'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import Link from 'next/link'
