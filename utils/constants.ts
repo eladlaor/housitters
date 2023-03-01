@@ -12,11 +12,13 @@ export const HOUSITTERS_ROUTES = {
 }
 
 export const LANDLORDS_ROUTES = {
-  HOME: '/house-owners/Home',
-  ACCOUNT: '/house-owners/landlordAccount',
+  HOME: '/landlords/Home',
+  ACCOUNT: '/landlords/landlordAccount',
 }
 
 export const SIGNUP_FORM_PROPS = {
+  FIRST_NAME: 'firstName',
+  LAST_NAME: 'lastName',
   EMAIL: 'email',
   PASSWORD: 'password',
   VISIBLE: 'visible',

@@ -1,6 +1,4 @@
 import { useRouter } from 'next/router'
-import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import { createClient } from '@supabase/supabase-js'
 
 // TODO: i think change so you ask only where (one location), and what pets.
 // availability will be set later.
@@ -14,10 +12,9 @@ import {
   setIsLoggedState,
   selectPrimaryUseState,
 } from '../../slices/userSlice'
-import { selectLocationsState } from '../../slices/housitterSlice' // TODO: no
+import { selectLocationState } from '../../slices/landlordSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import Dropdown from 'react-bootstrap/Dropdown'
-import DropdownButton from 'react-bootstrap/DropdownButton'
+
 import moment from 'moment'
 import LocationSelector from '../../components/LocationSelector'
 import { USER_TYPE, SIGNUP_FORM_PROPS } from '../../utils/constants'
@@ -34,6 +31,8 @@ export default function landlordIntro() {
   const supabaseClient = useSupabaseClient()
 
   const [form, setForm] = useState({
+    [SIGNUP_FORM_PROPS.FIRST_NAME]: '',
+    [SIGNUP_FORM_PROPS.LAST_NAME]: '',
     [SIGNUP_FORM_PROPS.EMAIL]: '',
     [SIGNUP_FORM_PROPS.PASSWORD]: '',
     [SIGNUP_FORM_PROPS.VISIBLE]: true,
@@ -43,7 +42,7 @@ export default function landlordIntro() {
 
   const availability = useSelector(selectAvailabilityState)
   const primaryUse = useSelector(selectPrimaryUseState)
-  const locations = useSelector(selectLocationsState)
+  const location = useSelector(selectLocationState)
 
   dispatch(setPrimaryUse(USER_TYPE.landlord))
 
@@ -52,7 +51,7 @@ export default function landlordIntro() {
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
-  function setFormField(field: any, value: any) {
+  function setFormField(field: string, value: any) {
     setForm({
       ...form,
       [field]: value,
@@ -79,18 +78,11 @@ export default function landlordIntro() {
   async function handleSignUp(e: any) {
     e.preventDefault()
 
-    // different type for locations in order to be performant on the display of checkboxes and save space on db
-    let locationsDb: string[] = []
-    Object.keys(locations).forEach((key) => {
-      if (locations[key as keyof typeof locations]) {
-        locationsDb.push(key)
-      }
-    })
-
     let { data, error } = await supabaseClient.auth.signUp({
       email: form[SIGNUP_FORM_PROPS.EMAIL],
       password: form[SIGNUP_FORM_PROPS.PASSWORD],
       options: {
+        // in supabase backend i defined a trigger: after a new user is added, a function is run, which upserts the following to the 'profiles' table
         data: {
           visible: form[SIGNUP_FORM_PROPS.VISIBLE],
           primary_use: primaryUse,
@@ -100,7 +92,17 @@ export default function landlordIntro() {
     })
 
     if (error) {
+      // TODO: for example, if a user is already registered
       debugger
+      switch (error.message) {
+        case 'user already registered':
+          alert(
+            'this email is already registered. a password recovery mechanism will be implemented soon'
+          )
+          break
+        default:
+          alert(error.message)
+      }
       throw error
     }
 
@@ -115,10 +117,10 @@ export default function landlordIntro() {
         // TODO: this variable key names should be replaced with simple type safety
         // username: form.email.substring(0, form.email.indexOf('@')),
         // availability,
-        locations: locationsDb,
+        location,
       }
 
-      let { error } = await supabaseClient.from('house_owners').upsert(newlandlord)
+      let { error } = await supabaseClient.from('landlords').upsert(newlandlord)
       if (error) {
         console.log('the error object:', error)
         throw error
@@ -141,7 +143,7 @@ export default function landlordIntro() {
         ))}
       </div>
       <div>
-        <h1>Where?</h1>
+        <h1>Where do you live?</h1>
         <LocationSelector selectionType="radio" housitter={false} />
       </div>
       <div>
@@ -154,6 +156,28 @@ export default function landlordIntro() {
           </Modal.Header>
           <Modal.Body>
             <Form>
+              <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
+                <Form.Label>First Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder=""
+                  value={form[SIGNUP_FORM_PROPS.FIRST_NAME]}
+                  onChange={(e) => {
+                    setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
+                  }}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
+                <Form.Label>Last Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder=""
+                  value={form[SIGNUP_FORM_PROPS.LAST_NAME]}
+                  onChange={(e) => {
+                    setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
+                  }}
+                />
+              </Form.Group>
               <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
                 <Form.Label>Email</Form.Label>
                 <Form.Control

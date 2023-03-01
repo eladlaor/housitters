@@ -142,7 +142,7 @@ export default function Account() {
         if (primary_use === USER_TYPE.Housitter) {
           router.push(`/housitters/Home`)
         } else {
-          router.push(`/house-owners/Home`)
+          router.push(`/landlords/Home`)
         }
       }
     } catch (error) {
