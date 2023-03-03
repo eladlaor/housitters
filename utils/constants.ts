@@ -1,18 +1,20 @@
 // rename all to be PascalCase
 
 export const USER_TYPE = {
-  landlord: 'landlord',
+  Landlord: 'landlord',
   Housitter: 'housitter',
   None: 'none',
 }
 
 export const HOUSITTERS_ROUTES = {
   HOME: '/housitters/Home',
+  INTRO: '/housitters/Intro',
   ACCOUNT: '/housitters/HousitterAccount',
 }
 
 export const LANDLORDS_ROUTES = {
   HOME: '/landlords/Home',
+  INTRO: '/landlords/Intro',
   ACCOUNT: '/landlords/landlordAccount',
 }
 

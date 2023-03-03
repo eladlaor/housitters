@@ -8,7 +8,6 @@ export const initialState = {
   lastName: '',
   username: '',
   primaryUse: '',
-  secondaryUse: USER_TYPE.None,
   avatarUrl: '', // TODO: add some default image here
   birthday: new Date(0).toISOString(),
   availability: [
@@ -55,12 +54,6 @@ export const userSlice = createSlice({
         primaryUse: action.payload,
       }
     },
-    setSecondaryUse(state = initialState, action) {
-      return {
-        ...state,
-        secondaryUse: action.payload,
-      }
-    },
     setAvatarUrl(state = initialState, action) {
       return {
         ...state,
@@ -89,7 +82,6 @@ export const {
   setLastName,
   setUsername,
   setPrimaryUse,
-  setSecondaryUse,
   setAvatarUrl,
   setBirthday,
   setAvailability,
@@ -100,7 +92,6 @@ export const selectFirstNameState = (state: RootState) => state.user.firstName
 export const selectLastNameState = (state: RootState) => state.user.lastName
 export const selectUsernameState = (state: RootState) => state.user.username
 export const selectPrimaryUseState = (state: RootState) => state.user.primaryUse
-export const selectSecondaryUseState = (state: RootState) => state.user.secondaryUse
 export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
 export const selectBirthdayState = (state: RootState) => state.user.birthday
 export const selectAvailabilityState = (state: RootState) => state.user.availability

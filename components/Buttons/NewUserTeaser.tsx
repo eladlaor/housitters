@@ -1,32 +1,33 @@
-import { USER_TYPE } from '../../utils/constants'
-
 import { useDispatch, useSelector } from 'react-redux'
-import { selectPrimaryUseState, setPrimaryUse } from '../../slices/userSlice'
+import { setPrimaryUse } from '../../slices/userSlice'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
 import Link from 'next/link'
+import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES, USER_TYPE } from '../../utils/constants'
 
-export default function NewUserTeaser({ primaryUse }: { primaryUse: string }) {
+export default function NewUserTeaser({ userType }: { userType: string }) {
   const router = useRouter()
-
   const dispatch = useDispatch()
-  dispatch(setPrimaryUse(primaryUse))
+  // dispatch(setPrimaryUse(USER_TYPE.Landlord))
+
+  const handleUserTypeSelection = () => {
+    dispatch(setPrimaryUse(userType))
+  }
 
   let message = ''
   let route = ''
 
-  if (primaryUse === USER_TYPE.Housitter) {
+  if (userType === USER_TYPE.Housitter) {
     message = 'I am a sitter, find me a house'
-    route = '/housitters/Intro'
+    route = HOUSITTERS_ROUTES.INTRO
   } else {
     message = 'I am going away, find me a sitter'
-    route = '/landlords/Intro'
+    route = LANDLORDS_ROUTES.INTRO
   }
 
   return (
     <div className="front-page-buttons">
       <div className="link-test">
-        <button type="button" className="btn btn-primary btn-lg">
+        <button type="button" className="btn btn-primary btn-lg" onClick={handleUserTypeSelection}>
           <Link href={route}>{message}</Link>
         </button>
       </div>

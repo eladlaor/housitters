@@ -10,13 +10,10 @@ import NewUserTeaser from '../components/Buttons/NewUserTeaser'
 import { settersToInitialStates } from '../slices/userSlice'
 import { useDispatch } from 'react-redux'
 
-import { userLogout } from '../utils/auth/userLogout'
-
 const Home: NextPage = () => {
   const router = useRouter()
   const user = useUser()
   const supabaseClient = useSupabaseClient()
-
   const dispatch = useDispatch()
 
   async function userLogout() {
@@ -36,7 +33,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (!user) {
       // TODO: this is bad, as it happens repeatedly.
-      userLogout()
+      // userLogout()
     } else {
       // TODO: go straight into action.
       debugger
@@ -56,9 +53,9 @@ i can just use links with some ui lib for a button.
             marginRight: '30px',
           }}
         >
-          <NewUserTeaser primaryUse={USER_TYPE.Housitter} />
+          <NewUserTeaser userType={USER_TYPE.Housitter} />
         </div>
-        <NewUserTeaser primaryUse={USER_TYPE.landlord} />
+        <NewUserTeaser userType={USER_TYPE.Landlord} />
       </div>
     </>
   )
