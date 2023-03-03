@@ -9,6 +9,7 @@ import Modal from 'react-bootstrap/Modal'
 import { useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
 import AvailabilityPeriod from '../../components/AvailabilityPeriod'
+import SignOut from '../../components/Buttons/SignOut'
 
 export default function Home() {
   const router = useRouter()
@@ -46,7 +47,11 @@ export default function Home() {
       <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
       <GoToProfileButton accountRoute={LANDLORDS_ROUTES.ACCOUNT} />
       <div>
-        <Button variant="primary" onClick={handleShowNewPostModal}>
+        <Button
+          style={{ position: 'relative', left: '50%' }}
+          variant="primary"
+          onClick={handleShowNewPostModal}
+        >
           Create new post
         </Button>
         <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>

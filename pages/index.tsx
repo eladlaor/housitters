@@ -35,6 +35,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!user) {
+      // TODO: this is bad, as it happens repeatedly.
       userLogout()
     } else {
       // TODO: go straight into action.
