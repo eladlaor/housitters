@@ -14,8 +14,20 @@ export default function SignOut() {
 
   return (
     <button
-      onClick={() => {
-        userLogout()
+      onClick={async () => {
+        const clearUserState = async () => {
+          settersToInitialStates.forEach((attributeSetterAndInitialState) => {
+            dispatch(
+              attributeSetterAndInitialState.matchingSetter(
+                attributeSetterAndInitialState.initialState
+              )
+            )
+          })
+        }
+
+        await clearUserState()
+        await supabaseClient.auth.signOut()
+        router.push('/')
       }}
     >
       sign out

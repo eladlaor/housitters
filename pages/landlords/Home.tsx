@@ -122,6 +122,7 @@ export default function Home() {
             </Form>
           </Modal.Body>
         </Modal>
+        <SignOut />
       </div>
     </div>
   )

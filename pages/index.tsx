@@ -42,10 +42,6 @@ const Home: NextPage = () => {
     }
   })
 
-  /*
-i can just use links with some ui lib for a button.
-*/
-
   return (
     <>
       <div className="front-page-buttons">
@@ -59,6 +55,14 @@ i can just use links with some ui lib for a button.
         </div>
         <NewUserTeaser userType={USER_TYPE.Landlord} />
       </div>
+      <button
+        className="signinbutton"
+        onClick={() => {
+          router.push('/Login')
+        }}
+      >
+        already registered? sign in
+      </button>
     </>
   )
 }

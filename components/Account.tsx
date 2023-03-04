@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 
 import AvailabilityPeriod from '../components/AvailabilityPeriod'
 
-import { Database } from '../utils/database.types'
+import { Database } from '../types/supabase'
 import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -13,7 +13,6 @@ import {
   selectFirstNameState,
   selectLastNameState,
   selectPrimaryUseState,
-  selectSecondaryUseState,
   selectUsernameState,
   selectBirthdayState,
   selectAvailabilityState,
@@ -21,7 +20,6 @@ import {
   setFirstName,
   setLastName,
   setPrimaryUse,
-  setSecondaryUse,
   setUsername,
   setBirthday,
   setAvailability,
@@ -44,7 +42,6 @@ export default function Account() {
   const last_name = useSelector(selectLastNameState)
   const username = useSelector(selectUsernameState)
   const primary_use = useSelector(selectPrimaryUseState)
-  const secondary_use = useSelector(selectSecondaryUseState)
   const avatar_url = useSelector(selectAvatarUrlState)
   const birthday = useSelector(selectBirthdayState)
   const availability = useSelector(selectAvailabilityState)
@@ -67,7 +64,6 @@ export default function Account() {
               first_name,
               last_name,
               primary_use,
-              secondary_use,
               avatar_url,
               birthday`
           )
@@ -79,7 +75,6 @@ export default function Account() {
         }
 
         if (data) {
-          dispatch(setSecondaryUse(data.secondary_use))
           dispatch(setFirstName(data.first_name))
           dispatch(setUsername(data.username))
           dispatch(setPrimaryUse(data.primary_use))
@@ -103,7 +98,6 @@ export default function Account() {
     first_name,
     last_name,
     primary_use,
-    secondary_use,
     avatar_url,
     birthday,
   }: {
@@ -111,7 +105,6 @@ export default function Account() {
     first_name: Profiles['first_name']
     last_name: Profiles['last_name']
     primary_use: Profiles['primary_use']
-    secondary_use: Profiles['secondary_use']
     avatar_url: Profiles['avatar_url']
     birthday: Profiles['birthday']
   }) {
@@ -126,7 +119,6 @@ export default function Account() {
         first_name,
         last_name,
         primary_use,
-        secondary_use,
         avatar_url,
         birthday,
       }
@@ -189,10 +181,6 @@ export default function Account() {
   // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
   function handlePrimayUseChange(event: any) {
     dispatch(setPrimaryUse(event.target.value))
-  }
-
-  function handleSecondaryUseChange(event: any) {
-    dispatch(setSecondaryUse(event.target.value))
   }
 
   function handleBirthdayChange(event: any) {
@@ -268,7 +256,6 @@ export default function Account() {
             first_name,
             last_name,
             primary_use,
-            secondary_use,
             avatar_url: url,
             birthday,
           })
@@ -312,7 +299,6 @@ export default function Account() {
           type="radio"
           value={USER_TYPE.Housitter}
           name="primary_use"
-          disabled={handleButtonMark(secondary_use, USER_TYPE.Housitter)}
           checked={handleButtonMark(primary_use, USER_TYPE.Housitter)}
           onChange={handlePrimayUseChange}
         />{' '}
@@ -321,41 +307,10 @@ export default function Account() {
           type="radio"
           value={USER_TYPE.Landlord}
           name="primary_use"
-          disabled={handleButtonMark(secondary_use, USER_TYPE.landlord)}
           checked={handleButtonMark(primary_use, USER_TYPE.landlord)}
           onChange={handlePrimayUseChange}
         />
         landlord
-      </div>
-
-      <div>
-        <h2>Secondary Use:</h2>
-        <input
-          type="radio"
-          value={USER_TYPE.Housitter}
-          name="secondary_use"
-          disabled={handleButtonMark(primary_use, USER_TYPE.Housitter)}
-          checked={handleButtonMark(secondary_use, USER_TYPE.Housitter)}
-          onChange={handleSecondaryUseChange}
-        />
-        Housitter
-        <input
-          type="radio"
-          value={USER_TYPE.Landlord}
-          name="secondary_use"
-          disabled={handleButtonMark(primary_use, USER_TYPE.landlord)}
-          checked={handleButtonMark(secondary_use, USER_TYPE.landlord)}
-          onChange={handleSecondaryUseChange}
-        />
-        landlord
-        <input
-          type="radio"
-          value={USER_TYPE.None}
-          name="secondary_use"
-          checked={handleButtonMark(secondary_use, USER_TYPE.None)}
-          onChange={handleSecondaryUseChange}
-        />
-        None
       </div>
 
       <div>
@@ -390,7 +345,6 @@ export default function Account() {
               first_name,
               last_name,
               primary_use,
-              secondary_use,
               avatar_url,
               birthday,
             })

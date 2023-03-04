@@ -15,7 +15,7 @@ export const HOUSITTERS_ROUTES = {
 export const LANDLORDS_ROUTES = {
   HOME: '/landlords/Home',
   INTRO: '/landlords/Intro',
-  ACCOUNT: '/landlords/landlordAccount',
+  ACCOUNT: '/landlords/LandlordAccount',
 }
 
 export const SIGNUP_FORM_PROPS = {
