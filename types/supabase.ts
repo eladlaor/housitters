@@ -134,7 +134,7 @@ export interface Database {
       }
       pets: {
         dogs: number
-        cat: number
+        cats: number
         other: string
       }
     }

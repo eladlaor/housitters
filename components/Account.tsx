@@ -319,7 +319,7 @@ export default function Account() {
         Housitter
         <input
           type="radio"
-          value={USER_TYPE.landlord}
+          value={USER_TYPE.Landlord}
           name="primary_use"
           disabled={handleButtonMark(secondary_use, USER_TYPE.landlord)}
           checked={handleButtonMark(primary_use, USER_TYPE.landlord)}
@@ -341,7 +341,7 @@ export default function Account() {
         Housitter
         <input
           type="radio"
-          value={USER_TYPE.landlord}
+          value={USER_TYPE.Landlord}
           name="secondary_use"
           disabled={handleButtonMark(primary_use, USER_TYPE.landlord)}
           checked={handleButtonMark(secondary_use, USER_TYPE.landlord)}

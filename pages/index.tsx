@@ -35,8 +35,10 @@ const Home: NextPage = () => {
       // TODO: this is bad, as it happens repeatedly.
       // userLogout()
     } else {
+      // debugger
+      supabaseClient.auth.signOut()
+      userLogout()
       // TODO: go straight into action.
-      debugger
     }
   })
 

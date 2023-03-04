@@ -1,15 +1,18 @@
 import { useRouter } from 'next/router'
 import GoToProfileButton from '../../components/GoToProfileButton'
 import { selectFirstNameState } from '../../slices/userSlice'
-import { LANDLORDS_ROUTES } from '../../utils/constants'
+import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
 import Modal from 'react-bootstrap/Modal'
 import { useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
+import { selectLocationState, selectPetsState, setPetsState } from '../../slices/landlordSlice'
 import AvailabilityPeriod from '../../components/AvailabilityPeriod'
 import SignOut from '../../components/Buttons/SignOut'
+import { Dropdown, DropdownButton } from 'react-bootstrap'
+import PetsCounter from '../../components/PetsCounter'
 
 export default function Home() {
   const router = useRouter()
@@ -17,6 +20,14 @@ export default function Home() {
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [imagesSrc, setImagesSrc] = useState([] as any)
+  const defaultLocation = useSelector(selectLocationState)
+  const pets = useSelector(selectPetsState)
+
+  const [location, setLocation] = useState(defaultLocation)
+
+  function handleLocationSelection(key: string | null) {
+    setLocation(key ? key : '')
+  }
 
   function handleShowNewPostModal() {
     setShowNewPostModal(true)
@@ -42,6 +53,14 @@ export default function Home() {
     }
   }
 
+  function handleSubmit() {
+    /*
+      make a call to the active_posts table
+    */
+
+    alert('submitted successfully')
+  }
+
   return (
     <div>
       <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
@@ -61,9 +80,29 @@ export default function Home() {
           <Modal.Body>
             <Form>
               <Form.Group>
+                <Form.Label>availability</Form.Label>
+
                 {availability.map((period, index) => (
                   <AvailabilityPeriod key={index} period={period} index={index} />
                 ))}
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Location</Form.Label>
+                <DropdownButton
+                  id="dropdown-basic-button"
+                  title={location}
+                  onSelect={handleLocationSelection}
+                >
+                  <Dropdown.Item eventKey={LocationIds.Abroad}>{LocationIds.Abroad}</Dropdown.Item>
+                  <Dropdown.Item eventKey={LocationIds.TelAviv}>
+                    {LocationIds.TelAviv}
+                  </Dropdown.Item>
+                  <Dropdown.Item eventKey={LocationIds.Eilat}>{LocationIds.Eilat}</Dropdown.Item>
+                </DropdownButton>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Pets</Form.Label>
+                <PetsCounter />
               </Form.Group>
               <Form.Group>
                 <h1 style={{ color: 'blue' }}>free text</h1>
@@ -76,11 +115,10 @@ export default function Home() {
                   <img src={link} />
                 ))}
               </Form.Group>
-              <Form.Group>
-                <Form.Label>
-                  here i would retrieve the pets from the db, and display them as a pet component.
-                </Form.Label>
-              </Form.Group>
+
+              <Button type="submit" onClick={handleSubmit}>
+                find me a sitter
+              </Button>
             </Form>
           </Modal.Body>
         </Modal>

@@ -26,6 +26,10 @@ export const SIGNUP_FORM_PROPS = {
   VISIBLE: 'visible',
 }
 
+export const NEW_POST_PROPS = {
+  LOCATION: 'location',
+}
+
 export const LocationIds = {
   Abroad: 'abroad',
   North: 'north',

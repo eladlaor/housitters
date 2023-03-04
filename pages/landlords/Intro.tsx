@@ -43,10 +43,11 @@ export default function landlordIntro() {
   const availability = useSelector(selectAvailabilityState)
   const primaryUse = useSelector(selectPrimaryUseState)
   const location = useSelector(selectLocationState)
+  dispatch(setPrimaryUse(USER_TYPE.Landlord)) // TODO: true?
 
   // running just once ([]), to prevent the warning: updating a component while rendering a different one
   useEffect(() => {
-    dispatch(setPrimaryUse(USER_TYPE.landlord))
+    // dispatch(setPrimaryUse(USER_TYPE.Landlord))
   }, [])
 
   const [show, setShow] = useState(false)
