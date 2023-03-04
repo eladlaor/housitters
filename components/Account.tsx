@@ -307,7 +307,7 @@ export default function Account() {
           type="radio"
           value={USER_TYPE.Landlord}
           name="primary_use"
-          checked={handleButtonMark(primary_use, USER_TYPE.landlord)}
+          checked={handleButtonMark(primary_use, USER_TYPE.Landlord)}
           onChange={handlePrimayUseChange}
         />
         landlord

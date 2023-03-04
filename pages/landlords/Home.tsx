@@ -13,14 +13,18 @@ import AvailabilityPeriod from '../../components/AvailabilityPeriod'
 import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 
 export default function Home() {
+  const supabaseClient = useSupabaseClient()
+  const user = useUser()
   const router = useRouter()
   const firstName = useSelector(selectFirstNameState)
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [imagesSrc, setImagesSrc] = useState([] as any)
   const defaultLocation = useSelector(selectLocationState)
+  const [freeTextState, setFreeTextState] = useState('')
   const pets = useSelector(selectPetsState)
 
   const [location, setLocation] = useState(defaultLocation)
@@ -53,10 +57,26 @@ export default function Home() {
     }
   }
 
-  function handleSubmit() {
-    /*
-      make a call to the active_posts table
-    */
+  async function handleSubmit(e: any) {
+    e.preventDefault()
+
+    // TODO: deal with multiple availabilities
+
+    const { data, error } = await supabaseClient.from('active_posts').insert([
+      {
+        landlord_uid: user?.id,
+        start_date: new Date(availability[0].startDate),
+        end_date: new Date(availability[0].endDate),
+        location: location,
+        free_text: freeTextState, // TODO: rename
+        pets,
+      },
+    ])
+
+    if (error) {
+      alert(error.message)
+      throw error
+    }
 
     alert('submitted successfully')
   }
@@ -106,7 +126,16 @@ export default function Home() {
               </Form.Group>
               <Form.Group>
                 <h1 style={{ color: 'blue' }}>free text</h1>
-                <Form.Control className="text-end" size="sm" as="textarea" rows={5}></Form.Control>
+                <Form.Control
+                  className="text-end"
+                  size="sm"
+                  as="textarea"
+                  rows={5}
+                  value={freeTextState}
+                  onChange={(e) => {
+                    setFreeTextState(e.target.value)
+                  }}
+                ></Form.Control>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Upload some pics</Form.Label>
@@ -116,7 +145,7 @@ export default function Home() {
                 ))}
               </Form.Group>
 
-              <Button type="submit" onClick={handleSubmit}>
+              <Button type="submit" onClick={(e) => handleSubmit(e)}>
                 find me a sitter
               </Button>
             </Form>

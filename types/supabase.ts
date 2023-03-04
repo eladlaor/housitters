@@ -9,6 +9,32 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      active_posts: {
+        Row: {
+          end_date: string | null
+          free_text: string | null
+          landlord_uid: string | null
+          location: string | null
+          pets: Database["public"]["CompositeTypes"]["pets"] | null
+          start_date: string | null
+        }
+        Insert: {
+          end_date?: string | null
+          free_text?: string | null
+          landlord_uid?: string | null
+          location?: string | null
+          pets?: Database["public"]["CompositeTypes"]["pets"] | null
+          start_date?: string | null
+        }
+        Update: {
+          end_date?: string | null
+          free_text?: string | null
+          landlord_uid?: string | null
+          location?: string | null
+          pets?: Database["public"]["CompositeTypes"]["pets"] | null
+          start_date?: string | null
+        }
+      }
       housitters: {
         Row: {
           availability: unknown | null

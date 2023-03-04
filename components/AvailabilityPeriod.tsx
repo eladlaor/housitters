@@ -77,51 +77,6 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
     dispatch(setAvailability(availabilityToModify))
   }
 
-  // function handleDatesChange(changedDate: Date, isStart: boolean) {
-  //   debugger
-
-  //   // let [dateType, dateTypeInverse] = isStart ? ['startDate', 'endDate'] : ['endDate', 'startDate']
-
-  //   let dateType
-  //   let dateTypeInverse
-
-  //   if (isStart) {
-  //     dateType = 'startDate'
-  //     dateTypeInverse = 'endDate'
-  //   } else {
-  //     dateTypeInverse = 'startDate'
-  //     dateDate = 'endDate'
-  //   }
-
-  //   console.log(dateType, dateTypeInverse)
-  //   let availabilityToModify = JSON.parse(JSON.stringify(availability))
-
-  //   availabilityToModify[index][dateType] = changedDate
-  //   availabilityToModify[index][dateTypeInverse] =
-  //     availability[index][dateTypeInverse as keyof typeof availability[0]]
-
-  //   if (availabilityToModify[index][dateTypeInverse] < availabilityToModify[index][dateType]) {
-  //     let inversedDateToModify = new Date(availabilityToModify[index][dateTypeInverse])
-  //     inversedDateToModify.setDate(
-  //       isStart
-  //         ? new Date(inversedDateToModify).getDate() + 1
-  //         : new Date(inversedDateToModify).getDate() - 1
-  //     )
-
-  //     availabilityToModify[index][dateTypeInverse] = inversedDateToModify
-  //   }
-
-  //   // formatting for db compatibility
-  //   availabilityToModify[index].startDate = moment(availabilityToModify[index].startDate).format(
-  //     'YYYY-MM-DD'
-  //   )
-  //   availabilityToModify[index].endDate = moment(availabilityToModify[index].endDate).format(
-  //     'YYYY-MM-DD'
-  //   )
-
-  //   dispatch(setAvailability(availabilityToModify))
-  // }
-
   function handleDateSelect(date: any) {
     // TODO: just understand the diff between select and change
   }
@@ -173,6 +128,17 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
         ) : (
           <></>
         )}
+      </div>
+      <div>
+        <button
+          onClick={() => {
+            const modifiedAvailability = JSON.parse(JSON.stringify(availability))
+            modifiedAvailability.splice(index, 1)
+            dispatch(setAvailability(modifiedAvailability))
+          }}
+        >
+          remove the above period
+        </button>
       </div>
     </div>
   )
