@@ -28,10 +28,11 @@ const EVENT_KEYS = {
 
 export default function AvailabilityPeriod({ period, index }: { period: any; index: number }) {
   const dispatch = useDispatch()
+  // // debugger
   const availability = useSelector(selectAvailabilityState)
 
   const [shouldShowEndDateRange, setShouldShowEndDateRange] = useState(
-    availability[index].endDate !== new Date(0).toISOString()
+    availability[index].endDate !== new Date(0).toISOString() // the 'Anytime' sign is new Date(0) as endDate.
   )
   const [endDateCurrentSelection, setEndDateCurrentSelection] = useState(
     shouldShowEndDateRange ? 'custom range' : 'anytime'
@@ -39,7 +40,6 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
 
   function handleDatesChange(changedDate: Date, isStart: boolean) {
     // all formatting can be done at the end
-
     let availabilityToModify = JSON.parse(JSON.stringify(availability))
     let formattedChangedDate = moment(changedDate).format('YYYY-MM-DD')
     let periodBorderType = ''
@@ -67,7 +67,7 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
 
       const { startDate: modifiedStart, endDate: modifiedEnd } = availabilityToModify[index]
 
-      if (modifiedStart <= modifiedEnd) {
+      if (modifiedEnd <= modifiedStart) {
         let startDateToModify = new Date(modifiedEnd)
         startDateToModify.setDate(startDateToModify.getDate() - 1)
         availabilityToModify[index].startDate = moment(startDateToModify).format('YYYY-MM-DD')

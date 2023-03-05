@@ -37,6 +37,7 @@ export default function HousitterIntro() {
 
   const [errors, setErrors] = useState({} as any)
 
+  // debugger
   const availability = useSelector(selectAvailabilityState)
   const primaryUse = useSelector(selectPrimaryUseState)
   const locations = useSelector(selectLocationsState)
@@ -103,8 +104,6 @@ export default function HousitterIntro() {
     if (error) {
       throw error
     }
-
-    console.log('data:', data)
 
     // TODO: if I'll be able to properly send to multiple tables (with correctly parsing the types i send), the following won't be needed.
     if (data && data.user) {
