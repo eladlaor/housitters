@@ -6,6 +6,8 @@ import {
   setPrimaryUse,
   setIsLoggedState,
   selectPrimaryUseState,
+  selectFirstNameState,
+  setFirstName,
 } from '../../slices/userSlice'
 
 import { selectLocationsState } from '../../slices/housitterSlice'
@@ -26,6 +28,7 @@ export default function HousitterIntro() {
   const router = useRouter()
   const dispatch = useDispatch()
   const supabaseClient = useSupabaseClient()
+  const firstName = useSelector(selectFirstNameState)
 
   const [form, setForm] = useState({
     [SIGNUP_FORM_PROPS.FIRST_NAME]: '',
@@ -75,14 +78,7 @@ export default function HousitterIntro() {
 
   async function handleSignUp(e: any) {
     e.preventDefault()
-
-    // different type for locations in order to be performant on the display of checkboxes and save space on db
-    let locationsDb: string[] = []
-    Object.keys(locations).forEach((key) => {
-      if (locations[key as keyof typeof locations]) {
-        locationsDb.push(key)
-      }
-    })
+    setShow(false)
 
     let { data, error } = await supabaseClient.auth.signUp({
       email: form[SIGNUP_FORM_PROPS.EMAIL],
@@ -110,9 +106,10 @@ export default function HousitterIntro() {
       let userId = data.user.id
 
       // TODO: this variable key names should be replaced with simple type safety
+      debugger
       const newHousitter = {
         user_id: userId,
-        locations: locationsDb,
+        locations,
         // availability,
       }
 
@@ -126,6 +123,7 @@ export default function HousitterIntro() {
     }
 
     dispatch(setIsLoggedState(true))
+    router.push('Home')
   }
 
   // debugger
@@ -160,6 +158,7 @@ export default function HousitterIntro() {
                   value={form[SIGNUP_FORM_PROPS.FIRST_NAME]}
                   onChange={(e) => {
                     setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
+                    dispatch(setFirstName(e.target.value))
                   }}
                 />
               </Form.Group>

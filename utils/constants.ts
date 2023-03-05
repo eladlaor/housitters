@@ -34,13 +34,13 @@ export const LocationIds = {
   Abroad: 'abroad',
   North: 'north',
   Haifa: 'haifa',
-  PardesHana: 'pardesHana',
+  PardesHana: 'pardes_hana',
   Hasharon: 'hasharon',
-  TelAviv: 'ta',
-  NearTa: 'nearTa',
+  TelAviv: 'tel_aviv',
+  NearTa: 'near_ta',
   Jerusalem: 'jerusalem',
-  RishonToAshkelon: 'rishonToAshkelon',
-  AshkelonToBash: 'ashkelonToBash',
+  RishonToAshkelon: 'rishon_ashkelon',
+  AshkelonToBash: 'ashkelon_bash',
   Eilat: 'eilat',
 }
 
