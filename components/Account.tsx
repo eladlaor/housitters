@@ -224,21 +224,6 @@ export default function Account() {
     return dateMultiRange
   }
 
-  function addAvailabilityPeriod() {
-    let modifiedAvailability = JSON.parse(JSON.stringify(availability))
-
-    let defaultStartDate = new Date()
-    let defaultEndDate = new Date()
-    defaultEndDate.setDate(defaultStartDate.getDate() + 1)
-
-    modifiedAvailability.push({
-      startDate: defaultStartDate.toISOString(),
-      endDate: defaultEndDate.toISOString(),
-    })
-
-    dispatch(setAvailability(modifiedAvailability))
-  }
-
   if (!user) {
     return <div>no user</div>
   }
@@ -328,8 +313,6 @@ export default function Account() {
         {availability.map((period, index) => (
           <AvailabilityPeriod period={period} index={index} />
         ))}
-
-        <button onClick={addAvailabilityPeriod}>add period</button>
       </div>
 
       <div>

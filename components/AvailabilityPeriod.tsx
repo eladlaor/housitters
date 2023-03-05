@@ -28,9 +28,9 @@ const EVENT_KEYS = {
 
 export default function AvailabilityPeriod({ period, index }: { period: any; index: number }) {
   const dispatch = useDispatch()
-  // // debugger
   const availability = useSelector(selectAvailabilityState)
-
+  // debugger
+  // const [shouldAllowRemoveAvailability, setShouldAllowRemoveAvailability] = useState(false)
   const [shouldShowEndDateRange, setShouldShowEndDateRange] = useState(
     availability[index].endDate !== new Date(0).toISOString() // the 'Anytime' sign is new Date(0) as endDate.
   )
@@ -92,7 +92,21 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
     }
   }
 
-  // TODO: what if availability is not rendered yet? (in 'selected')
+  function addAvailabilityPeriod() {
+    let modifiedAvailability = JSON.parse(JSON.stringify(availability))
+
+    let defaultStartDate = new Date()
+    let defaultEndDate = new Date()
+    defaultEndDate.setDate(defaultStartDate.getDate() + 1)
+
+    modifiedAvailability.push({
+      startDate: defaultStartDate.toISOString(),
+      endDate: defaultEndDate.toISOString(),
+    })
+
+    dispatch(setAvailability(modifiedAvailability))
+  }
+
   return (
     <div>
       <div>
@@ -130,6 +144,9 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
         )}
       </div>
       <div>
+        <button onClick={addAvailabilityPeriod}>add period</button>
+      </div>
+      <div>
         <button
           onClick={() => {
             const modifiedAvailability = JSON.parse(JSON.stringify(availability))
@@ -137,7 +154,7 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
             dispatch(setAvailability(modifiedAvailability))
           }}
         >
-          remove the above period
+          {availability.length > 1 ? 'remove the above period' : ''}
         </button>
       </div>
     </div>

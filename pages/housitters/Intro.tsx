@@ -128,6 +128,7 @@ export default function HousitterIntro() {
     dispatch(setIsLoggedState(true))
   }
 
+  // debugger
   return (
     <div className="position-absolute top-50 start-50 translate-middle">
       <p>ok lets find you a house</p>
