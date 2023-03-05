@@ -32,13 +32,13 @@ export default function SignOut() {
   return (
     <button
       onClick={async () => {
-        debugger
-        await clearState(userSettersToInitialStates)
         if (userType === USER_TYPE.Housitter) {
           await clearState(housitterSettersToInitialStates)
         } else {
           await clearState(landlordSettersToInitialStates)
         }
+        await clearState(userSettersToInitialStates)
+
         await supabaseClient.auth.signOut()
         router.push('/')
       }}
