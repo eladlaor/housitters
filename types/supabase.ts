@@ -17,6 +17,7 @@ export interface Database {
           location: string | null
           pets: Database["public"]["CompositeTypes"]["pets"] | null
           start_date: string | null
+          title: string | null
         }
         Insert: {
           end_date?: string | null
@@ -25,6 +26,7 @@ export interface Database {
           location?: string | null
           pets?: Database["public"]["CompositeTypes"]["pets"] | null
           start_date?: string | null
+          title?: string | null
         }
         Update: {
           end_date?: string | null
@@ -33,11 +35,14 @@ export interface Database {
           location?: string | null
           pets?: Database["public"]["CompositeTypes"]["pets"] | null
           start_date?: string | null
+          title?: string | null
         }
       }
       housitters: {
         Row: {
-          availability: unknown | null
+          availability:
+            | Database["public"]["CompositeTypes"]["date_range"][]
+            | null
           created_at: string | null
           experience: number | null
           id: number
@@ -47,7 +52,9 @@ export interface Database {
           user_id: string | null
         }
         Insert: {
-          availability?: unknown | null
+          availability?:
+            | Database["public"]["CompositeTypes"]["date_range"][]
+            | null
           created_at?: string | null
           experience?: number | null
           id?: number
@@ -57,7 +64,9 @@ export interface Database {
           user_id?: string | null
         }
         Update: {
-          availability?: unknown | null
+          availability?:
+            | Database["public"]["CompositeTypes"]["date_range"][]
+            | null
           created_at?: string | null
           experience?: number | null
           id?: number
@@ -69,19 +78,25 @@ export interface Database {
       }
       landlords: {
         Row: {
-          availability: unknown | null
+          availability:
+            | Database["public"]["CompositeTypes"]["date_range"][]
+            | null
           location: string | null
           pets: Database["public"]["CompositeTypes"]["pets"] | null
           user_id: string
         }
         Insert: {
-          availability?: unknown | null
+          availability?:
+            | Database["public"]["CompositeTypes"]["date_range"][]
+            | null
           location?: string | null
           pets?: Database["public"]["CompositeTypes"]["pets"] | null
           user_id: string
         }
         Update: {
-          availability?: unknown | null
+          availability?:
+            | Database["public"]["CompositeTypes"]["date_range"][]
+            | null
           location?: string | null
           pets?: Database["public"]["CompositeTypes"]["pets"] | null
           user_id?: string
@@ -143,6 +158,10 @@ export interface Database {
     }
     CompositeTypes: {
       availability: {
+        start_date: string
+        end_date: string
+      }
+      date_range: {
         start_date: string
         end_date: string
       }
