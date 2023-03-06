@@ -49,13 +49,14 @@ export default function Home() {
   */
 
   useEffect(() => {
-    if (!user) {
-    } else {
-      const asyncDoEverything = async () => {
+    if (user) {
+      const asyncWrapper = async () => {
+        // I'm not sure you need this, check what happens after sign in
         let relevantLocations: string[] = ['']
         let { data: housittersData, error } = await supabase
           .from('housitters')
           .select(`locations, availability`)
+          // TODO: nope sirry bob, you must filter at this point, using the settings of the specific housitter. dont get everything
           .eq('user_id', user.id)
           .single()
 
@@ -74,6 +75,8 @@ export default function Home() {
 
         let { data: postsData, error: postsError } = await supabase
           .from('active_posts')
+          // TODO: nope sirry bob, you must filter at this point, using the settings of the specific housitter. dont get everything
+
           .select(`landlord_uid, start_date, end_date, location, title, free_text, pets`)
           .in('location', ['nearTa']) // TODO: temp, just until i have the right data in the db.
         // .in('location', relevantLocations)
@@ -84,18 +87,12 @@ export default function Home() {
           // debugger
           alert(postsError.message)
         } else if (postsData) {
-          // debugger
-
           setPosts(postsData)
-
-          // setPosts()
           console.log('this is postsData:', postsData)
         }
-
-        // console.log(housittersData)
       }
 
-      asyncDoEverything()
+      asyncWrapper()
     }
   }, [user])
 

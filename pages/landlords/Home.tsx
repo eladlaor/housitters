@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
 import Modal from 'react-bootstrap/Modal'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
 import { selectLocationState, selectPetsState, setPetsState } from '../../slices/landlordSlice'
 import AvailabilityPeriod from '../../components/AvailabilityPeriod'
@@ -14,6 +14,8 @@ import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+import AvailableHousitter from '../../components/Housitter'
+import { debug } from 'console'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -26,8 +28,47 @@ export default function Home() {
   const defaultLocation = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
   const pets = useSelector(selectPetsState)
+  const [housitters, setHousitters] = useState([{}])
 
   const [location, setLocation] = useState(defaultLocation)
+
+  useEffect(() => {
+    // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
+    // definitely seems like it would be a better way to implement it, in one call to the server.
+
+    // search Filter Foreign Tables https://supabase.com/docs/reference/javascript/using-filters
+
+    if (user) {
+      const asyncWrapper = async () => {
+        let { data: userData, error } = await supabaseClient
+          .from('profiles')
+          .select(
+            `id, first_name, last_name, birthday, housitters!inner (
+            id, locations, experience
+          )`
+          )
+          .eq('primary_use', 'housitter')
+          .eq(`housitters.locations->hasharon`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
+        // just no default location here
+        // .eq(`housitters.locations->${location}`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
+
+        if (error) {
+          alert(error.message)
+        }
+
+        if (userData) {
+          setHousitters(userData)
+        }
+      }
+
+      asyncWrapper().catch((e) => {
+        debugger
+        alert(e.message)
+      })
+    }
+  }, [user])
+
+  // TODO: should move about_me text to the housitters table.
 
   function handleLocationSelection(key: string | null) {
     setLocation(key ? key : '')
@@ -151,8 +192,23 @@ export default function Home() {
             </Form>
           </Modal.Body>
         </Modal>
+        <div>
+          <h1>here are available housitters for you:</h1>
+          {/* <AvailableHousitter /> */}
+        </div>
         <SignOut />
       </div>
     </div>
   )
 }
+
+/*
+  on page render, i want to get from the db just the housitters that meet the filter.
+
+  then, every handler for every filter button, will get all relevant housitters.
+  
+  but the db call, and the subsequent setState func for housittersToDisplay, will need no further filtering.
+
+  so the actual component Housitter just wants the properties to show on the card
+
+*/
