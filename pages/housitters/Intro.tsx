@@ -92,7 +92,7 @@ export default function HousitterIntro() {
           username: form.email.substring(0, form.email.indexOf('@')),
           visible: form[SIGNUP_FORM_PROPS.VISIBLE],
           primary_use: primaryUse,
-          // locations: locationsDb, TODO: i need supabase assitacne to complete this one, if i want to insert into a different table as well, as the jsonb object comes with invalid format.
+          // there is a problem with getting array values (jsonb) in these functions, which causes a problem getting all values in here
         },
       },
     })
@@ -110,7 +110,7 @@ export default function HousitterIntro() {
       const newHousitter = {
         user_id: userId,
         locations,
-        // availability,
+        availability,
       }
 
       let { error } = await supabaseClient.from('housitters').upsert(newHousitter)

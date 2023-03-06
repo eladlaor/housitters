@@ -150,7 +150,8 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
         <button
           onClick={() => {
             const modifiedAvailability = JSON.parse(JSON.stringify(availability))
-            modifiedAvailability.splice(index, 1)
+            modifiedAvailability.splice(index, 1) // TODO: yeah, it's possible, but there's a simpler way.
+            // instead of doing this, I can use the map and filter func: https://beta.reactjs.org/learn/updating-arrays-in-state
             dispatch(setAvailability(modifiedAvailability))
           }}
         >
