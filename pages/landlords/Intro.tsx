@@ -113,13 +113,11 @@ export default function landlordIntro() {
       throw error
     }
 
-    console.log('data:', data)
-
     // TODO: if I'll be able to properly cast in the above call, the following won't be needed.
     if (data && data.user) {
       let userId = data.user.id
 
-      const newlandlord = {
+      const newLandlord = {
         user_id: userId,
         // TODO: this variable key names should be replaced with simple type safety
         // username: form.email.substring(0, form.email.indexOf('@')),
@@ -127,7 +125,7 @@ export default function landlordIntro() {
         location,
       }
 
-      let { error } = await supabaseClient.from('landlords').upsert(newlandlord)
+      let { error } = await supabaseClient.from('landlords').upsert(newLandlord)
       if (error) {
         debugger
         console.log('the error object:', error)
@@ -135,9 +133,14 @@ export default function landlordIntro() {
       } else {
         alert('success')
       }
+
+      const firstPost = {
+        landlord_uid: userId,
+      }
     }
 
     dispatch(setIsLoggedState(true))
+
     router.push('Home')
   }
 
