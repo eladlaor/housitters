@@ -14,8 +14,8 @@ import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import AvailableHousitter from '../../components/Housitter'
-import { debug } from 'console'
+import Housitter from '../../components/Housitter'
+import { HousitterCardProps } from '../../types/clientSide'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -28,7 +28,7 @@ export default function Home() {
   const defaultLocation = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
   const pets = useSelector(selectPetsState)
-  const [housitters, setHousitters] = useState([{}])
+  const [housitterCards, setHousitterCards] = useState([] as Array<HousitterCardProps>)
 
   const [location, setLocation] = useState(defaultLocation)
 
@@ -38,35 +38,53 @@ export default function Home() {
 
     // search Filter Foreign Tables https://supabase.com/docs/reference/javascript/using-filters
 
+    // type things correctly, be careful from 'array of arrays'.
+    // housitters can be either an object or an array.
+
+    /*
+      explanation about !inner: 
+        according to supabase api, '!inner' allows filtering parent table results, if the foreign table's filter isn't satisfied.
+    */
+
     if (user) {
       const asyncWrapper = async () => {
-        let { data: userData, error } = await supabaseClient
+        let { data: compositeUserData, error } = await supabaseClient
           .from('profiles')
           .select(
-            `id, first_name, last_name, birthday, housitters!inner (
-            id, locations, experience
+            `id, first_name, last_name, birthday, housitters!inner (    
+            locations, experience
           )`
           )
-          .eq('primary_use', 'housitter')
-          .eq(`housitters.locations->hasharon`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
-        // just no default location here
+          // .eq('primary_use', 'housitter') // so, i don't need this one, cause i query with a foreign key which is defined in the table itself.
+          .eq(`housitters.locations->eilat`, false) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
+        // just no default location here for some reason, fix that bug and you're good with it
         // .eq(`housitters.locations->${location}`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
+        // TODO: would also need to filter by availability of course
 
         if (error) {
           alert(error.message)
         }
 
-        if (userData) {
-          setHousitters(userData)
+        if (compositeUserData) {
+          let filteredHousitters: HousitterCardProps[] = []
+
+          filteredHousitters = compositeUserData.map((data) => {
+            return {
+              firstName: data.first_name,
+              lastName: data.last_name,
+            }
+          })
+
+          setHousitterCards(filteredHousitters)
+
         }
       }
 
       asyncWrapper().catch((e) => {
-        debugger
         alert(e.message)
       })
     }
-  }, [user])
+  }, [user, housitterCards]) // TODO: the page gets rendered reppeatedly, and I dont know why, seems like redundant renders are occuring nonstop.
 
   // TODO: should move about_me text to the housitters table.
 
@@ -194,7 +212,16 @@ export default function Home() {
         </Modal>
         <div>
           <h1>here are available housitters for you:</h1>
-          {/* <AvailableHousitter /> */}
+          {housitterCards
+            ? housitterCards.map((housitter: HousitterCardProps) => (
+                <Housitter
+                  props={{
+                    firstName: housitter.firstName,
+                    lastName: housitter.lastName,
+                  }}
+                />
+              ))
+            : 'no available housitters'}
         </div>
         <SignOut />
       </div>

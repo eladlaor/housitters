@@ -1,10 +1,19 @@
 import Card from 'react-bootstrap/Card'
-import { HousitterProps } from '../types/clientSide'
+import { HousitterCardProps } from '../types/clientSide'
+import Button from 'react-bootstrap/Button'
 
-export default function Housitter({ props }: { props: HousitterProps }) {
+export default function Housitter({ props }: { props: HousitterCardProps }) {
   return (
     <div>
-      <h1> housitter</h1>
+      <Card bg="light" style={{ width: '18rem' }}>
+        <Card.Body>
+          <Card.Title>some title</Card.Title>
+          <Card.Text>
+            {props.firstName} {props.lastName}
+          </Card.Text>
+          <Button variant="secondary">Send message</Button>
+        </Card.Body>
+      </Card>
     </div>
   )
 }
