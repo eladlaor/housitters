@@ -5,6 +5,7 @@ import {
 import {
   selectLocationState as selectlandlordLocationState,
   setLocationState as setlandlordLocationState,
+  setLocationState,
 } from '../slices/landlordSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import Form from 'react-bootstrap/Form'
@@ -31,15 +32,21 @@ export default function LocationSelector({
   }
 
   function handleHousitterSelectedLocation(e: any) {
-    // parse and stringify in order to create a deep copy of the object, modify it (otherwise read-only) and dispatch
-    let locationsToModify = JSON.parse(JSON.stringify(locations)) as Record<string, boolean>
+    if (!housitter) {
+      dispatch(setLocationState(e.target.id))
+    } else {
+      let locationsToModify = JSON.parse(JSON.stringify(locations)) as string[]
+      const receivedLocation = e.target.id as keyof typeof locations as string
 
-    const receivedLocation = e.target.id as keyof typeof locations
+      const selectedLocationIndex = locationsToModify.indexOf(receivedLocation)
+      if (selectedLocationIndex === -1) {
+        locationsToModify.push(receivedLocation)
+      } else {
+        locationsToModify.splice(selectedLocationIndex)
+      }
 
-    locationsToModify[receivedLocation] = !locationsToModify[receivedLocation]
-
-    console.log(e.target.name)
-    dispatch(setHousitterLocationsState(locationsToModify))
+      dispatch(setHousitterLocationsState(locationsToModify))
+    }
   }
 
   // TODO: to display properly, would need to search the array every time.
@@ -54,9 +61,7 @@ export default function LocationSelector({
             id={loc}
             label={LocationDescriptions[loc]}
             defaultChecked={
-              housitter
-                ? ((locations as Record<string, boolean>)[loc] as unknown as boolean)
-                : loc === locations
+              housitter ? locations.indexOf(loc) !== -1 : loc === locations // the landlord case (locations will hold only one value. should rename TODO:)
             }
             name={housitter ? loc : 'singleLocationChoice'}
           />

@@ -5,7 +5,12 @@ import { Router, useRouter } from 'next/router'
 import Link from 'next/link'
 import { LANDLORDS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectIsLoggedState, setIsLoggedState, setFirstName } from '../slices/userSlice'
+import {
+  selectIsLoggedState,
+  setIsLoggedState,
+  setFirstName,
+  selectPrimaryUseState,
+} from '../slices/userSlice'
 
 export default function LoginPage() {
   const { isLoading, session, error, supabaseClient } = useSessionContext()
@@ -13,6 +18,7 @@ export default function LoginPage() {
   const router = useRouter()
   const dispatch = useDispatch()
   const isLoggedState = useSelector(selectIsLoggedState)
+  const primaryUse = useSelector(selectPrimaryUseState)
 
   useEffect(() => {
     if (!user) {
