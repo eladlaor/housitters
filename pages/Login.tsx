@@ -5,7 +5,9 @@ import { Router, useRouter } from 'next/router'
 import Link from 'next/link'
 import { LANDLORDS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectIsLoggedState, setIsLoggedState, setFirstName } from '../slices/userSlice'
+import { selectIsLoggedState, setIsLoggedState, setFirstName } from '../slices/userSlice' // TODO: unify naming whether or not with 'state' or not
+import { setLocationState, setPetsState } from '../slices/landlordSlice'
+import { equal } from 'assert'
 
 export default function LoginPage() {
   const { isLoading, session, error, supabaseClient } = useSessionContext()
@@ -28,7 +30,7 @@ export default function LoginPage() {
           .single()
 
         // TODO: HyperText Transfer Protocol (HTTP) 406 Not Acceptable client error response code indicates that the server cannot produce a response matching the list of acceptable values defined in the request's proactive content negotiation headers, and that the server is unwilling to supply a default representatio
-        // why 406
+        // i noticed that i do get 406 a couple of times before getting a valid response. so i get it should be ignored, but i should understand more about its meaning, and why we care or not about it.
         if (error && status !== 406) {
           throw error
         }
@@ -38,6 +40,26 @@ export default function LoginPage() {
 
           dispatch(setIsLoggedState(true))
           dispatch(setFirstName(first_name))
+
+          let {
+            data: landlordData,
+            error: landlordError,
+            status: landlordResponseStatus,
+          } = await supabaseClient
+            .from('landlords')
+            .select('location, pets')
+            .eq('user_id', userId)
+            .single()
+
+          if (landlordError && landlordResponseStatus !== 406) {
+            throw error
+          }
+
+          if (landlordData) {
+            const { location, pets } = landlordData
+            dispatch(setLocationState(location))
+            // dispatch(setPetsState(pets))
+          }
 
           // TODO: shouldnt route in a loadUserData func.
           if (primary_use === USER_TYPE.Housitter) {
@@ -92,15 +114,18 @@ export default function LoginPage() {
         </>
       </div>
     )
-  }
-  /* Auth is just a component. it makes the user - which is retrireved from useUser() - become authenticated,
+  } else {
+    /* Auth is just a component. it makes the user - which is retrireved from useUser() - become authenticated,
             instead of undefined. you can check the docs in the readme file of the node modules of
             it. but you can control the behavior, by checking for defined or undefined user. I'm
             sure you can also just define a button here, if you really want, simply using the
             supabaseClient.auth.signinWith... */
-  return (
-    <>
-      <p>login page</p>
-    </>
-  )
+
+    // i can and should just omit this text and let the page be white for a sec.
+    return (
+      <>
+        <p>login page</p>
+      </>
+    )
+  }
 }

@@ -8,7 +8,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Modal from 'react-bootstrap/Modal'
 import { useEffect, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
-import { selectLocationState, selectPetsState, setPetsState } from '../../slices/landlordSlice'
+import {
+  selectLocationState,
+  selectPetsState,
+  setPetsState,
+  modifiedLocation,
+} from '../../slices/landlordSlice'
 import AvailabilityPeriod from '../../components/AvailabilityPeriod'
 import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
@@ -25,12 +30,11 @@ export default function Home() {
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [imagesSrc, setImagesSrc] = useState([] as any)
-  const defaultLocation = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
   const pets = useSelector(selectPetsState)
   const [housitterCards, setHousitterCards] = useState([] as Array<HousitterCardProps>)
 
-  const [location, setLocation] = useState(defaultLocation)
+  const location = useSelector(selectLocationState)
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -56,7 +60,7 @@ export default function Home() {
           )`
           )
           // .eq('primary_use', 'housitter') // so, i don't need this one, cause i query with a foreign key which is defined in the table itself.
-          .eq(`housitters.locations->eilat`, false) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
+          .eq(`housitters.locations->${location}`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
         // just no default location here for some reason, fix that bug and you're good with it
         // .eq(`housitters.locations->${location}`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
         // TODO: would also need to filter by availability of course
@@ -76,7 +80,6 @@ export default function Home() {
           })
 
           setHousitterCards(filteredHousitters)
-
         }
       }
 
@@ -89,7 +92,8 @@ export default function Home() {
   // TODO: should move about_me text to the housitters table.
 
   function handleLocationSelection(key: string | null) {
-    setLocation(key ? key : '')
+    const modifiedLocation = JSON.parse(JSON.stringify(key))
+    dispatch(setLocationState(modifiedLocation))
   }
 
   function handleShowNewPostModal() {

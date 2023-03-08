@@ -7,10 +7,11 @@ export default function Housitter({ props }: { props: HousitterCardProps }) {
     <div>
       <Card bg="light" style={{ width: '18rem' }}>
         <Card.Body>
-          <Card.Title>some title</Card.Title>
-          <Card.Text>
+          <Card.Title>
+            {' '}
             {props.firstName} {props.lastName}
-          </Card.Text>
+          </Card.Title>
+          <Card.Text>the about_me text</Card.Text>
           <Button variant="secondary">Send message</Button>
         </Card.Body>
       </Card>

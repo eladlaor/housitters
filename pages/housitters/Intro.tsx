@@ -106,7 +106,6 @@ export default function HousitterIntro() {
       let userId = data.user.id
 
       // TODO: this variable key names should be replaced with simple type safety
-      debugger
       const newHousitter = {
         user_id: userId,
         locations,
