@@ -7,14 +7,18 @@ import { USER_TYPE } from '../utils/constants'
 import Image from 'next/image'
 import cuteDog from '../public/cuteDog.jpg'
 import NewUserTeaser from '../components/Buttons/NewUserTeaser'
-import { settersToInitialStates } from '../slices/userSlice'
-import { useDispatch } from 'react-redux'
+import { selectPrimaryUseState, settersToInitialStates } from '../slices/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { settersToInitialStates as housitterSettersToInitialStates } from '../slices/housitterSlice'
+import { settersToInitialStates as landlordSettersToInitialStates } from '../slices/landlordSlice'
 
 const Home: NextPage = () => {
   const router = useRouter()
   const user = useUser()
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
+  const userType = useSelector(selectPrimaryUseState)
 
   async function userLogout() {
     const clearUserState = async () => {
@@ -34,6 +38,14 @@ const Home: NextPage = () => {
     if (!user) {
       // TODO: this is bad, as it happens repeatedly.
       // userLogout()
+
+      const nonUserSetters =
+        userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
+      nonUserSetters.forEach((attributeSetterAndInitialState) => {
+        dispatch(
+          attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
+        )
+      })
     } else {
       // debugger
       supabaseClient.auth.signOut()

@@ -2,14 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { LocationIds } from '../utils/constants'
 
-const locations: Record<string, boolean> = {}
-
-Object.values(LocationIds).forEach((loc) => {
-  locations[loc] = false
-})
-
 export const initialState = {
-  locations,
+  locations: [] as string[],
 }
 
 export type HousitterState = typeof initialState
