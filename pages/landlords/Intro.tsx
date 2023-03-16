@@ -113,8 +113,6 @@ export default function landlordIntro() {
       throw error
     }
 
-    console.log('data:', data)
-
     // TODO: if I'll be able to properly cast in the above call, the following won't be needed.
     if (data && data.user) {
       let userId = data.user.id

@@ -8,7 +8,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Modal from 'react-bootstrap/Modal'
 import { useEffect, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
-import { selectLocationState, selectPetsState, setPetsState } from '../../slices/landlordSlice'
+import {
+  selectLocationState,
+  selectPetsState,
+  setLocationState,
+  setPetsState,
+} from '../../slices/landlordSlice'
 import AvailabilityPeriod from '../../components/AvailabilityPeriod'
 import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
@@ -16,21 +21,21 @@ import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/Housitter'
 import { debug } from 'console'
+import HousitterIntro from '../housitters/Intro'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
   const router = useRouter()
+  const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [imagesSrc, setImagesSrc] = useState([] as any)
-  const defaultLocation = useSelector(selectLocationState)
+  const location = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
   const pets = useSelector(selectPetsState)
   const [housitters, setHousitters] = useState([{}])
-
-  const [location, setLocation] = useState(defaultLocation)
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -40,24 +45,51 @@ export default function Home() {
 
     if (user) {
       const asyncWrapper = async () => {
-        let { data: userData, error } = await supabaseClient
+        let { data: landlordData, error: landlordError } = await supabaseClient
+          .from('landlords')
+          .select(`location`)
+          .eq('user_id', user.id)
+          .single()
+
+        if (landlordError) {
+          debugger
+          alert(landlordError.message)
+        } else if (landlordData) {
+          dispatch(setLocationState(landlordData.location))
+        }
+
+        const arr = [location]
+
+        let { data: housitterData, error: housitterError } = await supabaseClient
           .from('profiles')
           .select(
-            `id, first_name, last_name, birthday, housitters!inner (
+            `id, first_name, last_name, housitters!inner (
             id, locations, experience
           )`
           )
           .eq('primary_use', 'housitter')
-          .eq(`housitters.locations->hasharon`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
+        // .in('housitters.locations', ['tel_aviv']) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
         // just no default location here
         // .eq(`housitters.locations->${location}`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
 
-        if (error) {
-          alert(error.message)
+        if (housitterError) {
+          debugger
+          alert(housitterError.message)
         }
 
-        if (userData) {
-          setHousitters(userData)
+        // TODO: stupid temp solution until syntax fix for filter on query
+        if (housitterData) {
+          debugger
+
+          housitterData = housitterData.filter((user) => {
+            const sitter: any = user.housitters[0] as any
+            if (sitter) {
+              return sitter.locations.includes(location)
+            }
+            return false
+          })
+
+          setHousitters(housitterData)
         }
       }
 
@@ -71,7 +103,7 @@ export default function Home() {
   // TODO: should move about_me text to the housitters table.
 
   function handleLocationSelection(key: string | null) {
-    setLocation(key ? key : '')
+    setLocationState(key ? key : '')
   }
 
   function handleShowNewPostModal() {
@@ -103,7 +135,7 @@ export default function Home() {
 
     // TODO: deal with multiple availabilities
 
-    const { data, error } = await supabaseClient.from('active_posts').insert([
+    const { data, error } = await supabaseClient.from('posts').insert([
       {
         landlord_uid: user?.id,
         start_date: new Date(availability[0].startDate),
@@ -125,6 +157,7 @@ export default function Home() {
   return (
     <div>
       <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
+      <h2>I see you're looking for sitters in {location}</h2>
       <GoToProfileButton accountRoute={LANDLORDS_ROUTES.ACCOUNT} />
       <div>
         <Button
@@ -194,7 +227,15 @@ export default function Home() {
         </Modal>
         <div>
           <h1>here are available housitters for you:</h1>
-          {/* <AvailableHousitter /> */}
+          {housitters.map((sitter) => (
+            <AvailableHousitter
+              props={{
+                firstName: sitter.first_name,
+                lastName: sitter.last_name,
+                about_me: 'yo yo',
+              }}
+            />
+          ))}
         </div>
         <SignOut />
       </div>
