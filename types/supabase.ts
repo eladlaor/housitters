@@ -9,33 +9,24 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      active_posts: {
+      available_dates: {
         Row: {
+          created_at: string | null
           end_date: string | null
-          free_text: string | null
-          landlord_uid: string | null
-          location: string | null
-          pets: Database["public"]["CompositeTypes"]["pets"] | null
+          id: string
           start_date: string | null
-          title: string | null
         }
         Insert: {
+          created_at?: string | null
           end_date?: string | null
-          free_text?: string | null
-          landlord_uid?: string | null
-          location?: string | null
-          pets?: Database["public"]["CompositeTypes"]["pets"] | null
+          id: string
           start_date?: string | null
-          title?: string | null
         }
         Update: {
+          created_at?: string | null
           end_date?: string | null
-          free_text?: string | null
-          landlord_uid?: string | null
-          location?: string | null
-          pets?: Database["public"]["CompositeTypes"]["pets"] | null
+          id?: string
           start_date?: string | null
-          title?: string | null
         }
       }
       housitters: {
@@ -46,7 +37,7 @@ export interface Database {
           created_at: string | null
           experience: number | null
           id: number
-          locations: Database["public"]["CompositeTypes"]["locations"] | null
+          locations: string[] | null
           only_paid: boolean | null
           updated_at: string | null
           user_id: string | null
@@ -58,7 +49,7 @@ export interface Database {
           created_at?: string | null
           experience?: number | null
           id?: number
-          locations?: Database["public"]["CompositeTypes"]["locations"] | null
+          locations?: string[] | null
           only_paid?: boolean | null
           updated_at?: string | null
           user_id?: string | null
@@ -70,7 +61,7 @@ export interface Database {
           created_at?: string | null
           experience?: number | null
           id?: number
-          locations?: Database["public"]["CompositeTypes"]["locations"] | null
+          locations?: string[] | null
           only_paid?: boolean | null
           updated_at?: string | null
           user_id?: string | null
@@ -78,28 +69,56 @@ export interface Database {
       }
       landlords: {
         Row: {
-          availability:
-            | Database["public"]["CompositeTypes"]["date_range"][]
-            | null
+          favorite_sitters: string[] | null
           location: string | null
-          pets: Database["public"]["CompositeTypes"]["pets"] | null
           user_id: string
         }
         Insert: {
-          availability?:
-            | Database["public"]["CompositeTypes"]["date_range"][]
-            | null
+          favorite_sitters?: string[] | null
           location?: string | null
-          pets?: Database["public"]["CompositeTypes"]["pets"] | null
           user_id: string
         }
         Update: {
-          availability?:
-            | Database["public"]["CompositeTypes"]["date_range"][]
-            | null
+          favorite_sitters?: string[] | null
           location?: string | null
-          pets?: Database["public"]["CompositeTypes"]["pets"] | null
           user_id?: string
+        }
+      }
+      pets: {
+        Row: {
+          created_at: string | null
+          id: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+        }
+      }
+      posts: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          description: string | null
+          id: string
+          title: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id: string
+          title?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title?: string | null
         }
       }
       profiles: {
@@ -109,7 +128,6 @@ export interface Database {
           birthday: string | null
           first_name: string | null
           id: string
-          is_public: boolean | null
           last_name: string | null
           primary_use: string | null
           social_media_url: string | null
@@ -123,7 +141,6 @@ export interface Database {
           birthday?: string | null
           first_name?: string | null
           id: string
-          is_public?: boolean | null
           last_name?: string | null
           primary_use?: string | null
           social_media_url?: string | null
@@ -137,7 +154,6 @@ export interface Database {
           birthday?: string | null
           first_name?: string | null
           id?: string
-          is_public?: boolean | null
           last_name?: string | null
           primary_use?: string | null
           social_media_url?: string | null
@@ -176,11 +192,6 @@ export interface Database {
         ashkelon_bash: boolean
         bash: boolean
         eilat: boolean
-      }
-      pets: {
-        dogs: number
-        cats: number
-        other: string
       }
     }
   }
