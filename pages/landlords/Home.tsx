@@ -52,7 +52,6 @@ export default function Home() {
           .single()
 
         if (landlordError) {
-          debugger
           alert(landlordError.message)
         } else if (landlordData) {
           dispatch(setLocationState(landlordData.location))
@@ -68,9 +67,8 @@ export default function Home() {
           )`
           )
           .eq('primary_use', 'housitter')
-        // .in('housitters.locations', ['tel_aviv']) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
-        // just no default location here
-        // .eq(`housitters.locations->${location}`, true) // https://supabase.com/docs/reference/javascript/using-filters (filter by values within a json column)
+          .contains('housitters.locations', [location])
+        // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
 
         if (housitterError) {
           debugger
@@ -79,15 +77,6 @@ export default function Home() {
 
         // TODO: stupid temp solution until syntax fix for filter on query
         if (housitterData) {
-          debugger
-
-          housitterData = housitterData.filter((user) => {
-            const sitter: any = user.housitters[0] as any
-            if (sitter) {
-              return sitter.locations.includes(location)
-            }
-            return false
-          })
 
           setHousitters(housitterData)
         }
