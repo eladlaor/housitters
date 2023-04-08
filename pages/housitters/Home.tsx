@@ -107,12 +107,10 @@ export default function Home() {
           // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
           let postsFilteredByPeriod = postsData.filter((post) => {
             for (const housitterAvailabilityPeriod of availability) {
-              if (
+              return (
                 housitterAvailabilityPeriod.startDate <= post.start_date &&
                 housitterAvailabilityPeriod.endDate >= post.end_date
-              ) {
-                return true
-              }
+              )
             }
           })
 
@@ -120,7 +118,7 @@ export default function Home() {
         }
       }
 
-      asyncWrapper()
+      asyncWrapper() // in order to use the awaited db call.
     }
   }, [user])
 
