@@ -70,12 +70,17 @@ export default function Home() {
 
           // TODO: get available dates as you should, dispatch as you should, and only then see how filter with multiple ranges...
 
-          // TODO: type it better
-          const dates = housittersData.profiles as {
-            available_dates: [{ start_date: any; end_date: any }]
+          // TODO: just for naming convention (to align with the availabaility object name), traversing again...
+          const dates = []
+          for (const housitterAvailabilityPeriod of (housittersData.profiles as any)
+            .available_dates) {
+            dates.push({
+              startDate: housitterAvailabilityPeriod.start_date,
+              endDate: housitterAvailabilityPeriod.end_date,
+            })
           }
 
-          dispatch(setAvailability(dates.available_dates))
+          dispatch(setAvailability(dates))
         }
 
         // TODO: add a ifActive filter.
@@ -92,18 +97,26 @@ export default function Home() {
           )
           .in('landlords.location', locations)
 
-        // TODO: for Date filtering, I can use the 'or' for at least one range, should be better.
+        // for Date filtering, I can also use the 'or' for at least one range, to filter on db call.
 
-        // TODO: how to only query dates in the selected time period
-        // lets first see that i can query with regular fields
         if (postsError) {
           alert(postsError.message)
         } else if (postsData) {
-          // TODO: filter dates...
           // TODO: maybe also show how many posts outside its range, so getting from db does make sense...
 
-          setPosts(postsData)
-          console.log('this is postsData:', postsData)
+          // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
+          let postsFilteredByPeriod = postsData.filter((post) => {
+            for (const housitterAvailabilityPeriod of availability) {
+              if (
+                housitterAvailabilityPeriod.startDate <= post.start_date &&
+                housitterAvailabilityPeriod.endDate >= post.end_date
+              ) {
+                return true
+              }
+            }
+          })
+
+          setPosts(postsFilteredByPeriod)
         }
       }
 
