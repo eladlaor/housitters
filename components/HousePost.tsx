@@ -9,13 +9,20 @@ export default function HousePost({
   location,
   startDate,
   endDate,
+  dogs,
+  cats,
 }: {
   title: string
   text: string
   location: string
   startDate: Date
   endDate: Date
+  dogs: number
+  cats: number
 }) {
+  // const totalDays = endDate.getTime() - startDate.getTime()
+  // debugger
+
   return (
     <Card bg="light" style={{ width: '18rem' }}>
       <Card.Body>

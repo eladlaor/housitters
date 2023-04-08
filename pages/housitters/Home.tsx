@@ -2,15 +2,15 @@ import { useRouter } from 'next/router'
 import SignOut from '../../components/Buttons/SignOut'
 import GoToProfileButton from '../../components/GoToProfileButton'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectFirstNameState, setAvailability } from '../../slices/userSlice'
+import {
+  selectFirstNameState,
+  setAvailability,
+  selectAvailabilityState,
+} from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
 import { HOUSITTERS_ROUTES } from '../../utils/constants'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
-import Card from 'react-bootstrap/Card'
-import Button from 'react-bootstrap/Button'
-import Col from 'react-bootstrap/Col'
-import Row from 'react-bootstrap/Row'
 
 import HousePost from '../../components/HousePost'
 
@@ -21,10 +21,11 @@ export default function Home() {
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
   const locations = useSelector(selectLocationsState)
+  const availability = useSelector(selectAvailabilityState)
   const supabase = useSupabaseClient()
   const [posts, setPosts] = useState([{}])
 
-  // can set loading states if needed
+  // TODO: can set loading states if needed
 
   /*
     filters:
@@ -52,41 +53,55 @@ export default function Home() {
     if (user) {
       const asyncWrapper = async () => {
         // I'm not sure you need this, check what happens after sign in
-        let relevantLocations: string[] = ['']
         let { data: housittersData, error } = await supabase
           .from('housitters')
-          .select(`locations, availability`)
-          // TODO: nope sirry bob, you must filter at this point, using the settings of the specific housitter. dont get everything
+          .select(
+            `locations, profiles!inner (
+            available_dates!inner (start_date, end_date)
+          )`
+          )
           .eq('user_id', user.id)
           .single()
 
         if (error) {
-          // debugger
           alert(error.message)
-        } else if (housittersData) {
+        } else if (housittersData && housittersData.profiles) {
           dispatch(setLocationsState(housittersData.locations))
-          dispatch(setAvailability(housittersData.availability))
-          Object.keys(locations).forEach((loc) => {
-            if (locations[loc]) {
-              relevantLocations.push(loc)
-            }
-          })
+
+          // TODO: get available dates as you should, dispatch as you should, and only then see how filter with multiple ranges...
+
+          // TODO: type it better
+          const dates = housittersData.profiles as {
+            available_dates: [{ start_date: any; end_date: any }]
+          }
+
+          dispatch(setAvailability(dates.available_dates))
         }
 
+        // TODO: add a ifActive filter.
         let { data: postsData, error: postsError } = await supabase
-          .from('active_posts')
-          // TODO: nope sirry bob, you must filter at this point, using the settings of the specific housitter. dont get everything
+          .from('posts')
+          .select(
+            `user_id, start_date, end_date, title, description, landlords!inner (
+              location, profiles!inner (
+                first_name, pets!inner (
+                  dogs, cats
+                )
+              )
+          )`
+          )
+          .in('landlords.location', locations)
 
-          .select(`landlord_uid, start_date, end_date, location, title, free_text, pets`)
-          .in('location', ['nearTa']) // TODO: temp, just until i have the right data in the db.
-        // .in('location', relevantLocations)
+        // TODO: for Date filtering, I can use the 'or' for at least one range, should be better.
 
         // TODO: how to only query dates in the selected time period
         // lets first see that i can query with regular fields
         if (postsError) {
-          // debugger
           alert(postsError.message)
         } else if (postsData) {
+          // TODO: filter dates...
+          // TODO: maybe also show how many posts outside its range, so getting from db does make sense...
+
           setPosts(postsData)
           console.log('this is postsData:', postsData)
         }
@@ -103,11 +118,13 @@ export default function Home() {
       <h2>here are all the relvant posts for you</h2>
       {posts.map((post: any) => (
         <HousePost
-          title={post.title} // not mandatory
-          text={post.free_text}
-          location={post.location}
+          title={post.title}
+          text={post.description}
+          location={post.landlords ? post.landlords.location : ''}
           startDate={post.startDate}
           endDate={post.endDate}
+          dogs={post.dogs}
+          cats={post.cats}
         />
       ))}
       <SignOut />

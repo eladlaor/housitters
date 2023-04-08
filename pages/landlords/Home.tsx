@@ -71,13 +71,11 @@ export default function Home() {
         // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
 
         if (housitterError) {
-          debugger
           alert(housitterError.message)
         }
 
         // TODO: stupid temp solution until syntax fix for filter on query
         if (housitterData) {
-
           setHousitters(housitterData)
         }
       }
