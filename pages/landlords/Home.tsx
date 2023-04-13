@@ -19,9 +19,10 @@ import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import AvailableHousitter from '../../components/Housitter'
+import AvailableHousitter from '../../components/AvailableHousitter'
 import { debug } from 'console'
 import HousitterIntro from '../housitters/Intro'
+import { HousitterProps } from '../../types/clientSide'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -35,7 +36,7 @@ export default function Home() {
   const location = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
   const pets = useSelector(selectPetsState)
-  const [housitters, setHousitters] = useState([{}])
+  const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -62,7 +63,7 @@ export default function Home() {
         let { data: housitterData, error: housitterError } = await supabaseClient
           .from('profiles')
           .select(
-            `id, first_name, last_name, housitters!inner (
+            `id, first_name, last_name, avatar_url, housitters!inner (
             id, locations, experience
           )`
           )
@@ -76,12 +77,12 @@ export default function Home() {
 
         // TODO: stupid temp solution until syntax fix for filter on query
         if (housitterData) {
+          console.log(housitterData)
           setHousitters(housitterData)
         }
       }
 
       asyncWrapper().catch((e) => {
-        debugger
         alert(e.message)
       })
     }
@@ -214,16 +215,23 @@ export default function Home() {
         </Modal>
         <div>
           <h1>here are available housitters for you:</h1>
-          {housitters.map((sitter, index) => (
-            <AvailableHousitter
-              props={{
-                firstName: sitter.first_name,
-                lastName: sitter.last_name,
-                about_me: 'yo yo',
-              }}
-              key={index}
-            />
-          ))}
+          {housitters.map(
+            (
+              sitter: any,
+              index: number // TODO: type 'sitter' with a new type of Db housitterdata
+            ) => (
+              <AvailableHousitter
+                props={{
+                  firstName: sitter.first_name,
+                  lastName: sitter.last_name,
+                  about_me: 'hard coded text',
+                  avatarUrl: sitter.avatar_url,
+                  housitterId: sitter.housitter_id,
+                }}
+                key={index}
+              />
+            )
+          )}
         </div>
         <SignOut />
       </div>

@@ -100,7 +100,7 @@ export default function landlordIntro() {
 
     if (error) {
       // TODO: for example, if a user is already registered
-      debugger
+
       switch (error.message) {
         case 'user already registered':
           alert(
@@ -127,7 +127,6 @@ export default function landlordIntro() {
 
       let { error } = await supabaseClient.from('landlords').upsert(newlandlord)
       if (error) {
-        debugger
         console.log('the error object:', error)
         throw error
       } else {
