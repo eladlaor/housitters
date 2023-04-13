@@ -122,13 +122,16 @@ export default function Home() {
     }
   }, [user])
 
+  // debugger
+
   return (
     <div>
       <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
       <GoToProfileButton accountRoute={HOUSITTERS_ROUTES.ACCOUNT} />
       <h2>here are all the relvant posts for you</h2>
-      {posts.map((post: any) => (
+      {posts.map((post: any, index: number) => (
         <HousePost
+          landlordId={post.user_id}
           title={post.title}
           text={post.description}
           location={post.landlords ? post.landlords.location : ''}
@@ -136,6 +139,7 @@ export default function Home() {
           endDate={post.endDate}
           dogs={post.dogs}
           cats={post.cats}
+          key={index}
         />
       ))}
       <SignOut />

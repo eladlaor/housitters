@@ -13,11 +13,13 @@ export default function Avatar({
   url,
   size,
   onUpload,
+  disableUpload,
 }: {
   uid: string
   url: Profiles['avatar_url']
   size: number
   onUpload: (url: string) => void
+  disableUpload: boolean
 }) {
   const supabase = useSupabaseClient<Database>()
   const dispatch = useDispatch()
@@ -86,7 +88,7 @@ export default function Avatar({
       )}
       <div style={{ width: size }}>
         <label className="button primary block" htmlFor="single">
-          {uploading ? 'Uploading ...' : 'Upload'}
+          {disableUpload ? '' : uploading ? 'Uploading ...' : 'Upload'}
         </label>
         <input
           style={{

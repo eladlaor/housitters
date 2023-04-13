@@ -214,13 +214,14 @@ export default function Home() {
         </Modal>
         <div>
           <h1>here are available housitters for you:</h1>
-          {housitters.map((sitter) => (
+          {housitters.map((sitter, index) => (
             <AvailableHousitter
               props={{
                 firstName: sitter.first_name,
                 lastName: sitter.last_name,
                 about_me: 'yo yo',
               }}
+              key={index}
             />
           ))}
         </div>

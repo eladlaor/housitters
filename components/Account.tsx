@@ -189,6 +189,13 @@ export default function Account() {
 
   return (
     <div className="form-widget">
+      <button
+        onClick={() => {
+          router.push('Home')
+        }}
+      >
+        go to dashboard
+      </button>
       <Avatar
         uid={user!.id} // verify i know what this means
         url={avatar_url}
@@ -204,6 +211,7 @@ export default function Account() {
             birthday,
           })
         }}
+        disableUpload={false}
       />
       <div>
         <label htmlFor="email">Email</label>
