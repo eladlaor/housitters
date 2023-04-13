@@ -83,7 +83,8 @@ export default function Account() {
           dispatch(setBirthday(data.birthday))
         }
 
-        getAvailabilityFromDbAndSetInRedux()
+        const availability = await getAvailabilityFromDb()
+        dispatch(setAvailability(availability))
       }
     } catch (error) {
       alert('Error loading user data!')
@@ -123,9 +124,6 @@ export default function Account() {
         birthday,
       }
 
-      // TODO: i need to move the whole availability thing to the housitter home page.
-      await updateAvailability(availability, user.id)
-
       let { error } = await supabaseClient.from('profiles').upsert(updates)
       if (error) {
         throw error
@@ -145,37 +143,31 @@ export default function Account() {
     }
   }
 
-  // a getter should not set
-  async function getAvailabilityFromDbAndSetInRedux() {
+  // TODO: a getter should not set
+  async function getAvailabilityFromDb() {
     if (!user) {
       return
     }
 
-    let { data, error } = await supabaseClient
-      .from('housitters')
-      .select('availability')
+    let { data: availableDates, error } = await supabaseClient
+      .from('available_dates')
+      .select('start_date, end_date')
       .eq('user_id', user.id)
-      .single()
 
     if (error) {
       throw error
     }
 
-    if (data) {
-      const modifiedAvailability = parseDateMultiRange(data.availability)
-      dispatch(setAvailability(modifiedAvailability))
-    }
+    if (availableDates) {
+      const availableDatesAsReduxType = availableDates.map((date) => {
+        return {
+          startDate: date.start_date,
+          endDate: date.end_date,
+        }
+      })
 
-    // const { data: upsertData, error: upsertError } = await supabaseClient
-    //   .from('housitters')
-    //   .update([
-    //     {
-    //       availability: '{[2022-12-01, 2022-12-11]}',
-    //     },
-    //   ])
-    //   .eq('user_id', user.id)
-    // if (upsertError) {
-    // }
+      return availableDatesAsReduxType
+    }
   }
 
   // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
@@ -189,39 +181,6 @@ export default function Account() {
 
   function handleButtonMark(type: string, typeToCompare: string) {
     return type === typeToCompare
-  }
-
-  async function updateAvailability(availability: any, userId: any) {
-    let modifiedAvailability = convertAvailabilityObjToMultiRange(availability)
-
-    // TODO: update vs upsert
-    let { error: housittersError } = await supabaseClient
-      .from('housitters')
-      .update({
-        availability: modifiedAvailability,
-      })
-      .eq('user_id', userId)
-
-    if (housittersError) {
-      throw housittersError
-    }
-  }
-
-  function convertAvailabilityObjToMultiRange(availability: any[]): string {
-    let dateMultiRange = '{'
-
-    availability.forEach((period) => {
-      let startDate = period.startDate.toString()
-      let endDate = period.endDate.toString()
-
-      dateMultiRange = dateMultiRange.concat('[' + startDate + ', ' + endDate + '], ')
-    })
-
-    dateMultiRange = dateMultiRange.slice(0, dateMultiRange.length - 2)
-
-    dateMultiRange += '}'
-
-    return dateMultiRange
   }
 
   if (!user) {

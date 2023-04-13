@@ -12,28 +12,28 @@ export interface Database {
       available_dates: {
         Row: {
           created_at: string | null
-          end_date: string | null
-          id: string
-          start_date: string | null
+          end_date: string
+          id: number
+          start_date: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
-          end_date?: string | null
-          id: string
-          start_date?: string | null
+          end_date: string
+          id?: number
+          start_date: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
-          end_date?: string | null
-          id?: string
-          start_date?: string | null
+          end_date?: string
+          id?: number
+          start_date?: string
+          user_id?: string | null
         }
       }
       housitters: {
         Row: {
-          availability:
-            | Database["public"]["CompositeTypes"]["date_range"][]
-            | null
           created_at: string | null
           experience: number | null
           id: number
@@ -43,9 +43,6 @@ export interface Database {
           user_id: string | null
         }
         Insert: {
-          availability?:
-            | Database["public"]["CompositeTypes"]["date_range"][]
-            | null
           created_at?: string | null
           experience?: number | null
           id?: number
@@ -55,9 +52,6 @@ export interface Database {
           user_id?: string | null
         }
         Update: {
-          availability?:
-            | Database["public"]["CompositeTypes"]["date_range"][]
-            | null
           created_at?: string | null
           experience?: number | null
           id?: number
@@ -86,16 +80,25 @@ export interface Database {
       }
       pets: {
         Row: {
+          cats: number | null
           created_at: string | null
-          id: number
+          dogs: number | null
+          other: string | null
+          user_id: string
         }
         Insert: {
+          cats?: number | null
           created_at?: string | null
-          id?: number
+          dogs?: number | null
+          other?: string | null
+          user_id: string
         }
         Update: {
+          cats?: number | null
           created_at?: string | null
-          id?: number
+          dogs?: number | null
+          other?: string | null
+          user_id?: string
         }
       }
       posts: {
@@ -103,22 +106,28 @@ export interface Database {
           active: boolean | null
           created_at: string | null
           description: string | null
-          id: string
+          end_date: string | null
+          start_date: string | null
           title: string | null
+          user_id: string
         }
         Insert: {
           active?: boolean | null
           created_at?: string | null
           description?: string | null
-          id: string
+          end_date?: string | null
+          start_date?: string | null
           title?: string | null
+          user_id: string
         }
         Update: {
           active?: boolean | null
           created_at?: string | null
           description?: string | null
-          id?: string
+          end_date?: string | null
+          start_date?: string | null
           title?: string | null
+          user_id?: string
         }
       }
       profiles: {
