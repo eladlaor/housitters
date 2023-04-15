@@ -49,7 +49,6 @@ const Home: NextPage = () => {
         })
       })
     } else {
-      // debugger
       supabaseClient.auth.signOut()
       userLogout()
       // TODO: go straight into action.

@@ -3,7 +3,6 @@ import { RootState } from '../store'
 
 export const initialState = {
   imagesUrls: [] as Array<string>,
-  imagesFiles: [] as Array<any>, // TODO: how to type a file?
 }
 
 export type postState = typeof initialState

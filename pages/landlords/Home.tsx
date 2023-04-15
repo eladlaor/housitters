@@ -242,8 +242,21 @@ export default function Home() {
               <Form.Group>
                 <Form.Label>Upload some pics </Form.Label>
                 <input onChange={onFileUpload} type="file" name="file" multiple />
+
                 {imagesUrls.map((link: any) => (
-                  <img src={link} height={50} width={50} />
+                  <div>
+                    <img src={link} height={50} width={50} />
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault()
+                        let copyOfImagesUrls = JSON.parse(JSON.stringify(imagesUrls))
+                        copyOfImagesUrls = copyOfImagesUrls.filter((img: any) => img !== link)
+                        dispatch(setImagesUrlsState(copyOfImagesUrls))
+                      }}
+                    >
+                      delete
+                    </button>
+                  </div>
                 ))}
               </Form.Group>
 
