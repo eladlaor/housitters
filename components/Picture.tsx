@@ -4,22 +4,20 @@ import { Database } from '../types/supabase'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAvatarUrlState, setAvatarUrl } from '../slices/userSlice'
 type Profiles = Database['public']['Tables']['profiles']['Row']
-/*
-8edd7ef6-dc20-4915-8be1-3f1a7ccd0fe5.
-8edd7ef6-dc20-4915-8be1-3f1a7ccd0fe5.jpg
-*/
 export default function Avatar({
   uid,
   url,
   size,
   onUpload,
   disableUpload,
+  bucketName,
 }: {
   uid: string
   url: Profiles['avatar_url']
   size: number
   onUpload: (url: string) => void
   disableUpload: boolean
+  bucketName: string
 }) {
   const supabase = useSupabaseClient<Database>()
   const dispatch = useDispatch()
@@ -32,8 +30,7 @@ export default function Avatar({
 
   async function downloadImage(path: string) {
     try {
-      // debugger
-      const { data, error } = await supabase.storage.from('avatars').download(path)
+      const { data, error } = await supabase.storage.from(bucketName).download(path)
       if (error) {
         throw error
       }
@@ -58,7 +55,7 @@ export default function Avatar({
       const filePath = `${fileName}`
 
       let { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from(bucketName)
         .upload(filePath, file, { upsert: true })
 
       if (uploadError) {

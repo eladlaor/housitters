@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
-import Avatar from './Avatar'
+import Picture from './Picture'
 import { useRouter } from 'next/router'
 
 import AvailabilityPeriod from '../components/AvailabilityPeriod'
@@ -196,7 +196,7 @@ export default function Account() {
       >
         go to dashboard
       </button>
-      <Avatar
+      <Picture
         uid={user!.id} // verify i know what this means
         url={avatar_url}
         size={150}
@@ -212,6 +212,7 @@ export default function Account() {
           })
         }}
         disableUpload={false}
+        bucketName="avatars"
       />
       <div>
         <label htmlFor="email">Email</label>

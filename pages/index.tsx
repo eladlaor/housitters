@@ -8,6 +8,7 @@ import Image from 'next/image'
 import cuteDog from '../public/cuteDog.jpg'
 import NewUserTeaser from '../components/Buttons/NewUserTeaser'
 import { selectPrimaryUseState, settersToInitialStates } from '../slices/userSlice'
+import { settersToInitialStates as postSettersToInitialStates } from '../slices/postSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { settersToInitialStates as housitterSettersToInitialStates } from '../slices/housitterSlice'
@@ -36,15 +37,16 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!user) {
-      // TODO: this is bad, as it happens repeatedly.
-      // userLogout()
-
       const nonUserSetters =
         userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
       nonUserSetters.forEach((attributeSetterAndInitialState) => {
         dispatch(
           attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
         )
+
+        postSettersToInitialStates.forEach((postSetter) => {
+          dispatch(postSetter.matchingSetter(postSetter.initialState))
+        })
       })
     } else {
       // debugger

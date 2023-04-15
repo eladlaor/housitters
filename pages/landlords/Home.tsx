@@ -8,19 +8,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import Modal from 'react-bootstrap/Modal'
 import { useEffect, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
-import {
-  selectLocationState,
-  selectPetsState,
-  setLocationState,
-  setPetsState,
-} from '../../slices/landlordSlice'
+import { selectLocationState, selectPetsState, setLocationState } from '../../slices/landlordSlice'
+import { selectImagesUrlsState, setImagesUrlsState } from '../../slices/postSlice'
 import AvailabilityPeriod from '../../components/AvailabilityPeriod'
 import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
-import { debug } from 'console'
 import HousitterIntro from '../housitters/Intro'
 import { HousitterProps } from '../../types/clientSide'
 
@@ -32,11 +27,13 @@ export default function Home() {
   const firstName = useSelector(selectFirstNameState)
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
-  const [imagesSrc, setImagesSrc] = useState([] as any)
+  const imagesUrls = useSelector(selectImagesUrlsState)
+
   const location = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
   const pets = useSelector(selectPetsState)
   const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -102,19 +99,48 @@ export default function Home() {
     setShowNewPostModal(false)
   }
 
-  // why would i decide to use '
-  function onFileUpload(e: any) {
-    for (const file of e.target.files) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => {
-        setImagesSrc((images: any) => [...images, reader.result])
+  async function onFileUpload(event: any) {
+    try {
+      setUploadingImage(true)
+
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('You must select an image to upload.')
       }
 
-      reader.onerror = () => {
-        console.log(reader.error)
-        throw reader.error
+      for (const file of event.target.files) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => {
+          const copyOfImages = JSON.parse(JSON.stringify(imagesUrls))
+          copyOfImages.push(reader.result)
+          dispatch(setImagesUrlsState(copyOfImages))
+        }
+        reader.onerror = () => {
+          alert(reader.error)
+        }
       }
+
+      //   let modifiedPostImages = JSON.parse(JSON.stringify(imagesUrls))
+      //   const imageNumberAsString = (modifiedPostImages.length + 1).toString()
+
+      //   debugger
+      //   const file = event.target.files[0]
+      //   const fileExt = file.name.split('.').pop() // gets the jpg/jpeg/png, gets the format.
+      //   const fileName = `${user?.id}-${location}-${imageNumberAsString}.${fileExt}` // TODO: see now this would be good for one single avatar, no other
+      //   const filePath = `${fileName}`
+
+      //   modifiedPostImages.push(filePath)
+      //   dispatch(setImagesUrlsState(modifiedPostImages))
+
+      //   let modifiedPostImagesFiles = JSON.parse(JSON.stringify(imagesFiles))
+      //   debugger
+      //   modifiedPostImagesFiles.push(file)
+      //   dispatch(setImagesFilesState(modifiedPostImagesFiles))
+      // } catch (error) {
+      //   alert('Error uploading post pic')
+      //   console.log(error)
+    } finally {
+      setUploadingImage(false) // TODO: the loading state
     }
   }
 
@@ -123,25 +149,39 @@ export default function Home() {
 
     // TODO: deal with multiple availabilities
 
-    const { data, error } = await supabaseClient.from('posts').insert([
-      {
-        landlord_uid: user?.id,
-        start_date: new Date(availability[0].startDate),
-        end_date: new Date(availability[0].endDate),
-        location: location,
-        free_text: freeTextState, // TODO: rename
-        pets,
-      },
-    ])
+    imagesUrls.forEach(async (fileDataUrl: any, index: number) => {
+      debugger
+      let { error: uploadError } = await supabaseClient.storage
+        .from('posts')
+        // TODO: there is no difference between imagesUrls and fileDataUrl.
+        .upload(imagesUrls[index], fileDataUrl, { upsert: true })
 
-    if (error) {
-      alert(error.message)
-      throw error
+      if (uploadError) {
+        debugger
+        throw uploadError
+      }
+    })
+
+    let { error: imageUploadError } = await supabaseClient.from('posts').upsert({
+      landlord_id: user?.id,
+      start_date: new Date(availability[0].startDate), // TODO: fix
+      end_date: new Date(availability[0].endDate), // TODO: fix
+      description: freeTextState, // TODO: rename
+      images_urls: imagesUrls,
+    })
+
+    if (imageUploadError) {
+      alert('error updating images urls in db: ' + imageUploadError.message)
+      throw imageUploadError
     }
 
+    dispatch(setImagesUrlsState([]))
+
     alert('submitted successfully')
+    setShowNewPostModal(false)
   }
 
+  console.log('this is images len: ' + imagesUrls.length)
   return (
     <div>
       <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
@@ -200,10 +240,10 @@ export default function Home() {
                 ></Form.Control>
               </Form.Group>
               <Form.Group>
-                <Form.Label>Upload some pics</Form.Label>
+                <Form.Label>Upload some pics </Form.Label>
                 <input onChange={onFileUpload} type="file" name="file" multiple />
-                {imagesSrc.map((link: any) => (
-                  <img src={link} />
+                {imagesUrls.map((link: any) => (
+                  <img src={link} height={50} width={50} />
                 ))}
               </Form.Group>
 
