@@ -56,7 +56,7 @@ const Home: NextPage = () => {
   })
 
   return (
-    <>
+    <div style={{ position: 'relative' }}>
       <div className="front-page-buttons">
         <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
         <div
@@ -67,16 +67,16 @@ const Home: NextPage = () => {
           <NewUserTeaser userType={USER_TYPE.Housitter} />
         </div>
         <NewUserTeaser userType={USER_TYPE.Landlord} />
+        <button
+          className="signin-button"
+          onClick={() => {
+            router.push('/Login')
+          }}
+        >
+          already registered? sign in
+        </button>
       </div>
-      <button
-        className="signinbutton"
-        onClick={() => {
-          router.push('/Login')
-        }}
-      >
-        already registered? sign in
-      </button>
-    </>
+    </div>
   )
 }
 

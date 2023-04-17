@@ -7,7 +7,6 @@ import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES, USER_TYPE } from '../../utils/cons
 export default function NewUserTeaser({ userType }: { userType: string }) {
   const router = useRouter()
   const dispatch = useDispatch()
-  // dispatch(setPrimaryUse(USER_TYPE.Landlord))
 
   const handleUserTypeSelection = () => {
     dispatch(setPrimaryUse(userType))
@@ -17,17 +16,22 @@ export default function NewUserTeaser({ userType }: { userType: string }) {
   let route = ''
 
   if (userType === USER_TYPE.Housitter) {
-    message = 'I am a sitter, find me a house'
+    message = '\nfind me a house'
     route = HOUSITTERS_ROUTES.INTRO
   } else {
-    message = 'I am going away, find me a sitter'
+    message = 'find me a housitter'
     route = LANDLORDS_ROUTES.INTRO
   }
 
   return (
     <div className="front-page-buttons">
-      <div className="link-test">
-        <button type="button" className="btn btn-primary btn-lg" onClick={handleUserTypeSelection}>
+      <div className="relative-position">
+        <button
+          type="button"
+          className="btn btn-primary btn-lg "
+          style={{ textDecoration: 'bold' }}
+          onClick={handleUserTypeSelection}
+        >
           <Link href={route}>{message}</Link>
         </button>
       </div>

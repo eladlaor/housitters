@@ -15,16 +15,22 @@ button,
   text-transform: lowercase;
 }
 
-.link-test {
+.relative-position {
   position: relative;
+  text-decoration: none;
 }
 
-.backgroud-image {
-
+a:visited {
+  text-decoration: none;
 }
+
+.front-page-buttons a:link {
+  text-decoration: none;
+}
+
 
 .front-page-buttons {
-  --bs-link-color: red;
+  --bs-link-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,13 +38,23 @@ button,
   text-align: center;
 }
 
-.signinbutton {
+.signin-button {
+  color: white;
+  background-color: purple;
   position: absolute;
-  bottom: 85%;
-  left: 25%;
-
-  
+  bottom: 30%;
+  align-items: center;
+  border-style: groove;
+  border-radius: 10px 10px 10px 10px;
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #ffffff, gray);
+}
+
+
 
 /* then import bootstrap */
 @import "bootstrap/dist/css/bootstrap.css";

@@ -119,26 +119,6 @@ export default function Home() {
           alert(reader.error)
         }
       }
-
-      //   let modifiedPostImages = JSON.parse(JSON.stringify(imagesUrls))
-      //   const imageNumberAsString = (modifiedPostImages.length + 1).toString()
-
-      //   debugger
-      //   const file = event.target.files[0]
-      //   const fileExt = file.name.split('.').pop() // gets the jpg/jpeg/png, gets the format.
-      //   const fileName = `${user?.id}-${location}-${imageNumberAsString}.${fileExt}` // TODO: see now this would be good for one single avatar, no other
-      //   const filePath = `${fileName}`
-
-      //   modifiedPostImages.push(filePath)
-      //   dispatch(setImagesUrlsState(modifiedPostImages))
-
-      //   let modifiedPostImagesFiles = JSON.parse(JSON.stringify(imagesFiles))
-      //   debugger
-      //   modifiedPostImagesFiles.push(file)
-      //   dispatch(setImagesFilesState(modifiedPostImagesFiles))
-      // } catch (error) {
-      //   alert('Error uploading post pic')
-      //   console.log(error)
     } finally {
       setUploadingImage(false) // TODO: the loading state
     }
@@ -181,15 +161,18 @@ export default function Home() {
     setShowNewPostModal(false)
   }
 
-  console.log('this is images len: ' + imagesUrls.length)
   return (
-    <div>
-      <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
-      <h2>I see you're looking for sitters in {location}</h2>
-      <GoToProfileButton accountRoute={LANDLORDS_ROUTES.ACCOUNT} />
+    <div className="container">
+      <div>
+        <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
+        <h2>I see you're looking for sitters in {location}</h2>
+      </div>
+      <div>
+        <GoToProfileButton accountRoute={LANDLORDS_ROUTES.ACCOUNT} />
+      </div>
       <div>
         <Button
-          style={{ position: 'relative', left: '50%' }}
+          style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
           variant="primary"
           onClick={handleShowNewPostModal}
         >
@@ -266,26 +249,24 @@ export default function Home() {
             </Form>
           </Modal.Body>
         </Modal>
-        <div>
-          <h1>here are available housitters for you:</h1>
-          {housitters.map(
-            (
-              sitter: any,
-              index: number // TODO: type 'sitter' with a new type of Db housitterdata
-            ) => (
-              <AvailableHousitter
-                props={{
-                  firstName: sitter.first_name,
-                  lastName: sitter.last_name,
-                  about_me: 'hard coded text',
-                  avatarUrl: sitter.avatar_url,
-                  housitterId: sitter.housitter_id,
-                }}
-                key={index}
-              />
-            )
-          )}
-        </div>
+        <h1>here are available housitters for you:</h1>
+        {housitters.map(
+          (
+            sitter: any,
+            index: number // TODO: type 'sitter' with a new type of Db housitterdata
+          ) => (
+            <AvailableHousitter
+              props={{
+                firstName: sitter.first_name,
+                lastName: sitter.last_name,
+                about_me: 'hard coded text',
+                avatarUrl: sitter.avatar_url,
+                housitterId: sitter.housitter_id,
+              }}
+              key={index}
+            />
+          )
+        )}
         <SignOut />
       </div>
     </div>
