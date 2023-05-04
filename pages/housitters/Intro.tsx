@@ -135,97 +135,101 @@ export default function HousitterIntro() {
   return (
     <Navbar bg="light" expand="lg">
       <Container>
-        <div>
-          <p>ok lets find you a house</p>
+        <Navbar.Brand href="#">Housitters</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
           <div>
-            <h1>WHEN are we talking about here?</h1>
-            {availability.map((period, index) => (
-              <AvailabilityPeriod key={index} period={period} index={index} />
-            ))}
-          </div>
-          <div>
-            <h1>Where?</h1>
-            <LocationSelector selectionType="checkbox" housitter={true} />
-          </div>
-          <div>
-            <Button variant="primary" onClick={handleShow}>
-              Find me a house
-            </Button>
-            <Modal show={show} onHide={handleClose} contentClassName="my-modal">
-              <Modal.Header closeButton>
-                <Modal.Title style={{ color: 'blue' }}>One more step</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form>
-                  <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
-                    <Form.Label>First Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder=""
-                      value={form[SIGNUP_FORM_PROPS.FIRST_NAME]}
-                      onChange={(e) => {
-                        setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
-                        dispatch(setFirstName(e.target.value))
-                      }}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
-                    <Form.Label>Last Name</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder=""
-                      value={form[SIGNUP_FORM_PROPS.LAST_NAME]}
-                      onChange={(e) => {
-                        setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
-                      }}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      placeholder="Enter email"
-                      value={form[SIGNUP_FORM_PROPS.EMAIL]}
-                      onChange={(e) => {
-                        setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
-                      }}
-                    />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      type="password" // TODO: is this secure enough to get password like this?
-                      placeholder="Password"
-                      // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
-                      onChange={(e) => {
-                        setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
-                      }}
-                    />
-                  </Form.Group>
+            <p>ok lets find you a house</p>
+            <div>
+              <h1>WHEN are we talking about here?</h1>
+              {availability.map((period, index) => (
+                <AvailabilityPeriod key={index} period={period} index={index} />
+              ))}
+            </div>
+            <div>
+              <h1>Where?</h1>
+              <LocationSelector selectionType="checkbox" housitter={true} />
+            </div>
+            <div>
+              <Button variant="primary" onClick={handleShow}>
+                Find me a house
+              </Button>
+              <Modal show={show} onHide={handleClose} contentClassName="my-modal">
+                <Modal.Header closeButton>
+                  <Modal.Title style={{ color: 'blue' }}>One more step</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
+                      <Form.Label>First Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder=""
+                        value={form[SIGNUP_FORM_PROPS.FIRST_NAME]}
+                        onChange={(e) => {
+                          setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
+                          dispatch(setFirstName(e.target.value))
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
+                      <Form.Label>Last Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder=""
+                        value={form[SIGNUP_FORM_PROPS.LAST_NAME]}
+                        onChange={(e) => {
+                          setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        type="email"
+                        placeholder="Enter email"
+                        value={form[SIGNUP_FORM_PROPS.EMAIL]}
+                        onChange={(e) => {
+                          setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        type="password" // TODO: is this secure enough to get password like this?
+                        placeholder="Password"
+                        // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
+                        onChange={(e) => {
+                          setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
+                        }}
+                      />
+                    </Form.Group>
 
-                  <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.VISIBLE}>
-                    <h2 style={{ color: 'blue' }}>which type of user are you</h2>
-                    <Form.Text className="text-muted">
-                      an anonymous profile can approach other visible or anonymous profiles.
-                    </Form.Text>
-                    <Form.Check
-                      type="checkbox"
-                      label="anonymous"
-                      id="anonymous"
-                      value={form[SIGNUP_FORM_PROPS.VISIBLE]}
-                      onChange={(e) => {
-                        setProfileVisibility(SIGNUP_FORM_PROPS.VISIBLE, e.target.id)
-                      }}
-                    />
-                  </Form.Group>
-                  <Button variant="primary" type="submit" onClick={handleSignUp}>
-                    Submit
-                  </Button>
-                </Form>
-              </Modal.Body>
-            </Modal>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.VISIBLE}>
+                      <h2 style={{ color: 'blue' }}>which type of user are you</h2>
+                      <Form.Text className="text-muted">
+                        an anonymous profile can approach other visible or anonymous profiles.
+                      </Form.Text>
+                      <Form.Check
+                        type="checkbox"
+                        label="anonymous"
+                        id="anonymous"
+                        value={form[SIGNUP_FORM_PROPS.VISIBLE]}
+                        onChange={(e) => {
+                          setProfileVisibility(SIGNUP_FORM_PROPS.VISIBLE, e.target.id)
+                        }}
+                      />
+                    </Form.Group>
+                    <Button variant="primary" type="submit" onClick={handleSignUp}>
+                      Submit
+                    </Button>
+                  </Form>
+                </Modal.Body>
+              </Modal>
+            </div>
           </div>
-        </div>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   )

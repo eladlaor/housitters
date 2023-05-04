@@ -19,6 +19,11 @@ import AvailableHousitter from '../../components/AvailableHousitter'
 import HousitterIntro from '../housitters/Intro'
 import { HousitterProps } from '../../types/clientSide'
 
+import Container from 'react-bootstrap/Container'
+import Nav from 'react-bootstrap/Nav'
+import Navbar from 'react-bootstrap/Navbar'
+import NavDropdown from 'react-bootstrap/NavDropdown'
+
 export default function Home() {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
@@ -163,116 +168,133 @@ export default function Home() {
   }
 
   return (
-    <div className="container">
-      <div>
-        <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
-        <h2>I see you're looking for sitters in {location}</h2>
+    <>
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Navbar.Brand className="mr-auto" href="#">
+          Housitters
+        </Navbar.Brand>
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ml-auto">
+            <NavDropdown title="My Profile" id="basic-nav-dropdown">
+              <NavDropdown.Item href={LANDLORDS_ROUTES.ACCOUNT}>Edit Profile</NavDropdown.Item>
+              <SignOut />
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+      <div className="container">
+        <div>
+          <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
+          <h2>I see you're looking for sitters in {location}</h2>
+        </div>
+        <div>
+          <GoToProfileButton accountRoute={LANDLORDS_ROUTES.ACCOUNT} />
+        </div>
+        <div>
+          <Button
+            style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
+            variant="primary"
+            onClick={handleShowNewPostModal}
+          >
+            Create new post
+          </Button>
+          <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
+            <Modal.Header closeButton>
+              <Modal.Title style={{ color: 'blue' }}>lets create new post</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group>
+                  <Form.Label>availability</Form.Label>
+
+                  {availability.map((period, index) => (
+                    <AvailabilityPeriod key={index} period={period} index={index} />
+                  ))}
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Location</Form.Label>
+                  <DropdownButton
+                    id="dropdown-basic-button"
+                    title={location}
+                    onSelect={handleLocationSelection}
+                  >
+                    <Dropdown.Item eventKey={LocationIds.Abroad}>
+                      {LocationIds.Abroad}
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey={LocationIds.TelAviv}>
+                      {LocationIds.TelAviv}
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey={LocationIds.Eilat}>{LocationIds.Eilat}</Dropdown.Item>
+                  </DropdownButton>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Pets</Form.Label>
+                  <PetsCounter />
+                </Form.Group>
+                <Form.Group>
+                  <h1 style={{ color: 'blue' }}>free text</h1>
+                  <Form.Control
+                    className="text-end"
+                    size="sm"
+                    as="textarea"
+                    rows={5}
+                    value={freeTextState}
+                    onChange={(e) => {
+                      setFreeTextState(e.target.value)
+                    }}
+                  ></Form.Control>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Upload some pics </Form.Label>
+                  <input onChange={onFileUpload} type="file" name="file" multiple />
+
+                  {imagesUrls.map((link: any, index: number) => (
+                    <div>
+                      <img src={link} height={50} width={50} />
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          let copyOfImagesUrls = JSON.parse(JSON.stringify(imagesUrls))
+                          copyOfImagesUrls = copyOfImagesUrls.filter((img: any) => img !== link)
+                          dispatch(setImagesUrlsState(copyOfImagesUrls))
+                        }}
+                        key={index}
+                      >
+                        delete
+                      </button>
+                    </div>
+                  ))}
+                </Form.Group>
+
+                <Button type="submit" onClick={(e) => handleSubmit(e)}>
+                  find me a sitter
+                </Button>
+              </Form>
+            </Modal.Body>
+          </Modal>
+          <h1>here are available housitters for you:</h1>
+
+          {housitters.map(
+            (
+              sitter: any,
+              index: number // TODO: type 'sitter' with a new type of Db housitterdata
+            ) => (
+              <AvailableHousitter
+                props={{
+                  firstName: sitter.first_name,
+                  lastName: sitter.last_name,
+                  about_me: 'hard coded text',
+                  avatarUrl: sitter.avatar_url,
+                  housitterId: sitter.housitter_id,
+                }}
+                key={index}
+              />
+            )
+          )}
+          <SignOut />
+        </div>
       </div>
-      <div>
-        <GoToProfileButton accountRoute={LANDLORDS_ROUTES.ACCOUNT} />
-      </div>
-      <div>
-        <Button
-          style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
-          variant="primary"
-          onClick={handleShowNewPostModal}
-        >
-          Create new post
-        </Button>
-        <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
-          <Modal.Header closeButton>
-            <Modal.Title style={{ color: 'blue' }}>lets create new post</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group>
-                <Form.Label>availability</Form.Label>
-
-                {availability.map((period, index) => (
-                  <AvailabilityPeriod key={index} period={period} index={index} />
-                ))}
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Location</Form.Label>
-                <DropdownButton
-                  id="dropdown-basic-button"
-                  title={location}
-                  onSelect={handleLocationSelection}
-                >
-                  <Dropdown.Item eventKey={LocationIds.Abroad}>{LocationIds.Abroad}</Dropdown.Item>
-                  <Dropdown.Item eventKey={LocationIds.TelAviv}>
-                    {LocationIds.TelAviv}
-                  </Dropdown.Item>
-                  <Dropdown.Item eventKey={LocationIds.Eilat}>{LocationIds.Eilat}</Dropdown.Item>
-                </DropdownButton>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Pets</Form.Label>
-                <PetsCounter />
-              </Form.Group>
-              <Form.Group>
-                <h1 style={{ color: 'blue' }}>free text</h1>
-                <Form.Control
-                  className="text-end"
-                  size="sm"
-                  as="textarea"
-                  rows={5}
-                  value={freeTextState}
-                  onChange={(e) => {
-                    setFreeTextState(e.target.value)
-                  }}
-                ></Form.Control>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Upload some pics </Form.Label>
-                <input onChange={onFileUpload} type="file" name="file" multiple />
-
-                {imagesUrls.map((link: any, index: number) => (
-                  <div>
-                    <img src={link} height={50} width={50} />
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault()
-                        let copyOfImagesUrls = JSON.parse(JSON.stringify(imagesUrls))
-                        copyOfImagesUrls = copyOfImagesUrls.filter((img: any) => img !== link)
-                        dispatch(setImagesUrlsState(copyOfImagesUrls))
-                      }}
-                      key={index}
-                    >
-                      delete
-                    </button>
-                  </div>
-                ))}
-              </Form.Group>
-
-              <Button type="submit" onClick={(e) => handleSubmit(e)}>
-                find me a sitter
-              </Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
-        <h1>here are available housitters for you:</h1>
-
-        {housitters.map(
-          (
-            sitter: any,
-            index: number // TODO: type 'sitter' with a new type of Db housitterdata
-          ) => (
-            <AvailableHousitter
-              props={{
-                firstName: sitter.first_name,
-                lastName: sitter.last_name,
-                about_me: 'hard coded text',
-                avatarUrl: sitter.avatar_url,
-                housitterId: sitter.housitter_id,
-              }}
-              key={index}
-            />
-          )
-        )}
-        <SignOut />
-      </div>
-    </div>
+    </>
   )
 }
 

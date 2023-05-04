@@ -26,7 +26,7 @@ function MyApp({
   }, [])
 
   return (
-    <div style={{ backgroundColor: 'blue' }}>
+    <div>
       <Provider store={store}>
         <PersistGate persistor={persistor}>
           <SessionContextProvider

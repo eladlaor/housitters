@@ -61,7 +61,6 @@ a {
 .container {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(to bottom, #ffffff, gray);
 }
 
 .housitter-card {
