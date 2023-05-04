@@ -8,7 +8,7 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
   // console.log(props)
   return (
     <div>
-      <Card bg="light" style={{ width: '18rem' }}>
+      <Card bg="success" style={{ width: '18rem' }}>
         <Card.Body>
           <Picture
             uid={props.housitterId}

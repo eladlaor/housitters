@@ -152,6 +152,7 @@ export default function Home() {
 
     if (imageUploadError) {
       alert('error updating images urls in db: ' + imageUploadError.message)
+      debugger
       throw imageUploadError
     }
 
@@ -226,7 +227,7 @@ export default function Home() {
                 <Form.Label>Upload some pics </Form.Label>
                 <input onChange={onFileUpload} type="file" name="file" multiple />
 
-                {imagesUrls.map((link: any) => (
+                {imagesUrls.map((link: any, index: number) => (
                   <div>
                     <img src={link} height={50} width={50} />
                     <button
@@ -236,6 +237,7 @@ export default function Home() {
                         copyOfImagesUrls = copyOfImagesUrls.filter((img: any) => img !== link)
                         dispatch(setImagesUrlsState(copyOfImagesUrls))
                       }}
+                      key={index}
                     >
                       delete
                     </button>
@@ -250,6 +252,7 @@ export default function Home() {
           </Modal.Body>
         </Modal>
         <h1>here are available housitters for you:</h1>
+
         {housitters.map(
           (
             sitter: any,

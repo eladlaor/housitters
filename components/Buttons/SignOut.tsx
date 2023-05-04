@@ -1,5 +1,5 @@
+import Button from 'react-bootstrap/Button'
 import { useSessionContext } from '@supabase/auth-helpers-react'
-import Link from 'next/link'
 
 import {
   settersToInitialStates as userSettersToInitialStates,
@@ -32,7 +32,7 @@ export default function SignOut() {
   }
 
   return (
-    <button
+    <Button
       onClick={async () => {
         if (userType === USER_TYPE.Housitter) {
           await clearState(housitterSettersToInitialStates)
@@ -45,8 +45,9 @@ export default function SignOut() {
         await supabaseClient.auth.signOut()
         router.push('/')
       }}
+      variant="danger"
     >
       sign out
-    </button>
+    </Button>
   )
 }

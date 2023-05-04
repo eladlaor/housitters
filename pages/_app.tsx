@@ -26,16 +26,18 @@ function MyApp({
   }, [])
 
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <SessionContextProvider
-          supabaseClient={supabaseClient}
-          initialSession={pageProps.initialSession}
-        >
-          <Component {...pageProps} />
-        </SessionContextProvider>
-      </PersistGate>
-    </Provider>
+    <div style={{ backgroundColor: 'blue' }}>
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <SessionContextProvider
+            supabaseClient={supabaseClient}
+            initialSession={pageProps.initialSession}
+          >
+            <Component {...pageProps} />
+          </SessionContextProvider>
+        </PersistGate>
+      </Provider>
+    </div>
   )
 }
 
