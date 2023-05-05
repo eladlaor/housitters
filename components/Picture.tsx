@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
-import { Database } from '../utils/database.types'
+import { Database } from '../types/supabase'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectAvatarUrlState, setAvatarUrl } from '../slices/userSlice'
 type Profiles = Database['public']['Tables']['profiles']['Row']
-
 export default function Avatar({
   uid,
   url,
   size,
   onUpload,
+  disableUpload,
+  bucketName,
 }: {
   uid: string
   url: Profiles['avatar_url']
   size: number
   onUpload: (url: string) => void
+  disableUpload: boolean
+  bucketName: string
 }) {
   const supabase = useSupabaseClient<Database>()
-  const [avatarUrl, setAvatarUrl] = useState<Profiles['avatar_url']>(null)
+  const dispatch = useDispatch()
+  const avatarUrl = useSelector(selectAvatarUrlState)
   const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
@@ -24,12 +30,12 @@ export default function Avatar({
 
   async function downloadImage(path: string) {
     try {
-      const { data, error } = await supabase.storage.from('avatars').download(path)
+      const { data, error } = await supabase.storage.from(bucketName).download(path)
       if (error) {
         throw error
       }
       const url = URL.createObjectURL(data)
-      setAvatarUrl(url)
+      dispatch(setAvatarUrl(url))
     } catch (error) {
       console.log('Error downloading image: ', error)
     }
@@ -49,7 +55,7 @@ export default function Avatar({
       const filePath = `${fileName}`
 
       let { error: uploadError } = await supabase.storage
-        .from('avatars')
+        .from(bucketName)
         .upload(filePath, file, { upsert: true })
 
       if (uploadError) {
@@ -79,7 +85,7 @@ export default function Avatar({
       )}
       <div style={{ width: size }}>
         <label className="button primary block" htmlFor="single">
-          {uploading ? 'Uploading ...' : 'Upload'}
+          {disableUpload ? '' : uploading ? 'Uploading ...' : 'Upload'}
         </label>
         <input
           style={{

@@ -1,40 +1,81 @@
 import type { NextPage } from 'next'
-import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
-import Account from '../components/Account'
-import Footer from '../components/Footer'
-import Link from 'next/link'
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { USER_TYPE } from '../utils/constants'
+import Image from 'next/image'
+import cuteDog from '../public/cuteDog.jpg'
+import NewUserTeaser from '../components/Buttons/NewUserTeaser'
+import { selectPrimaryUseState, settersToInitialStates } from '../slices/userSlice'
+import { settersToInitialStates as postSettersToInitialStates } from '../slices/postSlice'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { settersToInitialStates as housitterSettersToInitialStates } from '../slices/housitterSlice'
+import { settersToInitialStates as landlordSettersToInitialStates } from '../slices/landlordSlice'
 
 const Home: NextPage = () => {
-  const session = useSession()
-  const supabase = useSupabaseClient()
+  const router = useRouter()
+  const user = useUser()
+  const supabaseClient = useSupabaseClient()
+  const dispatch = useDispatch()
+  const userType = useSelector(selectPrimaryUseState)
+
+  async function userLogout() {
+    const clearUserState = async () => {
+      settersToInitialStates.forEach((attributeSetterAndInitialState) => {
+        dispatch(
+          attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
+        )
+      })
+    }
+
+    await clearUserState()
+    await supabaseClient.auth.signOut()
+    router.push('/')
+  }
+
+  useEffect(() => {
+    if (!user) {
+      const nonUserSetters =
+        userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
+      nonUserSetters.forEach((attributeSetterAndInitialState) => {
+        dispatch(
+          attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
+        )
+
+        postSettersToInitialStates.forEach((postSetter) => {
+          dispatch(postSetter.matchingSetter(postSetter.initialState))
+        })
+      })
+    } else {
+      supabaseClient.auth.signOut()
+      userLogout()
+      // TODO: go straight into action.
+    }
+  })
 
   return (
-    <div className="container" style={{ padding: '50px 0 100px 0' }}>
-      {!session ? (
-        <div className="row">
-          <div className="col-6">
-            <h1 className="header">The best housitting website ever!</h1>
-            <p>Coming Soon :)</p>
-          </div>
-          <div className="col-6 auth-widget">
-            <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} theme="dark" />
-          </div>
-
-          {/* <div>
-            <button>
-              <Link href="test/something">jumping to a page</Link>
-            </button>
-          </div> */}
+    <div style={{ position: 'relative' }}>
+      <div className="front-page-buttons">
+        <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
+        <div
+          style={{
+            marginRight: '30px',
+          }}
+        >
+          <NewUserTeaser userType={USER_TYPE.Housitter} />
         </div>
-      ) : (
-        <>
-          <h3>Account</h3>
-          <Account session={session} />
-        </>
-      )}
-
-      <Footer />
+        <NewUserTeaser userType={USER_TYPE.Landlord} />
+        <button
+          className="signin-button"
+          onClick={() => {
+            router.push('/Login')
+          }}
+        >
+          already registered? sign in
+        </button>
+      </div>
     </div>
   )
 }

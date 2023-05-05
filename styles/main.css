@@ -1,0 +1,73 @@
+/* first make any wanted customizations */
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+button,
+.button {
+  color: red;
+  border: var(--custom-border);
+  background-color: var(--custom-bg-color);
+  display: inline-block;
+  text-align: center;
+  border-radius: var(--custom-border-radius);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  text-align: center;
+  font-size: 1.9rem;
+  text-transform: lowercase;
+}
+
+.relative-position {
+  position: relative;
+  text-decoration: none;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.front-page-buttons a:link {
+  text-decoration: none;
+}
+
+
+.front-page-buttons {
+  --bs-link-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 600px;
+  text-align: center;
+}
+
+.signin-button {
+  color: white;
+  background-color: purple;
+  position: absolute;
+  bottom: 30%;
+  align-items: center;
+  border-style: groove;
+  border-radius: 10px 10px 10px 10px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.housitter-card {
+  background-color: blue
+}
+
+
+
+/* then import bootstrap */
+@import "bootstrap/dist/css/bootstrap.css";

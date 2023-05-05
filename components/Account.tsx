@@ -1,50 +1,90 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
-import Avatar from './Avatar'
-import { UserType } from '../utils/database.types'
+import Picture from './Picture'
 import { useRouter } from 'next/router'
 
-import { Database } from '../utils/database.types'
+import AvailabilityPeriod from '../components/AvailabilityPeriod'
+
+import { Database } from '../types/supabase'
+import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES, USER_TYPE } from '../utils/constants'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  selectAvatarUrlState,
+  selectFirstNameState,
+  selectLastNameState,
+  selectPrimaryUseState,
+  selectUsernameState,
+  selectBirthdayState,
+  selectAvailabilityState,
+  setAvatarUrl,
+  setFirstName,
+  setLastName,
+  setPrimaryUse,
+  setUsername,
+  setBirthday,
+  setAvailability,
+} from '../slices/userSlice'
+import SignOut from './Buttons/SignOut'
+
+import { parseDateMultiRange } from '../utils/dates'
+
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
-export default function Account({ session }: { session: Session }) {
+export default function Account() {
   const router = useRouter()
-  const supabase = useSupabaseClient<Database>()
+  const supabaseClient = useSupabaseClient<Database>()
   const user = useUser()
+  const dispatch = useDispatch()
+
   const [loading, setLoading] = useState(true)
-  const [username, setUsername] = useState<Profiles['username']>(null)
-  const [first_name, setFirstName] = useState<Profiles['first_name']>(null)
-  const [last_name, setLastName] = useState<Profiles['last_name']>(null)
-  const [primary_use, setPrimaryUse] = useState<Profiles['primary_use']>(UserType.HouseOwner)
-  const [secondary_use, setSecondaryUse] = useState<Profiles['secondary_use']>(UserType.None)
-  const [avatar_url, setAvatarUrl] = useState<Profiles['avatar_url']>(null)
+
+  const first_name = useSelector(selectFirstNameState)
+  const last_name = useSelector(selectLastNameState)
+  const username = useSelector(selectUsernameState)
+  const primary_use = useSelector(selectPrimaryUseState)
+  const avatar_url = useSelector(selectAvatarUrlState)
+  const birthday = useSelector(selectBirthdayState)
+  const availability = useSelector(selectAvailabilityState)
 
   useEffect(() => {
     getProfile()
-  }, [session])
+  }, [user])
 
   async function getProfile() {
+    // TODO: maybe refactor, make a util func
     try {
       setLoading(true)
-      if (!user) throw new Error('No user')
+      if (!user) {
+        return
+      } else {
+        let { data, error, status } = await supabaseClient
+          .from('profiles')
+          .select(
+            `username,
+              first_name,
+              last_name,
+              primary_use,
+              avatar_url,
+              birthday`
+          )
+          .eq('id', user.id)
+          .single()
 
-      let { data, error, status } = await supabase
-        .from('profiles')
-        .select(`username, first_name, last_name, primary_use, secondary_use, avatar_url`)
-        .eq('id', user.id)
-        .single()
+        if (error && status !== 406) {
+          throw error
+        }
 
-      if (error && status !== 406) {
-        throw error
-      }
+        if (data) {
+          dispatch(setFirstName(data.first_name))
+          dispatch(setUsername(data.username))
+          dispatch(setPrimaryUse(data.primary_use))
+          dispatch(setLastName(data.last_name))
+          dispatch(setAvatarUrl(data.avatar_url))
+          dispatch(setBirthday(data.birthday))
+        }
 
-      if (data) {
-        setUsername(data.username)
-        setFirstName(data.first_name)
-        setLastName(data.last_name)
-        setPrimaryUse(data.primary_use)
-        setSecondaryUse(data.secondary_use)
-        setAvatarUrl(data.avatar_url)
+        const availability = await getAvailabilityFromDb()
+        dispatch(setAvailability(availability))
       }
     } catch (error) {
       alert('Error loading user data!')
@@ -59,15 +99,15 @@ export default function Account({ session }: { session: Session }) {
     first_name,
     last_name,
     primary_use,
-    secondary_use,
     avatar_url,
+    birthday,
   }: {
     username: Profiles['username']
     first_name: Profiles['first_name']
     last_name: Profiles['last_name']
     primary_use: Profiles['primary_use']
-    secondary_use: Profiles['secondary_use']
     avatar_url: Profiles['avatar_url']
+    birthday: Profiles['birthday']
   }) {
     try {
       setLoading(true)
@@ -75,20 +115,25 @@ export default function Account({ session }: { session: Session }) {
 
       const updates = {
         id: user.id,
+        updated_at: new Date().toISOString(),
         username,
         first_name,
         last_name,
         primary_use,
-        secondary_use,
         avatar_url,
-        updated_at: new Date().toISOString(),
+        birthday,
       }
 
-      let { error } = await supabase.from('profiles').upsert(updates)
+      let { error } = await supabaseClient.from('profiles').upsert(updates)
       if (error) {
         throw error
       } else {
         alert('Profile successfully updated!')
+        if (primary_use === USER_TYPE.Housitter) {
+          router.push(`/housitters/Home`)
+        } else {
+          router.push(`/landlords/Home`)
+        }
       }
     } catch (error) {
       alert('Error updating the data!')
@@ -98,27 +143,80 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+  // TODO: a getter should not set
+  async function getAvailabilityFromDb() {
+    if (!user) {
+      return
+    }
+
+    let { data: availableDates, error } = await supabaseClient
+      .from('available_dates')
+      .select('start_date, end_date')
+      .eq('user_id', user.id)
+
+    if (error) {
+      throw error
+    }
+
+    if (availableDates) {
+      const availableDatesAsReduxType = availableDates.map((date) => {
+        return {
+          startDate: date.start_date,
+          endDate: date.end_date,
+        }
+      })
+
+      return availableDatesAsReduxType
+    }
+  }
+
+  // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
+  function handlePrimayUseChange(event: any) {
+    dispatch(setPrimaryUse(event.target.value))
+  }
+
+  function handleBirthdayChange(event: any) {
+    dispatch(setBirthday(event.target.value))
+  }
+
+  function handleButtonMark(type: string, typeToCompare: string) {
+    return type === typeToCompare
+  }
+
+  if (!user) {
+    return <div>no user</div>
+  }
+
   return (
     <div className="form-widget">
-      <Avatar
+      <button
+        onClick={() => {
+          router.push('Home')
+        }}
+      >
+        go to dashboard
+      </button>
+      <Picture
         uid={user!.id} // verify i know what this means
         url={avatar_url}
         size={150}
         onUpload={(url) => {
-          setAvatarUrl(url)
+          dispatch(setAvatarUrl(url))
           updateProfile({
             username,
             first_name,
             last_name,
             primary_use,
-            secondary_use,
             avatar_url: url,
+            birthday,
           })
         }}
+        disableUpload={false}
+        bucketName="avatars"
       />
       <div>
         <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={session.user.email} disabled />
+        <input id="email" type="text" value={user.email} disabled />
       </div>
       <div>
         <label htmlFor="username">Username</label>
@@ -126,7 +224,7 @@ export default function Account({ session }: { session: Session }) {
           id="username"
           type="text"
           value={username || ''}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => dispatch(setUsername(e.target.value))}
         />
       </div>
       <div>
@@ -134,8 +232,8 @@ export default function Account({ session }: { session: Session }) {
         <input
           id="first_name"
           type="text"
-          value={first_name || ''}
-          onChange={(e) => setFirstName(e.target.value)}
+          value={first_name}
+          onChange={(e) => dispatch(setFirstName(e.target.value))}
         />
       </div>
       <div>
@@ -143,34 +241,50 @@ export default function Account({ session }: { session: Session }) {
         <input
           id="last_name"
           type="text"
-          value={last_name || ''}
-          onChange={(e) => setLastName(e.target.value)}
+          value={last_name}
+          onChange={(e) => dispatch(setLastName(e.target.value))}
         />
       </div>
 
-      <div onChange={handlePrimayUseChange}>
+      <div>
         <h2>Primary Use:</h2>
         <input
           type="radio"
-          value="housitter"
+          value={USER_TYPE.Housitter}
           name="primary_use"
-          defaultChecked={primary_use === UserType.Housitter ? true : false}
+          checked={handleButtonMark(primary_use, USER_TYPE.Housitter)}
+          onChange={handlePrimayUseChange}
         />{' '}
         Housitter
         <input
           type="radio"
-          value="houseowner"
+          value={USER_TYPE.Landlord}
           name="primary_use"
-          defaultChecked={primary_use === UserType.HouseOwner ? true : false}
-        />{' '}
-        HouseOwner
+          checked={handleButtonMark(primary_use, USER_TYPE.Landlord)}
+          onChange={handlePrimayUseChange}
+        />
+        landlord
       </div>
 
-      <div onChange={handleSecondaryUseChange}>
-        <h2>Secondary Use:</h2>
-        <input type="radio" value="housitter" name="secondary_use" /> Housitter
-        <input type="radio" value="houseowner" name="secondary_use" /> HouseOwner
-        <input type="radio" value="none" name="secondary_use" defaultChecked={false} /> None
+      <div>
+        <h2>Birthday</h2>
+        <input
+          type="date"
+          name="birthday" // TODO: use these names in handlers
+          value={birthday ? birthday.toString() : undefined}
+          onChange={handleBirthdayChange}
+        />
+      </div>
+
+      <div>
+        <h2>Availability</h2>
+        {availability.map((period, index) => (
+          <AvailabilityPeriod period={period} index={index} />
+        ))}
+      </div>
+
+      <div>
+        <h2>Preferred Location</h2>
       </div>
 
       <div>
@@ -182,35 +296,19 @@ export default function Account({ session }: { session: Session }) {
               first_name,
               last_name,
               primary_use,
-              secondary_use,
               avatar_url,
+              birthday,
             })
-
-            if (primary_use === UserType.Housitter) {
-              router.push(`/housitters/Home?username=${username}&firstName=${first_name}`)
-            } else {
-              router.push(`/house-owners/Home?username=${username}&firstName=${first_name}`)
-            }
           }}
           disabled={loading}
         >
-          {loading ? 'Loading ...' : 'Update'}
+          {loading ? 'loading ...' : 'update'}
         </button>
       </div>
 
       <div>
-        <button className="button block" onClick={() => supabase.auth.signOut()}>
-          Sign Out
-        </button>
+        <SignOut />
       </div>
     </div>
   )
-
-  function handlePrimayUseChange(event: any) {
-    setPrimaryUse(event.target.value)
-  }
-
-  function handleSecondaryUseChange(event: any) {
-    setSecondaryUse(event.target.value)
-  }
 }
