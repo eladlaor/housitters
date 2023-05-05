@@ -58,6 +58,8 @@ export default function Home() {
 
     const asyncWrapper = async () => {
       // I'm not sure you need this, check what happens after sign in
+      const dates: any[] = []
+
       let { data: housittersData, error } = await supabase
         .from('housitters')
         .select(
@@ -76,7 +78,7 @@ export default function Home() {
         // TODO: get available dates as you should, dispatch as you should, and only then see how filter with multiple ranges...
 
         // TODO: just for naming convention (to align with the availabaility object name), traversing again...
-        const dates = []
+
         for (const housitterAvailabilityPeriod of (housittersData.profiles as any)
           .available_dates) {
           dates.push({
@@ -84,8 +86,6 @@ export default function Home() {
             endDate: housitterAvailabilityPeriod.end_date,
           })
         }
-
-        dispatch(setAvailability(dates))
       }
 
       // TODO: add a ifActive filter.
@@ -94,9 +94,7 @@ export default function Home() {
         .select(
           `landlord_id, start_date, end_date, title, description, images_urls, landlords!inner (
               location, profiles!inner (
-                first_name, pets!inner (
-                  dogs, cats
-                )
+                first_name
               )
           )`
         )
@@ -111,22 +109,22 @@ export default function Home() {
 
         // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
         let postsFilteredByPeriod = postsData.filter((post) => {
-          for (const housitterAvailabilityPeriod of availability) {
+          for (const housitterAvailabilityPeriod of dates) {
             return (
               housitterAvailabilityPeriod.startDate <= post.start_date &&
               housitterAvailabilityPeriod.endDate >= post.end_date
             )
           }
         })
+        console.log('finished filtering. posts:', posts)
 
         setPosts(postsFilteredByPeriod)
+        console.log('finished setting. posts:', posts)
       }
     }
 
-    asyncWrapper() // in order to use the awaited db call.
-  }, [user, availability])
-
-  // debugger
+    asyncWrapper()
+  }, [user])
 
   return (
     <div>

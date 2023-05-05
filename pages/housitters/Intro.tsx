@@ -13,9 +13,7 @@ import {
 import { selectLocationsState } from '../../slices/housitterSlice'
 
 import { useDispatch, useSelector } from 'react-redux'
-import Dropdown from 'react-bootstrap/Dropdown'
-import DropdownButton from 'react-bootstrap/DropdownButton'
-import moment from 'moment'
+
 import LocationSelector from '../../components/LocationSelector'
 import { USER_TYPE, SIGNUP_FORM_PROPS } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
@@ -25,9 +23,7 @@ import Form from 'react-bootstrap/Form'
 import { useState } from 'react'
 
 import Container from 'react-bootstrap/Container'
-import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
-import NavDropdown from 'react-bootstrap/NavDropdown'
 
 export default function HousitterIntro() {
   const router = useRouter()
@@ -45,7 +41,6 @@ export default function HousitterIntro() {
 
   const [errors, setErrors] = useState({} as any)
 
-  // debugger
   const availability = useSelector(selectAvailabilityState)
   const primaryUse = useSelector(selectPrimaryUseState)
   const locations = useSelector(selectLocationsState)
@@ -62,11 +57,6 @@ export default function HousitterIntro() {
       ...form,
       [field]: value,
     })
-
-    // setErrors({
-    //   ...errors,
-    //   [field]: null, // TODO: is this the best way
-    // })
   }
 
   function setProfileVisibility(field: any, value: any) {
@@ -74,11 +64,6 @@ export default function HousitterIntro() {
       ...form,
       visible: !form.visible,
     })
-
-    // setErrors({
-    //   ...errors,
-    //   [field]: null, // TODO: is this the best way
-    // })
   }
 
   async function handleSignUp(e: any) {
@@ -103,6 +88,7 @@ export default function HousitterIntro() {
     })
 
     if (error) {
+      alert(`Sign up failed with the following error: ${error}`)
       throw error
     }
 
@@ -115,16 +101,28 @@ export default function HousitterIntro() {
       const newHousitter = {
         user_id: userId,
         locations,
-        availability,
       }
 
       let { error } = await supabaseClient.from('housitters').upsert(newHousitter)
       if (error) {
-        console.log('the error object:', error)
+        alert(`failed upserting housitter to housitters table: ${error}`)
         throw error
       } else {
         alert('success')
       }
+
+      availability.forEach(async (period) => {
+        let { error: availabilityError } = await supabaseClient.from('available_dates').upsert({
+          user_id: userId,
+          start_date: period.startDate,
+          end_date: period.endDate,
+          user_type: USER_TYPE.Housitter,
+        })
+        if (availabilityError) {
+          alert(`failed upserting housitter to housitters table: ${error}`)
+          throw error
+        }
+      })
     }
 
     dispatch(setIsLoggedState(true))

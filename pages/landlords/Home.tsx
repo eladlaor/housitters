@@ -16,10 +16,7 @@ import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
-import HousitterIntro from '../housitters/Intro'
-import { HousitterProps } from '../../types/clientSide'
 
-import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
@@ -36,9 +33,7 @@ export default function Home() {
 
   const location = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
-  const pets = useSelector(selectPetsState)
   const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type
-  const [uploadingImage, setUploadingImage] = useState(false)
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -291,7 +286,6 @@ export default function Home() {
               />
             )
           )}
-          <SignOut />
         </div>
       </div>
     </>

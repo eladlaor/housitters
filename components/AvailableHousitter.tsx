@@ -4,8 +4,6 @@ import { HousitterProps } from '../types/clientSide'
 import Picture from './Picture'
 
 export default function AvailableHousitter({ props }: { props: HousitterProps }) {
-  // debugger
-  // console.log(props)
   return (
     <div>
       <Card bg="success" style={{ width: '18rem' }}>
