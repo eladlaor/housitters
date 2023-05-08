@@ -16,10 +16,11 @@ import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
-
+import Image from 'next/image'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
+import Resizer from 'react-image-file-resizer'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -29,7 +30,10 @@ export default function Home() {
   const firstName = useSelector(selectFirstNameState)
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
+
   const imagesUrls = useSelector(selectImagesUrlsState)
+
+  const [previewDataUrls, setPreviewDataUrls] = useState([''] as Array<String>)
 
   const location = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
@@ -104,6 +108,47 @@ export default function Home() {
     setShowNewPostModal(false)
   }
 
+  function removeInvalidCharacters(fileName: string): string {
+    const allInvalidFileNameCharacters = /[^a-zA-Z0-9]/g
+
+    return fileName.replace(allInvalidFileNameCharacters, '')
+  }
+
+  const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      Resizer.imageFileResizer(
+        file,
+        maxWidth,
+        maxHeight,
+        'JPEG',
+        80,
+        0,
+        (resizedImage: any) => {
+          resolve(resizedImage)
+        },
+        'blob'
+      )
+    })
+  }
+
+  const blobToBuffer = (blob: Blob): Promise<Buffer> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (reader.result instanceof ArrayBuffer) {
+          const buffer = Buffer.from(reader.result)
+          resolve(buffer)
+        } else {
+          reject(new Error('Failed to convert Blob to Buffer.'))
+        }
+      }
+      reader.onerror = (error) => {
+        reject(error)
+      }
+      reader.readAsArrayBuffer(blob)
+    })
+  }
+
   async function onPostImageSelection(event: any) {
     try {
       // setUploadingImage(true)
@@ -113,23 +158,29 @@ export default function Home() {
       }
 
       for (const file of event.target.files) {
-        const reader = new FileReader()
-        reader.onload = () => {
-          const imageUrl = reader.result as string
+        const fileName = removeInvalidCharacters(file.name)
 
-          const copyOfImages = [...imagesUrls, imageUrl]
-          // which is a much nicer way to write code than:
-          // const copyOfImages = JSON.parse(JSON.stringify(imagesUrls))
-          // copyOfImages.push(imageUrl)
+        let { error: uploadError } = await supabaseClient.storage
+          .from('posts')
+          .upload(`${user?.id}-${fileName}`, file, { upsert: true })
 
-          dispatch(setImagesUrlsState(copyOfImages))
+        if (uploadError) {
+          debugger
+          throw uploadError
         }
-        reader.onerror = () => {
-          alert(reader.error)
-        }
+
+        const resizedImage = await resizeImage(file, 50, 50)
+        const buffer = await blobToBuffer(resizedImage)
+
+        const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
+        const updatedPreviews = [...previewDataUrls, previewDataUrl]
+        setPreviewDataUrls(updatedPreviews)
+
+        const updatedFileNames = [...imagesUrls, fileName]
+        dispatch(setImagesUrlsState(updatedFileNames)) // TODO: rename. this is for db, to retrieve later.
       }
-    } finally {
-      // setUploadingImage(false) // TODO: the loading state
+    } catch (e: any) {
+      alert(e)
     }
   }
 
@@ -137,17 +188,6 @@ export default function Home() {
     e.preventDefault()
 
     // TODO: deal with multiple availabilities
-
-    imagesUrls.forEach(async (fileDataUrl: any, index: number) => {
-      let { error: uploadError } = await supabaseClient.storage
-        .from('posts')
-        // TODO: there is no difference between imagesUrls and fileDataUrl.
-        .upload(imagesUrls[index], fileDataUrl, { upsert: true })
-
-      if (uploadError) {
-        throw uploadError
-      }
-    })
 
     let { error: imageUploadError } = await supabaseClient.from('posts').upsert({
       landlord_id: user?.id,
@@ -248,18 +288,25 @@ export default function Home() {
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>Upload some pics </Form.Label>
-                  <input onChange={onPostImageSelection} type="file" name="file" multiple />
+                  <input
+                    onChange={onPostImageSelection}
+                    type="file"
+                    name="file"
+                    accept="image/*"
+                    multiple
+                  />
 
-                  {imagesUrls.map((link: any, index: number) => (
+                  {previewDataUrls.map((url: any, index: number) => (
                     <div>
-                      <img src={link} height={50} width={50} key={index} />
+                      <Image src={url} height={50} width={50} key={index} />
                       <button
                         onClick={(e) => {
                           e.preventDefault()
-                          let copyOfImagesUrls = JSON.parse(JSON.stringify(imagesUrls))
-                          copyOfImagesUrls = copyOfImagesUrls.filter((img: any) => img !== link)
-                          dispatch(setImagesUrlsState(copyOfImagesUrls))
+                          let copyOfImagesUrls = [...previewDataUrls]
+                          copyOfImagesUrls = copyOfImagesUrls.filter((img: any) => img !== url)
+                          setPreviewDataUrls(copyOfImagesUrls)
                         }}
+                        key={`delete-${index}`}
                       >
                         delete
                       </button>
