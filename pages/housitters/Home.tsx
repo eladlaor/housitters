@@ -116,7 +116,8 @@ export default function Home() {
             )
           }
         })
-        console.log('finished filtering. posts:', posts)
+
+        console.log('finished filtering. posts:', postsFilteredByPeriod)
 
         setPosts(postsFilteredByPeriod)
         console.log('finished setting. posts:', posts)
@@ -141,7 +142,7 @@ export default function Home() {
           endDate={post.endDate}
           dogs={post.dogs}
           cats={post.cats}
-          imagesUrls={post.images_urls ? post.images_urls : ''}
+          imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image
           key={index}
         />
       ))}

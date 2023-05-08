@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { selectPetsState, setPetsState } from '../slices/landlordSlice'
-import Counter from '../components/ui/Counter'
+import Counter from './Counter'
 import { Database } from '../types/supabase'
 
 export default function PetsCounter() {

@@ -101,7 +101,7 @@ export default function Home() {
 
   async function onFileUpload(event: any) {
     try {
-      setUploadingImage(true)
+      // setUploadingImage(true)
 
       if (!event.target.files || event.target.files.length === 0) {
         throw new Error('You must select an image to upload.')
@@ -120,7 +120,7 @@ export default function Home() {
         }
       }
     } finally {
-      setUploadingImage(false) // TODO: the loading state
+      // setUploadingImage(false) // TODO: the loading state
     }
   }
 
@@ -130,14 +130,12 @@ export default function Home() {
     // TODO: deal with multiple availabilities
 
     imagesUrls.forEach(async (fileDataUrl: any, index: number) => {
-      debugger
       let { error: uploadError } = await supabaseClient.storage
         .from('posts')
         // TODO: there is no difference between imagesUrls and fileDataUrl.
         .upload(imagesUrls[index], fileDataUrl, { upsert: true })
 
       if (uploadError) {
-        debugger
         throw uploadError
       }
     })
@@ -152,7 +150,7 @@ export default function Home() {
 
     if (imageUploadError) {
       alert('error updating images urls in db: ' + imageUploadError.message)
-      debugger
+
       throw imageUploadError
     }
 
