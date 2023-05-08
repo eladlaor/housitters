@@ -7,7 +7,10 @@ import { USER_TYPE } from '../utils/constants'
 import Image from 'next/image'
 import cuteDog from '../public/cuteDog.jpg'
 import NewUserTeaser from '../components/Buttons/NewUserTeaser'
-import { selectPrimaryUseState, settersToInitialStates } from '../slices/userSlice'
+import {
+  selectPrimaryUseState,
+  settersToInitialStates as userSettersToInitialStates,
+} from '../slices/userSlice'
 import { settersToInitialStates as postSettersToInitialStates } from '../slices/postSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -23,7 +26,7 @@ const Home: NextPage = () => {
 
   async function userLogout() {
     const clearUserState = async () => {
-      settersToInitialStates.forEach((attributeSetterAndInitialState) => {
+      userSettersToInitialStates.forEach((attributeSetterAndInitialState) => {
         dispatch(
           attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
         )
@@ -32,11 +35,12 @@ const Home: NextPage = () => {
 
     await clearUserState()
     await supabaseClient.auth.signOut()
-    router.push('/')
   }
 
   useEffect(() => {
     if (!user) {
+      console.log('reached index: no authenticated user')
+      console.log('userType: ' + userType)
       const nonUserSetters =
         userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
       nonUserSetters.forEach((attributeSetterAndInitialState) => {
@@ -47,13 +51,15 @@ const Home: NextPage = () => {
         postSettersToInitialStates.forEach((postSetter) => {
           dispatch(postSetter.matchingSetter(postSetter.initialState))
         })
+
+        userLogout()
       })
     } else {
+      console.log('reached index: yes there is an authenticated user')
       supabaseClient.auth.signOut()
       userLogout()
-      // TODO: go straight into action.
     }
-  })
+  }, [user])
 
   return (
     <div style={{ position: 'relative' }}>

@@ -129,7 +129,6 @@ export default function HousitterIntro() {
     router.push('Home')
   }
 
-  // debugger
   return (
     <Navbar bg="light" expand="lg">
       <Container>

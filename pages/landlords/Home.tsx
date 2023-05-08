@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import GoToProfileButton from '../../components/GoToProfileButton'
-import { selectFirstNameState } from '../../slices/userSlice'
+import { selectFirstNameState, setFirstName } from '../../slices/userSlice'
 import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -45,7 +45,11 @@ export default function Home() {
       const asyncWrapper = async () => {
         let { data: landlordData, error: landlordError } = await supabaseClient
           .from('landlords')
-          .select(`location`)
+          .select(
+            `location, profiles!inner (
+            first_name
+          )`
+          )
           .eq('user_id', user.id)
           .single()
 
@@ -53,6 +57,7 @@ export default function Home() {
           alert(landlordError.message)
         } else if (landlordData) {
           dispatch(setLocationState(landlordData.location))
+          dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
         }
 
         const arr = [location]
@@ -99,7 +104,7 @@ export default function Home() {
     setShowNewPostModal(false)
   }
 
-  async function onFileUpload(event: any) {
+  async function onPostImageSelection(event: any) {
     try {
       // setUploadingImage(true)
 
@@ -109,10 +114,14 @@ export default function Home() {
 
       for (const file of event.target.files) {
         const reader = new FileReader()
-        reader.readAsDataURL(file)
         reader.onload = () => {
-          const copyOfImages = JSON.parse(JSON.stringify(imagesUrls))
-          copyOfImages.push(reader.result)
+          const imageUrl = reader.result as string
+
+          const copyOfImages = [...imagesUrls, imageUrl]
+          // which is a much nicer way to write code than:
+          // const copyOfImages = JSON.parse(JSON.stringify(imagesUrls))
+          // copyOfImages.push(imageUrl)
+
           dispatch(setImagesUrlsState(copyOfImages))
         }
         reader.onerror = () => {
@@ -239,11 +248,11 @@ export default function Home() {
                 </Form.Group>
                 <Form.Group>
                   <Form.Label>Upload some pics </Form.Label>
-                  <input onChange={onFileUpload} type="file" name="file" multiple />
+                  <input onChange={onPostImageSelection} type="file" name="file" multiple />
 
                   {imagesUrls.map((link: any, index: number) => (
                     <div>
-                      <img src={link} height={50} width={50} />
+                      <img src={link} height={50} width={50} key={index} />
                       <button
                         onClick={(e) => {
                           e.preventDefault()
@@ -251,7 +260,6 @@ export default function Home() {
                           copyOfImagesUrls = copyOfImagesUrls.filter((img: any) => img !== link)
                           dispatch(setImagesUrlsState(copyOfImagesUrls))
                         }}
-                        key={index}
                       >
                         delete
                       </button>
