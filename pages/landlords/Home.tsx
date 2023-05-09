@@ -83,7 +83,6 @@ export default function Home() {
 
         // TODO: stupid temp solution until syntax fix for filter on query
         if (housitterData) {
-          console.log(housitterData)
           setHousitters(housitterData)
         }
       }
@@ -109,31 +108,88 @@ export default function Home() {
   }
 
   function removeInvalidCharacters(fileName: string): string {
-    const allInvalidFileNameCharacters = /[^a-zA-Z0-9]/g
+    const hebrewToEnglishMap: { [key: string]: string } = {
+      א: 'a',
+      ב: 'b',
+      ג: 'g',
+      ד: 'd',
+      ה: 'h',
+      ו: 'v',
+      ז: 'z',
+      ח: 'kh',
+      ט: 't',
+      י: 'y',
+      כ: 'k',
+      ל: 'l',
+      מ: 'm',
+      נ: 'n',
+      ס: 's',
+      ע: 'a',
+      פ: 'p',
+      צ: 'ts',
+      ק: 'k',
+      ר: 'r',
+      ש: 'sh',
+      ת: 't',
+      ן: 'n',
+      ך: 'k',
+      ם: 'm',
+      ף: 'p',
+      ץ: 'ts',
+      '׳': "'",
+      '״': '"',
+    }
 
-    return fileName.replace(allInvalidFileNameCharacters, '')
+    const hebToEngRegex = new RegExp(Object.keys(hebrewToEnglishMap).join('|'), 'g')
+    const noHebrewFileName = fileName.replace(hebToEngRegex, (match) => hebrewToEnglishMap[match])
+
+    const allInvalidFileNameCharacters = /[^a-zA-Z0-9]/g
+    return noHebrewFileName.replace(allInvalidFileNameCharacters, '')
   }
 
   const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<Blob> => {
     return new Promise((resolve, reject) => {
-      Resizer.imageFileResizer(
-        file,
-        maxWidth,
-        maxHeight,
-        'JPEG',
-        80,
-        0,
-        (resizedImage: any) => {
-          resolve(resizedImage)
-        },
-        'blob'
-      )
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = (event) => {
+        const img = new window.Image()
+        img.src = reader.result as string
+        img.onload = () => {
+          const aspectRatio = img.width / img.height
+          let targetWidth, targetHeight
+
+          if (aspectRatio < 1) {
+            // horizontal
+            targetWidth = maxWidth
+            targetHeight = maxWidth / aspectRatio
+          } else {
+            // vertical
+            targetWidth = maxHeight * aspectRatio
+            targetHeight = maxHeight
+          }
+
+          Resizer.imageFileResizer(
+            file,
+            targetWidth,
+            targetHeight,
+            'JPEG',
+            80,
+            0,
+            (resizedImage: any) => {
+              resolve(resizedImage)
+            },
+            'blob'
+          )
+        }
+      }
     })
   }
 
+  // TODO: get rid of the resolve reject syntax
   const blobToBuffer = (blob: Blob): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
+      reader.readAsArrayBuffer(blob)
       reader.onload = () => {
         if (reader.result instanceof ArrayBuffer) {
           const buffer = Buffer.from(reader.result)
@@ -145,7 +201,6 @@ export default function Home() {
       reader.onerror = (error) => {
         reject(error)
       }
-      reader.readAsArrayBuffer(blob)
     })
   }
 
@@ -160,16 +215,17 @@ export default function Home() {
       for (const file of event.target.files) {
         const fileName = removeInvalidCharacters(file.name)
 
+        const resizedImage = await resizeImage(file, 1920, 1080)
+
         let { error: uploadError } = await supabaseClient.storage
           .from('posts')
-          .upload(`${user?.id}-${fileName}`, file, { upsert: true })
+          .upload(`${user?.id}-${fileName}`, resizedImage, { upsert: true })
 
         if (uploadError) {
           debugger
           throw uploadError
         }
 
-        const resizedImage = await resizeImage(file, 50, 50)
         const buffer = await blobToBuffer(resizedImage)
 
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
@@ -297,7 +353,7 @@ export default function Home() {
                   />
 
                   {previewDataUrls.map((url: any, index: number) => (
-                    <div>
+                    <div key={index}>
                       <Image src={url} height={50} width={50} key={index} />
                       <button
                         onClick={(e) => {

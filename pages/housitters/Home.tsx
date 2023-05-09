@@ -24,7 +24,7 @@ export default function Home() {
   const locations = useSelector(selectLocationsState)
   const availability = useSelector(selectAvailabilityState)
   const supabase = useSupabaseClient()
-  const [posts, setPosts] = useState([{}])
+  const [posts, setPosts] = useState([] as Object[])
   const imagesUrls = useSelector(selectImagesUrlsState)
 
   // TODO: can set loading states if needed
@@ -88,40 +88,50 @@ export default function Home() {
         }
       }
 
+      debugger
+
+      console.log('about to call posts')
       // TODO: add a ifActive filter.
-      let { data: postsData, error: postsError } = await supabase
-        .from('posts')
-        .select(
+      try {
+        let { data: postsData, error: postsError } = await supabase.from('posts').select(
           `landlord_id, start_date, end_date, title, description, images_urls, landlords!inner (
-              location, profiles!inner (
-                first_name
-              )
-          )`
+                location, profiles!inner (
+                  first_name
+                )
+            )`
         )
-        .in('landlords.location', locations)
+
+        console.log('called posts')
+
+        // TODO: bring back
+        // .in('landlords.location', locations)
+        debugger
+        if (postsError) {
+          alert(postsError.message)
+        } else if (postsData) {
+          // TODO: maybe also show how many posts outside its range, so getting from db does make sense...
+
+          // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
+          let postsFilteredByPeriod = postsData.filter((post) => {
+            for (const housitterAvailabilityPeriod of dates) {
+              return (
+                housitterAvailabilityPeriod.startDate <= post.start_date &&
+                housitterAvailabilityPeriod.endDate >= post.end_date
+              )
+            }
+          })
+
+          console.log('finished filtering. posts:', postsFilteredByPeriod)
+          debugger
+          setPosts(postsFilteredByPeriod)
+          console.log('finished setting. posts:', posts)
+        }
+      } catch (e: any) {
+        debugger
+        console.log(e)
+      }
 
       // for Date filtering, I can also use the 'or' for at least one range, to filter on db call.
-
-      if (postsError) {
-        alert(postsError.message)
-      } else if (postsData) {
-        // TODO: maybe also show how many posts outside its range, so getting from db does make sense...
-
-        // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
-        let postsFilteredByPeriod = postsData.filter((post) => {
-          for (const housitterAvailabilityPeriod of dates) {
-            return (
-              housitterAvailabilityPeriod.startDate <= post.start_date &&
-              housitterAvailabilityPeriod.endDate >= post.end_date
-            )
-          }
-        })
-        
-        console.log('finished filtering. posts:', postsFilteredByPeriod)
-
-        setPosts(postsFilteredByPeriod)
-        console.log('finished setting. posts:', posts)
-      }
     }
 
     asyncWrapper()
