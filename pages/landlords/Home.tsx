@@ -31,7 +31,7 @@ export default function Home() {
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
 
-  const imagesUrls = useSelector(selectImagesUrlsState)
+  const fileNames = useSelector(selectImagesUrlsState)
 
   const [previewDataUrls, setPreviewDataUrls] = useState([''] as Array<String>)
 
@@ -232,7 +232,7 @@ export default function Home() {
         const updatedPreviews = [...previewDataUrls, previewDataUrl]
         setPreviewDataUrls(updatedPreviews)
 
-        const updatedFileNames = [...imagesUrls, fileName]
+        const updatedFileNames = [...fileNames, fileName]
         dispatch(setImagesUrlsState(updatedFileNames)) // TODO: rename. this is for db, to retrieve later.
       }
     } catch (e: any) {
@@ -250,7 +250,7 @@ export default function Home() {
       start_date: new Date(availability[0].startDate), // TODO: fix
       end_date: new Date(availability[0].endDate), // TODO: fix
       description: freeTextState, // TODO: rename
-      images_urls: imagesUrls,
+      images_urls: fileNames, // TODO: rename in db.
     })
 
     if (imageUploadError) {
