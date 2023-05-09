@@ -145,7 +145,7 @@ export default function HousitterIntro() {
             </div>
             <div>
               <h1>Where?</h1>
-              <LocationSelector selectionType="checkbox" housitter={true} />
+              <LocationSelector selectionType="checkbox" isHousitter={true} />
             </div>
             <div>
               <Button variant="primary" onClick={handleShow}>

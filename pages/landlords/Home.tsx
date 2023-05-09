@@ -64,8 +64,6 @@ export default function Home() {
           dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
         }
 
-        const arr = [location]
-
         let { data: housitterData, error: housitterError } = await supabaseClient
           .from('profiles')
           .select(

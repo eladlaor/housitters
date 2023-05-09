@@ -29,8 +29,7 @@ const EVENT_KEYS = {
 export default function AvailabilityPeriod({ period, index }: { period: any; index: number }) {
   const dispatch = useDispatch()
   const availability = useSelector(selectAvailabilityState)
-  // debugger
-  // const [shouldAllowRemoveAvailability, setShouldAllowRemoveAvailability] = useState(false)
+
   const [shouldShowEndDateRange, setShouldShowEndDateRange] = useState(
     availability[index].endDate !== new Date(0).toISOString() // the 'Anytime' sign is new Date(0) as endDate.
   )
