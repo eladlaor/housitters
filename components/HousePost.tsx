@@ -99,7 +99,9 @@ export default function HousePost({
       <Card bg="light" style={{ width: '18rem' }}>
         <Card.Body>
           <Card.Title>{title}</Card.Title>
-          <Image src={postPicturesFullUrl[0]} alt="Thumbnail" height={100} width={100} />
+          {postPicturesFullUrl[0] && (
+            <Image src={postPicturesFullUrl[0]} alt="Thumbnail" height={100} width={100} />
+          )}
           <div>
             {postPicturesFullUrl.length > 1 ? (
               <Button onClick={handleModalOpen}>See More Pictures</Button>
@@ -115,7 +117,7 @@ export default function HousePost({
             <Modal.Body>
               <Row className="justify-content-center">
                 {postPicturesFullUrl.map((picUrl, index) => (
-                  <Col md={4} className="mb-4">
+                  <Col md={4} className="mb-4" key={index}>
                     <Image src={picUrl} width={100} height={100} key={index} />
                   </Col>
                 ))}

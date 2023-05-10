@@ -8,7 +8,7 @@ import {
   selectAvailabilityState,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
-import { HOUSITTERS_ROUTES } from '../../utils/constants'
+import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES } from '../../utils/constants'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 
@@ -19,6 +19,7 @@ import Col from 'react-bootstrap/Col'
 
 import { setLocationState } from '../../slices/landlordSlice'
 import { selectImagesUrlsState } from '../../slices/postSlice'
+import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 export default function Home() {
   const user = useUser()
   const router = useRouter()
@@ -146,29 +147,42 @@ export default function Home() {
   }, [user])
 
   return (
-    <div>
-      <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
-      <GoToProfileButton accountRoute={HOUSITTERS_ROUTES.ACCOUNT} />
-      <h2>here are all the relvant posts for you</h2>
-      <Row className="justify-content-center">
-        {posts.map((post: any, index: number) => (
-          <Col key={index} md={4} className="mb-4">
-            <HousePost
-              landlordId={post.landlord_id}
-              title={post.title}
-              text={post.description}
-              location={post.landlords ? post.landlords.location : ''}
-              startDate={post.startDate}
-              endDate={post.endDate}
-              dogs={post.dogs}
-              cats={post.cats}
-              imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image
-              key={index}
-            />
-          </Col>
-        ))}
-      </Row>
-      <SignOut />
-    </div>
+    <>
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Navbar.Brand className="mr-auto" href="#">
+          Housitters
+        </Navbar.Brand>
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ml-auto">
+            <NavDropdown title="My Profile" id="basic-nav-dropdown">
+              <NavDropdown.Item href={LANDLORDS_ROUTES.ACCOUNT}>Edit Profile</NavDropdown.Item>
+              <SignOut />
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+      <div>
+        <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
+        <h2>here are all the relvant posts for you</h2>
+        <Row className="justify-content-center">
+          {posts.map((post: any, index: number) => (
+            <Col key={index} md={4} className="mb-4">
+              <HousePost
+                landlordId={post.landlord_id}
+                title={post.title}
+                text={post.description}
+                location={post.landlords ? post.landlords.location : ''}
+                startDate={post.startDate}
+                endDate={post.endDate}
+                dogs={post.dogs}
+                cats={post.cats}
+                imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image
+                key={index}
+              />
+            </Col>
+          ))}
+        </Row>
+      </div>
+    </>
   )
 }
