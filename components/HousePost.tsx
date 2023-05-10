@@ -1,4 +1,4 @@
-import { Button } from 'react-bootstrap'
+import { Button, Carousel, Modal } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
@@ -6,7 +6,8 @@ import { useSessionContext } from '@supabase/auth-helpers-react'
 import Picture from './Picture'
 import SignOut from './Buttons/SignOut'
 import Image from 'next/image'
-
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 // can maybe type as HousePostInput
 export default function HousePost({
   landlordId,
@@ -31,6 +32,15 @@ export default function HousePost({
   const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as string[])
 
   const { session, error, supabaseClient } = useSessionContext()
+  const [showModal, setShowModal] = useState(false)
+
+  function handleModalOpen() {
+    setShowModal(true)
+  }
+
+  function handleModalClose() {
+    setShowModal(false)
+  }
 
   useEffect(() => {
     if (!landlordId) {
@@ -89,14 +99,43 @@ export default function HousePost({
       <Card bg="light" style={{ width: '18rem' }}>
         <Card.Body>
           <Card.Title>{title}</Card.Title>
+          <Image src={postPicturesFullUrl[0]} alt="Thumbnail" height={100} width={100} />
+          <div>
+            {postPicturesFullUrl.length > 1 ? (
+              <Button onClick={handleModalOpen}>See More Pictures</Button>
+            ) : (
+              <Button disabled={true}>No Other Pictures</Button>
+            )}
+          </div>
+
+          <Modal show={showModal} onHide={handleModalClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Additional Pictures</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Row className="justify-content-center">
+                {postPicturesFullUrl.map((picUrl, index) => (
+                  <Col md={4} className="mb-4">
+                    <Image src={picUrl} width={100} height={100} key={index} />
+                  </Col>
+                ))}
+              </Row>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={handleModalClose}>Close</Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/*           
           {postPicturesFullUrl.map((picUrl, index) => (
             <Image src={picUrl} alt="post pic" height={100} width={100} key={index} />
-          ))}
+          ))} */}
+
+          <Card.Text>location: {location}</Card.Text>
+          <Card.Text>need to show dog and cat count</Card.Text>
           <Card.Text>{text}</Card.Text>
-          <Button variant="secondary">Send message</Button>
-          <Card.Text>{location}</Card.Text>
           <Card.Text>{moment(new Date()).format('YYYY-MM-DD')} - 2023-03-10</Card.Text>
-          <Card.Text>can also show total days</Card.Text>
+          <Card.Text>can also show total day count</Card.Text>
           <Card.Text>post by: {landlordFirstName}</Card.Text>
           <Picture
             uid={landlordId ? landlordId : 'testing'}
@@ -106,6 +145,7 @@ export default function HousePost({
             disableUpload={true}
             bucketName="avatars"
           />
+          <Button variant="secondary">Send {landlordFirstName} a message</Button>
         </Card.Body>
       </Card>
     </div>

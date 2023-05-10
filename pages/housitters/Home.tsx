@@ -14,6 +14,9 @@ import { useEffect, useState } from 'react'
 
 import HousePost from '../../components/HousePost'
 
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+
 import { setLocationState } from '../../slices/landlordSlice'
 import { selectImagesUrlsState } from '../../slices/postSlice'
 export default function Home() {
@@ -147,20 +150,24 @@ export default function Home() {
       <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
       <GoToProfileButton accountRoute={HOUSITTERS_ROUTES.ACCOUNT} />
       <h2>here are all the relvant posts for you</h2>
-      {posts.map((post: any, index: number) => (
-        <HousePost
-          landlordId={post.landlord_id}
-          title={post.title}
-          text={post.description}
-          location={post.landlords ? post.landlords.location : ''}
-          startDate={post.startDate}
-          endDate={post.endDate}
-          dogs={post.dogs}
-          cats={post.cats}
-          imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image
-          key={index}
-        />
-      ))}
+      <Row className="justify-content-center">
+        {posts.map((post: any, index: number) => (
+          <Col key={index} md={4} className="mb-4">
+            <HousePost
+              landlordId={post.landlord_id}
+              title={post.title}
+              text={post.description}
+              location={post.landlords ? post.landlords.location : ''}
+              startDate={post.startDate}
+              endDate={post.endDate}
+              dogs={post.dogs}
+              cats={post.cats}
+              imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image
+              key={index}
+            />
+          </Col>
+        ))}
+      </Row>
       <SignOut />
     </div>
   )
