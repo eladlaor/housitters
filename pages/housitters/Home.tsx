@@ -8,10 +8,10 @@ import {
   selectAvailabilityState,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
-import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES } from '../../utils/constants'
+import { LANDLORDS_ROUTES, LocationIds } from '../../utils/constants'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
-
+import SideBarFilter from '../../components/SideBarFilter'
 import HousePost from '../../components/HousePost'
 
 import Row from 'react-bootstrap/Row'
@@ -77,7 +77,13 @@ export default function Home() {
       if (error) {
         alert(error.message)
       } else if (housittersData && housittersData.profiles) {
-        dispatch(setLocationsState(housittersData.locations))
+        const newLocations = housittersData.locations
+        const locationsChanged = JSON.stringify(locations) !== JSON.stringify(newLocations)
+
+        // since react does a shallow comparison of locations, and therefore will re-render even if the inside values are the same.
+        if (locationsChanged) {
+          dispatch(setLocationsState(newLocations))
+        }
 
         // TODO: get available dates as you should, dispatch as you should, and only then see how filter with multiple ranges...
 
@@ -130,11 +136,11 @@ export default function Home() {
     }
 
     asyncWrapper()
-  }, [user])
+  }, [user, locations])
 
   return (
     <>
-      <Navbar bg="dark" variant="dark" expand="lg">
+      <Navbar bg="dark" variant="dark">
         <Navbar.Brand className="mr-auto" href="#">
           Housitters
         </Navbar.Brand>
@@ -151,24 +157,36 @@ export default function Home() {
         <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
         <h2>here are all the relvant posts for you</h2>
         <Row className="justify-content-center">
-          {posts.map((post: any, index: number) => (
-            <Col key={index} md={4} className="mb-4">
-              <HousePost
-                landlordId={post.landlord_id}
-                title={post.title}
-                text={post.description}
-                location={post.landlords ? post.landlords.location : ''}
-                startDate={post.startDate}
-                endDate={post.endDate}
-                dogs={post.dogs}
-                cats={post.cats}
-                imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image
-                key={index}
-              />
-            </Col>
-          ))}
+          {posts.length === 0 ? (
+            <p>
+              There are no available houses with your current filtering. Try expanding your search
+              to broader dates or locations.
+            </p>
+          ) : (
+            posts.map((post: any, index: number) => (
+              <Col key={index} md={4} className="mb-4">
+                <HousePost
+                  landlordId={post.landlord_id}
+                  title={post.title}
+                  text={post.description}
+                  location={post.landlords ? post.landlords.location : ''}
+                  startDate={post.startDate}
+                  endDate={post.endDate}
+                  dogs={post.dogs}
+                  cats={post.cats}
+                  imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image
+                  key={index}
+                />
+              </Col>
+            ))
+          )}
         </Row>
       </div>
+      <SideBarFilter
+        isHousitter={true}
+        showCustomLocations={locations.length < Object.values(LocationIds).length}
+        selectionType="checkbox"
+      />
     </>
   )
 }

@@ -13,16 +13,19 @@ import { LocationIds, LocationDescriptions } from '../utils/constants'
 import { FormCheckType } from 'react-bootstrap/esm/FormCheck'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 
 export default function LocationSelector({
   selectionType,
   isHousitter,
   showCustomLocations,
+  updateDbInstantly,
 }: {
   selectionType: FormCheckType
   isHousitter: boolean
   showCustomLocations: boolean
+  updateDbInstantly: boolean
 }) {
   const dispatch = useDispatch()
   const locations = isHousitter
@@ -30,13 +33,23 @@ export default function LocationSelector({
     : useSelector(selectlandlordLocationState)
 
   const [shouldShowCustomLocations, setShouldShowCustomLocations] = useState(showCustomLocations)
+  const supabaseClient = useSupabaseClient()
+  const user = useUser()
 
   const EVENT_KEYS = {
     ANYWHERE: 'anywhere',
     CUSTOM_LOCATIONS: 'custom locations',
   }
 
-  const [locationCurrentSelection, setLocationCurrentSelection] = useState(EVENT_KEYS.ANYWHERE)
+  const [locationCurrentSelection, setLocationCurrentSelection] = useState(
+    showCustomLocations ? EVENT_KEYS.CUSTOM_LOCATIONS : EVENT_KEYS.ANYWHERE
+  )
+
+  useEffect(() => {
+    if (!user) {
+      return
+    }
+  }, [user])
 
   // TODO: there is a bug on page refresh!
   // also, think of how to create initialState in a better way.
@@ -45,7 +58,7 @@ export default function LocationSelector({
     dispatch(setlandlordLocationState(e.target.id))
   }
 
-  function handleHousitterSelectedLocation(e: any) {
+  async function handleHousitterSelectedLocation(e: any) {
     let locationsToModify = [...(locations as string[])]
     const receivedLocation = e.target.id as keyof typeof locations as string
 
@@ -56,7 +69,25 @@ export default function LocationSelector({
       locationsToModify.splice(selectedLocationIndex)
     }
 
-    dispatch(setHousitterLocationsState(locationsToModify))
+    if (updateDbInstantly) {
+      try {
+        let { error } = await supabaseClient.from('housitters').upsert({
+          user_id: user?.id,
+          locations: locationsToModify,
+        })
+
+        if (error) {
+          alert('error updating locations from filter to db' + error)
+          throw error
+        }
+
+        dispatch(setHousitterLocationsState(locationsToModify))
+      } catch (e) {
+        throw e
+      }
+    } else {
+      dispatch(setHousitterLocationsState(locationsToModify))
+    }
   }
 
   function handleHousitterSelectionType(e: any) {

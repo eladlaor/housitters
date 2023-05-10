@@ -147,7 +147,12 @@ export default function landlordIntro() {
       </div>
       <div>
         <h1>Where do you live?</h1>
-        <LocationSelector selectionType="radio" isHousitter={false} showCustomLocations={true} />
+        <LocationSelector
+          selectionType="radio"
+          isHousitter={false}
+          showCustomLocations={true}
+          updateDbInstantly={false}
+        />
       </div>
       <div>
         <Button variant="primary" onClick={handleShow}>

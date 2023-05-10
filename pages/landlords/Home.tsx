@@ -275,7 +275,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar bg="dark" variant="dark" expand="lg">
+      <Navbar bg="dark" variant="dark">
         <Navbar.Brand className="mr-auto" href="#">
           Housitters
         </Navbar.Brand>

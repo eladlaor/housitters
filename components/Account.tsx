@@ -304,6 +304,7 @@ export default function Account() {
           selectionType="checkbox"
           isHousitter={true}
           showCustomLocations={locations.length < Object.values(LocationIds).length}
+          updateDbInstantly={false}
         />
       </div>
 
