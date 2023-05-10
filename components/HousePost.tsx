@@ -56,15 +56,15 @@ export default function HousePost({
     }
 
     loadLandlordData(landlordId)
-    downloadPostImages(imagesUrls)
-  })
+    downloadPostImages(landlordId, imagesUrls)
+  }, [landlordId, imagesUrls])
 
   // TODO: duplicated in Picture.tsx
-  async function downloadPostImages(imagesUrls: string[]) {
+  async function downloadPostImages(landlordId: string, imagesUrls: string[]) {
     try {
       const { data: downloadData, error: downloadError } = await supabaseClient.storage
         .from('posts')
-        .download(imagesUrls[0])
+        .download(`${landlordId}-${imagesUrls[0]}`)
       if (downloadError) {
         throw downloadError
       }
@@ -73,7 +73,9 @@ export default function HousePost({
         const fullUrl = URL.createObjectURL(downloadData)
         setPostPictureFullUrl(fullUrl)
       }
-    } catch (error) {}
+    } catch (error) {
+      alert('error in downloadPostImages' + error)
+    }
   }
 
   return (

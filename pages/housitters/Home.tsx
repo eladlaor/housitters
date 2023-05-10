@@ -92,6 +92,14 @@ export default function Home() {
 
       console.log('about to call posts')
       // TODO: add a ifActive filter.
+      // try {
+      //   let { data: postsData, error: postsError } = await supabase.from('posts').select(
+      //     `landlord_id, start_date, end_date, title, description, images_urls, landlords!inner (
+      //           location, profiles!inner (
+      //             first_name
+      //           )
+      //       )`
+      //   )
       try {
         let { data: postsData, error: postsError } = await supabase.from('posts').select(
           `landlord_id, start_date, end_date, title, description, images_urls, landlords!inner (
@@ -105,7 +113,7 @@ export default function Home() {
 
         // TODO: bring back
         // .in('landlords.location', locations)
-        debugger
+
         if (postsError) {
           alert(postsError.message)
         } else if (postsData) {
@@ -122,12 +130,11 @@ export default function Home() {
           })
 
           console.log('finished filtering. posts:', postsFilteredByPeriod)
-          debugger
+
           setPosts(postsFilteredByPeriod)
           console.log('finished setting. posts:', posts)
         }
       } catch (e: any) {
-        debugger
         console.log(e)
       }
 
