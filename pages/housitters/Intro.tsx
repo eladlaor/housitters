@@ -15,7 +15,7 @@ import { selectLocationsState } from '../../slices/housitterSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import LocationSelector from '../../components/LocationSelector'
-import { USER_TYPE, SIGNUP_FORM_PROPS } from '../../utils/constants'
+import { USER_TYPE, SIGNUP_FORM_PROPS, LocationIds } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
@@ -145,7 +145,11 @@ export default function HousitterIntro() {
             </div>
             <div>
               <h1>Where?</h1>
-              <LocationSelector selectionType="checkbox" isHousitter={true} />
+              <LocationSelector
+                selectionType="checkbox"
+                isHousitter={true}
+                showCustomLocations={locations.length < Object.values(LocationIds).length}
+              />
             </div>
             <div>
               <Button variant="primary" onClick={handleShow}>

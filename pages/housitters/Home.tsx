@@ -92,29 +92,18 @@ export default function Home() {
         }
       }
 
-      console.log('about to call posts')
       // TODO: add a ifActive filter.
-      // try {
-      //   let { data: postsData, error: postsError } = await supabase.from('posts').select(
-      //     `landlord_id, start_date, end_date, title, description, images_urls, landlords!inner (
-      //           location, profiles!inner (
-      //             first_name
-      //           )
-      //       )`
-      //   )
       try {
-        let { data: postsData, error: postsError } = await supabase.from('posts').select(
-          `landlord_id, start_date, end_date, title, description, images_urls, landlords!inner (
+        let { data: postsData, error: postsError } = await supabase
+          .from('posts')
+          .select(
+            `landlord_id, start_date, end_date, title, description, images_urls, landlords!inner (
                 location, profiles!inner (
                   first_name
                 )
             )`
-        )
-
-        console.log('called posts')
-
-        // TODO: bring back
-        // .in('landlords.location', locations)
+          )
+          .in('landlords.location', locations)
 
         if (postsError) {
           alert(postsError.message)
@@ -131,13 +120,10 @@ export default function Home() {
             }
           })
 
-          console.log('finished filtering. posts:', postsFilteredByPeriod)
-
           setPosts(postsFilteredByPeriod)
-          console.log('finished setting. posts:', posts)
         }
       } catch (e: any) {
-        console.log(e)
+        alert(e)
       }
 
       // for Date filtering, I can also use the 'or' for at least one range, to filter on db call.

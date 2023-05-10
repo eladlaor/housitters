@@ -18,18 +18,18 @@ import { useState } from 'react'
 export default function LocationSelector({
   selectionType,
   isHousitter,
+  showCustomLocations,
 }: {
   selectionType: FormCheckType
   isHousitter: boolean
+  showCustomLocations: boolean
 }) {
   const dispatch = useDispatch()
   const locations = isHousitter
     ? useSelector(selectHousitterLocationsState)
     : useSelector(selectlandlordLocationState)
 
-  const [shouldShowCustomLocations, setShouldShowCustomLocations] = useState(
-    isHousitter ? false : true
-  )
+  const [shouldShowCustomLocations, setShouldShowCustomLocations] = useState(showCustomLocations)
 
   const EVENT_KEYS = {
     ANYWHERE: 'anywhere',

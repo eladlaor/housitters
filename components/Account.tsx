@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import AvailabilityPeriod from '../components/AvailabilityPeriod'
 
 import { Database } from '../types/supabase'
-import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES, USER_TYPE } from '../utils/constants'
+import { LocationIds, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectAvatarUrlState,
@@ -26,7 +26,8 @@ import {
 } from '../slices/userSlice'
 import SignOut from './Buttons/SignOut'
 
-import { parseDateMultiRange } from '../utils/dates'
+import LocationSelector from './LocationSelector'
+import { selectLocationsState } from '../slices/housitterSlice'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
@@ -45,6 +46,7 @@ export default function Account() {
   const avatar_url = useSelector(selectAvatarUrlState)
   const birthday = useSelector(selectBirthdayState)
   const availability = useSelector(selectAvailabilityState)
+  const locations = useSelector(selectLocationsState)
 
   useEffect(() => {
     getProfile()
@@ -101,6 +103,7 @@ export default function Account() {
     primary_use,
     avatar_url,
     birthday,
+    locations,
   }: {
     username: Profiles['username']
     first_name: Profiles['first_name']
@@ -108,12 +111,13 @@ export default function Account() {
     primary_use: Profiles['primary_use']
     avatar_url: Profiles['avatar_url']
     birthday: Profiles['birthday']
+    locations: string[] // TODO: unify
   }) {
     try {
       setLoading(true)
       if (!user) throw new Error('No user')
 
-      const updates = {
+      const profileUpdates = {
         id: user.id,
         updated_at: new Date().toISOString(),
         username,
@@ -124,20 +128,30 @@ export default function Account() {
         birthday,
       }
 
-      let { error } = await supabaseClient.from('profiles').upsert(updates)
+      let { error } = await supabaseClient.from('profiles').upsert(profileUpdates)
       if (error) {
         throw error
-      } else {
-        alert('Profile successfully updated!')
-        if (primary_use === USER_TYPE.Housitter) {
-          router.push(`/housitters/Home`)
-        } else {
-          router.push(`/landlords/Home`)
+      }
+
+      if (primary_use === USER_TYPE.Housitter) {
+        let { error: housitterUpsertError } = await supabaseClient.from('housitters').upsert({
+          locations,
+        })
+
+        if (housitterUpsertError) {
+          alert('Error updating the data: ' + housitterUpsertError)
+          throw housitterUpsertError
         }
       }
+
+      alert('Profile successfully updated!')
+      if (primary_use === USER_TYPE.Housitter) {
+        router.push(`/housitters/Home`)
+      } else {
+        router.push(`/landlords/Home`)
+      }
     } catch (error) {
-      alert('Error updating the data!')
-      console.log(error)
+      alert('Error updating the data: ' + error)
     } finally {
       setLoading(false)
     }
@@ -209,6 +223,7 @@ export default function Account() {
             primary_use,
             avatar_url: url,
             birthday,
+            locations,
           })
         }}
         disableUpload={false}
@@ -271,7 +286,7 @@ export default function Account() {
         <input
           type="date"
           name="birthday" // TODO: use these names in handlers
-          value={birthday ? birthday.toString() : undefined}
+          value={birthday ? birthday.toString() : ''}
           onChange={handleBirthdayChange}
         />
       </div>
@@ -279,12 +294,17 @@ export default function Account() {
       <div>
         <h2>Availability</h2>
         {availability.map((period, index) => (
-          <AvailabilityPeriod period={period} index={index} />
+          <AvailabilityPeriod period={period} index={index} key={index} />
         ))}
       </div>
 
       <div>
-        <h2>Preferred Location</h2>
+        <h2>Locations</h2>
+        <LocationSelector
+          selectionType="checkbox"
+          isHousitter={true}
+          showCustomLocations={locations.length < Object.values(LocationIds).length}
+        />
       </div>
 
       <div>
@@ -298,6 +318,7 @@ export default function Account() {
               primary_use,
               avatar_url,
               birthday,
+              locations,
             })
           }}
           disabled={loading}

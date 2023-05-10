@@ -25,7 +25,6 @@ import Resizer from 'react-image-file-resizer'
 export default function Home() {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
-  const router = useRouter()
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
   const availability = useSelector(selectAvailabilityState)
@@ -33,11 +32,13 @@ export default function Home() {
 
   const fileNames = useSelector(selectImagesUrlsState)
 
-  const [previewDataUrls, setPreviewDataUrls] = useState([''] as Array<String>)
+  const [previewDataUrls, setPreviewDataUrls] = useState([] as Array<String>)
 
   const location = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
   const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type
+
+  const pets = useSelector(selectPetsState)
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -243,7 +244,7 @@ export default function Home() {
 
     // TODO: deal with multiple availabilities
 
-    let { error: imageUploadError } = await supabaseClient.from('posts').upsert({
+    let { error: postUploadError } = await supabaseClient.from('posts').upsert({
       landlord_id: user?.id,
       start_date: new Date(availability[0].startDate), // TODO: fix
       end_date: new Date(availability[0].endDate), // TODO: fix
@@ -251,10 +252,19 @@ export default function Home() {
       images_urls: fileNames, // TODO: rename in db.
     })
 
-    if (imageUploadError) {
-      alert('error updating images urls in db: ' + imageUploadError.message)
+    if (postUploadError) {
+      alert('error updating images urls in db: ' + postUploadError.message)
+      throw postUploadError
+    }
 
-      throw imageUploadError
+    let { error: petUploadError } = await supabaseClient.from('pets').upsert({
+      user_id: user?.id,
+      dogs: pets.dogs,
+      cats: pets.cats,
+    })
+
+    if (petUploadError) {
+      alert('error upserting pets: ' + petUploadError.message)
     }
 
     dispatch(setImagesUrlsState([]))

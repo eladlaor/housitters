@@ -14,6 +14,8 @@ export default function HousePost({
   title,
   text,
   location,
+  dogs,
+  cats,
   imagesUrls,
 }: {
   landlordId: string
@@ -134,7 +136,9 @@ export default function HousePost({
           ))} */}
 
           <Card.Text>location: {location}</Card.Text>
-          <Card.Text>need to show dog and cat count</Card.Text>
+          <Card.Text>
+            dogs: {dogs} cats: {cats}
+          </Card.Text>
           <Card.Text>{text}</Card.Text>
           <Card.Text>{moment(new Date()).format('YYYY-MM-DD')} - 2023-03-10</Card.Text>
           <Card.Text>can also show total day count</Card.Text>
