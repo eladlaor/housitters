@@ -88,8 +88,6 @@ export default function Home() {
         }
       }
 
-      debugger
-
       console.log('about to call posts')
       // TODO: add a ifActive filter.
       // try {

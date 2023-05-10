@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { useSessionContext } from '@supabase/auth-helpers-react'
 import Picture from './Picture'
 import SignOut from './Buttons/SignOut'
+import Image from 'next/image'
 
 // can maybe type as HousePostInput
 export default function HousePost({
@@ -27,7 +28,7 @@ export default function HousePost({
   const [landlordFirstName, setLandlordFirstName] = useState('')
   const [landlordAvatarUrl, setLandlordAvatarUrl] = useState('')
 
-  const [postPictureFullUrl, setPostPictureFullUrl] = useState('')
+  const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as string[])
 
   const { session, error, supabaseClient } = useSessionContext()
 
@@ -62,17 +63,22 @@ export default function HousePost({
   // TODO: duplicated in Picture.tsx
   async function downloadPostImages(landlordId: string, imagesUrls: string[]) {
     try {
-      const { data: downloadData, error: downloadError } = await supabaseClient.storage
-        .from('posts')
-        .download(`${landlordId}-${imagesUrls[0]}`)
-      if (downloadError) {
-        throw downloadError
-      }
+      const downloadPromises = imagesUrls.map(async (imageUrl) => {
+        const { data: downloadData, error: downloadError } = await supabaseClient.storage
+          .from('posts')
+          .download(`${landlordId}-${imageUrl}`)
+        if (downloadError) {
+          throw downloadError
+        }
 
-      if (downloadData) {
-        const fullUrl = URL.createObjectURL(downloadData)
-        setPostPictureFullUrl(fullUrl)
-      }
+        if (downloadData) {
+          const fullUrl = URL.createObjectURL(downloadData)
+          return fullUrl
+        }
+      })
+
+      const fullUrlsForPreview = await Promise.all(downloadPromises)
+      setPostPicturesFullUrl(fullUrlsForPreview as string[])
     } catch (error) {
       alert('error in downloadPostImages' + error)
     }
@@ -83,12 +89,9 @@ export default function HousePost({
       <Card bg="light" style={{ width: '18rem' }}>
         <Card.Body>
           <Card.Title>{title}</Card.Title>
-          <img
-            src={postPictureFullUrl}
-            alt="post pic"
-            className="avatar image"
-            style={{ height: 100, width: 100 }}
-          />
+          {postPicturesFullUrl.map((picUrl, index) => (
+            <Image src={picUrl} alt="post pic" height={100} width={100} key={index} />
+          ))}
           <Card.Text>{text}</Card.Text>
           <Button variant="secondary">Send message</Button>
           <Card.Text>{location}</Card.Text>
