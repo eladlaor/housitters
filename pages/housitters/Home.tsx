@@ -1,11 +1,11 @@
 import { useRouter } from 'next/router'
 import SignOut from '../../components/Buttons/SignOut'
-import GoToProfileButton from '../../components/GoToProfileButton'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectFirstNameState,
   setAvailability,
   selectAvailabilityState,
+  selectIsLoggedState,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
 import { LANDLORDS_ROUTES, LocationIds } from '../../utils/constants'
@@ -17,7 +17,6 @@ import HousePost from '../../components/HousePost'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
-import { setLocationState } from '../../slices/landlordSlice'
 import { selectImagesUrlsState } from '../../slices/postSlice'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 export default function Home() {
@@ -30,6 +29,7 @@ export default function Home() {
   const supabase = useSupabaseClient()
   const [posts, setPosts] = useState([] as Object[])
   const imagesUrls = useSelector(selectImagesUrlsState)
+  const isLogged = useSelector(selectIsLoggedState)
 
   // TODO: can set loading states if needed
 
@@ -81,7 +81,7 @@ export default function Home() {
         const locationsChanged = JSON.stringify(locations) !== JSON.stringify(newLocations)
 
         // since react does a shallow comparison of locations, and therefore will re-render even if the inside values are the same.
-        if (locationsChanged) {
+        if (locationsChanged && isLogged) {
           dispatch(setLocationsState(newLocations))
         }
 

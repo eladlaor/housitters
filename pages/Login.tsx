@@ -10,6 +10,7 @@ import {
   setIsLoggedState,
   setFirstName,
   selectPrimaryUseState,
+  setPrimaryUse,
 } from '../slices/userSlice'
 
 export default function LoginPage() {
@@ -44,6 +45,7 @@ export default function LoginPage() {
 
           dispatch(setIsLoggedState(true))
           dispatch(setFirstName(first_name))
+          dispatch(setPrimaryUse(primary_use))
 
           // TODO: shouldnt route in a loadUserData func.
           if (primary_use === USER_TYPE.Housitter) {

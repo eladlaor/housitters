@@ -5,6 +5,8 @@ import {
   settersToInitialStates as userSettersToInitialStates,
   SettersToInitialStates,
   selectPrimaryUseState,
+  selectIsLoggedState,
+  setIsLoggedState,
 } from '../../slices/userSlice'
 import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
 
@@ -13,7 +15,6 @@ import { settersToInitialStates as landlordSettersToInitialStates } from '../../
 import { useSelector, useDispatch } from 'react-redux'
 import { useRouter } from 'next/router'
 
-import { userLogout } from '../../utils/auth/userLogout'
 import { USER_TYPE } from '../../utils/constants'
 
 export default function SignOut() {
@@ -34,6 +35,8 @@ export default function SignOut() {
   return (
     <Button
       onClick={async () => {
+        dispatch(setIsLoggedState(false))
+
         if (userType === USER_TYPE.Housitter) {
           await clearState(housitterSettersToInitialStates)
         } else {
