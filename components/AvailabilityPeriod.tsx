@@ -30,11 +30,12 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
   const dispatch = useDispatch()
   const availability = useSelector(selectAvailabilityState)
 
-  const [shouldShowEndDateRange, setShouldShowEndDateRange] = useState(
+  const [shouldShowCustomSelection, setshouldShowCustomSelection] = useState(
     availability[index].endDate !== new Date(0).toISOString() // the 'Anytime' sign is new Date(0) as endDate.
   )
   const [endDateCurrentSelection, setEndDateCurrentSelection] = useState(
-    shouldShowEndDateRange ? 'custom range' : 'anytime'
+    // TODO: rename, cause its not only endDate.
+    shouldShowCustomSelection ? 'custom range' : 'anytime'
   )
 
   function handleDatesChange(changedDate: Date, isStart: boolean) {
@@ -80,12 +81,12 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
     // TODO: just understand the diff between select and change
   }
 
-  function handleEndDateSelection(e: any) {
+  function handleSelectionType(e: any) {
     if (e === EVENT_KEYS.CUSTOM_RANGE) {
-      setShouldShowEndDateRange(true)
+      setshouldShowCustomSelection(true)
       setEndDateCurrentSelection('custom date') // TODO: can also make a const enum for messages
     } else if (e === EVENT_KEYS.ANYTIME) {
-      setShouldShowEndDateRange(false)
+      setshouldShowCustomSelection(false)
       setEndDateCurrentSelection('anytime')
       handleDatesChange(new Date(0), false)
     }
@@ -108,42 +109,48 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
 
   return (
     <div>
+      <DropdownButton
+        id="dropdown-basic-button"
+        title={endDateCurrentSelection}
+        onSelect={handleSelectionType}
+      >
+        <Dropdown.Item eventKey={EVENT_KEYS.ANYTIME}>Anytime</Dropdown.Item>
+        <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_RANGE}>Custom Range</Dropdown.Item>
+      </DropdownButton>
+
       <div>
-        <p>start Date:</p>
-      </div>
-      <DatePicker
-        selected={new Date(period.startDate)}
-        openToDate={new Date()}
-        onChange={(date: Date) => handleDatesChange(date, true)}
-        onSelect={(date: Date) => handleDateSelect(date)}
-      />
-      <div>
-        <p>end Date:</p>
-        <DropdownButton
-          id="dropdown-basic-button"
-          title={endDateCurrentSelection}
-          onSelect={handleEndDateSelection}
-        >
-          <Dropdown.Item eventKey={EVENT_KEYS.ANYTIME}>Anytime</Dropdown.Item>
-          <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_RANGE}>Custom Range</Dropdown.Item>
-        </DropdownButton>
-        {shouldShowEndDateRange ? (
-          <DatePicker
-            selected={
-              new Date(period.endDate).getFullYear() == 1970
-                ? new Date(period.startDate)
-                : new Date(period.endDate)
-            }
-            openToDate={new Date(period.startDate)}
-            onChange={(date: Date) => handleDatesChange(date, false)}
-            onSelect={handleDateSelect}
-          />
-        ) : (
-          <></>
+        <div>
+          {shouldShowCustomSelection && (
+            <div>
+              <p>start Date:</p>
+              <DatePicker
+                selected={new Date(period.startDate)}
+                openToDate={new Date()}
+                onChange={(date: Date) => handleDatesChange(date, true)}
+                onSelect={(date: Date) => handleDateSelect(date)}
+              />
+            </div>
+          )}
+        </div>
+
+        {shouldShowCustomSelection && (
+          <div>
+            <p>end Date:</p>
+            <DatePicker
+              selected={
+                new Date(period.endDate).getFullYear() == 1970
+                  ? new Date(period.startDate)
+                  : new Date(period.endDate)
+              }
+              openToDate={new Date(period.startDate)}
+              onChange={(date: Date) => handleDatesChange(date, false)}
+              onSelect={handleDateSelect}
+            />
+          </div>
         )}
       </div>
       <div>
-        <button onClick={addAvailabilityPeriod}>add period</button>
+        {shouldShowCustomSelection && <button onClick={addAvailabilityPeriod}>add period</button>}
       </div>
       <div>
         <button

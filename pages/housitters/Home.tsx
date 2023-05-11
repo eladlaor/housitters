@@ -11,7 +11,7 @@ import { selectLocationsState, setLocationsState } from '../../slices/housitterS
 import { LANDLORDS_ROUTES, LocationIds } from '../../utils/constants'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
-import SideBarFilter from '../../components/SideBarFilter'
+import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
 
 import Row from 'react-bootstrap/Row'
@@ -182,7 +182,7 @@ export default function Home() {
           )}
         </Row>
       </div>
-      <SideBarFilter
+      <SidebarFilter
         isHousitter={true}
         showCustomLocations={locations.length < Object.values(LocationIds).length}
         selectionType="checkbox"
@@ -190,3 +190,5 @@ export default function Home() {
     </>
   )
 }
+
+// TODO: have the SidebarFilter accept props for location and props for availability

@@ -7,8 +7,10 @@ import { selectLocationState } from '../slices/landlordSlice'
 import { selectLocationsState, setLocationsState } from '../slices/housitterSlice'
 import LocationSelector from './LocationSelector'
 import { FormCheckType } from 'react-bootstrap/esm/FormCheck'
+import AvailabilityPeriod from './AvailabilityPeriod'
+import { selectAvailabilityState, setAvailability } from '../slices/userSlice'
 
-export default function SideBarFilter({
+export default function SidebarFilter({
   isHousitter,
   showCustomLocations,
   selectionType,
@@ -17,6 +19,7 @@ export default function SideBarFilter({
   showCustomLocations: boolean
   selectionType: string
 }) {
+  const availabaility = useSelector(selectAvailabilityState)
   return (
     <div
       style={{
@@ -33,6 +36,10 @@ export default function SideBarFilter({
           selectionType={selectionType as FormCheckType}
           updateDbInstantly={true}
         />
+        <hr />
+        {availabaility.map((period, index) => (
+          <AvailabilityPeriod period={period} index={index} key={index} />
+        ))}
       </Card>
     </div>
   )
