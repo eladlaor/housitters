@@ -49,8 +49,6 @@ export default function LocationSelector({
     if (!user) {
       return
     }
-
-    console.log('rendered LocationSelector')
   }, [user, locations])
 
   // TODO: there is a bug on page refresh!
@@ -114,9 +112,7 @@ export default function LocationSelector({
   // change hard coded ids to the enum.
   return (
     <>
-      <Form
-        onChange={isHousitter ? handleHousitterSelectedLocation : handlelandlordSelectedLocation}
-      >
+      <Form>
         <DropdownButton
           id="dropdown-basic-button"
           title={locationCurrentSelection}
@@ -134,10 +130,13 @@ export default function LocationSelector({
                 key={loc}
                 id={loc}
                 label={LocationDescriptions[loc]}
-                defaultChecked={
+                checked={
                   isHousitter ? locations.indexOf(loc) !== -1 : loc === locations // the landlord case (locations will hold only one value. should rename TODO:)
                 }
                 name={isHousitter ? loc : 'singleLocationChoice'}
+                onChange={
+                  isHousitter ? handleHousitterSelectedLocation : handlelandlordSelectedLocation
+                }
               />
             ))
           ) : (
