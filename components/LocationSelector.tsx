@@ -49,7 +49,7 @@ export default function LocationSelector({
     if (!user) {
       return
     }
-  }, [user, locations])
+  }, [user])
 
   // TODO: there is a bug on page refresh!
   // also, think of how to create initialState in a better way.
@@ -90,17 +90,37 @@ export default function LocationSelector({
     }
   }
 
-  function handleHousitterSelectionType(e: any) {
+  async function handleHousitterSelectionType(e: any) {
     if (e === EVENT_KEYS.ANYWHERE) {
       let allLocationsSelected: string[] = []
       Object.values(LocationIds).forEach((location) => {
         allLocationsSelected.push(location)
       })
-      dispatch(setHousitterLocationsState(allLocationsSelected))
 
+      let { error } = await supabaseClient.from('housitters').upsert({
+        user_id: user?.id,
+        locations: allLocationsSelected,
+      })
+
+      if (error) {
+        alert('error updating locations from filter to db' + error)
+        throw error
+      }
+
+      dispatch(setHousitterLocationsState(allLocationsSelected))
       setShouldShowCustomLocations(false)
       setLocationCurrentSelection(EVENT_KEYS.ANYWHERE)
     } else if (e === EVENT_KEYS.CUSTOM_LOCATIONS) {
+      let { error } = await supabaseClient.from('housitters').upsert({
+        user_id: user?.id,
+        locations: [''],
+      })
+
+      if (error) {
+        alert('error updating locations from filter to db' + error)
+        throw error
+      }
+
       dispatch(setHousitterLocationsState(['']))
 
       setShouldShowCustomLocations(true)
