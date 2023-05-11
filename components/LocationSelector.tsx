@@ -49,7 +49,9 @@ export default function LocationSelector({
     if (!user) {
       return
     }
-  }, [user])
+
+    console.log('rendered LocationSelector')
+  }, [user, locations])
 
   // TODO: there is a bug on page refresh!
   // also, think of how to create initialState in a better way.
