@@ -128,6 +128,8 @@ export default function AvailabilityPeriod({
 
   async function addAvailabilityPeriod() {
     let modifiedAvailability = JSON.parse(JSON.stringify(availability))
+    const length = availability.length
+    const indexToAdd = length
 
     let defaultStartDate = new Date()
     let defaultEndDate = new Date()
@@ -142,11 +144,12 @@ export default function AvailabilityPeriod({
     })
 
     if (updateDbInstantly) {
+      console.log('UPDATING IN ADD AVAILABILITY from index: ' + indexToAdd)
       let { error: datesUpdateError } = await supabaseClient.from('available_dates').upsert({
         user_id: user?.id,
         start_date: formattedStartDate,
         end_date: formattedEndDate,
-        period_index: index,
+        period_index: indexToAdd,
         user_type: primaryUse,
       })
 
@@ -154,17 +157,18 @@ export default function AvailabilityPeriod({
         alert(datesUpdateError.message)
         throw datesUpdateError
       }
+      console.log('SUCCESSFULLY UPDATED IN ADD AVAILABILITY')
     }
 
     dispatch(setAvailability(modifiedAvailability))
   }
 
   async function removeAvailabilityPeriod() {
-    ;async () => {
-      const modifiedAvailability = JSON.parse(JSON.stringify(availability))
-      modifiedAvailability.splice(index, 1) // TODO: yeah, it's possible, but there's a simpler way.
-      // instead of doing this, I can use the map and filter func: https://beta.reactjs.org/learn/updating-arrays-in-state
+    const modifiedAvailability = JSON.parse(JSON.stringify(availability))
+    modifiedAvailability.splice(index, 1) // TODO: yeah, it's possible, but there's a simpler way.
+    // instead of doing this, I can use the map and filter func: https://beta.reactjs.org/learn/updating-arrays-in-state
 
+    if (updateDbInstantly) {
       console.log('removing for index: ' + index)
 
       let { error: deletionError } = await supabaseClient
@@ -177,11 +181,10 @@ export default function AvailabilityPeriod({
         alert(deletionError.message)
         throw deletionError
       }
-
       console.log('successfully removed available_dates row for index: ' + index)
-
-      dispatch(setAvailability(modifiedAvailability))
     }
+
+    dispatch(setAvailability(modifiedAvailability))
   }
 
   return (
@@ -227,11 +230,16 @@ export default function AvailabilityPeriod({
         )}
       </div>
       <div>
-        {shouldShowCustomSelection && <button onClick={addAvailabilityPeriod}>add period</button>}
+        {shouldShowCustomSelection && index === availability.length - 1 && (
+          <button onClick={addAvailabilityPeriod}>add period</button>
+        )}
       </div>
       <div>
         <button onClick={removeAvailabilityPeriod}>
-          {availability.length > 1 && 'remove the above period'}
+          {shouldShowCustomSelection &&
+            availability.length > 1 &&
+            index === availability.length - 1 &&
+            'remove the above period'}
         </button>
       </div>
     </div>
