@@ -3,7 +3,7 @@ import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-reac
 import Picture from './Picture'
 import { useRouter } from 'next/router'
 
-import AvailabilityPeriod from '../components/AvailabilityPeriod'
+import AvailabilitySelector from '../components/AvailabilitySelector'
 
 import { Database } from '../types/supabase'
 import { LocationIds, USER_TYPE } from '../utils/constants'
@@ -294,7 +294,12 @@ export default function Account() {
       <div>
         <h2>Availability</h2>
         {availability.map((period, index) => (
-          <AvailabilityPeriod period={period} index={index} key={index} updateDbInstantly={false}/>
+          <AvailabilitySelector
+            period={period}
+            index={index}
+            key={index}
+            updateDbInstantly={false}
+          />
         ))}
       </div>
 

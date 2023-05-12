@@ -20,7 +20,7 @@ const EVENT_KEYS = {
   CUSTOM_RANGE: 'custom range',
 }
 
-export default function AvailabilityPeriod({
+export default function AvailabilitySelector({
   period,
   index,
   updateDbInstantly,
@@ -153,7 +153,7 @@ export default function AvailabilityPeriod({
     dispatch(setAvailability(modifiedAvailability))
   }
 
-  async function addAvailabilityPeriod() {
+  async function addAvailabilitySelector() {
     let modifiedAvailability = JSON.parse(JSON.stringify(availability))
     const length = availability.length
     const indexToAdd = length
@@ -190,7 +190,7 @@ export default function AvailabilityPeriod({
     dispatch(setAvailability(modifiedAvailability))
   }
 
-  async function removeAvailabilityPeriod() {
+  async function removeAvailabilitySelector() {
     const modifiedAvailability = JSON.parse(JSON.stringify(availability))
     modifiedAvailability.splice(index, 1) // TODO: yeah, it's possible, but there's a simpler way.
     // instead of doing this, I can use the map and filter func: https://beta.reactjs.org/learn/updating-arrays-in-state
@@ -258,7 +258,7 @@ export default function AvailabilityPeriod({
       </div>
       <div>
         {shouldShowCustomSelection && index === availability.length - 1 && (
-          <Button onClick={addAvailabilityPeriod}>add period</Button>
+          <Button onClick={addAvailabilitySelector}>add period</Button>
         )}
       </div>
       <div>
@@ -266,7 +266,7 @@ export default function AvailabilityPeriod({
           availability.length > 1 &&
           index === availability.length - 1 && (
             <div>
-              <Button onClick={removeAvailabilityPeriod}>remove the above period</Button>
+              <Button onClick={removeAvailabilitySelector}>remove the above period</Button>
             </div>
           )}
       </div>

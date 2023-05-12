@@ -86,11 +86,11 @@ export default function Home() {
 
         // TODO: just for naming convention (to align with the availabaility object name), traversing again...
 
-        for (const housitterAvailabilityPeriod of (housittersData.profiles as any)
+        for (const housitterAvailabilitySelector of (housittersData.profiles as any)
           .available_dates) {
           dates.push({
-            startDate: housitterAvailabilityPeriod.start_date,
-            endDate: housitterAvailabilityPeriod.end_date,
+            startDate: housitterAvailabilitySelector.start_date,
+            endDate: housitterAvailabilitySelector.end_date,
           })
         }
       }
@@ -115,10 +115,10 @@ export default function Home() {
 
           // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
           let postsFilteredByPeriod = postsData.filter((post) => {
-            for (const housitterAvailabilityPeriod of dates) {
+            for (const housitterAvailabilitySelector of dates) {
               return (
-                housitterAvailabilityPeriod.startDate <= post.start_date &&
-                housitterAvailabilityPeriod.endDate >= post.end_date
+                housitterAvailabilitySelector.startDate <= post.start_date &&
+                housitterAvailabilitySelector.endDate >= post.end_date
               )
             }
           })

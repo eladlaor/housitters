@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 
 // add an ANYWHERE option.
 
-import AvailabilityPeriod from '../../components/AvailabilityPeriod'
+import AvailabilitySelector from '../../components/AvailabilitySelector'
 import {
   selectAvailabilityState,
   setPrimaryUse,
@@ -142,7 +142,12 @@ export default function landlordIntro() {
       <div>
         <h1>WHEN are we talking about here?</h1>
         {availability.map((period, index) => (
-          <AvailabilityPeriod key={index} period={period} index={index} updateDbInstantly={false} />
+          <AvailabilitySelector
+            key={index}
+            period={period}
+            index={index}
+            updateDbInstantly={false}
+          />
         ))}
       </div>
       <div>

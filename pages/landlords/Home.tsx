@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
 import { selectLocationState, selectPetsState, setLocationState } from '../../slices/landlordSlice'
 import { selectImagesUrlsState, setImagesUrlsState } from '../../slices/postSlice'
-import AvailabilityPeriod from '../../components/AvailabilityPeriod'
+import AvailabilitySelector from '../../components/AvailabilitySelector'
 import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
@@ -314,7 +314,7 @@ export default function Home() {
                   <Form.Label>availability</Form.Label>
 
                   {availability.map((period, index) => (
-                    <AvailabilityPeriod key={index} period={period} index={index} />
+                    <AvailabilitySelector key={index} period={period} index={index} />
                   ))}
                 </Form.Group>
                 <Form.Group>
