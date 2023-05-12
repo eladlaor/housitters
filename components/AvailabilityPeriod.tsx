@@ -24,6 +24,7 @@ import {
 } from '../slices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
+import { Button } from 'react-bootstrap'
 
 const EVENT_KEYS = {
   ANYTIME: 'anytime',
@@ -69,7 +70,7 @@ export default function AvailabilityPeriod({
       const { startDate: modifiedStart, endDate: modifiedEnd } = availabilityToModify[index]
 
       if (modifiedEnd <= modifiedStart) {
-        let copyOfStartDate = new Date(modifiedStart)
+        let copyOfStartDate = new Date(modifiedStart) // rename
         copyOfStartDate.setDate(copyOfStartDate.getDate() + 1)
         availabilityToModify[index].endDate = moment(copyOfStartDate).format('YYYY-MM-DD')
       }
@@ -231,16 +232,17 @@ export default function AvailabilityPeriod({
       </div>
       <div>
         {shouldShowCustomSelection && index === availability.length - 1 && (
-          <button onClick={addAvailabilityPeriod}>add period</button>
+          <Button onClick={addAvailabilityPeriod}>add period</Button>
         )}
       </div>
       <div>
-        <button onClick={removeAvailabilityPeriod}>
-          {shouldShowCustomSelection &&
-            availability.length > 1 &&
-            index === availability.length - 1 &&
-            'remove the above period'}
-        </button>
+        {shouldShowCustomSelection &&
+          availability.length > 1 &&
+          index === availability.length - 1 && (
+            <div>
+              <Button onClick={removeAvailabilityPeriod}>remove the above period</Button>
+            </div>
+          )}
       </div>
     </div>
   )
