@@ -294,7 +294,7 @@ export default function Account() {
       <div>
         <h2>Availability</h2>
         {availability.map((period, index) => (
-          <AvailabilityPeriod period={period} index={index} key={index} />
+          <AvailabilityPeriod period={period} index={index} key={index} updateDbInstantly={false}/>
         ))}
       </div>
 

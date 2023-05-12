@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import SignOut from '../../components/Buttons/SignOut'
+import SidebarFilter from '../../components/SidebarFilter'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectFirstNameState,
@@ -11,14 +12,12 @@ import { selectLocationsState, setLocationsState } from '../../slices/housitterS
 import { LANDLORDS_ROUTES, LocationIds } from '../../utils/constants'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
-import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
-
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-
 import { selectImagesUrlsState } from '../../slices/postSlice'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
+
 export default function Home() {
   const user = useUser()
   const router = useRouter()
@@ -68,7 +67,7 @@ export default function Home() {
         .from('housitters')
         .select(
           `locations, profiles!inner (
-            available_dates!inner (start_date, end_date)
+            available_dates!inner (start_date, end_date, period_index)
           )`
         )
         .eq('user_id', user.id)
@@ -85,12 +84,16 @@ export default function Home() {
           dispatch(setLocationsState(newLocations))
         }
 
-        // TODO: get available dates as you should, dispatch as you should, and only then see how filter with multiple ranges...
-
         // TODO: just for naming convention (to align with the availabaility object name), traversing again...
 
+        if (Array.isArray((housittersData.profiles as any).available_dates)) {
+          console.log('type of housitterData.profiles.available_dates is array')
+        } else {
+          console.log('type of housitterData.profiles.available_dates is object')
+        }
         for (const housitterAvailabilityPeriod of (housittersData.profiles as any)
           .available_dates) {
+          console.log('iterating successfully')
           dates.push({
             startDate: housitterAvailabilityPeriod.start_date,
             endDate: housitterAvailabilityPeriod.end_date,

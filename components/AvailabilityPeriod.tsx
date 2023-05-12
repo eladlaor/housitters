@@ -2,6 +2,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 
 import { useState } from 'react'
 
@@ -18,7 +19,6 @@ import { useState } from 'react'
 
 import { selectAvailabilityState, setAvailability } from '../slices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
-
 import moment from 'moment'
 
 const EVENT_KEYS = {
@@ -26,7 +26,17 @@ const EVENT_KEYS = {
   CUSTOM_RANGE: 'custom-range',
 }
 
-export default function AvailabilityPeriod({ period, index }: { period: any; index: number }) {
+export default function AvailabilityPeriod({
+  period,
+  index,
+  updateDbInstantly,
+}: {
+  period: any
+  index: number
+  updateDbInstantly: boolean
+}) {
+  const supabaseClient = useSupabaseClient()
+  const user = useUser()
   const dispatch = useDispatch()
   const availability = useSelector(selectAvailabilityState)
 
@@ -38,7 +48,7 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
     shouldShowCustomSelection ? 'custom range' : 'anytime'
   )
 
-  function handleDatesChange(changedDate: Date, isStart: boolean) {
+  async function handleDatesChange(changedDate: Date, isStart: boolean) {
     // all formatting can be done at the end
     let availabilityToModify = JSON.parse(JSON.stringify(availability))
     let formattedChangedDate = moment(changedDate).format('YYYY-MM-DD')
@@ -71,6 +81,24 @@ export default function AvailabilityPeriod({ period, index }: { period: any; ind
         let startDateToModify = new Date(modifiedEnd)
         startDateToModify.setDate(startDateToModify.getDate() - 1)
         availabilityToModify[index].startDate = moment(startDateToModify).format('YYYY-MM-DD')
+      }
+    }
+
+    const startDateToUpdateInDb = availabilityToModify[index].startDate
+    const endDateToUpdateInDb = availabilityToModify[index].endDate
+
+    if (updateDbInstantly) {
+      // TODO: let's take the db names from the generated types in supabase db, let's import them.
+      let { error: datesUpdateError } = await supabaseClient.from('available_dates').upsert({
+        user_id: user?.id,
+        start_date: startDateToUpdateInDb,
+        end_date: endDateToUpdateInDb,
+        period_index: index,
+      })
+
+      if (datesUpdateError) {
+        alert(datesUpdateError.message)
+        throw datesUpdateError
       }
     }
 

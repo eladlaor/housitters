@@ -142,7 +142,7 @@ export default function landlordIntro() {
       <div>
         <h1>WHEN are we talking about here?</h1>
         {availability.map((period, index) => (
-          <AvailabilityPeriod key={index} period={period} index={index} />
+          <AvailabilityPeriod key={index} period={period} index={index} updateDbInstantly={false} />
         ))}
       </div>
       <div>

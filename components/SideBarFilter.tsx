@@ -38,7 +38,7 @@ export default function SidebarFilter({
         />
         <hr />
         {availabaility.map((period, index) => (
-          <AvailabilityPeriod period={period} index={index} key={index} />
+          <AvailabilityPeriod period={period} index={index} key={index} updateDbInstantly={true} />
         ))}
       </Card>
     </div>

@@ -44,12 +44,6 @@ export default function LocationSelector({
     showCustomLocations ? EVENT_KEYS.CUSTOM_LOCATIONS : EVENT_KEYS.ANYWHERE
   )
 
-  useEffect(() => {
-    if (!user) {
-      return
-    }
-  }, [user])
-
   function handlelandlordSelectedLocation(e: any) {
     dispatch(setlandlordLocationState(e.target.id))
   }
