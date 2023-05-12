@@ -5,7 +5,6 @@ import {
 import {
   selectLocationState as selectlandlordLocationState,
   setLocationState as setlandlordLocationState,
-  setLocationState,
 } from '../slices/landlordSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import Form from 'react-bootstrap/Form'
@@ -51,9 +50,6 @@ export default function LocationSelector({
     }
   }, [user])
 
-  // TODO: there is a bug on page refresh!
-  // also, think of how to create initialState in a better way.
-
   function handlelandlordSelectedLocation(e: any) {
     dispatch(setlandlordLocationState(e.target.id))
   }
@@ -66,7 +62,7 @@ export default function LocationSelector({
     if (selectedLocationIndex === -1) {
       locationsToModify.push(receivedLocation)
     } else {
-      locationsToModify.splice(selectedLocationIndex)
+      locationsToModify.splice(selectedLocationIndex, 1)
     }
 
     if (updateDbInstantly) {
@@ -113,7 +109,6 @@ export default function LocationSelector({
     } else if (e === EVENT_KEYS.CUSTOM_LOCATIONS) {
       let { error } = await supabaseClient.from('housitters').upsert({
         user_id: user?.id,
-        locations: [''],
       })
 
       if (error) {
