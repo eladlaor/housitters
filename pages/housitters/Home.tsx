@@ -86,14 +86,8 @@ export default function Home() {
 
         // TODO: just for naming convention (to align with the availabaility object name), traversing again...
 
-        if (Array.isArray((housittersData.profiles as any).available_dates)) {
-          console.log('type of housitterData.profiles.available_dates is array')
-        } else {
-          console.log('type of housitterData.profiles.available_dates is object')
-        }
         for (const housitterAvailabilityPeriod of (housittersData.profiles as any)
           .available_dates) {
-          console.log('iterating successfully')
           dates.push({
             startDate: housitterAvailabilityPeriod.start_date,
             endDate: housitterAvailabilityPeriod.end_date,
@@ -139,7 +133,7 @@ export default function Home() {
     }
 
     asyncWrapper()
-  }, [user, locations])
+  }, [user, locations, availability])
 
   return (
     <>

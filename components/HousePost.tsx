@@ -49,7 +49,6 @@ export default function HousePost({
       return
     }
     async function loadLandlordData(landlordId: string) {
-      console.log('INSIDE loadLandlordData')
       try {
         let { data: landlordData, error: landlordError } = await supabaseClient
           .from('profiles')

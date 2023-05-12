@@ -17,7 +17,11 @@ import { useState } from 'react'
       (i don't 'need' these flags in different pages, so i don't want to have a heavy system)
 */
 
-import { selectAvailabilityState, setAvailability } from '../slices/userSlice'
+import {
+  selectAvailabilityState,
+  selectPrimaryUseState,
+  setAvailability,
+} from '../slices/userSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 
@@ -39,6 +43,7 @@ export default function AvailabilityPeriod({
   const user = useUser()
   const dispatch = useDispatch()
   const availability = useSelector(selectAvailabilityState)
+  const primaryUse = useSelector(selectPrimaryUseState)
 
   const [shouldShowCustomSelection, setshouldShowCustomSelection] = useState(
     availability[index].endDate !== new Date(0).toISOString() // the 'Anytime' sign is new Date(0) as endDate.
@@ -94,6 +99,7 @@ export default function AvailabilityPeriod({
         start_date: startDateToUpdateInDb,
         end_date: endDateToUpdateInDb,
         period_index: index,
+        user_type: primaryUse,
       })
 
       if (datesUpdateError) {
@@ -120,19 +126,62 @@ export default function AvailabilityPeriod({
     }
   }
 
-  function addAvailabilityPeriod() {
+  async function addAvailabilityPeriod() {
     let modifiedAvailability = JSON.parse(JSON.stringify(availability))
 
     let defaultStartDate = new Date()
     let defaultEndDate = new Date()
     defaultEndDate.setDate(defaultStartDate.getDate() + 1)
 
+    const formattedStartDate = defaultStartDate.toISOString()
+    const formattedEndDate = defaultEndDate.toISOString()
+
     modifiedAvailability.push({
-      startDate: defaultStartDate.toISOString(),
-      endDate: defaultEndDate.toISOString(),
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
     })
 
+    if (updateDbInstantly) {
+      let { error: datesUpdateError } = await supabaseClient.from('available_dates').upsert({
+        user_id: user?.id,
+        start_date: formattedStartDate,
+        end_date: formattedEndDate,
+        period_index: index,
+        user_type: primaryUse,
+      })
+
+      if (datesUpdateError) {
+        alert(datesUpdateError.message)
+        throw datesUpdateError
+      }
+    }
+
     dispatch(setAvailability(modifiedAvailability))
+  }
+
+  async function removeAvailabilityPeriod() {
+    ;async () => {
+      const modifiedAvailability = JSON.parse(JSON.stringify(availability))
+      modifiedAvailability.splice(index, 1) // TODO: yeah, it's possible, but there's a simpler way.
+      // instead of doing this, I can use the map and filter func: https://beta.reactjs.org/learn/updating-arrays-in-state
+
+      console.log('removing for index: ' + index)
+
+      let { error: deletionError } = await supabaseClient
+        .from('available_dates')
+        .delete()
+        .eq('period_index', index)
+        .eq('user_id', user?.id)
+
+      if (deletionError) {
+        alert(deletionError.message)
+        throw deletionError
+      }
+
+      console.log('successfully removed available_dates row for index: ' + index)
+
+      dispatch(setAvailability(modifiedAvailability))
+    }
   }
 
   return (
@@ -181,15 +230,8 @@ export default function AvailabilityPeriod({
         {shouldShowCustomSelection && <button onClick={addAvailabilityPeriod}>add period</button>}
       </div>
       <div>
-        <button
-          onClick={() => {
-            const modifiedAvailability = JSON.parse(JSON.stringify(availability))
-            modifiedAvailability.splice(index, 1) // TODO: yeah, it's possible, but there's a simpler way.
-            // instead of doing this, I can use the map and filter func: https://beta.reactjs.org/learn/updating-arrays-in-state
-            dispatch(setAvailability(modifiedAvailability))
-          }}
-        >
-          {availability.length > 1 ? 'remove the above period' : ''}
+        <button onClick={removeAvailabilityPeriod}>
+          {availability.length > 1 && 'remove the above period'}
         </button>
       </div>
     </div>
