@@ -270,6 +270,7 @@ export default function AvailabilitySelector({
             </div>
           )}
       </div>
+      <hr />
     </div>
   )
 }
