@@ -6,17 +6,6 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 
 import { useState } from 'react'
 
-/*
-  Additions:
-    what if endDate is selected to be before today (should disable)
-    what if endDate is before startDate (should update startDate)
-
-    Must be more effective with the way i handle the formatting of the dates between operations
-
-    Is the motivation behind using react hooks here (rather than redux store values) good justified?
-      (i don't 'need' these flags in different pages, so i don't want to have a heavy system)
-*/
-
 import {
   selectAvailabilityState,
   selectPrimaryUseState,
@@ -28,7 +17,7 @@ import { Button } from 'react-bootstrap'
 
 const EVENT_KEYS = {
   ANYTIME: 'anytime',
-  CUSTOM_RANGE: 'custom-range',
+  CUSTOM_RANGE: 'custom range',
 }
 
 export default function AvailabilityPeriod({
@@ -51,7 +40,7 @@ export default function AvailabilityPeriod({
   )
   const [endDateCurrentSelection, setEndDateCurrentSelection] = useState(
     // TODO: rename, cause its not only endDate.
-    shouldShowCustomSelection ? 'custom range' : 'anytime'
+    shouldShowCustomSelection ? EVENT_KEYS.CUSTOM_RANGE : EVENT_KEYS.ANYTIME
   )
 
   async function handleDatesChange(changedDate: Date, isStart: boolean) {
@@ -112,19 +101,56 @@ export default function AvailabilityPeriod({
     dispatch(setAvailability(availabilityToModify))
   }
 
-  function handleDateSelect(date: any) {
-    // TODO: just understand the diff between select and change
-  }
-
-  function handleSelectionType(e: any) {
+  async function handleSelectionType(e: any) {
+    let modifiedAvailability = [...availability]
     if (e === EVENT_KEYS.CUSTOM_RANGE) {
       setshouldShowCustomSelection(true)
-      setEndDateCurrentSelection('custom date') // TODO: can also make a const enum for messages
+      setEndDateCurrentSelection(EVENT_KEYS.CUSTOM_RANGE)
+      handleDatesChange(new Date(), true)
     } else if (e === EVENT_KEYS.ANYTIME) {
       setshouldShowCustomSelection(false)
-      setEndDateCurrentSelection('anytime')
-      handleDatesChange(new Date(0), false)
+      setEndDateCurrentSelection(EVENT_KEYS.ANYTIME)
+
+      const formattedAnytimeDate = moment(new Date(0)).format('YYYY-MM-DD')
+      if (updateDbInstantly) {
+        // TODO: aware that I'm removing first element and then inserting, rather than updating it.
+        const removalPromises = modifiedAvailability.map(async (period: any, index: number) => {
+          let { error: deletionError } = await supabaseClient
+            .from('available_dates')
+            .delete()
+            .eq('period_index', index)
+            .eq('user_id', user?.id)
+
+          if (deletionError) {
+            alert(deletionError.message)
+            throw deletionError
+          }
+        })
+
+        await Promise.all(removalPromises)
+
+        let { error: datesUpdateError } = await supabaseClient.from('available_dates').upsert({
+          user_id: user?.id,
+          start_date: new Date(), // it doesnt matter, as only endDate determines if it's anytime.
+          end_date: formattedAnytimeDate,
+          period_index: 0,
+          user_type: primaryUse,
+        })
+
+        if (datesUpdateError) {
+          alert(datesUpdateError.message)
+          throw datesUpdateError
+        }
+      }
+
+      modifiedAvailability.splice(1)
+      modifiedAvailability[0] = {
+        ...modifiedAvailability[0],
+        endDate: formattedAnytimeDate,
+      }
     }
+
+    dispatch(setAvailability(modifiedAvailability))
   }
 
   async function addAvailabilityPeriod() {
@@ -190,14 +216,16 @@ export default function AvailabilityPeriod({
 
   return (
     <div>
-      <DropdownButton
-        id="dropdown-basic-button"
-        title={endDateCurrentSelection}
-        onSelect={handleSelectionType}
-      >
-        <Dropdown.Item eventKey={EVENT_KEYS.ANYTIME}>Anytime</Dropdown.Item>
-        <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_RANGE}>Custom Range</Dropdown.Item>
-      </DropdownButton>
+      {index === 0 && (
+        <DropdownButton
+          id="dropdown-basic-button"
+          title={endDateCurrentSelection}
+          onSelect={handleSelectionType}
+        >
+          <Dropdown.Item eventKey={EVENT_KEYS.ANYTIME}>Anytime</Dropdown.Item>
+          <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_RANGE}>Custom Range</Dropdown.Item>
+        </DropdownButton>
+      )}
 
       <div>
         <div>
@@ -208,7 +236,6 @@ export default function AvailabilityPeriod({
                 selected={new Date(period.startDate)}
                 openToDate={new Date()}
                 onChange={(date: Date) => handleDatesChange(date, true)}
-                onSelect={(date: Date) => handleDateSelect(date)}
               />
             </div>
           )}
@@ -225,7 +252,6 @@ export default function AvailabilityPeriod({
               }
               openToDate={new Date(period.startDate)}
               onChange={(date: Date) => handleDatesChange(date, false)}
-              onSelect={handleDateSelect}
             />
           </div>
         )}
