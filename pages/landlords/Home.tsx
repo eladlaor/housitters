@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import GoToProfileButton from '../../components/GoToProfileButton'
-import { selectFirstNameState, setFirstName } from '../../slices/userSlice'
+import { selectFirstNameState, selectIsLoggedState, setFirstName } from '../../slices/userSlice'
 import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -21,6 +21,7 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import Resizer from 'react-image-file-resizer'
+import SidebarFilter from '../../components/SidebarFilter'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -37,6 +38,7 @@ export default function Home() {
   const location = useSelector(selectLocationState)
   const [freeTextState, setFreeTextState] = useState('')
   const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type
+  const isLogged = useSelector(selectIsLoggedState)
 
   const pets = useSelector(selectPetsState)
 
@@ -52,7 +54,7 @@ export default function Home() {
           .from('landlords')
           .select(
             `location, profiles!inner (
-            first_name
+            first_name, available_dates!inner (start_date, end_date, period_index)
           )`
           )
           .eq('user_id', user.id)
@@ -60,8 +62,12 @@ export default function Home() {
 
         if (landlordError) {
           alert(landlordError.message)
-        } else if (landlordData) {
-          dispatch(setLocationState(landlordData.location))
+        } else if (landlordData && landlordData.profiles) {
+          const newLocation = landlordData.location
+          const locationChanged = JSON.stringify(location) !== JSON.stringify(newLocation)
+          if (locationChanged && isLogged) {
+            dispatch(setLocationState(landlordData.location))
+          }
           dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
         }
 
@@ -70,19 +76,67 @@ export default function Home() {
           .select(
             `id, first_name, last_name, avatar_url, housitters!inner (
             id, locations, experience
-          )`
+          ), available_dates!inner (user_id, start_date, end_date)`
           )
           .eq('primary_use', 'housitter')
           .contains('housitters.locations', [location])
+
+        // filtering by availability, maybe there's a way to filter by availability on server-side?
+        // meanwhile we'll do it client side, using user_id to kind of join the dates with the relavant sitter.
+        // maybe there's a server-side solution, which will be better.
+
         // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
 
         if (housitterError) {
           alert(housitterError.message)
         }
 
-        // TODO: stupid temp solution until syntax fix for filter on query
+        let availableHousitters: {
+          firstName: string
+          lastName: string
+          housitterId: string
+          avatarUrl: string
+          locations: string[]
+          availability: { startDate: Date; endDate: Date }[]
+        }[] = []
+
         if (housitterData) {
-          setHousitters(housitterData)
+          for (const housitter of housitterData) {
+            let currentSitterAvailability: any[] = []
+            currentSitterAvailability = (
+              housitter.available_dates as { start_date: string; end_date: string }[]
+            ).map(({ start_date, end_date }: { start_date: string; end_date: string }) => ({
+              startDate: new Date(start_date),
+              endDate: new Date(end_date),
+            }))
+
+            availableHousitters.push({
+              firstName: housitter.first_name,
+              lastName: housitter.last_name,
+              housitterId: housitter.id,
+              avatarUrl: housitter.avatar_url,
+              availability: currentSitterAvailability,
+              locations: Array.isArray(housitter.housitters)
+                ? housitter.housitters[0].locations
+                : housitter.housitters?.locations,
+            })
+
+            availableHousitters = availableHousitters.filter((sitter) => {
+              return sitter.availability.some((sitterPeriod) => {
+                return availability.some((landlordPeriod) => {
+                  const landlordStartDateAsDate = new Date(landlordPeriod.startDate)
+                  const landlordEndDateAsDate = new Date(landlordPeriod.endDate)
+                  return (
+                    landlordPeriod.endDate.startsWith('1970') ||
+                    (landlordStartDateAsDate >= sitterPeriod.startDate &&
+                      landlordEndDateAsDate <= sitterPeriod.endDate)
+                  )
+                })
+              })
+            })
+          }
+
+          setHousitters(availableHousitters)
         }
       }
 
@@ -90,7 +144,7 @@ export default function Home() {
         alert(e.message)
       })
     }
-  }, [user])
+  }, [user, availability, location])
 
   // TODO: should move about_me text to the housitters table.
 
@@ -314,7 +368,12 @@ export default function Home() {
                   <Form.Label>availability</Form.Label>
 
                   {availability.map((period, index) => (
-                    <AvailabilitySelector key={index} period={period} index={index} />
+                    <AvailabilitySelector
+                      key={index}
+                      period={period}
+                      index={index}
+                      updateDbInstantly={false}
+                    />
                   ))}
                 </Form.Group>
                 <Form.Group>
@@ -393,11 +452,11 @@ export default function Home() {
             ) => (
               <AvailableHousitter
                 props={{
-                  firstName: sitter.first_name,
-                  lastName: sitter.last_name,
+                  firstName: sitter.firstName,
+                  lastName: sitter.lastName,
                   about_me: 'hard coded text',
-                  avatarUrl: sitter.avatar_url,
-                  housitterId: sitter.housitter_id,
+                  avatarUrl: sitter.avatarUrl,
+                  housitterId: sitter.housitterId,
                 }}
                 key={index}
               />
@@ -405,6 +464,7 @@ export default function Home() {
           )}
         </div>
       </div>
+      <SidebarFilter isHousitter={false} showCustomLocations={true} selectionType="checkbox" />
     </>
   )
 }

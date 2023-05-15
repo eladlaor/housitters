@@ -40,7 +40,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (!user) {
       console.log('reached index: no authenticated user')
-      console.log('userType: ' + userType)
       const nonUserSetters =
         userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
       nonUserSetters.forEach((attributeSetterAndInitialState) => {

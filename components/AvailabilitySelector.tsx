@@ -4,7 +4,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
   selectAvailabilityState,
@@ -42,6 +42,43 @@ export default function AvailabilitySelector({
     // TODO: rename, cause its not only endDate.
     shouldShowCustomSelection ? EVENT_KEYS.CUSTOM_RANGE : EVENT_KEYS.ANYTIME
   )
+
+  useEffect(() => {
+    if (!user) {
+      return
+    }
+
+    const asyncWrapper = async () => {
+      const { data: availableDates, error } = await supabaseClient
+        .from('available_dates')
+        .select('start_date, end_date')
+        .eq('user_id', user?.id)
+
+      if (error) {
+        alert(error.message)
+        throw error
+      }
+
+      // TODO: this is duplicated in Account and should be moved to utils, or as part of the api route handler which should replace the above.
+      if (availableDates) {
+        const availableDatesAsReduxType = availableDates.map((date) => {
+          return {
+            startDate: date.start_date,
+            endDate: date.end_date,
+          }
+        })
+
+        dispatch(setAvailability(availableDatesAsReduxType))
+
+        if (!availableDatesAsReduxType[0].endDate.startsWith('1970')) {
+          setshouldShowCustomSelection(true)
+          setEndDateCurrentSelection(EVENT_KEYS.CUSTOM_RANGE)
+        }
+      }
+    }
+
+    asyncWrapper()
+  }, [user])
 
   async function handleDatesChange(changedDate: Date, isStart: boolean) {
     // all formatting can be done at the end
