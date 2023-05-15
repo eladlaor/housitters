@@ -3,6 +3,9 @@ import { RootState } from '../store'
 
 export const initialState = {
   imagesUrls: [] as Array<string>,
+  isActive: true,
+  description: '',
+  title: '',
 }
 
 export type postState = typeof initialState
@@ -17,13 +20,37 @@ export const postSlice = createSlice({
         imagesUrls: action.payload,
       }
     },
+    setIsActiveState(state = initialState, action) {
+      return {
+        ...state,
+        isActive: action.payload,
+      }
+    },
+    setDescriptionState(state = initialState, action) {
+      return {
+        ...state,
+        description: action.payload,
+      }
+    },
+    setTitleState(state = initialState, action) {
+      return {
+        ...state,
+        title: action.payload,
+      }
+    },
   },
 })
 
 // Action creators (postsSlice.action) are generated (automatically) for each case reducer function
 export const { setImagesUrlsState } = postSlice.actions
+export const { setIsActiveState } = postSlice.actions
+export const { setDescriptionState } = postSlice.actions
+export const { setTitleState } = postSlice.actions
 
 export const selectImagesUrlsState = (state: RootState) => state.post.imagesUrls
+export const selectIsActiveState = (state: RootState) => state.post.isActive
+export const selectDescriptionState = (state: RootState) => state.post.description
+export const selectTitleState = (state: RootState) => state.post.title
 
 export type SettersToInitialStates = {
   matchingSetter: any

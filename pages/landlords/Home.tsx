@@ -9,7 +9,16 @@ import Modal from 'react-bootstrap/Modal'
 import { useEffect, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
 import { selectLocationState, selectPetsState, setLocationState } from '../../slices/landlordSlice'
-import { selectImagesUrlsState, setImagesUrlsState } from '../../slices/postSlice'
+import {
+  selectImagesUrlsState,
+  selectDescriptionState,
+  selectIsActiveState,
+  selectTitleState,
+  setImagesUrlsState,
+  setDescriptionState,
+  setIsActiveState,
+  setTitleState,
+} from '../../slices/postSlice'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import SignOut from '../../components/Buttons/SignOut'
 import { Dropdown, DropdownButton } from 'react-bootstrap'
@@ -22,6 +31,8 @@ import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import Resizer from 'react-image-file-resizer'
 import SidebarFilter from '../../components/SidebarFilter'
+import HousePost from '../../components/HousePost'
+import Accordion from 'react-bootstrap/Accordion'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -31,6 +42,8 @@ export default function Home() {
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
 
+  const title = useSelector(selectTitleState)
+  const description = useSelector(selectDescriptionState)
   const fileNames = useSelector(selectImagesUrlsState)
 
   const [previewDataUrls, setPreviewDataUrls] = useState([] as Array<String>)
@@ -61,7 +74,7 @@ export default function Home() {
           .single()
 
         if (landlordError) {
-          alert(landlordError.message)
+          alert('error when querying landlords table in landlords home' + landlordError.message)
         } else if (landlordData && landlordData.profiles) {
           const newLocation = landlordData.location
           const locationChanged = JSON.stringify(location) !== JSON.stringify(newLocation)
@@ -69,6 +82,21 @@ export default function Home() {
             dispatch(setLocationState(landlordData.location))
           }
           dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
+        }
+
+        let { data: postsData, error: postsError } = await supabaseClient
+          .from('posts')
+          .select(`description, images_urls, title`)
+          .eq('landlord_id', user.id)
+          .eq('is_active', true)
+          .single()
+
+        if (postsError) {
+          alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
+        } else if (postsData) {
+          dispatch(setImagesUrlsState(postsData.images_urls))
+          dispatch(setDescriptionState(postsData.description))
+          dispatch(setTitleState(postsData.title))
         }
 
         let { data: housitterData, error: housitterError } = await supabaseClient
@@ -88,7 +116,10 @@ export default function Home() {
         // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
 
         if (housitterError) {
-          alert(housitterError.message)
+          alert(
+            'error when querying housitters from profiles in landlords home' +
+              housitterError.message
+          )
         }
 
         let availableHousitters: {
@@ -275,7 +306,7 @@ export default function Home() {
           .upload(`${user?.id}-${fileName}`, resizedImage, { upsert: true })
 
         if (uploadError) {
-          debugger
+          alert(`error in landlords/Home trying to upload an image to storage ` + uploadError)
           throw uploadError
         }
 
@@ -327,6 +358,8 @@ export default function Home() {
     setShowNewPostModal(false)
   }
 
+  async function handleDeletePost() {}
+
   return (
     <>
       <Navbar bg="dark" variant="dark">
@@ -339,16 +372,38 @@ export default function Home() {
               <NavDropdown.Item href={LANDLORDS_ROUTES.ACCOUNT}>Edit Profile</NavDropdown.Item>
               <SignOut />
             </NavDropdown>
+            <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
       <div className="container">
         <div>
           <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
-          <h2>I see you're looking for sitters in {location}</h2>
         </div>
         <div>
-          <GoToProfileButton accountRoute={LANDLORDS_ROUTES.ACCOUNT} />
+          <h1>here is your current post</h1>
+          <Accordion defaultActiveKey="0">
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>My Active Post</Accordion.Header>
+              <Accordion.Body>
+                <HousePost
+                  landlordId={user ? user.id : ''}
+                  title={title}
+                  description={description}
+                  location={location}
+                  availability={availability}
+                  dogs={1}
+                  cats={2}
+                  imagesUrls={fileNames} // TODO: should have default image
+                />
+                <Button variant="danger" onClick={handleDeletePost}>
+                  Delete post
+                </Button>
+                <Button variant="success">I found a sitter</Button>
+                <Button>Edit Post</Button>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
         </div>
         <div>
           <Button
@@ -443,28 +498,36 @@ export default function Home() {
               </Form>
             </Modal.Body>
           </Modal>
-          <h1>here are available housitters for you:</h1>
+          <div className="sitters-and-filter">
+            <div id="available-housitters" className="available-housitters">
+              <h3>
+                here are the housitters who are available in your specified dates and location:
+              </h3>
 
-          {housitters.map(
-            (
-              sitter: any,
-              index: number // TODO: type 'sitter' with a new type of Db housitterdata
-            ) => (
-              <AvailableHousitter
-                props={{
-                  firstName: sitter.firstName,
-                  lastName: sitter.lastName,
-                  about_me: 'hard coded text',
-                  avatarUrl: sitter.avatarUrl,
-                  housitterId: sitter.housitterId,
-                }}
-                key={index}
-              />
-            )
-          )}
+              {housitters.map(
+                (
+                  sitter: any,
+                  index: number // TODO: type 'sitter' with a new type of Db housitterdata
+                ) => (
+                  <AvailableHousitter
+                    props={{
+                      firstName: sitter.firstName,
+                      lastName: sitter.lastName,
+                      about_me: 'hard coded text',
+                      avatarUrl: sitter.avatarUrl,
+                      housitterId: sitter.housitterId,
+                    }}
+                    key={index}
+                  />
+                )
+              )}
+            </div>
+            <div className="sidebar-filter">
+              <SidebarFilter isHousitter={false} showCustomLocations={true} selectionType="radio" />
+            </div>
+          </div>
         </div>
       </div>
-      <SidebarFilter isHousitter={false} showCustomLocations={true} selectionType="checkbox" />
     </>
   )
 }

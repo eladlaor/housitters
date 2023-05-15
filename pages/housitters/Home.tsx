@@ -165,10 +165,9 @@ export default function Home() {
                 <HousePost
                   landlordId={post.landlord_id}
                   title={post.title}
-                  text={post.description}
+                  description={post.description}
                   location={post.landlords ? post.landlords.location : ''}
-                  startDate={post.startDate}
-                  endDate={post.endDate}
+                  availability={availability}
                   dogs={post.dogs}
                   cats={post.cats}
                   imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image

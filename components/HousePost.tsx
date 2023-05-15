@@ -8,22 +8,33 @@ import SignOut from './Buttons/SignOut'
 import Image from 'next/image'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import React from 'react'
+import { countDays } from '../utils/dates'
+import { useSelector } from 'react-redux'
+import { selectPrimaryUseState } from '../slices/userSlice'
+import { USER_TYPE } from '../utils/constants'
+
+/*
+  if no active posts: allow create new post
+
+*/
+
 // can maybe type as HousePostInput
 export default function HousePost({
   landlordId,
   title,
-  text,
+  description,
   location,
+  availability,
   dogs,
   cats,
   imagesUrls,
 }: {
   landlordId: string
   title: string
-  text: string
+  description: string
   location: string
-  startDate: Date
-  endDate: Date
+  availability: { startDate: string; endDate: string }[]
   dogs: number
   cats: number
   imagesUrls: string[]
@@ -35,6 +46,7 @@ export default function HousePost({
 
   const { session, error, supabaseClient } = useSessionContext()
   const [showModal, setShowModal] = useState(false)
+  const primaryUse = useSelector(selectPrimaryUseState)
 
   function handleModalOpen() {
     setShowModal(true)
@@ -129,28 +141,42 @@ export default function HousePost({
             </Modal.Footer>
           </Modal>
 
-          {/*           
-          {postPicturesFullUrl.map((picUrl, index) => (
-            <Image src={picUrl} alt="post pic" height={100} width={100} key={index} />
-          ))} */}
-
           <Card.Text>location: {location}</Card.Text>
+          <hr />
           <Card.Text>
             dogs: {dogs} cats: {cats}
           </Card.Text>
-          <Card.Text>{text}</Card.Text>
-          <Card.Text>{moment(new Date()).format('YYYY-MM-DD')} - 2023-03-10</Card.Text>
-          <Card.Text>can also show total day count</Card.Text>
-          <Card.Text>post by: {landlordFirstName}</Card.Text>
-          <Picture
-            uid={landlordId ? landlordId : 'testing'}
-            url={landlordAvatarUrl}
-            size={100}
-            onUpload={() => {}}
-            disableUpload={true}
-            bucketName="avatars"
-          />
-          <Button variant="secondary">Send {landlordFirstName} a message</Button>
+          <hr />
+          <Card.Text>{description}</Card.Text>
+          <hr />
+          <div>
+            <h3>dates:</h3>
+            <Card.Text>
+              {availability.map((period, index) => (
+                <React.Fragment key={index}>
+                  {`${period.startDate} - ${period.endDate}`}
+                  <br />
+                  {`total days: ${countDays(period.startDate, period.endDate)}`}
+                </React.Fragment>
+              ))}
+            </Card.Text>
+            <hr />
+          </div>
+          {primaryUse === USER_TYPE.Housitter && (
+            <div>
+              {' '}
+              <Card.Text>post by: {landlordFirstName}</Card.Text>
+              <Picture
+                uid={landlordId ? landlordId : 'testing'}
+                url={landlordAvatarUrl}
+                size={100}
+                onUpload={() => {}}
+                disableUpload={true}
+                bucketName="avatars"
+              />
+              <Button variant="secondary">Send {landlordFirstName} a message</Button>
+            </div>
+          )}
         </Card.Body>
       </Card>
     </div>

@@ -138,7 +138,7 @@ export default function landlordIntro() {
 
   return (
     <div className="position-absolute top-50 start-50 translate-middle">
-      <p>ok lets find you a house</p>
+      <h1>ok lets find you a sitter</h1>
       <div>
         <h1>WHEN are we talking about here?</h1>
         {availability.map((period, index) => (

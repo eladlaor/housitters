@@ -67,6 +67,21 @@ a {
   background-color: blue
 }
 
+.sitters-and-filter {
+  /* Adjust as needed */
+  display: flex;
+  flex-direction: row;
+}
+
+.available-housitters {
+  /* Adjust width as needed */
+  width: 50%;
+}
+
+.sidebar-filter {
+  flex: 1;
+}
+
 
 
 /* then import bootstrap */

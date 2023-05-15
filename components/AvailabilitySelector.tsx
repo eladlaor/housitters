@@ -73,6 +73,9 @@ export default function AvailabilitySelector({
         if (!availableDatesAsReduxType[0].endDate.startsWith('1970')) {
           setshouldShowCustomSelection(true)
           setEndDateCurrentSelection(EVENT_KEYS.CUSTOM_RANGE)
+        } else {
+          setshouldShowCustomSelection(false)
+          setEndDateCurrentSelection(EVENT_KEYS.ANYTIME)
         }
       }
     }

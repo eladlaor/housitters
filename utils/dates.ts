@@ -22,3 +22,22 @@ export function parseDateMultiRange(
 
   return modifiedAvailability
 }
+
+export function countDays(startDate: string | Date, endDate: string | Date): number {
+  let beginning: Date
+  let end: Date
+
+  if (typeof startDate === 'string') {
+    beginning = new Date(startDate)
+    end = new Date(endDate)
+  } else {
+    beginning = startDate as Date
+    end = endDate as Date
+  }
+
+  const millisecondsPerDay = 24 * 60 * 60 * 1000
+  const timeDifference = Math.abs(beginning.getTime() - end.getTime())
+  const daysDifference = Math.floor(timeDifference / millisecondsPerDay)
+
+  return daysDifference
+}
