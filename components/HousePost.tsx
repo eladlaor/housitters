@@ -37,12 +37,14 @@ export default function HousePost({
   availability: { startDate: string; endDate: string }[]
   dogs: number
   cats: number
-  imagesUrls: string[]
+  imagesUrls: { url: string; id: number }[]
 }) {
   const [landlordFirstName, setLandlordFirstName] = useState('')
   const [landlordAvatarUrl, setLandlordAvatarUrl] = useState('')
 
-  const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as string[])
+  const [postPicturesFullUrl, setPostPicturesFullUrl] = useState(
+    [] as { url: string; id: number }[]
+  )
 
   const { session, error, supabaseClient } = useSessionContext()
   const [showModal, setShowModal] = useState(false)
@@ -84,24 +86,25 @@ export default function HousePost({
   }, [landlordId, imagesUrls])
 
   // TODO: duplicated in Picture.tsx
-  async function downloadPostImages(landlordId: string, imagesUrls: string[]) {
+  async function downloadPostImages(landlordId: string, imagesUrls: { url: string; id: number }[]) {
     try {
       const downloadPromises = imagesUrls.map(async (imageUrl) => {
         const { data: downloadData, error: downloadError } = await supabaseClient.storage
           .from('posts')
-          .download(`${landlordId}-${imageUrl}`)
+          .download(`${landlordId}-${imageUrl.url}`)
         if (downloadError) {
           throw downloadError
         }
 
         if (downloadData) {
           const fullUrl = URL.createObjectURL(downloadData)
-          return fullUrl
+          return { url: fullUrl, id: imageUrl.id }
         }
       })
 
       const fullUrlsForPreview = await Promise.all(downloadPromises)
-      setPostPicturesFullUrl(fullUrlsForPreview as string[])
+
+      setPostPicturesFullUrl(fullUrlsForPreview as { url: string; id: number }[])
     } catch (error) {
       alert('error in downloadPostImages' + error)
     }
@@ -113,7 +116,7 @@ export default function HousePost({
         <Card.Body>
           <Card.Title>{title}</Card.Title>
           {postPicturesFullUrl[0] && (
-            <Image src={postPicturesFullUrl[0]} alt="Thumbnail" height={100} width={100} />
+            <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
           )}
           <div>
             {postPicturesFullUrl.length > 1 ? (
@@ -131,7 +134,7 @@ export default function HousePost({
               <Row className="justify-content-center">
                 {postPicturesFullUrl.map((picUrl, index) => (
                   <Col md={4} className="mb-4" key={index}>
-                    <Image src={picUrl} width={100} height={100} key={index} />
+                    <Image src={picUrl.url} width={100} height={100} key={index} />
                   </Col>
                 ))}
               </Row>
@@ -157,6 +160,7 @@ export default function HousePost({
                   {`${period.startDate} - ${period.endDate}`}
                   <br />
                   {`total days: ${countDays(period.startDate, period.endDate)}`}
+                  <br />
                 </React.Fragment>
               ))}
             </Card.Text>

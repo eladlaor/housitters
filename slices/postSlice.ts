@@ -2,7 +2,10 @@ import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 
 export const initialState = {
-  imagesUrls: [] as Array<string>,
+  imagesUrls: [] as Array<{
+    url: string
+    id: number
+  }>,
   isActive: true,
   description: '',
   title: '',

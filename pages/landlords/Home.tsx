@@ -8,7 +8,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Modal from 'react-bootstrap/Modal'
 import { useEffect, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
-import { selectLocationState, selectPetsState, setLocationState } from '../../slices/landlordSlice'
+import {
+  selectLocationState,
+  selectPetsState,
+  setLocationState,
+  setPetsState,
+} from '../../slices/landlordSlice'
 import {
   selectImagesUrlsState,
   selectDescriptionState,
@@ -33,6 +38,7 @@ import Resizer from 'react-image-file-resizer'
 import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
+import { supabase } from '../../utils/supabase-client'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -46,10 +52,15 @@ export default function Home() {
   const description = useSelector(selectDescriptionState)
   const fileNames = useSelector(selectImagesUrlsState)
 
-  const [previewDataUrls, setPreviewDataUrls] = useState([] as Array<String>)
+  const [previewDataUrls, setPreviewDataUrls] = useState(
+    [] as Array<{
+      url: string
+      id: number
+    }>
+  )
 
   const location = useSelector(selectLocationState)
-  const [freeTextState, setFreeTextState] = useState('')
+  const [freeTextState, setFreeTextState] = useState(description)
   const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type
   const isLogged = useSelector(selectIsLoggedState)
 
@@ -67,7 +78,7 @@ export default function Home() {
           .from('landlords')
           .select(
             `location, profiles!inner (
-            first_name, available_dates!inner (start_date, end_date, period_index)
+            first_name, available_dates!inner (start_date, end_date, period_index), pets!inner (dogs, cats)
           )`
           )
           .eq('user_id', user.id)
@@ -81,6 +92,14 @@ export default function Home() {
           if (locationChanged && isLogged) {
             dispatch(setLocationState(landlordData.location))
           }
+
+          // TODO: lets import the needed type from supabase types and use instead of any.
+          dispatch(
+            setPetsState({
+              dogs: (landlordData.profiles as any).pets.dogs,
+              cats: (landlordData.profiles as any).pets.cats,
+            })
+          )
           dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
         }
 
@@ -94,7 +113,16 @@ export default function Home() {
         if (postsError) {
           alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
         } else if (postsData) {
-          dispatch(setImagesUrlsState(postsData.images_urls))
+          let formattedImageUrlData: { url: string; id: number }[] = []
+
+          postsData.images_urls.forEach((postImagesUrl: string, index: number) => {
+            formattedImageUrlData.push({
+              url: postImagesUrl,
+              id: index,
+            })
+          })
+
+          dispatch(setImagesUrlsState(formattedImageUrlData))
           dispatch(setDescriptionState(postsData.description))
           dispatch(setTitleState(postsData.title))
         }
@@ -183,11 +211,15 @@ export default function Home() {
     setLocationState(key ? key : '')
   }
 
-  function handleShowNewPostModal() {
+  async function handleShowNewPostModal() {
+    if (fileNames.length > 0) {
+      await loadPreviewImages()
+    }
     setShowNewPostModal(true)
   }
 
   function handleCloseNoewPostModal() {
+    setPreviewDataUrls([])
     setShowNewPostModal(false)
   }
 
@@ -288,6 +320,27 @@ export default function Home() {
     })
   }
 
+  async function loadPreviewImages() {
+    let previews: { url: string; id: number }[] = []
+    const downloadPromises = fileNames.map(async (fileName) => {
+      let { error, data: imageData } = await supabaseClient.storage
+        .from('posts')
+        .download(`${user?.id}-${fileName.url}`)
+      if (error) {
+        alert(`failed downloading preview image: ${error.message}`)
+        throw error
+      } else if (imageData) {
+        const buffer = await blobToBuffer(imageData)
+
+        const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
+        previews.push({ url: previewDataUrl, id: fileName.id })
+      }
+    })
+
+    await Promise.all(downloadPromises)
+    setPreviewDataUrls(previews)
+  }
+
   async function onPostImageSelection(event: any) {
     try {
       // setUploadingImage(true)
@@ -313,10 +366,14 @@ export default function Home() {
         const buffer = await blobToBuffer(resizedImage)
 
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
-        const updatedPreviews = [...previewDataUrls, previewDataUrl]
+        const updatedPreviews = [
+          ...previewDataUrls,
+          { url: previewDataUrl, id: previewDataUrls.length },
+        ]
+
         setPreviewDataUrls(updatedPreviews)
 
-        const updatedFileNames = [...fileNames, fileName]
+        const updatedFileNames = [...fileNames, { url: fileName, id: fileNames.length }]
         dispatch(setImagesUrlsState(updatedFileNames)) // TODO: rename. this is for db, to retrieve later.
       }
     } catch (e: any) {
@@ -331,10 +388,9 @@ export default function Home() {
 
     let { error: postUploadError } = await supabaseClient.from('posts').upsert({
       landlord_id: user?.id,
-      start_date: new Date(availability[0].startDate), // TODO: fix
-      end_date: new Date(availability[0].endDate), // TODO: fix
-      description: freeTextState, // TODO: rename
-      images_urls: fileNames, // TODO: rename in db.
+      description: freeTextState, // TODO: rename // separating description and freeTextState in order to allow quick update of the field while typing, and only later dispatch and update in db.
+      images_urls: fileNames.map((file) => file.url), // TODO: rename in db AND fix the update scenario.
+      is_active: true,
     })
 
     if (postUploadError) {
@@ -342,6 +398,7 @@ export default function Home() {
       throw postUploadError
     }
 
+    // TODO: should probably get created_at also, and use it also as a primary key, to allow multiple past posts.
     let { error: petUploadError } = await supabaseClient.from('pets').upsert({
       user_id: user?.id,
       dogs: pets.dogs,
@@ -352,13 +409,25 @@ export default function Home() {
       alert('error upserting pets: ' + petUploadError.message)
     }
 
-    dispatch(setImagesUrlsState([]))
-
     alert('submitted successfully')
     setShowNewPostModal(false)
   }
 
-  async function handleDeletePost() {}
+  async function handleDeleteImage(previewData: { url: string; id: number }, e: any) {
+    e.preventDefault()
+    let copyOfImagesUrls = [...previewDataUrls]
+    copyOfImagesUrls = copyOfImagesUrls.filter(
+      (img: { url: string; id: number }) => img.url !== previewData.url
+    )
+
+    let copyOfFileNames = [...fileNames]
+    copyOfFileNames = copyOfFileNames.filter(
+      (fileData: { url: string; id: number }) => fileData.id != previewData.id
+    )
+
+    setPreviewDataUrls(copyOfImagesUrls)
+    dispatch(setImagesUrlsState(copyOfFileNames))
+  }
 
   return (
     <>
@@ -392,15 +461,13 @@ export default function Home() {
                   description={description}
                   location={location}
                   availability={availability}
-                  dogs={1}
-                  cats={2}
+                  dogs={pets.dogs}
+                  cats={pets.cats}
                   imagesUrls={fileNames} // TODO: should have default image
                 />
-                <Button variant="danger" onClick={handleDeletePost}>
-                  Delete post
-                </Button>
+                <Button variant="danger">Delete post</Button>
                 <Button variant="success">I found a sitter</Button>
-                <Button>Edit Post</Button>
+                <Button onClick={handleShowNewPostModal}>Edit Post</Button>
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
@@ -427,7 +494,7 @@ export default function Home() {
                       key={index}
                       period={period}
                       index={index}
-                      updateDbInstantly={false}
+                      updateDbInstantly={true}
                     />
                   ))}
                 </Form.Group>
@@ -452,7 +519,7 @@ export default function Home() {
                   <PetsCounter />
                 </Form.Group>
                 <Form.Group>
-                  <h1 style={{ color: 'blue' }}>free text</h1>
+                  <h1>Description</h1>
                   <Form.Control
                     className="text-end"
                     size="sm"
@@ -474,22 +541,21 @@ export default function Home() {
                     multiple
                   />
 
-                  {previewDataUrls.map((url: any, index: number) => (
-                    <div key={index}>
-                      <Image src={url} height={50} width={50} key={index} />
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          let copyOfImagesUrls = [...previewDataUrls]
-                          copyOfImagesUrls = copyOfImagesUrls.filter((img: any) => img !== url)
-                          setPreviewDataUrls(copyOfImagesUrls)
-                        }}
-                        key={`delete-${index}`}
-                      >
-                        delete
-                      </button>
-                    </div>
-                  ))}
+                  {previewDataUrls.map(
+                    (previewData: { url: string; id: number }, index: number) => (
+                      <div key={index}>
+                        <Image src={previewData.url} height={50} width={50} key={index} />
+                        <Button
+                          variant="danger"
+                          onClick={(e) => handleDeleteImage(previewData, e)}
+                          key={`delete-${index}`}
+                          name={`image-${index}`}
+                        >
+                          delete
+                        </Button>
+                      </div>
+                    )
+                  )}
                 </Form.Group>
 
                 <Button type="submit" onClick={(e) => handleSubmit(e)}>
