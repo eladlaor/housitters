@@ -1,25 +1,17 @@
-import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
+import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
-import { useEffect, useState } from 'react'
-import { Router, useRouter } from 'next/router'
-import Link from 'next/link'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { LANDLORDS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  selectIsLoggedState,
-  setIsLoggedState,
-  setFirstName,
-  selectPrimaryUseState,
-  setPrimaryUse,
-} from '../slices/userSlice'
+import { setIsLoggedState, setFirstName, setPrimaryUse } from '../slices/userSlice'
 
 export default function LoginPage() {
-  const { isLoading, session, error, supabaseClient } = useSessionContext()
+  const { error, supabaseClient } = useSessionContext()
   const user = useUser()
   const router = useRouter()
   const dispatch = useDispatch()
-  const isLoggedState = useSelector(selectIsLoggedState)
-  const primaryUse = useSelector(selectPrimaryUseState)
 
   useEffect(() => {
     if (!user) {
@@ -72,7 +64,7 @@ export default function LoginPage() {
     return (
       <div className="container" style={{ padding: '50px 0 100px 0' }}>
         <>
-          {/* why user check? maybe just testing purpose <pre>{user ? user : 'user is indeed not logged in, yaani not authenticated'}</pre> */}
+          <p>sign in using one of the methods below:</p>
           {error && <p>{error.message}</p>}
           <div className="col-6 auth-widget">
             <Auth
@@ -93,7 +85,7 @@ export default function LoginPage() {
               }}
               theme="default"
               supabaseClient={supabaseClient}
-              providers={['google', 'github']}
+              providers={['google', 'facebook', 'apple']}
               socialLayout="horizontal"
             />
           </div>
