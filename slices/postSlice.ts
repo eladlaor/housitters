@@ -6,7 +6,7 @@ export const initialState = {
     url: string
     id: number
   }>,
-  isActive: true,
+  isActive: false,
   description: '',
   title: '',
 }

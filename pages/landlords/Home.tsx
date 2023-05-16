@@ -26,7 +26,7 @@ import {
 } from '../../slices/postSlice'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import SignOut from '../../components/Buttons/SignOut'
-import { Dropdown, DropdownButton } from 'react-bootstrap'
+import { Dropdown, DropdownButton, FormControl } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
@@ -38,7 +38,7 @@ import Resizer from 'react-image-file-resizer'
 import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
-import { supabase } from '../../utils/supabase-client'
+import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -47,6 +47,7 @@ export default function Home() {
   const firstName = useSelector(selectFirstNameState)
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
+  const isActive = useSelector(selectIsActiveState)
 
   const title = useSelector(selectTitleState)
   const description = useSelector(selectDescriptionState)
@@ -60,8 +61,7 @@ export default function Home() {
   )
 
   const location = useSelector(selectLocationState)
-  const [freeTextState, setFreeTextState] = useState(description)
-  const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type
+  const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type? no. improve
   const isLogged = useSelector(selectIsLoggedState)
 
   const pets = useSelector(selectPetsState)
@@ -103,7 +103,20 @@ export default function Home() {
           dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
         }
 
-        let { data: postsData, error: postsError } = await supabaseClient
+        if (!isActive) {
+          postSettersToInitialStates.forEach((attributeSetterAndInitialState) => {
+            dispatch(
+              attributeSetterAndInitialState.matchingSetter(
+                attributeSetterAndInitialState.initialState
+              )
+            )
+          })
+          setPreviewDataUrls([])
+          setHousitters([])
+          return
+        }
+
+        let { data: activePostData, error: postsError } = await supabaseClient
           .from('posts')
           .select(`description, images_urls, title`)
           .eq('landlord_id', user.id)
@@ -111,20 +124,30 @@ export default function Home() {
           .single()
 
         if (postsError) {
-          alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
-        } else if (postsData) {
-          let formattedImageUrlData: { url: string; id: number }[] = []
+          if (postsError.details.startsWith('Results contain 0 rows')) {
+            console.log(
+              'Error: 0 rows returned: even though isActive is set to false, query was sent and no posts found'
+            )
+          } else {
+            alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
+            throw postsError
+          }
+        }
 
-          postsData.images_urls.forEach((postImagesUrl: string, index: number) => {
-            formattedImageUrlData.push({
+        if (activePostData) {
+          const imagesUrlData: { url: string; id: number }[] = []
+
+          activePostData.images_urls.forEach((postImagesUrl: string, index: number) => {
+            imagesUrlData.push({
               url: postImagesUrl,
               id: index,
             })
           })
 
-          dispatch(setImagesUrlsState(formattedImageUrlData))
-          dispatch(setDescriptionState(postsData.description))
-          dispatch(setTitleState(postsData.title))
+          // TODO: maybe create a utility which gets a property, checks if it's different, and only then dispatches.
+          dispatch(setImagesUrlsState(imagesUrlData))
+          dispatch(setDescriptionState(activePostData.description))
+          dispatch(setTitleState(activePostData.title))
         }
 
         let { data: housitterData, error: housitterError } = await supabaseClient
@@ -203,7 +226,7 @@ export default function Home() {
         alert(e.message)
       })
     }
-  }, [user, availability, location])
+  }, [user, availability, location, isActive])
 
   // TODO: should move about_me text to the housitters table.
 
@@ -388,7 +411,8 @@ export default function Home() {
 
     let { error: postUploadError } = await supabaseClient.from('posts').upsert({
       landlord_id: user?.id,
-      description: freeTextState, // TODO: rename // separating description and freeTextState in order to allow quick update of the field while typing, and only later dispatch and update in db.
+      title,
+      description,
       images_urls: fileNames.map((file) => file.url), // TODO: rename in db AND fix the update scenario.
       is_active: true,
     })
@@ -409,6 +433,8 @@ export default function Home() {
       alert('error upserting pets: ' + petUploadError.message)
     }
 
+    dispatch(setIsActiveState(true))
+
     alert('submitted successfully')
     setShowNewPostModal(false)
   }
@@ -427,6 +453,22 @@ export default function Home() {
 
     setPreviewDataUrls(copyOfImagesUrls)
     dispatch(setImagesUrlsState(copyOfFileNames))
+  }
+
+  async function handleDeletePost(e: any) {
+    let { error } = await supabaseClient
+      .from('posts')
+      .delete()
+      .eq('landlord_id', user?.id)
+      .eq('is_active', true)
+
+    if (error) {
+      alert(`error deleting post: ${error.message}`)
+      throw error
+    }
+
+    dispatch(setIsActiveState(false))
+    alert('successfully deleted the post')
   }
 
   return (
@@ -449,37 +491,47 @@ export default function Home() {
         <div>
           <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
         </div>
+        {isActive ? (
+          <div>
+            <h1>here is your current post</h1>
+            <Accordion defaultActiveKey="0">
+              <Accordion.Item eventKey="0">
+                <Accordion.Header>My Active Post</Accordion.Header>
+                <Accordion.Body>
+                  <HousePost
+                    landlordId={user ? user.id : ''}
+                    title={title}
+                    description={description}
+                    location={location}
+                    availability={availability}
+                    dogs={pets.dogs}
+                    cats={pets.cats}
+                    imagesUrls={fileNames} // TODO: should have default image
+                  />
+                  <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
+                    Delete post
+                  </Button>
+                  <Button variant="success">I found a sitter</Button>
+                  <Button onClick={handleShowNewPostModal}>Edit Post</Button>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+          </div>
+        ) : (
+          <div>
+            <Button
+              style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
+              variant="primary"
+              onClick={handleShowNewPostModal}
+            >
+              Create new post
+            </Button>
+            <br />
+            <br />
+          </div>
+        )}
+
         <div>
-          <h1>here is your current post</h1>
-          <Accordion defaultActiveKey="0">
-            <Accordion.Item eventKey="0">
-              <Accordion.Header>My Active Post</Accordion.Header>
-              <Accordion.Body>
-                <HousePost
-                  landlordId={user ? user.id : ''}
-                  title={title}
-                  description={description}
-                  location={location}
-                  availability={availability}
-                  dogs={pets.dogs}
-                  cats={pets.cats}
-                  imagesUrls={fileNames} // TODO: should have default image
-                />
-                <Button variant="danger">Delete post</Button>
-                <Button variant="success">I found a sitter</Button>
-                <Button onClick={handleShowNewPostModal}>Edit Post</Button>
-              </Accordion.Body>
-            </Accordion.Item>
-          </Accordion>
-        </div>
-        <div>
-          <Button
-            style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
-            variant="primary"
-            onClick={handleShowNewPostModal}
-          >
-            Create new post
-          </Button>
           <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
             <Modal.Header closeButton>
               <Modal.Title style={{ color: 'blue' }}>lets create new post</Modal.Title>
@@ -519,15 +571,25 @@ export default function Home() {
                   <PetsCounter />
                 </Form.Group>
                 <Form.Group>
+                  <Form.Group>
+                    <Form.Label>this could be title</Form.Label>
+                    <FormControl
+                      type="text"
+                      value={title}
+                      onChange={(e) => {
+                        dispatch(setTitleState(e.target.value))
+                      }}
+                    />
+                  </Form.Group>
                   <h1>Description</h1>
                   <Form.Control
                     className="text-end"
                     size="sm"
                     as="textarea"
                     rows={5}
-                    value={freeTextState}
+                    value={description}
                     onChange={(e) => {
-                      setFreeTextState(e.target.value)
+                      dispatch(setDescriptionState(e.target.value))
                     }}
                   ></Form.Control>
                 </Form.Group>
