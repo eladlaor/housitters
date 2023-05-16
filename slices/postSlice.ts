@@ -1,11 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import { ImageData } from '../types/clientSide'
 
 export const initialState = {
-  imagesUrls: [] as Array<{
-    url: string
-    id: number
-  }>,
+  imagesUrls: [] as ImageData[],
   isActive: false,
   description: '',
   title: '',

@@ -14,22 +14,28 @@ export interface Database {
           created_at: string | null
           end_date: string
           id: number
+          period_index: number
           start_date: string
-          user_id: string | null
+          user_id: string
+          user_type: string | null
         }
         Insert: {
           created_at?: string | null
           end_date: string
           id?: number
+          period_index?: number
           start_date: string
-          user_id?: string | null
+          user_id: string
+          user_type?: string | null
         }
         Update: {
           created_at?: string | null
           end_date?: string
           id?: number
+          period_index?: number
           start_date?: string
-          user_id?: string | null
+          user_id?: string
+          user_type?: string | null
         }
       }
       housitters: {
@@ -40,7 +46,7 @@ export interface Database {
           locations: string[] | null
           only_paid: boolean | null
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -49,7 +55,7 @@ export interface Database {
           locations?: string[] | null
           only_paid?: boolean | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -58,7 +64,7 @@ export interface Database {
           locations?: string[] | null
           only_paid?: boolean | null
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
       }
       landlords: {
@@ -103,31 +109,31 @@ export interface Database {
       }
       posts: {
         Row: {
-          active: boolean | null
           created_at: string | null
           description: string | null
-          end_date: string | null
-          start_date: string | null
+          id: number
+          images_urls: string[] | null
+          is_active: boolean
+          landlord_id: string
           title: string | null
-          user_id: string
         }
         Insert: {
-          active?: boolean | null
           created_at?: string | null
           description?: string | null
-          end_date?: string | null
-          start_date?: string | null
+          id?: number
+          images_urls?: string[] | null
+          is_active: boolean
+          landlord_id: string
           title?: string | null
-          user_id: string
         }
         Update: {
-          active?: boolean | null
           created_at?: string | null
           description?: string | null
-          end_date?: string | null
-          start_date?: string | null
+          id?: number
+          images_urls?: string[] | null
+          is_active?: boolean
+          landlord_id?: string
           title?: string | null
-          user_id?: string
         }
       }
       profiles: {

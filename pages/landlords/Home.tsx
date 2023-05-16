@@ -39,6 +39,7 @@ import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
 import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
+import { ImageData } from '../../types/clientSide'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -53,12 +54,7 @@ export default function Home() {
   const description = useSelector(selectDescriptionState)
   const fileNames = useSelector(selectImagesUrlsState)
 
-  const [previewDataUrls, setPreviewDataUrls] = useState(
-    [] as Array<{
-      url: string
-      id: number
-    }>
-  )
+  const [previewDataUrls, setPreviewDataUrls] = useState([] as ImageData[])
 
   const location = useSelector(selectLocationState)
   const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type? no. improve
@@ -135,7 +131,7 @@ export default function Home() {
         }
 
         if (activePostData) {
-          const imagesUrlData: { url: string; id: number }[] = []
+          const imagesUrlData: ImageData[] = []
 
           activePostData.images_urls.forEach((postImagesUrl: string, index: number) => {
             imagesUrlData.push({
@@ -344,7 +340,7 @@ export default function Home() {
   }
 
   async function loadPreviewImages() {
-    let previews: { url: string; id: number }[] = []
+    let previews: ImageData[] = []
     const downloadPromises = fileNames.map(async (fileName) => {
       let { error, data: imageData } = await supabaseClient.storage
         .from('posts')
@@ -442,9 +438,7 @@ export default function Home() {
   async function handleDeleteImage(previewData: { url: string; id: number }, e: any) {
     e.preventDefault()
     let copyOfImagesUrls = [...previewDataUrls]
-    copyOfImagesUrls = copyOfImagesUrls.filter(
-      (img: { url: string; id: number }) => img.url !== previewData.url
-    )
+    copyOfImagesUrls = copyOfImagesUrls.filter((img: ImageData) => img.url !== previewData.url)
 
     let copyOfFileNames = [...fileNames]
     copyOfFileNames = copyOfFileNames.filter(
@@ -603,21 +597,19 @@ export default function Home() {
                     multiple
                   />
 
-                  {previewDataUrls.map(
-                    (previewData: { url: string; id: number }, index: number) => (
-                      <div key={index}>
-                        <Image src={previewData.url} height={50} width={50} key={index} />
-                        <Button
-                          variant="danger"
-                          onClick={(e) => handleDeleteImage(previewData, e)}
-                          key={`delete-${index}`}
-                          name={`image-${index}`}
-                        >
-                          delete
-                        </Button>
-                      </div>
-                    )
-                  )}
+                  {previewDataUrls.map((previewData: ImageData, index: number) => (
+                    <div key={index}>
+                      <Image src={previewData.url} height={50} width={50} key={index} />
+                      <Button
+                        variant="danger"
+                        onClick={(e) => handleDeleteImage(previewData, e)}
+                        key={`delete-${index}`}
+                        name={`image-${index}`}
+                      >
+                        delete
+                      </Button>
+                    </div>
+                  ))}
                 </Form.Group>
 
                 <Button type="submit" onClick={(e) => handleSubmit(e)}>

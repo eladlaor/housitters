@@ -13,6 +13,7 @@ import { countDays } from '../utils/dates'
 import { useSelector } from 'react-redux'
 import { selectPrimaryUseState } from '../slices/userSlice'
 import { USER_TYPE } from '../utils/constants'
+import { ImageData } from '../types/clientSide'
 
 /*
   if no active posts: allow create new post
@@ -37,14 +38,12 @@ export default function HousePost({
   availability: { startDate: string; endDate: string }[]
   dogs: number
   cats: number
-  imagesUrls: { url: string; id: number }[]
+  imagesUrls: ImageData[]
 }) {
   const [landlordFirstName, setLandlordFirstName] = useState('')
   const [landlordAvatarUrl, setLandlordAvatarUrl] = useState('')
 
-  const [postPicturesFullUrl, setPostPicturesFullUrl] = useState(
-    [] as { url: string; id: number }[]
-  )
+  const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as ImageData[])
 
   const { session, error, supabaseClient } = useSessionContext()
   const [showModal, setShowModal] = useState(false)
@@ -86,7 +85,7 @@ export default function HousePost({
   }, [landlordId, imagesUrls])
 
   // TODO: duplicated in Picture.tsx
-  async function downloadPostImages(landlordId: string, imagesUrls: { url: string; id: number }[]) {
+  async function downloadPostImages(landlordId: string, imagesUrls: ImageData[]) {
     try {
       const downloadPromises = imagesUrls.map(async (imageUrl) => {
         const { data: downloadData, error: downloadError } = await supabaseClient.storage
@@ -104,7 +103,7 @@ export default function HousePost({
 
       const fullUrlsForPreview = await Promise.all(downloadPromises)
 
-      setPostPicturesFullUrl(fullUrlsForPreview as { url: string; id: number }[])
+      setPostPicturesFullUrl(fullUrlsForPreview as ImageData[])
     } catch (error) {
       alert('error in downloadPostImages' + error)
     }
