@@ -8,6 +8,7 @@ import {
   selectPrimaryUseState,
   selectFirstNameState,
   setFirstName,
+  setAvatarUrl,
 } from '../../slices/userSlice'
 
 import { selectLocationsState } from '../../slices/housitterSlice'
@@ -116,6 +117,8 @@ export default function HousitterIntro() {
         alert(`error upserting profile: ${profileUpsertError}`)
         throw profileUpsertError
       }
+
+      dispatch(setAvatarUrl(newProfile.avatar_url))
 
       // TODO: this variable key names should be replaced with simple type safety
       const newHousitter = {

@@ -7,6 +7,8 @@ import {
   setAvailability,
   selectAvailabilityState,
   selectIsLoggedState,
+  selectAvatarUrlState,
+  setAvatarUrl,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
 import { LANDLORDS_ROUTES, LocationIds } from '../../utils/constants'
@@ -17,6 +19,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { selectImagesUrlsState } from '../../slices/postSlice'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
+import Picture from '../../components/Picture'
 
 export default function Home() {
   const user = useUser()
@@ -29,6 +32,7 @@ export default function Home() {
   const [posts, setPosts] = useState([] as Object[])
   const imagesUrls = useSelector(selectImagesUrlsState)
   const isLogged = useSelector(selectIsLoggedState)
+  const avatarUrl = useSelector(selectAvatarUrlState)
 
   // TODO: can set loading states if needed
 
@@ -67,7 +71,7 @@ export default function Home() {
         .from('housitters')
         .select(
           `locations, profiles!inner (
-            available_dates!inner (start_date, end_date, period_index)
+            avatar_url, available_dates!inner (start_date, end_date, period_index)
           )`
         )
         .eq('user_id', user.id)
@@ -84,6 +88,8 @@ export default function Home() {
         if (locationsChanged && isLogged) {
           dispatch(setLocationsState(newLocations))
         }
+
+        dispatch(setAvatarUrl(avatarUrl))
 
         // TODO: just for naming convention (to align with the availabaility object name), traversing again...
 
@@ -153,6 +159,18 @@ export default function Home() {
       </Navbar>
       <div>
         <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
+        {user && (
+          <Picture
+            uid={user.id}
+            size={100}
+            disableUpload={true}
+            bucketName="avatars"
+            url={avatarUrl}
+            onUpload={() => {
+              console.log('no upload')
+            }}
+          />
+        )}
         <h2>here are all the relvant posts for you</h2>
         <Row className="justify-content-center">
           {posts.length === 0 ? (

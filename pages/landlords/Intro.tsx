@@ -56,10 +56,11 @@ export default function landlordIntro() {
   // running just once ([]), to prevent the warning: updating a component while rendering a different one
   useEffect(() => {}, [])
 
-  const [show, setShow] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
+  const handleClose = () => setShowModal(false)
+  const handleShow = () => setShowModal(true)
 
   function setFormField(field: string, value: any) {
     setForm({
@@ -87,7 +88,7 @@ export default function landlordIntro() {
 
   async function handleSignUp(e: any) {
     e.preventDefault()
-    setShow(false) // TODO: should probably add another kind of signifier to wait until registration completes, but twice alert is no good. maybe a route to a differnet page.
+    setShowModal(false) // TODO: should probably add another kind of signifier to wait until registration completes, but twice alert is no good. maybe a route to a differnet page.
 
     let { data, error } = await supabaseClient.auth.signUp({
       email: form[SIGNUP_FORM_PROPS.EMAIL] as string,
@@ -268,7 +269,7 @@ export default function landlordIntro() {
         <Button variant="primary" onClick={handleShow}>
           Find me a sitter
         </Button>
-        <Modal show={show} onHide={handleClose} contentClassName="landlord-signup-modal">
+        <Modal show={showModal} onHide={handleClose} contentClassName="landlord-signup-modal">
           <Modal.Header closeButton>
             <Modal.Title style={{ color: 'blue' }}>One more step</Modal.Title>
           </Modal.Header>
@@ -309,14 +310,25 @@ export default function landlordIntro() {
               </Form.Group>
               <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
                 <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password" // TODO: is this secure enough to get password like this?
-                  placeholder="Password"
-                  // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
-                  onChange={(e) => {
-                    setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
-                  }}
-                />
+                <div className="password-input-wrapper">
+                  <Form.Control
+                    type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
+                    placeholder="Password"
+                    // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
+                    onChange={(e) => {
+                      setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
+                    }}
+                  />
+                  <Button
+                    variant="info"
+                    type="button"
+                    className="password-toggle-button"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </Button>
+                  <hr />
+                </div>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Pets</Form.Label>
