@@ -82,7 +82,20 @@ a {
   flex: 1;
 }
 
+.headline {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #333; /* Customize the color as per your preference */
+}
 
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle-button {
+  position: relative; 
+}
 
 /* then import bootstrap */
 @import "bootstrap/dist/css/bootstrap.css";

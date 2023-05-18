@@ -1,6 +1,12 @@
 import { useRouter } from 'next/router'
 import GoToProfileButton from '../../components/GoToProfileButton'
-import { selectFirstNameState, selectIsLoggedState, setFirstName } from '../../slices/userSlice'
+import {
+  selectAvatarUrlState,
+  selectFirstNameState,
+  selectIsLoggedState,
+  setAvatarUrl,
+  setFirstName,
+} from '../../slices/userSlice'
 import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -34,25 +40,29 @@ import Image from 'next/image'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
-import Resizer from 'react-image-file-resizer'
 import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
 import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
 import { ImageData } from '../../types/clientSide'
+import { removeInvalidCharacters, resizeImage, blobToBuffer } from '../../utils/files'
+import Picture from '../../components/Picture'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
+  const router = useRouter()
+
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
   const availability = useSelector(selectAvailabilityState)
   const [showNewPostModal, setShowNewPostModal] = useState(false)
-  const isActive = useSelector(selectIsActiveState)
+  const isActivePost = useSelector(selectIsActiveState)
 
   const title = useSelector(selectTitleState)
   const description = useSelector(selectDescriptionState)
   const fileNames = useSelector(selectImagesUrlsState)
+  const avatarUrl = useSelector(selectAvatarUrlState)
 
   const [previewDataUrls, setPreviewDataUrls] = useState([] as ImageData[])
 
@@ -70,11 +80,16 @@ export default function Home() {
 
     if (user) {
       const asyncWrapper = async () => {
+        const isAfterSignup = router.query.isAfterSignup
+        if (isAfterSignup) {
+          console.log('is after signup')
+        }
+
         let { data: landlordData, error: landlordError } = await supabaseClient
           .from('landlords')
           .select(
             `location, profiles!inner (
-            first_name, available_dates!inner (start_date, end_date, period_index), pets!inner (dogs, cats)
+            first_name, avatar_url, available_dates!inner (start_date, end_date, period_index), pets!inner (dogs, cats)
           )`
           )
           .eq('user_id', user.id)
@@ -89,6 +104,8 @@ export default function Home() {
             dispatch(setLocationState(landlordData.location))
           }
 
+          dispatch(setAvatarUrl((landlordData.profiles as any).avatar_url))
+
           // TODO: lets import the needed type from supabase types and use instead of any.
           dispatch(
             setPetsState({
@@ -99,7 +116,7 @@ export default function Home() {
           dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
         }
 
-        if (!isActive) {
+        if (!isActivePost) {
           postSettersToInitialStates.forEach((attributeSetterAndInitialState) => {
             dispatch(
               attributeSetterAndInitialState.matchingSetter(
@@ -122,7 +139,7 @@ export default function Home() {
         if (postsError) {
           if (postsError.details.startsWith('Results contain 0 rows')) {
             console.log(
-              'Error: 0 rows returned: even though isActive is set to false, query was sent and no posts found'
+              'Error: 0 rows returned: even though isActivePost is set to false, query was sent and no posts found'
             )
           } else {
             alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
@@ -222,7 +239,7 @@ export default function Home() {
         alert(e.message)
       })
     }
-  }, [user, availability, location, isActive])
+  }, [user, availability, location, isActivePost])
 
   // TODO: should move about_me text to the housitters table.
 
@@ -242,103 +259,7 @@ export default function Home() {
     setShowNewPostModal(false)
   }
 
-  function removeInvalidCharacters(fileName: string): string {
-    const hebrewToEnglishMap: { [key: string]: string } = {
-      א: 'a',
-      ב: 'b',
-      ג: 'g',
-      ד: 'd',
-      ה: 'h',
-      ו: 'v',
-      ז: 'z',
-      ח: 'kh',
-      ט: 't',
-      י: 'y',
-      כ: 'k',
-      ל: 'l',
-      מ: 'm',
-      נ: 'n',
-      ס: 's',
-      ע: 'a',
-      פ: 'p',
-      צ: 'ts',
-      ק: 'k',
-      ר: 'r',
-      ש: 'sh',
-      ת: 't',
-      ן: 'n',
-      ך: 'k',
-      ם: 'm',
-      ף: 'p',
-      ץ: 'ts',
-      '׳': "'",
-      '״': '"',
-    }
-
-    const hebToEngRegex = new RegExp(Object.keys(hebrewToEnglishMap).join('|'), 'g')
-    const noHebrewFileName = fileName.replace(hebToEngRegex, (match) => hebrewToEnglishMap[match])
-
-    const allInvalidFileNameCharacters = /[^a-zA-Z0-9]/g
-    return noHebrewFileName.replace(allInvalidFileNameCharacters, '')
-  }
-
-  const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = (event) => {
-        const img = new window.Image()
-        img.src = reader.result as string
-        img.onload = () => {
-          const aspectRatio = img.width / img.height
-          let targetWidth, targetHeight
-
-          if (aspectRatio < 1) {
-            // horizontal
-            targetWidth = maxWidth
-            targetHeight = maxWidth / aspectRatio
-          } else {
-            // vertical
-            targetWidth = maxHeight * aspectRatio
-            targetHeight = maxHeight
-          }
-
-          Resizer.imageFileResizer(
-            file,
-            targetWidth,
-            targetHeight,
-            'JPEG',
-            80,
-            0,
-            (resizedImage: any) => {
-              resolve(resizedImage)
-            },
-            'blob'
-          )
-        }
-      }
-    })
-  }
-
-  // TODO: get rid of the resolve reject syntax
-  const blobToBuffer = (blob: Blob): Promise<Buffer> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsArrayBuffer(blob)
-      reader.onload = () => {
-        if (reader.result instanceof ArrayBuffer) {
-          const buffer = Buffer.from(reader.result)
-          resolve(buffer)
-        } else {
-          reject(new Error('Failed to convert Blob to Buffer.'))
-        }
-      }
-      reader.onerror = (error) => {
-        reject(error)
-      }
-    })
-  }
-
+  // TODO: should paramterize to load any kind of image
   async function loadPreviewImages() {
     let previews: ImageData[] = []
     const downloadPromises = fileNames.map(async (fileName) => {
@@ -350,7 +271,6 @@ export default function Home() {
         throw error
       } else if (imageData) {
         const buffer = await blobToBuffer(imageData)
-
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
         previews.push({ url: previewDataUrl, id: fileName.id })
       }
@@ -370,7 +290,6 @@ export default function Home() {
 
       for (const file of event.target.files) {
         const fileName = removeInvalidCharacters(file.name)
-
         const resizedImage = await resizeImage(file, 1920, 1080)
 
         let { error: uploadError } = await supabaseClient.storage
@@ -383,7 +302,6 @@ export default function Home() {
         }
 
         const buffer = await blobToBuffer(resizedImage)
-
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
         const updatedPreviews = [
           ...previewDataUrls,
@@ -435,14 +353,14 @@ export default function Home() {
     setShowNewPostModal(false)
   }
 
-  async function handleDeleteImage(previewData: { url: string; id: number }, e: any) {
+  async function handleDeleteImage(previewData: ImageData, e: any) {
     e.preventDefault()
     let copyOfImagesUrls = [...previewDataUrls]
     copyOfImagesUrls = copyOfImagesUrls.filter((img: ImageData) => img.url !== previewData.url)
 
     let copyOfFileNames = [...fileNames]
     copyOfFileNames = copyOfFileNames.filter(
-      (fileData: { url: string; id: number }) => fileData.id != previewData.id
+      (imageData: ImageData) => imageData.id != previewData.id
     )
 
     setPreviewDataUrls(copyOfImagesUrls)
@@ -484,8 +402,20 @@ export default function Home() {
       <div className="container">
         <div>
           <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
+          {user && (
+            <Picture
+              uid={user.id}
+              size={100}
+              disableUpload={true}
+              bucketName="avatars"
+              url={avatarUrl}
+              onUpload={() => {
+                console.log('no upload')
+              }}
+            />
+          )}
         </div>
-        {isActive ? (
+        {isActivePost ? (
           <div>
             <h1>here is your current post</h1>
             <Accordion defaultActiveKey="0">

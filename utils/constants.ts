@@ -26,6 +26,12 @@ export const SIGNUP_FORM_PROPS = {
   VISIBLE: 'visible',
 }
 
+export type SignupFormProps = typeof SIGNUP_FORM_PROPS
+
+export interface SignupForm {
+  [key: string]: string | boolean
+}
+
 export const NEW_POST_PROPS = {
   LOCATION: 'location',
 }

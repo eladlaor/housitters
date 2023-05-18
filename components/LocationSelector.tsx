@@ -14,6 +14,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+import { selectIsLoggedState } from '../slices/userSlice'
 
 export default function LocationSelector({
   selectionType,
@@ -34,15 +35,22 @@ export default function LocationSelector({
   const [shouldShowCustomLocations, setShouldShowCustomLocations] = useState(showCustomLocations)
   const supabaseClient = useSupabaseClient()
   const user = useUser()
+  const isLogged = useSelector(selectIsLoggedState)
 
   const EVENT_KEYS = {
     ANYWHERE: 'anywhere',
     CUSTOM_LOCATIONS: 'custom locations',
   }
 
-  const [locationCurrentSelection, setLocationCurrentSelection] = useState(
+  const [locationCurrentSelectionType, setLocationCurrentSelectionType] = useState(
     showCustomLocations ? EVENT_KEYS.CUSTOM_LOCATIONS : EVENT_KEYS.ANYWHERE
   )
+
+  useEffect(() => {
+    if (locations === '') {
+      dispatch(setlandlordLocationState(LocationIds.TelAviv))
+    }
+  }, [])
 
   function handlelandlordSelectedLocation(e: any) {
     dispatch(setlandlordLocationState(e.target.id))
@@ -87,33 +95,35 @@ export default function LocationSelector({
         allLocationsSelected.push(location)
       })
 
-      let { error } = await supabaseClient.from('housitters').upsert({
-        user_id: user?.id,
-        locations: allLocationsSelected,
-      })
+      if (isLogged) {
+        let { error } = await supabaseClient.from('housitters').upsert({
+          user_id: user?.id,
+          locations: allLocationsSelected,
+        })
 
-      if (error) {
-        alert('error updating locations from filter to db' + error)
-        throw error
+        if (error) {
+          alert('error updating locations from filter to db' + error)
+          throw error
+        }
       }
-
       dispatch(setHousitterLocationsState(allLocationsSelected))
       setShouldShowCustomLocations(false)
-      setLocationCurrentSelection(EVENT_KEYS.ANYWHERE)
+      setLocationCurrentSelectionType(EVENT_KEYS.ANYWHERE)
     } else if (e === EVENT_KEYS.CUSTOM_LOCATIONS) {
-      let { error } = await supabaseClient.from('housitters').upsert({
-        user_id: user?.id,
-      })
+      if (isLogged) {
+        let { error } = await supabaseClient.from('housitters').upsert({
+          user_id: user?.id,
+        })
 
-      if (error) {
-        alert('error updating locations from filter to db' + error)
-        throw error
+        if (error) {
+          alert('error updating locations from filter to db' + error)
+          throw error
+        }
       }
 
-      dispatch(setHousitterLocationsState(['']))
-
+      dispatch(setHousitterLocationsState([]))
       setShouldShowCustomLocations(true)
-      setLocationCurrentSelection(EVENT_KEYS.CUSTOM_LOCATIONS)
+      setLocationCurrentSelectionType(EVENT_KEYS.CUSTOM_LOCATIONS)
     }
   }
 
@@ -124,7 +134,7 @@ export default function LocationSelector({
       <Form>
         <DropdownButton
           id="dropdown-basic-button"
-          title={locationCurrentSelection}
+          title={locationCurrentSelectionType}
           onSelect={handleHousitterSelectionType}
         >
           <Dropdown.Item eventKey={EVENT_KEYS.ANYWHERE}>Anywhere</Dropdown.Item>
@@ -140,7 +150,10 @@ export default function LocationSelector({
                 id={loc}
                 label={LocationDescriptions[loc]}
                 checked={
-                  isHousitter ? locations.indexOf(loc) !== -1 : loc === locations // the landlord case (locations will hold only one value. should rename TODO:)
+                  isHousitter
+                    ? locations.indexOf(loc) !== -1
+                    : // the landlord case
+                      loc === locations
                 }
                 name={isHousitter ? loc : 'singleLocationChoice'}
                 onChange={

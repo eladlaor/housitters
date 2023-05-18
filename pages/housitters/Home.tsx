@@ -75,6 +75,7 @@ export default function Home() {
 
       if (error) {
         alert(error.message)
+        debugger
       } else if (housittersData && housittersData.profiles) {
         const newLocations = housittersData.locations
         const locationsChanged = JSON.stringify(locations) !== JSON.stringify(newLocations)
@@ -100,7 +101,7 @@ export default function Home() {
         let { data: postsData, error: postsError } = await supabase
           .from('posts')
           .select(
-            `landlord_id, start_date, end_date, title, description, images_urls, landlords!inner (
+            `landlord_id, title, description, images_urls, landlords!inner (
                 location, profiles!inner (
                   first_name
                 )
@@ -114,16 +115,16 @@ export default function Home() {
           // TODO: maybe also show how many posts outside its range, so getting from db does make sense...
 
           // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
-          let postsFilteredByPeriod = postsData.filter((post) => {
-            for (const housitterAvailabilitySelector of dates) {
-              return (
-                housitterAvailabilitySelector.startDate <= post.start_date &&
-                housitterAvailabilitySelector.endDate >= post.end_date
-              )
-            }
-          })
+          // let postsFilteredByPeriod = postsData.filter((post) => {
+          //   for (const housitterAvailabilitySelector of dates) {
+          //     return (
+          //       housitterAvailabilitySelector.startDate <= post.start_date &&
+          //       housitterAvailabilitySelector.endDate >= post.end_date
+          //     )
+          //   }
+          // })
 
-          setPosts(postsFilteredByPeriod)
+          setPosts(postsData)
         }
       } catch (e: any) {
         alert(e)

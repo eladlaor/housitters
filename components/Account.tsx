@@ -135,6 +135,7 @@ export default function Account() {
 
       if (primary_use === USER_TYPE.Housitter) {
         let { error: housitterUpsertError } = await supabaseClient.from('housitters').upsert({
+          user_id: user?.id,
           locations,
         })
 
@@ -172,7 +173,7 @@ export default function Account() {
       throw error
     }
 
-    if (availableDates) {
+    if (availableDates && availableDates.length > 0) {
       const availableDatesAsReduxType = availableDates.map((date) => {
         return {
           startDate: date.start_date,
@@ -211,7 +212,7 @@ export default function Account() {
         go to dashboard
       </button>
       <Picture
-        uid={user!.id} // verify i know what this means
+        uid={user!.id}
         url={avatar_url}
         size={150}
         onUpload={(url) => {
