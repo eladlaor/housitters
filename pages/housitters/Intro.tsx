@@ -155,7 +155,7 @@ export default function HousitterIntro() {
       }
 
       for (const file of event.target.files) {
-        const fileName = removeInvalidCharacters(file.name)
+        const fileName = removeInvalidCharacters(`${form[SIGNUP_FORM_PROPS.EMAIL]}-${file.name}`)
 
         // NOTICE: with this size, image is between 5 to 10 MB.
         // if the supabse bucket is set to limit the size to less than 10MB,
