@@ -118,8 +118,10 @@ export default function HousePost({
       <Card bg="light" style={{ width: '18rem' }}>
         <Card.Body>
           <Card.Title>{title}</Card.Title>
-          {postPicturesFullUrl[0] && (
+          {postPicturesFullUrl[0] ? (
             <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
+          ) : (
+            'Loading Title Image'
           )}
           <div>
             {postPicturesFullUrl.length > 1 ? (

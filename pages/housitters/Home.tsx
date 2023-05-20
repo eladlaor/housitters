@@ -160,7 +160,7 @@ export default function Home() {
             promptMessage=""
           />
         )}
-        <h2>here are all the relvant posts for you</h2>
+        <h2>here are all the relevant posts for you</h2>
         <Row className="justify-content-center">
           {posts.length === 0 ? (
             <p>
