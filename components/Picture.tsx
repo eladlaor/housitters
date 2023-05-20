@@ -3,6 +3,8 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Database } from '../types/supabase'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAvatarUrlState, setAvatarUrl } from '../slices/userSlice'
+import Image from 'next/image'
+
 type Profiles = Database['public']['Tables']['profiles']['Row']
 export default function Avatar({
   uid,
@@ -74,12 +76,7 @@ export default function Avatar({
   return (
     <div>
       {avatarUrl ? (
-        <img
-          src={avatarUrl}
-          alt="Avatar"
-          className="avatar image"
-          style={{ height: size, width: size }}
-        />
+        <Image src={avatarUrl} alt="Avatar" className="avatar image" height={size} width={size} />
       ) : (
         <div className="avatar no-image" style={{ height: size, width: size }} />
       )}

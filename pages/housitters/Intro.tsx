@@ -6,13 +6,12 @@ import {
   setPrimaryUse,
   setIsLoggedState,
   selectPrimaryUseState,
-  selectFirstNameState,
   setFirstName,
   setAvatarUrl,
+  selectAvatarUrlState,
 } from '../../slices/userSlice'
 
 import { selectLocationsState } from '../../slices/housitterSlice'
-import Image from 'next/image'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -23,17 +22,16 @@ import Modal from 'react-bootstrap/Modal'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Form from 'react-bootstrap/Form'
 import { useState } from 'react'
-import { removeInvalidCharacters, resizeImage, blobToBuffer } from '../../utils/files'
 import { ImageData } from '../../types/clientSide'
 
 import Container from 'react-bootstrap/Container'
 import Navbar from 'react-bootstrap/Navbar'
+import PictureBetter from '../../components/PictureBetter'
 
 export default function HousitterIntro() {
   const router = useRouter()
   const dispatch = useDispatch()
   const supabaseClient = useSupabaseClient()
-  const firstName = useSelector(selectFirstNameState)
 
   const [form, setForm] = useState({
     [SIGNUP_FORM_PROPS.FIRST_NAME]: '',
@@ -41,7 +39,7 @@ export default function HousitterIntro() {
     [SIGNUP_FORM_PROPS.EMAIL]: '',
     [SIGNUP_FORM_PROPS.PASSWORD]: '',
     [SIGNUP_FORM_PROPS.VISIBLE]: true,
-  } as any) // TODO: type it
+  } as any) // TODO: type it (try better than string | boolean which is not good)
 
   const [errors, setErrors] = useState({} as any)
 
@@ -50,6 +48,7 @@ export default function HousitterIntro() {
   const locations = useSelector(selectLocationsState)
   const [previewDataUrls, setPreviewDataUrls] = useState([] as ImageData[])
   const [fileNames, setFileNames] = useState([] as ImageData[])
+  const avatarUrl = useSelector(selectAvatarUrlState)
 
   dispatch(setPrimaryUse(USER_TYPE.Housitter))
 
@@ -99,7 +98,7 @@ export default function HousitterIntro() {
         username: form.email.substring(0, form.email.indexOf('@')),
         visible: form[SIGNUP_FORM_PROPS.VISIBLE],
         primary_use: primaryUse,
-        avatar_url: fileNames[0].url,
+        avatar_url: avatarUrl,
       }
 
       let { error: profileUpsertError } = await supabaseClient
@@ -122,8 +121,6 @@ export default function HousitterIntro() {
       if (error) {
         alert(`failed upserting housitter to housitters table: ${error}`)
         throw error
-      } else {
-        alert('success')
       }
 
       availability.forEach(async (period) => {
@@ -142,70 +139,8 @@ export default function HousitterIntro() {
     }
 
     dispatch(setIsLoggedState(true))
+    alert('success')
     router.push('Home')
-  }
-
-  // TODO: duplicated: I have Picture component, and onPostImageSelection in landlords home, and landlord intro
-  async function handleAvatarUpload(event: any) {
-    try {
-      // set uploading image
-
-      if (!event.target.files || event.target.files.length === 0) {
-        throw new Error('You must select an image to upload.')
-      }
-
-      for (const file of event.target.files) {
-        const fileName = removeInvalidCharacters(`${form[SIGNUP_FORM_PROPS.EMAIL]}-${file.name}`)
-
-        // NOTICE: with this size, image is between 5 to 10 MB.
-        // if the supabse bucket is set to limit the size to less than 10MB,
-        // it might cause a Network Error when trying to upload the file.
-        const resizedImage = await resizeImage(file, 1920, 1080)
-
-        console.log('uploading to avatars')
-        let { error: uploadError } = await supabaseClient.storage
-          .from('avatars')
-          .upload(fileName, resizedImage, { upsert: true })
-        // TODO: not the best naming method, i should change it
-
-        if (uploadError) {
-          debugger
-          alert(`error in housitters/Intro trying to upload an avatar to avatars ` + uploadError)
-          throw uploadError
-        }
-
-        console.log('SUCCESSFULLY uploaded to avatars')
-        const buffer = await blobToBuffer(resizedImage)
-        const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
-        const updatedPreviews = [
-          ...previewDataUrls,
-          { url: previewDataUrl, id: previewDataUrls.length },
-        ]
-        console.log('updating these updatedPreviews: ' + JSON.stringify(updatedPreviews))
-        setPreviewDataUrls(updatedPreviews)
-        const updatedFileNames = [...fileNames, { url: fileName, id: fileNames.length }]
-
-        setFileNames(updatedFileNames)
-      }
-    } catch (e: any) {
-      debugger
-      alert(e)
-    }
-  }
-
-  // TODO: duplicated
-  async function handleDeleteImage(previewData: ImageData, e: any) {
-    e.preventDefault()
-    let copyOfImagesUrls = [...previewDataUrls]
-    copyOfImagesUrls = copyOfImagesUrls.filter((img: ImageData) => img.url !== previewData.url)
-
-    let copyOfFileNames = [...fileNames]
-    copyOfFileNames = copyOfFileNames.filter(
-      (imageData: ImageData) => imageData.id != previewData.id
-    )
-
-    setPreviewDataUrls(copyOfImagesUrls)
-    setFileNames(copyOfFileNames)
   }
 
   return (
@@ -303,29 +238,20 @@ export default function HousitterIntro() {
                       </div>
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>Choose a profile picture</Form.Label>
-                      <br />
-                      <input
-                        onChange={(e: any) => handleAvatarUpload(e)}
-                        type="file"
-                        name="file"
-                        accept="image/*"
-                        multiple
+                      <PictureBetter
+                        isIntro={true}
+                        uid=""
+                        primaryUse={USER_TYPE.Housitter}
+                        url={avatarUrl}
+                        size={100}
+                        width={100} // should persist dimensions of image upon upload
+                        height={100}
+                        disableUpload={false}
+                        bucketName="avatars"
+                        isAvatar={true}
+                        promptMessage="Choose a profile picture"
+                        email={form[SIGNUP_FORM_PROPS.EMAIL]}
                       />
-                      {previewDataUrls.map((previewData: ImageData, index: number) => (
-                        <div key={index}>
-                          <Image src={previewData.url} height={50} width={50} key={index} />
-                          <Button
-                            variant="danger"
-                            onClick={(e) => handleDeleteImage(previewData, e)}
-                            key={`delete-${index}`}
-                            name={`image-${index}`}
-                          >
-                            delete
-                          </Button>
-                        </div>
-                      ))}
-                      <hr />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.VISIBLE}>

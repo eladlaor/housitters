@@ -66,7 +66,7 @@ export const resizeImage = (file: File, maxWidth: number, maxHeight: number): Pr
           targetWidth,
           targetHeight,
           'JPEG',
-          80,
+          70,
           0,
           (resizedImage: any) => {
             resolve(resizedImage)
@@ -78,8 +78,8 @@ export const resizeImage = (file: File, maxWidth: number, maxHeight: number): Pr
   })
 }
 
-// TODO: get rid of the resolve reject syntax
-export function blobToBuffer(blob: Blob): Promise<Buffer> {
+export // TODO: get rid of the resolve reject syntax
+function blobToBuffer(blob: Blob): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsArrayBuffer(blob)

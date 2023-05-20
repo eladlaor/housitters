@@ -11,7 +11,7 @@ import {
   setAvatarUrl,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
-import { LANDLORDS_ROUTES, LocationIds } from '../../utils/constants'
+import { LANDLORDS_ROUTES, LocationIds, USER_TYPE } from '../../utils/constants'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import HousePost from '../../components/HousePost'
@@ -20,6 +20,7 @@ import Col from 'react-bootstrap/Col'
 import { selectImagesUrlsState } from '../../slices/postSlice'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import Picture from '../../components/Picture'
+import PictureBetter from '../../components/PictureBetter'
 
 export default function Home() {
   const user = useUser()
@@ -36,28 +37,6 @@ export default function Home() {
 
   // TODO: can set loading states if needed
 
-  /*
-    filters:
-        when
-
-        where
-  */
-
-  /*
-            what to show on a landlord card:
-              when
-              where
-              picture
-              how many animals
-              the start of the free text (no headline needed) with a 'read more' option which open the add as a modal and allows you to send message.
-        */
-
-  /*
-    on first render:
-      use the following filters to produce the data
-
-  */
-
   useEffect(() => {
     if (!user) {
       return
@@ -65,7 +44,7 @@ export default function Home() {
 
     const asyncWrapper = async () => {
       // I'm not sure you need this, check what happens after sign in
-      const dates: any[] = []
+      const housitterAvailableDates: any[] = []
 
       let { data: housittersData, error } = await supabase
         .from('housitters')
@@ -92,10 +71,9 @@ export default function Home() {
         dispatch(setAvatarUrl((housittersData.profiles as any).avatar_url))
 
         // TODO: just for naming convention (to align with the availabaility object name), traversing again...
-
         for (const housitterAvailabilitySelector of (housittersData.profiles as any)
           .available_dates) {
-          dates.push({
+          housitterAvailableDates.push({
             startDate: housitterAvailabilitySelector.start_date,
             endDate: housitterAvailabilitySelector.end_date,
           })
@@ -109,31 +87,38 @@ export default function Home() {
           .select(
             `landlord_id, title, description, images_urls, landlords!inner (
                 location, profiles!inner (
-                  first_name
+                  first_name, available_dates (start_date, end_date)
                 )
             )`
           )
           .in('landlords.location', locations)
+          .eq('is_active', true)
 
         if (postsError) {
           alert(postsError.message)
+          debugger
+          throw postsError
         } else if (postsData) {
           // TODO: maybe also show how many posts outside its range, so getting from db does make sense...
 
           // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
-          // let postsFilteredByPeriod = postsData.filter((post) => {
-          //   for (const housitterAvailabilitySelector of dates) {
-          //     return (
-          //       housitterAvailabilitySelector.startDate <= post.start_date &&
-          //       housitterAvailabilitySelector.endDate >= post.end_date
-          //     )
-          //   }
-          // })
+          let postsFilteredByPeriod = postsData.filter((post) => {
+            return (post?.landlords as any).profiles?.available_dates.some((postPeriod: any) => {
+              for (const housitterAvailabilitySelector of housitterAvailableDates) {
+                return (
+                  housitterAvailabilitySelector.endDate.startsWith('1970') ||
+                  (housitterAvailabilitySelector.startDate <= postPeriod.start_date &&
+                    housitterAvailabilitySelector.endDate >= postPeriod.end_date)
+                )
+              }
+            })
+          })
 
-          setPosts(postsData)
+          setPosts(postsFilteredByPeriod)
         }
       } catch (e: any) {
-        alert(e)
+        alert(e.message)
+        debugger
       }
 
       // for Date filtering, I can also use the 'or' for at least one range, to filter on db call.
@@ -160,23 +145,28 @@ export default function Home() {
       <div>
         <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
         {user && (
-          <Picture
+          <PictureBetter
+            isIntro={false}
             uid={user.id}
+            url={avatarUrl}
+            email={user.email as string}
+            primaryUse={USER_TYPE.Housitter}
             size={100}
+            width={100} // should persist dimensions of image upon upload
+            height={100}
             disableUpload={true}
             bucketName="avatars"
-            url={avatarUrl}
-            onUpload={() => {
-              console.log('no upload')
-            }}
+            isAvatar={true}
+            promptMessage=""
           />
         )}
         <h2>here are all the relvant posts for you</h2>
         <Row className="justify-content-center">
           {posts.length === 0 ? (
             <p>
-              There are no available houses with your current filtering. Try expanding your search
-              to broader dates or locations.
+              There are no available houses with your current filtering.
+              <br />
+              Try expanding your search to broader dates or locations. k?
             </p>
           ) : (
             posts.map((post: any, index: number) => (
@@ -189,8 +179,12 @@ export default function Home() {
                   availability={availability}
                   dogs={post.dogs}
                   cats={post.cats}
-                  imagesUrls={post.images_urls ? post.images_urls : ''} // TODO: should have default image
                   key={index}
+                  imagesUrls={
+                    post.images_urls
+                      ? post.images_urls.map((imageUrl: string) => ({ url: imageUrl, id: index }))
+                      : ''
+                  } // TODO: should have default image
                 />
               </Col>
             ))

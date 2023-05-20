@@ -1,10 +1,7 @@
-import { Button, Carousel, Modal } from 'react-bootstrap'
+import { Button, Modal } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
-import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { useSessionContext } from '@supabase/auth-helpers-react'
-import Picture from './Picture'
-import SignOut from './Buttons/SignOut'
 import Image from 'next/image'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -14,6 +11,7 @@ import { useSelector } from 'react-redux'
 import { selectPrimaryUseState } from '../slices/userSlice'
 import { USER_TYPE } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
+import PictureBetter from './PictureBetter'
 
 /*
   if no active posts: allow create new post
@@ -81,13 +79,17 @@ export default function HousePost({
     }
 
     loadLandlordData(landlordId)
-    downloadPostImages(landlordId, imagesUrls)
+    downloadPostImagesAndSetPostPicturesPreview(landlordId, imagesUrls)
   }, [landlordId, imagesUrls])
 
   // TODO: duplicated in Picture.tsx
-  async function downloadPostImages(landlordId: string, imagesUrls: ImageData[]) {
+  // TODO: this is a bad mixup of getter and setter, a getter should not set.
+  async function downloadPostImagesAndSetPostPicturesPreview(
+    landlordId: string,
+    imagesUrls: ImageData[]
+  ) {
     try {
-      const downloadPromises = imagesUrls.map(async (imageUrl) => {
+      const downloadPromises = imagesUrls.map(async (imageUrl: ImageData) => {
         const { data: downloadData, error: downloadError } = await supabaseClient.storage
           .from('posts')
           .download(`${landlordId}-${imageUrl.url}`)
@@ -97,15 +99,17 @@ export default function HousePost({
 
         if (downloadData) {
           const fullUrl = URL.createObjectURL(downloadData)
+
+          // TODO: there was a reason i did it with object, should return it...
           return { url: fullUrl, id: imageUrl.id }
         }
       })
 
       const fullUrlsForPreview = await Promise.all(downloadPromises)
-
       setPostPicturesFullUrl(fullUrlsForPreview as ImageData[])
     } catch (error) {
-      alert('error in downloadPostImages' + error)
+      alert('error in downloadPostImagesAndSetPostPicturesPreview' + error)
+      debugger
     }
   }
 
@@ -169,12 +173,18 @@ export default function HousePost({
             <div>
               {' '}
               <Card.Text>post by: {landlordFirstName}</Card.Text>
-              <Picture
-                uid={landlordId ? landlordId : 'testing'}
+              <PictureBetter
+                isAvatar={true}
                 url={landlordAvatarUrl}
-                size={100}
-                onUpload={() => {}}
+                email=""
+                promptMessage=""
+                isIntro={false}
                 disableUpload={true}
+                primaryUse={USER_TYPE.Landlord}
+                uid={landlordId ? landlordId : 'no landlord uid - not valid'}
+                size={100}
+                width={100}
+                height={100}
                 bucketName="avatars"
               />
               <Button variant="secondary">Send {landlordFirstName} a message</Button>

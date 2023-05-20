@@ -7,7 +7,7 @@ import {
   setAvatarUrl,
   setFirstName,
 } from '../../slices/userSlice'
-import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds } from '../../utils/constants'
+import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds, USER_TYPE } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -45,8 +45,8 @@ import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
 import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
 import { ImageData } from '../../types/clientSide'
-import { removeInvalidCharacters, resizeImage, blobToBuffer } from '../../utils/files'
-import Picture from '../../components/Picture'
+import PictureBetter from '../../components/PictureBetter'
+import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -64,7 +64,7 @@ export default function Home() {
   const fileNames = useSelector(selectImagesUrlsState)
   const avatarUrl = useSelector(selectAvatarUrlState)
 
-  const [previewDataUrls, setPreviewDataUrls] = useState([] as ImageData[])
+  const [postPreviewDataUrls, setPostPreviewDataUrls] = useState([] as ImageData[])
 
   const location = useSelector(selectLocationState)
   const [housitters, setHousitters] = useState([{} as any]) // TODO: is this the best way to type? no. improve
@@ -116,19 +116,6 @@ export default function Home() {
           dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
         }
 
-        if (!isActivePost) {
-          postSettersToInitialStates.forEach((attributeSetterAndInitialState) => {
-            dispatch(
-              attributeSetterAndInitialState.matchingSetter(
-                attributeSetterAndInitialState.initialState
-              )
-            )
-          })
-          setPreviewDataUrls([])
-          setHousitters([])
-          return
-        }
-
         let { data: activePostData, error: postsError } = await supabaseClient
           .from('posts')
           .select(`description, images_urls, title`)
@@ -148,6 +135,7 @@ export default function Home() {
         }
 
         if (activePostData) {
+          dispatch(setIsActiveState(true))
           const imagesUrlData: ImageData[] = []
 
           activePostData.images_urls.forEach((postImagesUrl: string, index: number) => {
@@ -161,6 +149,16 @@ export default function Home() {
           dispatch(setImagesUrlsState(imagesUrlData))
           dispatch(setDescriptionState(activePostData.description))
           dispatch(setTitleState(activePostData.title))
+        }
+
+        if (!isActivePost) {
+          // returning all post slice to initial state except isActive, because of race condition with the above
+          dispatch(setDescriptionState(''))
+          dispatch(setTitleState(''))
+          dispatch(setImagesUrlsState([])), setPostPreviewDataUrls([])
+          setHousitters([])
+          console.log('returning')
+          return
         }
 
         let { data: housitterData, error: housitterError } = await supabaseClient
@@ -249,18 +247,18 @@ export default function Home() {
 
   async function handleShowNewPostModal() {
     if (fileNames.length > 0) {
-      await loadPreviewImages()
+      await loadPostPreviewImages()
     }
     setShowNewPostModal(true)
   }
 
   function handleCloseNoewPostModal() {
-    setPreviewDataUrls([])
+    setPostPreviewDataUrls([])
     setShowNewPostModal(false)
   }
 
   // TODO: should paramterize to load any kind of image
-  async function loadPreviewImages() {
+  async function loadPostPreviewImages() {
     let previews: ImageData[] = []
     const downloadPromises = fileNames.map(async (fileName) => {
       let { error, data: imageData } = await supabaseClient.storage
@@ -277,7 +275,7 @@ export default function Home() {
     })
 
     await Promise.all(downloadPromises)
-    setPreviewDataUrls(previews)
+    setPostPreviewDataUrls(previews)
   }
 
   async function onPostImageSelection(event: any) {
@@ -304,11 +302,11 @@ export default function Home() {
         const buffer = await blobToBuffer(resizedImage)
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
         const updatedPreviews = [
-          ...previewDataUrls,
-          { url: previewDataUrl, id: previewDataUrls.length },
+          ...postPreviewDataUrls,
+          { url: previewDataUrl, id: postPreviewDataUrls.length },
         ]
 
-        setPreviewDataUrls(updatedPreviews)
+        setPostPreviewDataUrls(updatedPreviews)
 
         const updatedFileNames = [...fileNames, { url: fileName, id: fileNames.length }]
         dispatch(setImagesUrlsState(updatedFileNames)) // TODO: rename. this is for db, to retrieve later.
@@ -355,7 +353,7 @@ export default function Home() {
 
   async function handleDeleteImage(previewData: ImageData, e: any) {
     e.preventDefault()
-    let copyOfImagesUrls = [...previewDataUrls]
+    let copyOfImagesUrls = [...postPreviewDataUrls]
     copyOfImagesUrls = copyOfImagesUrls.filter((img: ImageData) => img.url !== previewData.url)
 
     let copyOfFileNames = [...fileNames]
@@ -363,7 +361,7 @@ export default function Home() {
       (imageData: ImageData) => imageData.id != previewData.id
     )
 
-    setPreviewDataUrls(copyOfImagesUrls)
+    setPostPreviewDataUrls(copyOfImagesUrls)
     dispatch(setImagesUrlsState(copyOfFileNames))
   }
 
@@ -403,15 +401,19 @@ export default function Home() {
         <div>
           <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
           {user && (
-            <Picture
+            <PictureBetter
+              isIntro={false}
               uid={user.id}
+              url={avatarUrl}
+              email={user.email as string}
+              primaryUse={USER_TYPE.Landlord}
               size={100}
+              width={100} // should persist dimensions of image upon upload
+              height={100}
               disableUpload={true}
               bucketName="avatars"
-              url={avatarUrl}
-              onUpload={() => {
-                console.log('no upload')
-              }}
+              isAvatar={true}
+              promptMessage=""
             />
           )}
         </div>
@@ -527,7 +529,7 @@ export default function Home() {
                     multiple
                   />
 
-                  {previewDataUrls.map((previewData: ImageData, index: number) => (
+                  {postPreviewDataUrls.map((previewData: ImageData, index: number) => (
                     <div key={index}>
                       <Image src={previewData.url} height={50} width={50} key={index} />
                       <Button
@@ -563,7 +565,7 @@ export default function Home() {
                     props={{
                       firstName: sitter.firstName,
                       lastName: sitter.lastName,
-                      about_me: 'hard coded text',
+                      about_me: 'hard coded about_me text',
                       avatarUrl: sitter.avatarUrl,
                       housitterId: sitter.housitterId,
                     }}
