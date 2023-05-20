@@ -89,7 +89,7 @@ export default function Home() {
           dispatch(setLocationsState(newLocations))
         }
 
-        dispatch(setAvatarUrl(avatarUrl))
+        dispatch(setAvatarUrl((housittersData.profiles as any).avatar_url))
 
         // TODO: just for naming convention (to align with the availabaility object name), traversing again...
 

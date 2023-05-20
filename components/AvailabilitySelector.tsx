@@ -61,11 +61,6 @@ export default function AvailabilitySelector({
 
       // TODO: this is duplicated in Account and should be moved to utils, or as part of the api route handler which should replace the above.
       if (availableDates && availableDates.length > 0) {
-        console.log(
-          `IN AVAILABLE DATES: USER ID: ${user.id}. Available dates: ${JSON.stringify(
-            availableDates
-          )}`
-        )
         const availableDatesAsReduxType = availableDates.map((date) => {
           return {
             startDate: date.start_date,

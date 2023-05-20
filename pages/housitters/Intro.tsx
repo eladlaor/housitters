@@ -80,19 +80,6 @@ export default function HousitterIntro() {
     let { data, error } = await supabaseClient.auth.signUp({
       email: form[SIGNUP_FORM_PROPS.EMAIL],
       password: form[SIGNUP_FORM_PROPS.PASSWORD],
-      options: {
-        // i can get rid of this data option as im not really using the rpc.
-        data: {
-          // in a postgres stored procedure (in supabase backend) named 'handle_new_user', with a trigger defined there as well.
-          // https://app.supabase.com/project/rssznetfvuqctnxfwvzr/database/functions
-          first_name: form[SIGNUP_FORM_PROPS.FIRST_NAME],
-          last_name: form[SIGNUP_FORM_PROPS.LAST_NAME],
-          username: form.email.substring(0, form.email.indexOf('@')),
-          visible: form[SIGNUP_FORM_PROPS.VISIBLE],
-          primary_use: primaryUse,
-          // there is a problem with getting array values (jsonb) in these functions, which causes a problem getting all values in here
-        },
-      },
     })
 
     if (error) {
@@ -107,7 +94,12 @@ export default function HousitterIntro() {
       // TODO: should update the above to do it without stored procedure, all here
       const newProfile = {
         id: userId,
-        avatar_url: fileNames.map((file) => file.url),
+        first_name: form[SIGNUP_FORM_PROPS.FIRST_NAME],
+        last_name: form[SIGNUP_FORM_PROPS.LAST_NAME],
+        username: form.email.substring(0, form.email.indexOf('@')),
+        visible: form[SIGNUP_FORM_PROPS.VISIBLE],
+        primary_use: primaryUse,
+        avatar_url: fileNames[0].url,
       }
 
       let { error: profileUpsertError } = await supabaseClient
