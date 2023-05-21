@@ -8,8 +8,7 @@ import Image from 'next/image'
 import { Button, Form } from 'react-bootstrap'
 import { ImageData } from '../types/clientSide'
 import Resizer from 'react-image-file-resizer'
-
-type Profiles = Database['public']['Tables']['profiles']['Row']
+import axios from 'axios'
 
 export default function PictureBetter({
   isIntro,
@@ -28,7 +27,7 @@ export default function PictureBetter({
   isIntro: boolean
   uid: string
   primaryUse: string
-  url: Profiles['avatar_url']
+  url: string
   size: number // TODO: can change this completely to different use: quality
   width: number
   height: number
@@ -163,21 +162,30 @@ export default function PictureBetter({
         // NOTICE: with this size, image is between 5 to 10 MB.
         // if the supabse bucket is set to limit the size to less than 10MB,
         // it might cause a Network Error when trying to upload the file.
-        const resizedImage = await resizeImage(file, 1920, 1080)
+        const resizedImage = await resizeImage(file, 384, 216)
 
         console.log('uploading to avatars')
-        let { error: uploadError } = await supabaseClient.storage
-          .from('avatars')
-          .upload(fileName, resizedImage, { upsert: true })
-        // TODO: not the best naming method, i should change it
 
-        if (uploadError) {
-          alert(`error in housitters/Intro trying to upload an avatar to avatars ` + uploadError)
-          debugger
-          throw uploadError
+        const formData = new FormData()
+        formData.append('bucketName', 'avatars')
+        formData.append('upsert', 'true')
+        formData.append('file', resizedImage, fileName)
+
+        const uploadResponse = await axios.post('/api/uploadAvatar', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+
+        if (uploadResponse.status === 200) {
+          console.log('uploaded successfully')
+        } else {
+          console.error(`Error: ${uploadResponse}`)
+          alert(`error: ${uploadResponse}`)
         }
 
         console.log('SUCCESSFULLY uploaded to avatars')
+
         dispatch(setAvatarUrl(fileName))
 
         const buffer = await blobToBuffer(resizedImage)
@@ -293,7 +301,7 @@ export default function PictureBetter({
       )}
       {previewDataUrls.map((previewData: ImageData, index: number) => (
         <div key={index}>
-          <Image src={previewData.url} height={size} width={size} key={index} />
+          <Image src={previewData.url} height={height} width={width} key={index} />
 
           {!disableUpload && (
             <Button
