@@ -3,7 +3,7 @@ import { RootState } from '../store'
 import { ImageData } from '../types/clientSide'
 
 export const initialState = {
-  imagesUrls: [] as ImageData[],
+  imagesData: [] as ImageData[],
   isActive: false,
   description: '',
   title: '',
@@ -15,10 +15,10 @@ export const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
-    setImagesUrlsState(state = initialState, action) {
+    setImagesDataState(state = initialState, action) {
       return {
         ...state,
-        imagesUrls: action.payload,
+        imagesData: action.payload,
       }
     },
     setIsActiveState(state = initialState, action) {
@@ -43,12 +43,12 @@ export const postSlice = createSlice({
 })
 
 // Action creators (postsSlice.action) are generated (automatically) for each case reducer function
-export const { setImagesUrlsState } = postSlice.actions
+export const { setImagesDataState } = postSlice.actions
 export const { setIsActiveState } = postSlice.actions
 export const { setDescriptionState } = postSlice.actions
 export const { setTitleState } = postSlice.actions
 
-export const selectImagesUrlsState = (state: RootState) => state.post.imagesUrls
+export const selectImagesDataState = (state: RootState) => state.post.imagesData
 export const selectIsActiveState = (state: RootState) => state.post.isActive
 export const selectDescriptionState = (state: RootState) => state.post.description
 export const selectTitleState = (state: RootState) => state.post.title

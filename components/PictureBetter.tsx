@@ -3,12 +3,13 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Database } from '../types/supabase'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectAvatarUrlState, setAvatarUrl } from '../slices/userSlice'
-import { selectImagesUrlsState, setImagesUrlsState } from '../slices/postSlice'
+import { selectImagesDataState, setImagesDataState } from '../slices/postSlice'
 import Image from 'next/image'
 import { Button, Form } from 'react-bootstrap'
 import { ImageData } from '../types/clientSide'
 import Resizer from 'react-image-file-resizer'
 import axios from 'axios'
+import { API_ROUTES } from '../utils/constants'
 
 export default function PictureBetter({
   isIntro,
@@ -162,16 +163,18 @@ export default function PictureBetter({
         // NOTICE: with this size, image is between 5 to 10 MB.
         // if the supabse bucket is set to limit the size to less than 10MB,
         // it might cause a Network Error when trying to upload the file.
-        const resizedImage = await resizeImage(file, 384, 216)
+        // NOTICE 2: when using api route, a file too big may cause network failure.
+        const resizedImage = await resizeImage(file, 384, 216) // TODO: make constant
 
         console.log('uploading to avatars')
 
         const formData = new FormData()
+
         formData.append('bucketName', 'avatars')
         formData.append('upsert', 'true')
         formData.append('file', resizedImage, fileName)
 
-        const uploadResponse = await axios.post('/api/uploadAvatar', formData, {
+        const uploadResponse = await axios.post(API_ROUTES.UploadPicture, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

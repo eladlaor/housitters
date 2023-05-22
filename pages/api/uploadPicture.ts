@@ -13,7 +13,7 @@ const upload = multer({
   dest: './tmp-files', // Adjust the destination folder as needed
   // You can customize the filename as per your requirements
   filename: (req: any, file: any, callback: any) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e7)}`
     callback(null, `${file.fieldname}-${uniqueSuffix}`)
   },
 } as any)
@@ -30,13 +30,15 @@ const apiRoute = nextConnect<any, any>({
 apiRoute.use(upload.any()) // The Request object will be populated with a files array containing an information object for each processed file.
 
 apiRoute.post(async (req, res) => {
+  let tmpFilePath: string = ''
   try {
     const files = req.files // Assuming the file data is passed in the request body
+    const { bucketName, upsert } = req.body
 
     const fileName = files[0].originalname // Adjust this based on your file object structure
     const file = files[0]
 
-    const tmpFilePath = file.path
+    tmpFilePath = file.path
     const fileData = fs.readFileSync(tmpFilePath)
 
     const mimeType = file.mimetype
@@ -45,10 +47,8 @@ apiRoute.post(async (req, res) => {
     console.log(`this is file name: ${fileName}`)
     // Upload the file to Supabase storage
     const { error } = await supabaseClient.storage
-      .from('avatars')
+      .from(bucketName)
       .upload(fileName, fileData, { upsert: true, contentType: mimeType })
-    console.log('finished the storage call')
-
     if (error) {
       throw new Error(`Failed to upload file: ${error.message}`)
     }
@@ -59,6 +59,10 @@ apiRoute.post(async (req, res) => {
     res.status(400).json({ error: 'Failed to upload file' })
   } finally {
     // TODO: i should add code to remove the file from here
+    if (tmpFilePath) {
+      fs.unlinkSync(tmpFilePath)
+      console.log(`successfully removed file named: ${tmpFilePath}`);
+    }
   }
 })
 

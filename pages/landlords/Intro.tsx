@@ -182,69 +182,6 @@ export default function landlordIntro() {
     router.push({ pathname: 'Home', query: homeProps })
   }
 
-  // // TODO: duplicated: I have Picture component, and onPostImageSelection in landlords home, and landlord intro
-  // async function handleAvatarUpload(event: any) {
-  //   try {
-  //     // set uploading image
-
-  //     if (!event.target.files || event.target.files.length === 0) {
-  //       throw new Error('You must select an image to upload.')
-  //     }
-
-  //     for (const file of event.target.files) {
-  //       const fileName = removeInvalidCharacters(`${form[SIGNUP_FORM_PROPS.EMAIL]}-${file.name}`)
-
-  //       // NOTICE: with this size, image is between 5 to 10 MB.
-  //       // if the supabse bucket is set to limit the size to less than 10MB,
-  //       // it might cause a Network Error when trying to upload the file.
-  //       const resizedImage = await resizeImage(file, 1920, 1080)
-
-  //       console.log('uploading to avatars')
-  //       let { error: uploadError } = await supabaseClient.storage
-  //         .from('avatars')
-  //         .upload(fileName, resizedImage, { upsert: true })
-  //       // TODO: not the best naming method, i should change it
-
-  //       if (uploadError) {
-  //         debugger
-  //         alert(`error in housitters/Intro trying to upload an avatar to avatars ` + uploadError)
-  //         throw uploadError
-  //       }
-
-  //       console.log('SUCCESSFULLY uploaded to avatars')
-  //       const buffer = await blobToBuffer(resizedImage)
-  //       const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
-  //       const updatedPreviews = [
-  //         ...previewDataUrls,
-  //         { url: previewDataUrl, id: previewDataUrls.length },
-  //       ]
-  //       console.log('updating these updatedPreviews: ' + JSON.stringify(updatedPreviews))
-  //       setPreviewDataUrls(updatedPreviews)
-  //       const updatedFileNames = [...fileNames, { url: fileName, id: fileNames.length }]
-
-  //       setFileNames(updatedFileNames)
-  //     }
-  //   } catch (e: any) {
-  //     debugger
-  //     alert(e)
-  //   }
-  // }
-
-  // // TODO: duplicated
-  // async function handleDeleteImage(previewData: ImageData, e: any) {
-  //   e.preventDefault()
-  //   let copyOfImagesUrls = [...previewDataUrls]
-  //   copyOfImagesUrls = copyOfImagesUrls.filter((img: ImageData) => img.url !== previewData.url)
-
-  //   let copyOfFileNames = [...fileNames]
-  //   copyOfFileNames = copyOfFileNames.filter(
-  //     (imageData: ImageData) => imageData.id != previewData.id
-  //   )
-
-  //   setPreviewDataUrls(copyOfImagesUrls)
-  //   setFileNames(copyOfFileNames)
-  // }
-
   return (
     <div className="position-absolute top-50 start-50 translate-middle">
       <h1>ok lets find you a sitter</h1>

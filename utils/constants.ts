@@ -63,3 +63,10 @@ export const LocationDescriptions = {
   [LocationIds.AshkelonToBash]: 'Ashkelon to Bash',
   [LocationIds.Eilat]: 'Eilat',
 }
+
+
+// api routes
+
+export const API_ROUTES = {
+  UploadPicture: '/api/uploadPicture'
+}

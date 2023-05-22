@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
-import Picture from './Picture'
+import Picture from './PictureDeprecated'
 import { useRouter } from 'next/router'
 
 import AvailabilitySelector from '../components/AvailabilitySelector'

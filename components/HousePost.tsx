@@ -27,7 +27,7 @@ export default function HousePost({
   availability,
   dogs,
   cats,
-  imagesUrls,
+  imagesData,
 }: {
   landlordId: string
   title: string
@@ -36,7 +36,7 @@ export default function HousePost({
   availability: { startDate: string; endDate: string }[]
   dogs: number
   cats: number
-  imagesUrls: ImageData[]
+  imagesData: ImageData[]
 }) {
   const [landlordFirstName, setLandlordFirstName] = useState('')
   const [landlordAvatarUrl, setLandlordAvatarUrl] = useState('')
@@ -79,20 +79,25 @@ export default function HousePost({
     }
 
     loadLandlordData(landlordId)
-    downloadPostImagesAndSetPostPicturesPreview(landlordId, imagesUrls)
-  }, [landlordId, imagesUrls])
+    downloadPostImagesAndSetPostPicturesPreview(landlordId, imagesData)
+  }, [landlordId, imagesData])
 
   // TODO: duplicated in Picture.tsx
   // TODO: this is a bad mixup of getter and setter, a getter should not set.
   async function downloadPostImagesAndSetPostPicturesPreview(
     landlordId: string,
-    imagesUrls: ImageData[]
+    imagesData: ImageData[]
   ) {
     try {
-      const downloadPromises = imagesUrls.map(async (imageUrl: ImageData) => {
+
+      
+      
+      const downloadPromises = imagesData.map(async (imageData: ImageData) => {
+
+        
         const { data: downloadData, error: downloadError } = await supabaseClient.storage
           .from('posts')
-          .download(`${landlordId}-${imageUrl.url}`)
+          .download(`${imageData.url}`)
         if (downloadError) {
           throw downloadError
         }
@@ -101,7 +106,7 @@ export default function HousePost({
           const fullUrl = URL.createObjectURL(downloadData)
 
           // TODO: there was a reason i did it with object, should return it...
-          return { url: fullUrl, id: imageUrl.id }
+          return { url: fullUrl, id: imageData.id }
         }
       })
 
@@ -109,7 +114,7 @@ export default function HousePost({
       setPostPicturesFullUrl(fullUrlsForPreview as ImageData[])
     } catch (error) {
       alert('error in downloadPostImagesAndSetPostPicturesPreview' + error)
-      debugger
+      
     }
   }
 

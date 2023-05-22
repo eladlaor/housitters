@@ -17,9 +17,8 @@ import { useEffect, useState } from 'react'
 import HousePost from '../../components/HousePost'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import { selectImagesUrlsState } from '../../slices/postSlice'
+import { selectImagesDataState } from '../../slices/postSlice'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
-import Picture from '../../components/Picture'
 import PictureBetter from '../../components/PictureBetter'
 
 export default function Home() {
@@ -31,7 +30,7 @@ export default function Home() {
   const availability = useSelector(selectAvailabilityState)
   const supabase = useSupabaseClient()
   const [posts, setPosts] = useState([] as Object[])
-  const imagesUrls = useSelector(selectImagesUrlsState)
+  const imagesData = useSelector(selectImagesDataState)
   const isLogged = useSelector(selectIsLoggedState)
   const avatarUrl = useSelector(selectAvatarUrlState)
 
@@ -180,7 +179,7 @@ export default function Home() {
                   dogs={post.dogs}
                   cats={post.cats}
                   key={index}
-                  imagesUrls={
+                  imagesData={
                     post.images_urls
                       ? post.images_urls.map((imageUrl: string) => ({ url: imageUrl, id: index }))
                       : ''

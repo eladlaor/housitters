@@ -8,8 +8,8 @@
         "command": "npm run dev",
         "port": 9229,
         "env": {
-  "SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzc3puZXRmdnVxY3RueGZ3dnpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjgyNjAyODksImV4cCI6MTk4MzgzNjI4OX0.fyWaISimfSUGQoavOyLah6loAkm3LwJl_YfFDspauIg",
-  "SUPABASE_URL": "https://rssznetfvuqctnxfwvzr.supabase.co"
+          "SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzc3puZXRmdnVxY3RueGZ3dnpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjgyNjAyODksImV4cCI6MTk4MzgzNjI4OX0.fyWaISimfSUGQoavOyLah6loAkm3LwJl_YfFDspauIg",
+          "SUPABASE_URL": "https://rssznetfvuqctnxfwvzr.supabase.co"
         }
       },
       {

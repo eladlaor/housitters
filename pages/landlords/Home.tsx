@@ -7,7 +7,7 @@ import {
   setAvatarUrl,
   setFirstName,
 } from '../../slices/userSlice'
-import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds, USER_TYPE } from '../../utils/constants'
+import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds, USER_TYPE, API_ROUTES } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -21,11 +21,11 @@ import {
   setPetsState,
 } from '../../slices/landlordSlice'
 import {
-  selectImagesUrlsState,
+  selectImagesDataState,
   selectDescriptionState,
   selectIsActiveState,
   selectTitleState,
-  setImagesUrlsState,
+  setImagesDataState,
   setDescriptionState,
   setIsActiveState,
   setTitleState,
@@ -43,10 +43,10 @@ import NavDropdown from 'react-bootstrap/NavDropdown'
 import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
-import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
 import { ImageData } from '../../types/clientSide'
 import PictureBetter from '../../components/PictureBetter'
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
+import axios from 'axios'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -61,7 +61,7 @@ export default function Home() {
 
   const title = useSelector(selectTitleState)
   const description = useSelector(selectDescriptionState)
-  const fileNames = useSelector(selectImagesUrlsState)
+  const imagesData = useSelector(selectImagesDataState)
   const avatarUrl = useSelector(selectAvatarUrlState)
 
   const [postPreviewDataUrls, setPostPreviewDataUrls] = useState([] as ImageData[])
@@ -121,7 +121,7 @@ export default function Home() {
           .select(`description, images_urls, title`)
           .eq('landlord_id', user.id)
           .eq('is_active', true)
-          .single()
+          .single() // TODO: losing 'single' and dealing with it differently may prevent the need for the error handling here next.
 
         if (postsError) {
           if (postsError.details.startsWith('Results contain 0 rows')) {
@@ -146,7 +146,7 @@ export default function Home() {
           })
 
           // TODO: maybe create a utility which gets a property, checks if it's different, and only then dispatches.
-          dispatch(setImagesUrlsState(imagesUrlData))
+          dispatch(setImagesDataState(imagesUrlData))
           dispatch(setDescriptionState(activePostData.description))
           dispatch(setTitleState(activePostData.title))
         }
@@ -155,7 +155,7 @@ export default function Home() {
           // returning all post slice to initial state except isActive, because of race condition with the above
           dispatch(setDescriptionState(''))
           dispatch(setTitleState(''))
-          dispatch(setImagesUrlsState([])), setPostPreviewDataUrls([])
+          dispatch(setImagesDataState([])), setPostPreviewDataUrls([])
           setHousitters([])
           console.log('returning')
           return
@@ -246,9 +246,10 @@ export default function Home() {
   }
 
   async function handleShowNewPostModal() {
-    if (fileNames.length > 0) {
+    if (imagesData.length > 0) {
       await loadPostPreviewImages()
     }
+    setIsActiveState(true) // so that on rendering due to server side change, post wont be erased. it wont survive if it wont be submitted.
     setShowNewPostModal(true)
   }
 
@@ -260,17 +261,17 @@ export default function Home() {
   // TODO: should paramterize to load any kind of image
   async function loadPostPreviewImages() {
     let previews: ImageData[] = []
-    const downloadPromises = fileNames.map(async (fileName) => {
-      let { error, data: imageData } = await supabaseClient.storage
+    const downloadPromises = imagesData.map(async (reduxImageData) => {
+      let { error, data: dbImageData } = await supabaseClient.storage
         .from('posts')
-        .download(`${user?.id}-${fileName.url}`)
+        .download(`${user?.id}-${reduxImageData.url}`)
       if (error) {
         alert(`failed downloading preview image: ${error.message}`)
         throw error
-      } else if (imageData) {
-        const buffer = await blobToBuffer(imageData)
+      } else if (dbImageData) {
+        const buffer = await blobToBuffer(dbImageData)
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
-        previews.push({ url: previewDataUrl, id: fileName.id })
+        previews.push({ url: previewDataUrl, id: reduxImageData.id })
       }
     })
 
@@ -280,6 +281,7 @@ export default function Home() {
 
   async function onPostImageSelection(event: any) {
     try {
+      // TODO: set uploading state
       // setUploadingImage(true)
 
       if (!event.target.files || event.target.files.length === 0) {
@@ -287,18 +289,41 @@ export default function Home() {
       }
 
       for (const file of event.target.files) {
-        const fileName = removeInvalidCharacters(file.name)
-        const resizedImage = await resizeImage(file, 1920, 1080)
+        const fileName = `${user?.id}-${removeInvalidCharacters(file.name)}`
+        const resizedImage = await resizeImage(file, 384, 216)
 
+        console.log('uploading to posts')
+
+        const formData = new FormData()
+        formData.append('bucketName', 'posts')
+        formData.append('upsert', 'true')
+        formData.append('file', resizedImage, fileName)
+
+        const uploadResponse = await axios.post(API_ROUTES.UploadPicture, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data', // TODO: make constant
+          },
+        })
+
+        if (uploadResponse.status === 200) {
+          console.log(`uploaded successfully the file named: ${fileName}`)
+        } else {
+          alert(`error in landlords/Home trying to upload an image to storage ${uploadResponse}`)
+          throw uploadResponse
+        }
+
+        // TODO: with rls enabled for 'objects', it works only with this and not with the api route.
+/*
         let { error: uploadError } = await supabaseClient.storage
           .from('posts')
-          .upload(`${user?.id}-${fileName}`, resizedImage, { upsert: true })
+          .upload(fileName, resizedImage, { upsert: true })
 
         if (uploadError) {
           alert(`error in landlords/Home trying to upload an image to storage ` + uploadError)
+          debugger
           throw uploadError
         }
-
+*/
         const buffer = await blobToBuffer(resizedImage)
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
         const updatedPreviews = [
@@ -308,11 +333,12 @@ export default function Home() {
 
         setPostPreviewDataUrls(updatedPreviews)
 
-        const updatedFileNames = [...fileNames, { url: fileName, id: fileNames.length }]
-        dispatch(setImagesUrlsState(updatedFileNames)) // TODO: rename. this is for db, to retrieve later.
+        const updatedFileNames = [...imagesData, { url: fileName, id: imagesData.length }]
+        dispatch(setImagesDataState(updatedFileNames)) // TODO: rename. this is for db, to retrieve later.
       }
     } catch (e: any) {
       alert(e)
+      debugger
     }
   }
 
@@ -325,7 +351,7 @@ export default function Home() {
       landlord_id: user?.id,
       title,
       description,
-      images_urls: fileNames.map((file) => file.url), // TODO: rename in db AND fix the update scenario.
+      images_urls: imagesData.map((imageData) => imageData.url), // TODO: rename in db AND fix the update scenario.
       is_active: true,
     })
 
@@ -353,16 +379,16 @@ export default function Home() {
 
   async function handleDeleteImage(previewData: ImageData, e: any) {
     e.preventDefault()
-    let copyOfImagesUrls = [...postPreviewDataUrls]
-    copyOfImagesUrls = copyOfImagesUrls.filter((img: ImageData) => img.url !== previewData.url)
+    let copyOfPreviewImagesData = [...postPreviewDataUrls]
+    copyOfPreviewImagesData = copyOfPreviewImagesData.filter((img: ImageData) => img.url !== previewData.url)
 
-    let copyOfFileNames = [...fileNames]
+    let copyOfFileNames = [...imagesData]
     copyOfFileNames = copyOfFileNames.filter(
       (imageData: ImageData) => imageData.id != previewData.id
     )
 
-    setPostPreviewDataUrls(copyOfImagesUrls)
-    dispatch(setImagesUrlsState(copyOfFileNames))
+    setPostPreviewDataUrls(copyOfPreviewImagesData)
+    dispatch(setImagesDataState(copyOfFileNames))
   }
 
   async function handleDeletePost(e: any) {
@@ -432,7 +458,7 @@ export default function Home() {
                     availability={availability}
                     dogs={pets.dogs}
                     cats={pets.cats}
-                    imagesUrls={fileNames} // TODO: should have default image
+                    imagesData={imagesData} // TODO: should have default image
                   />
                   <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
                     Delete post
