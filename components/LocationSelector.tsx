@@ -52,8 +52,17 @@ export default function LocationSelector({
     }
   }, [])
 
-  function handlelandlordSelectedLocation(e: any) {
-    dispatch(setlandlordLocationState(e.target.id))
+  async function handleLandlordSelectedLocation(e: any) {
+    const newLocation = e.target.id
+
+    if (updateDbInstantly) {
+      await supabaseClient.from('landlords').upsert({
+        user_id: user?.id,
+        location: newLocation,
+      })
+    }
+
+    dispatch(setlandlordLocationState(newLocation))
   }
 
   async function handleHousitterSelectedLocation(e: any) {
@@ -157,7 +166,7 @@ export default function LocationSelector({
                 }
                 name={isHousitter ? loc : 'singleLocationChoice'}
                 onChange={
-                  isHousitter ? handleHousitterSelectedLocation : handlelandlordSelectedLocation
+                  isHousitter ? handleHousitterSelectedLocation : handleLandlordSelectedLocation
                 }
               />
             ))

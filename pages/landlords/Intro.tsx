@@ -171,6 +171,10 @@ export default function landlordIntro() {
       }
 
       let { error: petsError } = await supabaseClient.from('pets').upsert(newPets)
+      if (petsError) {
+        alert(`error uploading pets: ${petsError}`)
+        throw petsError
+      }
     }
 
     dispatch(setIsLoggedState(true))
@@ -178,7 +182,11 @@ export default function landlordIntro() {
       isAfterSignup: true,
     }
 
-    alert('success')
+    alert(
+      `Successfully created new landlord: ${form[SIGNUP_FORM_PROPS.FIRST_NAME]} ${
+        form[SIGNUP_FORM_PROPS.LAST_NAME]
+      }`
+    )
     router.push({ pathname: 'Home', query: homeProps })
   }
 

@@ -121,24 +121,20 @@ export default function Home() {
           .select(`description, images_urls, title`)
           .eq('landlord_id', user.id)
           .eq('is_active', true)
-          .single()
+        // not using single() filter to prevent 0 rows error when no active post
 
         if (postsError) {
-          if (postsError.details.startsWith('Results contain 0 rows')) {
-            console.log(
-              'Error: 0 rows returned: even though isActivePost is set to false, query was sent and no posts found'
-            )
-          } else {
-            alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
-            throw postsError
-          }
+          alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
+          throw postsError
         }
 
-        if (activePostData) {
+        if (activePostData && activePostData[0]) {
+          // never more than a single result
+          const activePost = activePostData[0] // TODO:
           dispatch(setIsActiveState(true))
           const imagesUrlData: ImageData[] = []
 
-          activePostData.images_urls.forEach((postImagesUrl: string, index: number) => {
+          activePost.images_urls.forEach((postImagesUrl: string, index: number) => {
             imagesUrlData.push({
               url: postImagesUrl,
               id: index,
@@ -147,8 +143,8 @@ export default function Home() {
 
           // TODO: maybe create a utility which gets a property, checks if it's different, and only then dispatches.
           dispatch(setImagesUrlsState(imagesUrlData))
-          dispatch(setDescriptionState(activePostData.description))
-          dispatch(setTitleState(activePostData.title))
+          dispatch(setDescriptionState(activePost.description))
+          dispatch(setTitleState(activePost.title))
         }
 
         if (!isActivePost) {
@@ -157,7 +153,7 @@ export default function Home() {
           dispatch(setTitleState(''))
           dispatch(setImagesUrlsState([])), setPostPreviewDataUrls([])
           setHousitters([])
-          console.log('returning')
+          console.log('no active post, returning')
           return
         }
 
