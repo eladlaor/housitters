@@ -9,9 +9,11 @@ import React from 'react'
 import { countDays } from '../utils/dates'
 import { useSelector } from 'react-redux'
 import { selectPrimaryUseState } from '../slices/userSlice'
-import { USER_TYPE } from '../utils/constants'
+import { API_ROUTES, USER_TYPE } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import PictureBetter from './PictureBetter'
+import axios from 'axios'
+import { blobToBuffer } from '../utils/files'
 
 /*
   if no active posts: allow create new post
@@ -89,32 +91,50 @@ export default function HousePost({
     imagesData: ImageData[]
   ) {
     try {
+      const downloadPromises = imagesData.map(async (imageData: ImageData) => { 
 
-      
-      
-      const downloadPromises = imagesData.map(async (imageData: ImageData) => {
-
-        
         const { data: downloadData, error: downloadError } = await supabaseClient.storage
           .from('posts')
-          .download(`${imageData.url}`)
-        if (downloadError) {
-          throw downloadError
-        }
+          .download(imageData.url)
 
-        if (downloadData) {
-          const fullUrl = URL.createObjectURL(downloadData)
+          if (downloadError) {
+            throw downloadError
+          }
+  
+          if (downloadData) {
+            const objectUrl = URL.createObjectURL(downloadData)
+  
+            // TODO: there was a reason i did it with object, should return it...
+            return { url: objectUrl, id: imageData.id }
+          }
 
-          // TODO: there was a reason i did it with object, should return it...
-          return { url: fullUrl, id: imageData.id }
-        }
-      })
+            // const response = await axios.get(API_ROUTES.picture, { params: {
+            //   bucketName: 'posts',
+            //   imageName: imageData.url,
+            // },        
+            // responseType: 'blob' }) 
+    
+            // if (response.status === 200) {
+              
+            //   const buffer = await blobToBuffer(response.data)
+            //   // conveting to the url format needed to display the preview image
 
-      const fullUrlsForPreview = await Promise.all(downloadPromises)
-      setPostPicturesFullUrl(fullUrlsForPreview as ImageData[])
-    } catch (error) {
-      alert('error in downloadPostImagesAndSetPostPicturesPreview' + error)
-      
+            //   const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
+    
+            //   return { url: fullUrl, id: imageData.id };
+            // } else {
+            //   alert('Bad response');
+            //   debugger;
+            // }
+    }) 
+
+    const fullUrlsForPreview = await Promise.all(downloadPromises)
+    
+    setPostPicturesFullUrl(fullUrlsForPreview as ImageData[])
+
+  } catch (error) {
+      alert('error in downloadPostImagesAndSetPostPicturesPreview' + error) 
+      throw error
     }
   }
 
@@ -124,7 +144,7 @@ export default function HousePost({
         <Card.Body>
           <Card.Title>{title}</Card.Title>
           {postPicturesFullUrl[0] ? (
-            <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
+            <Image src={postPicturesFullUrl[0].url} alt='Thumbnail' height={100} width={100} />
           ) : (
             'Loading Title Image'
           )}

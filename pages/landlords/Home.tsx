@@ -299,7 +299,7 @@ export default function Home() {
         formData.append('upsert', 'true')
         formData.append('file', resizedImage, fileName)
 
-        const uploadResponse = await axios.post(API_ROUTES.UploadPicture, formData, {
+        const uploadResponse = await axios.post(API_ROUTES.picture, formData, {
           headers: {
             'Content-Type': 'multipart/form-data', // TODO: make constant
           },

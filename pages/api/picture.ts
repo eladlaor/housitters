@@ -8,7 +8,8 @@ const supabaseUrl = process.env.SUPABASE_URL || ''
 const supabaseKey = process.env.SUPABASE_KEY || ''
 const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
-// Create a multer instance
+// Create a multer instance.
+// applies only for POST requests.
 const upload = multer({
   dest: './tmp-files', // Adjust the destination folder as needed
   // You can customize the filename as per your requirements
@@ -28,6 +29,35 @@ const apiRoute = nextConnect<any, any>({
 })
 
 apiRoute.use(upload.any()) // The Request object will be populated with a files array containing an information object for each processed file.
+
+apiRoute.get(async (req, res) => {
+  try {
+    const {bucketName, imageName} = req.query
+
+        const { data: downloadData, error: downloadError } = await supabaseClient.storage
+          .from(bucketName)
+          .download(imageName)
+
+          if (downloadError) {
+            console.log(`download error: ${downloadError}`);
+            throw downloadError
+          }
+
+          if (downloadData) {
+            res.setHeader('Content-Type', 'image/jpeg');
+            res.status(200).send(downloadData);
+          } else {
+            res.status(404).json({ error: 'File not found' });
+          }
+
+
+  }
+    catch (e) {
+      console.log(`error: ${e}`);
+      res.stats(400).json({error: 'failed to download file'})
+    }
+  
+})
 
 apiRoute.post(async (req, res) => {
   let tmpFilePath: string = ''

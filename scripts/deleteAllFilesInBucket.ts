@@ -1,17 +1,16 @@
 const { createClient } = require('@supabase/supabase-js')
 
-const supabase = createClient(
-  'https://rssznetfvuqctnxfwvzr.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzc3puZXRmdnVxY3RueGZ3dnpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjgyNjAyODksImV4cCI6MTk4MzgzNjI4OX0.fyWaISimfSUGQoavOyLah6loAkm3LwJl_YfFDspauIg'
-)
+const supabaseUrl = process.env.SUPABASE_URL || ''
+const supabaseKey = process.env.SUPABASE_KEY || ''
+const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
-const bucketName = 'posts'
+const bucketName = 'avatars'
 
 async function deleteAllFilesInBucket() {
   console.log(`removing all files from: ${bucketName} `)
 
   // Retrieve all files in the storage bucket
-  const { data, error } = await supabase.storage.from(bucketName).list()
+  const { data, error } = await supabaseClient.storage.from(bucketName).list()
   console.log(`data is: ${JSON.stringify(data)}`)
 
   if (error) {
@@ -21,7 +20,7 @@ async function deleteAllFilesInBucket() {
 
   // Delete each file in the bucket
   for (const file of data) {
-    const { data, error } = await supabase.storage.from(bucketName).remove(file.name)
+    const { data, error } = await supabaseClient.storage.from(bucketName).remove(file.name)
 
     if (error) {
       console.log('Error removing file: ', error)

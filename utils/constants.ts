@@ -68,5 +68,5 @@ export const LocationDescriptions = {
 // api routes
 
 export const API_ROUTES = {
-  UploadPicture: '/api/uploadPicture'
+  picture: '/api/picture'
 }
