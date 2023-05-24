@@ -3,6 +3,20 @@ import Card from 'react-bootstrap/Card'
 import { HousitterProps } from '../types/clientSide'
 import PictureBetter from './PictureBetter'
 import { USER_TYPE } from '../utils/constants'
+import axios from 'axios'
+
+async function handleSendMessage(e: any) {
+  e.preventDefault()
+  const response = await axios.post('/api/send-emails', {
+    someProp: 'hi',
+  })
+
+  if (response.status === 200) {
+    console.log('successful call')
+  } else {
+    console.log('bad response')
+  }
+}
 
 export default function AvailableHousitter({ props }: { props: HousitterProps }) {
   return (
@@ -27,7 +41,9 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
             {props.firstName} {props.lastName}
           </Card.Title>
           <Card.Text>{props.about_me}</Card.Text>
-          <Button variant="secondary">Send message</Button>
+          <Button variant="secondary" onClick={handleSendMessage}>
+            Send message
+          </Button>
         </Card.Body>
       </Card>
     </div>
