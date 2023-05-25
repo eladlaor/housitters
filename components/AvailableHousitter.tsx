@@ -2,27 +2,23 @@ import { Button, Form, Modal } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
 import { HousitterProps } from '../types/clientSide'
 import PictureBetter from './PictureBetter'
-import { API_ROUTES, EMAIL_FORM_FIELDS, USER_TYPE } from '../utils/constants'
+import { API_ROUTES, EmailFormFields, USER_TYPE } from '../utils/constants'
 import axios from 'axios'
 import { useState } from 'react'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
+import Recommendation from './Recommendation'
 
+// TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
 export default function AvailableHousitter({ props }: { props: HousitterProps }) {
   const [showEmailModal, setShowEmailModal] = useState(false)
   const supabaseClient = useSupabaseClient()
+  const [showRecModal, setShowRecModal] = useState(false)
 
   const [emailForm, setEmailForm] = useState({
-    [EMAIL_FORM_FIELDS.TITLE]: '',
-    [EMAIL_FORM_FIELDS.MESSAGE]: '',
-    [EMAIL_FORM_FIELDS.RECIPIENT_EMAIL]: '',
-  })
-
-  function setEmailFormField(field: string, value: string) {
-    setEmailForm({
-      ...emailForm,
-      [field]: value,
-    })
-  }
+    title: '',
+    message: '',
+    reciepientEmail: '',
+  } as EmailFormFields)
 
   async function handleSendEmail(e: any) {
     e.preventDefault()
@@ -49,8 +45,8 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
     }
 
     const response = await axios.post(API_ROUTES.SEND_EMAILS, {
-      [EMAIL_FORM_FIELDS.TITLE]: emailForm[EMAIL_FORM_FIELDS.TITLE],
-      [EMAIL_FORM_FIELDS.MESSAGE]: emailForm[EMAIL_FORM_FIELDS.MESSAGE],
+      title: emailForm.title,
+      message: emailForm.message,
       recipientEmail: data.email,
     })
 
@@ -109,20 +105,26 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
                   <Form.Control
                     type="text"
                     placeholder=""
-                    value={emailForm[EMAIL_FORM_FIELDS.TITLE]}
+                    value={emailForm.title}
                     onChange={(e) => {
-                      setEmailFormField(EMAIL_FORM_FIELDS.TITLE, e.target.value)
+                      setEmailForm({
+                        ...emailForm,
+                        title: e.target.value,
+                      })
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId={EMAIL_FORM_FIELDS.MESSAGE}>
+                <Form.Group controlId="message">
                   <Form.Label>Message</Form.Label>
                   <Form.Control
                     type="text"
                     placeholder=""
-                    value={emailForm[EMAIL_FORM_FIELDS.MESSAGE]}
+                    value={emailForm.message}
                     onChange={(e) => {
-                      setEmailFormField(EMAIL_FORM_FIELDS.MESSAGE, e.target.value)
+                      setEmailForm({
+                        ...emailForm,
+                        message: e.target.value,
+                      })
                     }}
                   />
                 </Form.Group>
@@ -135,6 +137,21 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
               <Button onClick={handleCloseEmailModal}>Close</Button>
             </Modal.Footer>
           </Modal>
+          <Button variant="primary" onClick={() => setShowRecModal(true)}>
+            Recommend
+          </Button>
+
+          {showRecModal && (
+            <Recommendation
+              housitterId={props.housitterId}
+              firstName={props.firstName}
+              lastName={props.lastName}
+              recommendedUserType={USER_TYPE.Housitter}
+              recommendedUserAvatarUrl={props.avatarUrl as string}
+              showRecModal={showRecModal}
+              setShowRecModal={setShowRecModal}
+            />
+          )}
         </Card.Body>
       </Card>
     </div>
