@@ -18,6 +18,7 @@ export const LANDLORDS_ROUTES = {
   ACCOUNT: '/landlords/LandlordAccount',
 }
 
+/* Forms */
 export const SIGNUP_FORM_PROPS = {
   FIRST_NAME: 'firstName',
   LAST_NAME: 'lastName',
@@ -32,9 +33,13 @@ export interface SignupForm {
   [key: string]: string | boolean
 }
 
-export const NEW_POST_PROPS = {
-  LOCATION: 'location',
+export const EMAIL_FORM_FIELDS = {
+  TITLE: 'title',
+  MESSAGE: 'message',
+  RECIPIENT_EMAIL: 'recipientEmail',
 }
+
+/* Location Selector */
 
 export const LocationIds = {
   Abroad: 'abroad',
@@ -62,4 +67,10 @@ export const LocationDescriptions = {
   [LocationIds.RishonToAshkelon]: 'Between Rishon and Ashkelon',
   [LocationIds.AshkelonToBash]: 'Ashkelon to Bash',
   [LocationIds.Eilat]: 'Eilat',
+}
+
+/* api routes */
+
+export const API_ROUTES = {
+  SEND_EMAILS: '/api/send-emails',
 }

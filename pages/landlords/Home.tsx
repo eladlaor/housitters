@@ -7,7 +7,7 @@ import {
   setAvatarUrl,
   setFirstName,
 } from '../../slices/userSlice'
-import { LANDLORDS_ROUTES, NEW_POST_PROPS, LocationIds, USER_TYPE } from '../../utils/constants'
+import { LANDLORDS_ROUTES, LocationIds, USER_TYPE } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'

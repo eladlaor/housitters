@@ -65,7 +65,7 @@ export default function HousitterIntro() {
     })
   }
 
-  function setProfileVisibility(field: any, value: any) {
+  function setProfileVisibility() {
     setForm({
       ...form,
       visible: !form.visible,
@@ -265,7 +265,7 @@ export default function HousitterIntro() {
                         id="anonymous"
                         value={form[SIGNUP_FORM_PROPS.VISIBLE]}
                         onChange={(e) => {
-                          setProfileVisibility(SIGNUP_FORM_PROPS.VISIBLE, e.target.id)
+                          setProfileVisibility()
                         }}
                       />
                     </Form.Group>

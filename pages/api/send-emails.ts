@@ -3,7 +3,7 @@ import * as nodemailer from 'nodemailer'
 
 const sendGridApiKey = process.env.SENDGRID_API_KEY || ''
 
-const sendEmail = async (recipientEmail: string, message: string) => {
+const sendEmail = async (recipientEmail: string, title: string, message: string) => {
   // Configure Nodemailer with SendGrid transport
   const transporter = nodemailer.createTransport({
     service: 'SendGrid',
@@ -15,14 +15,17 @@ const sendEmail = async (recipientEmail: string, message: string) => {
 
   // Compose the email message
   const mailOptions = {
-    from: 'eladlaor88@gmail.com',
+    from: 'eladlaor88@gmail.com', // TODO: must change this to be from 'housitters.com'
     to: recipientEmail,
-    subject: 'hey dude whats up',
+    subject: title,
     text: message,
   }
 
   try {
     // Send the email using Nodemailer
+
+    console.log(`sending this email: to - ${recipientEmail}. subject: ${title}. text: ${message}`)
+
     await transporter.sendMail(mailOptions)
     console.log('Email sent successfully')
   } catch (error) {
@@ -34,14 +37,10 @@ export default async function handler(req: any, res: any) {
   if (req.method === 'POST') {
     console.log('reached post handler')
     try {
-      // const { recipientEmail, message } = req.body
+      const { recipientEmail, title, message } = req.body
 
-      const recipientEmail = 'eladlaor88@gmail.com'
-      const message = 'hi elad how are you?'
-      // Validate recipientEmail and message fields if needed
-
-      // Send email using Nodemailer and SendGrid
-      await sendEmail(recipientEmail, message)
+      // sending email using Nodemailer and SendGrid
+      await sendEmail(recipientEmail, title, message)
 
       return res.status(200).json({ message: 'Email sent successfully' })
     } catch (error) {
