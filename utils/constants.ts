@@ -1,4 +1,4 @@
-// rename all to be PascalCase
+//TODO: rename all to be PascalCase
 
 export const USER_TYPE = {
   Landlord: 'landlord',
@@ -30,13 +30,42 @@ export const SIGNUP_FORM_PROPS = {
 export type SignupFormProps = typeof SIGNUP_FORM_PROPS
 
 export interface SignupForm {
-  [key: string]: string | boolean
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  visible: boolean
 }
 
-export const EMAIL_FORM_FIELDS = {
-  TITLE: 'title',
-  MESSAGE: 'message',
-  RECIPIENT_EMAIL: 'recipientEmail',
+export interface EmailFormFields {
+  title: string
+  message: string
+  reciepientEmail: string
+}
+
+export interface RecommendationProps {
+  housitterId: string
+  firstName: string
+  lastName: string
+  sitDuration: number
+  startMonth: Date
+  recommended_user_type: string
+  recommended_by: string
+  description: string
+  showAllRecsModal: boolean
+  setShowAllRecsModal: Function
+}
+
+/* Component Props */
+
+export interface RecommendationFormProps {
+  housitterId: string
+  firstName: string
+  lastName: string
+  recommendedUserType: string
+  recommendedUserAvatarUrl: string
+  showRecModal: boolean
+  setShowRecModal: Function
 }
 
 /* Location Selector */

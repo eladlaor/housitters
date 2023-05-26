@@ -18,7 +18,7 @@
     "@supabase/supabase-js": "^2.0.4",
     "@types/redux-persist": "^4.3.1",
     "bootstrap": "^5.2.3",
-    "date-fns": "^2.29.3",
+    "date-fns": "^2.30.0",
     "image-compressor": "^2.0.3",
     "moment": "^2.29.4",
     "next": "12.3.1",

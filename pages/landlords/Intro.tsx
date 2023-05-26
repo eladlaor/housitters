@@ -27,7 +27,7 @@ import Image from 'next/image'
 import { ImageData } from '../../types/clientSide'
 import PetsCounter from '../../components/PetsCounter'
 
-import PictureBetter from '../../components/PictureBetter'
+import Picture from '../../components/Picture'
 
 export default function landlordIntro() {
   const router = useRouter()
@@ -35,11 +35,11 @@ export default function landlordIntro() {
   const supabaseClient = useSupabaseClient()
 
   const [form, setForm] = useState({
-    [SIGNUP_FORM_PROPS.FIRST_NAME]: '',
-    [SIGNUP_FORM_PROPS.LAST_NAME]: '',
-    [SIGNUP_FORM_PROPS.EMAIL]: '',
-    [SIGNUP_FORM_PROPS.PASSWORD]: '',
-    [SIGNUP_FORM_PROPS.VISIBLE]: true,
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    visible: true,
   } as SignupForm)
 
   const [errors, setErrors] = useState({} as any)
@@ -68,23 +68,6 @@ export default function landlordIntro() {
       ...form,
       [field]: value,
     })
-
-    // setErrors({
-    //   ...errors,
-    //   [field]: null, // TODO: is this the best way
-    // })
-  }
-
-  function setProfileVisibility(field: any, value: any) {
-    setForm({
-      ...form,
-      [SIGNUP_FORM_PROPS.VISIBLE]: !form.visible,
-    })
-
-    // setErrors({
-    //   ...errors,
-    //   [field]: null, // TODO: is this the best way
-    // })
   }
 
   async function handleSignUp(e: any) {
@@ -92,13 +75,14 @@ export default function landlordIntro() {
     setShowModal(false) // TODO: should probably add another kind of signifier to wait until registration completes, but twice alert is no good. maybe a route to a differnet page.
 
     let { data, error } = await supabaseClient.auth.signUp({
-      email: form[SIGNUP_FORM_PROPS.EMAIL] as string,
-      password: form[SIGNUP_FORM_PROPS.PASSWORD] as string,
+      email: form.email,
+      password: form.password,
     })
 
     if (error) {
-      // TODO: for example, if a user is already registered
+      // TODO: for example, if a user is already registered, or if db error
 
+      debugger
       switch (error.message) {
         case 'user already registered':
           alert(
@@ -111,21 +95,26 @@ export default function landlordIntro() {
       throw error
     }
 
-    // TODO: if I'll be able to properly cast in the above call, the following won't be needed.
+    // visible and editable via supabase ui. creates a view containing only the 'email' field of the restricted auth.users table
+    // this is required in order to allow users to send each other emails.
+    const { error: rpcError } = await supabaseClient.rpc('update_users_view')
+    if (rpcError) {
+      alert(`rpc error`)
+      debugger
+      throw rpcError
+    }
+
     if (data && data.user) {
       let userId = data.user.id
 
       const newProfile = {
         id: userId,
-        username: (form[SIGNUP_FORM_PROPS.EMAIL] as string).substring(
-          0,
-          (form[SIGNUP_FORM_PROPS.EMAIL] as string).indexOf('@')
-        ),
-        first_name: form[SIGNUP_FORM_PROPS.FIRST_NAME],
-        last_name: form[SIGNUP_FORM_PROPS.LAST_NAME],
+        username: form.email.substring(0, form.email.indexOf('@')),
+        first_name: form.firstName,
+        last_name: form.lastName,
         primary_use: primaryUse,
         avatar_url: avatarUrl,
-        visible: form[SIGNUP_FORM_PROPS.VISIBLE],
+        visible: form.visible,
       }
 
       let { error: profileError } = await supabaseClient
@@ -182,11 +171,7 @@ export default function landlordIntro() {
       isAfterSignup: true,
     }
 
-    alert(
-      `Successfully created new landlord: ${form[SIGNUP_FORM_PROPS.FIRST_NAME]} ${
-        form[SIGNUP_FORM_PROPS.LAST_NAME]
-      }`
-    )
+    alert(`Successfully created new landlord: ${form.firstName} ${form.lastName}`)
     router.push({ pathname: 'Home', query: homeProps })
   }
 
@@ -291,7 +276,7 @@ export default function landlordIntro() {
                 <Form.Control
                   type="text"
                   placeholder=""
-                  value={form[SIGNUP_FORM_PROPS.FIRST_NAME] as string}
+                  value={form.firstName as string}
                   onChange={(e) => {
                     setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
                   }}
@@ -302,7 +287,7 @@ export default function landlordIntro() {
                 <Form.Control
                   type="text"
                   placeholder=""
-                  value={form[SIGNUP_FORM_PROPS.LAST_NAME] as string}
+                  value={form.lastName}
                   onChange={(e) => {
                     setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
                   }}
@@ -313,7 +298,7 @@ export default function landlordIntro() {
                 <Form.Control
                   type="email"
                   placeholder="Enter email"
-                  value={form[SIGNUP_FORM_PROPS.EMAIL] as string}
+                  value={form.email}
                   onChange={(e) => {
                     setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
                   }}
@@ -346,7 +331,7 @@ export default function landlordIntro() {
                 <PetsCounter />
               </Form.Group>
               <Form.Group>
-                <PictureBetter
+                <Picture
                   isIntro={true}
                   uid=""
                   primaryUse={USER_TYPE.Landlord}
@@ -358,7 +343,7 @@ export default function landlordIntro() {
                   bucketName="avatars"
                   isAvatar={true}
                   promptMessage="Choose a profile picture"
-                  email={form[SIGNUP_FORM_PROPS.EMAIL] as string}
+                  email={form.email}
                 />
               </Form.Group>
 
@@ -371,9 +356,11 @@ export default function landlordIntro() {
                   type="checkbox"
                   label="anonymous"
                   id="anonymous"
-                  value={form[SIGNUP_FORM_PROPS.VISIBLE] as string}
-                  onChange={(e) => {
-                    setProfileVisibility(SIGNUP_FORM_PROPS.VISIBLE, e.target.id)
+                  onChange={() => {
+                    setForm({
+                      ...form,
+                      visible: !form.visible,
+                    })
                   }}
                 />
               </Form.Group>

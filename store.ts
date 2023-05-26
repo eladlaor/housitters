@@ -6,6 +6,8 @@ import { landlordSlice } from './slices/landlordSlice'
 import landlordReducer from './slices/landlordSlice'
 import { housitterSlice } from './slices/housitterSlice'
 import { postSlice } from './slices/postSlice'
+import { recommendationSlice } from './slices/recommendationSlice'
+import recommendationReducer from './slices/recommendationSlice'
 import postReducer from './slices/postSlice'
 import housitterReducer from './slices/housitterSlice'
 import storage from 'redux-persist/lib/storage'
@@ -22,6 +24,7 @@ const reducers = combineReducers({
   [landlordSlice.name]: landlordReducer,
   [housitterSlice.name]: housitterReducer,
   [postSlice.name]: postReducer,
+  [recommendationSlice.name]: recommendationReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers)
