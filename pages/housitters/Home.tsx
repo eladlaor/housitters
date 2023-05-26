@@ -107,6 +107,7 @@ export default function Home() {
               for (const housitterAvailabilitySelector of housitterAvailableDates) {
                 return (
                   housitterAvailabilitySelector.endDate.startsWith('1970') ||
+                  postPeriod.end_date.getFullYear().toString() === '1970' ||
                   (housitterAvailabilitySelector.startDate <= postPeriod.start_date &&
                     housitterAvailabilitySelector.endDate >= postPeriod.end_date)
                 )

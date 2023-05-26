@@ -43,14 +43,22 @@ export interface EmailFormFields {
   reciepientEmail: string
 }
 
-export interface RecommendationFormFields {
-  duration: number
+export interface RecommendationProps {
+  housitterId: string
+  firstName: string
+  lastName: string
+  sitDuration: number
+  startMonth: Date
+  recommended_user_type: string
+  recommended_by: string
   description: string
+  showAllRecsModal: boolean
+  setShowAllRecsModal: Function
 }
 
 /* Component Props */
 
-export interface RecommendationProps {
+export interface RecommendationFormProps {
   housitterId: string
   firstName: string
   lastName: string

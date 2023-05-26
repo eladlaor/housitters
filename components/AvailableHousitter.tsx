@@ -6,13 +6,16 @@ import { API_ROUTES, EmailFormFields, USER_TYPE } from '../utils/constants'
 import axios from 'axios'
 import { useState } from 'react'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
-import Recommendation from './Recommendation'
+import RecommendationForm from './RecommendationForm'
+import Recommendations from './Recommendations'
 
 // TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
 export default function AvailableHousitter({ props }: { props: HousitterProps }) {
   const [showEmailModal, setShowEmailModal] = useState(false)
   const supabaseClient = useSupabaseClient()
   const [showRecModal, setShowRecModal] = useState(false)
+  const [showAllRecsModal, setShowAllRecsModal] = useState(false)
+  const [recommendations, setRecommendations] = useState([] as any[]) // TODO: type it
 
   const [emailForm, setEmailForm] = useState({
     title: '',
@@ -142,7 +145,7 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
           </Button>
 
           {showRecModal && (
-            <Recommendation
+            <RecommendationForm
               housitterId={props.housitterId}
               firstName={props.firstName}
               lastName={props.lastName}
@@ -150,6 +153,20 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
               recommendedUserAvatarUrl={props.avatarUrl as string}
               showRecModal={showRecModal}
               setShowRecModal={setShowRecModal}
+            />
+          )}
+          <Button variant="info" onClick={() => setShowAllRecsModal(true)}>
+            See recommendations
+          </Button>
+          {showAllRecsModal && (
+            <Recommendations
+              firstName={props.firstName}
+              lastName={props.lastName}
+              housitterId={props.housitterId}
+              showAllRecsModal={showAllRecsModal}
+              setShowAllRecsModal={setShowAllRecsModal}
+              recommendations={recommendations}
+              setRecommendations={setRecommendations}
             />
           )}
         </Card.Body>

@@ -69,17 +69,7 @@ export default function landlordIntro() {
       [field]: value,
     })
 
-    // setErrors({
-    //   ...errors,
-    //   [field]: null, // TODO: is this the best way
-    // })
-  }
 
-  function setProfileVisibility(field: any, value: any) {
-    setForm({
-      ...form,
-      [SIGNUP_FORM_PROPS.VISIBLE]: !form.visible,
-    })
   }
 
   async function handleSignUp(e: any) {
@@ -92,8 +82,9 @@ export default function landlordIntro() {
     })
 
     if (error) {
-      // TODO: for example, if a user is already registered
+      // TODO: for example, if a user is already registered, or if db error
 
+      debugger
       switch (error.message) {
         case 'user already registered':
           alert(
@@ -106,7 +97,15 @@ export default function landlordIntro() {
       throw error
     }
 
-    // TODO: if I'll be able to properly cast in the above call, the following won't be needed.
+    // visible and editable via supabase ui. creates a view containing only the 'email' field of the restricted auth.users table
+    // this is required in order to allow users to send each other emails.
+    const { error: rpcError } = await supabaseClient.rpc('update_users_view')
+    if (rpcError) {
+      alert(`rpc error`)
+      debugger
+      throw rpcError
+    }
+
     if (data && data.user) {
       let userId = data.user.id
 

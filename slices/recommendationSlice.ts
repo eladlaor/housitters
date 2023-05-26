@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { format, startOfMonth } from 'date-fns'
+
+// TODO: might be worth a rename, because this slice only refers to the recommendation form
 
 export const initialState = {
   startMonth: new Date().toISOString(),

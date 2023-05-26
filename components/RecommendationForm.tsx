@@ -1,5 +1,5 @@
 import { Button, Form, Modal } from 'react-bootstrap'
-import { RecommendationProps } from '../utils/constants'
+import { RecommendationFormProps } from '../utils/constants'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import {
@@ -16,19 +16,11 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { startOfMonth, format, isDate } from 'date-fns'
-import moment from 'moment'
 import { Database } from '../types/supabase'
 
-export default function Recommendation(props: RecommendationProps) {
-  const {
-    housitterId,
-    firstName,
-    lastName,
-    recommendedUserType,
-    recommendedUserAvatarUrl, // not using it
-    showRecModal,
-    setShowRecModal,
-  } = props
+export default function RecommendationForm(props: RecommendationFormProps) {
+  const { housitterId, firstName, lastName, recommendedUserType, showRecModal, setShowRecModal } =
+    props
 
   const supabaseClient = useSupabaseClient()
   const user = useUser()
@@ -54,7 +46,6 @@ export default function Recommendation(props: RecommendationProps) {
   async function handleSubmit(e: any) {
     e.preventDefault()
 
-    // TODO: generate updated supabase types and import table name from there
     const { error } = await supabaseClient.from('recommendations').upsert({
       recommended_user_id: housitterId,
       recommended_by: user!.id, // TODO: how to make sure i'll always have this value here as useUser is async
@@ -67,11 +58,13 @@ export default function Recommendation(props: RecommendationProps) {
 
     if (error) {
       alert(`Failed upserting new recommendation. Error: ${error.message}`)
+      debugger
       throw error
     }
 
     alert(`successfully submitted recommendation for ${firstName}`)
 
+    // TODO: in this case its ok because its separate setters, but generally not good to set state in forEach, should create a new array and then set it.
     settersToInitialStates.forEach((attributeSetterAndInitialState) => {
       dispatch(
         attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
