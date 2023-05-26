@@ -23,7 +23,6 @@ import Modal from 'react-bootstrap/Modal'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Form from 'react-bootstrap/Form'
 import { useState } from 'react'
-import Image from 'next/image'
 import { ImageData } from '../../types/clientSide'
 import PetsCounter from '../../components/PetsCounter'
 
@@ -95,14 +94,15 @@ export default function landlordIntro() {
       throw error
     }
 
+    // TODO: no need for this users view thing, just add email to profiles...
     // visible and editable via supabase ui. creates a view containing only the 'email' field of the restricted auth.users table
     // this is required in order to allow users to send each other emails.
-    const { error: rpcError } = await supabaseClient.rpc('update_users_view')
-    if (rpcError) {
-      alert(`rpc error`)
-      debugger
-      throw rpcError
-    }
+    // const { error: rpcError } = await supabaseClient.rpc('update_users_view')
+    // if (rpcError) {
+    //   alert(`rpc error`)
+    //   debugger
+    //   throw rpcError
+    // }
 
     if (data && data.user) {
       let userId = data.user.id
@@ -115,6 +115,7 @@ export default function landlordIntro() {
         primary_use: primaryUse,
         avatar_url: avatarUrl,
         visible: form.visible,
+        email: form.email,
       }
 
       let { error: profileError } = await supabaseClient

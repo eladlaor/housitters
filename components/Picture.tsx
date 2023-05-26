@@ -295,7 +295,6 @@ export default function Picture({
           )}
         </div>
       )}
-      {previewDataUrls.length > 0 && <h1>got previewdata</h1>}
       {previewDataUrls.map((previewData: ImageData, index: number) => (
         <div key={index}>
           <Image src={previewData.url} height={size} width={size} key={index} />

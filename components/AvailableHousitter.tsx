@@ -30,7 +30,7 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
     // in supabase database, I created a function which triggers after every new user signup, which creates a queryable public.users view
     // trigger name: on_new_user_created | function name: create_public_users_view
     const { error, data } = await supabaseClient
-      .from('users')
+      .from('profiles')
       .select(`email`)
       .eq('id', props.housitterId)
       .single()
@@ -54,8 +54,7 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
     })
 
     if (response.status === 200) {
-      debugger
-      console.log(response.data.message)
+      alert(response.data.message)
     } else {
       alert(
         `error when trying to send email. Status: ${response.status}. Message: ${response.data?.error}`
