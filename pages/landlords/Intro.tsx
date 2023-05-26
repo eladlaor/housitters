@@ -27,7 +27,7 @@ import Image from 'next/image'
 import { ImageData } from '../../types/clientSide'
 import PetsCounter from '../../components/PetsCounter'
 
-import PictureBetter from '../../components/PictureBetter'
+import Picture from '../../components/Picture'
 
 export default function landlordIntro() {
   const router = useRouter()
@@ -68,8 +68,6 @@ export default function landlordIntro() {
       ...form,
       [field]: value,
     })
-
-
   }
 
   async function handleSignUp(e: any) {
@@ -333,7 +331,7 @@ export default function landlordIntro() {
                 <PetsCounter />
               </Form.Group>
               <Form.Group>
-                <PictureBetter
+                <Picture
                   isIntro={true}
                   uid=""
                   primaryUse={USER_TYPE.Landlord}

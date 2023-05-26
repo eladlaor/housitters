@@ -1,7 +1,7 @@
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { Card, Modal } from 'react-bootstrap'
-import PictureBetter from './PictureBetter'
+import Picture from './Picture'
 import { USER_TYPE } from '../utils/constants'
 
 export default function Recommendations(props: any) {
@@ -122,7 +122,7 @@ export default function Recommendations(props: any) {
                 <Card.Title>
                   <div>
                     {rec.landlordFirstName} {rec.landlordLastName}
-                    <PictureBetter
+                    <Picture
                       uid={rec.landlordId}
                       email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved
                       url={rec.landlordAvatarUrl}

@@ -26,7 +26,7 @@ import { ImageData } from '../../types/clientSide'
 
 import Container from 'react-bootstrap/Container'
 import Navbar from 'react-bootstrap/Navbar'
-import PictureBetter from '../../components/PictureBetter'
+import Picture from '../../components/PictureDeprecated'
 
 export default function HousitterIntro() {
   const router = useRouter()
@@ -238,7 +238,7 @@ export default function HousitterIntro() {
                       </div>
                     </Form.Group>
                     <Form.Group>
-                      <PictureBetter
+                      <Picture
                         isIntro={true}
                         uid=""
                         primaryUse={USER_TYPE.Housitter}

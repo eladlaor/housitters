@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
-import Picture from './Picture'
+import PictureDeprecated from './PictureDeprecated'
 import { useRouter } from 'next/router'
 
 import AvailabilitySelector from '../components/AvailabilitySelector'
@@ -211,7 +211,7 @@ export default function Account() {
       >
         go to dashboard
       </button>
-      <Picture
+      <PictureDeprecated
         uid={user!.id}
         url={avatar_url}
         size={150}

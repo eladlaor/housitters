@@ -1,7 +1,7 @@
 import { Button, Form, Modal } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
 import { HousitterProps } from '../types/clientSide'
-import PictureBetter from './PictureBetter'
+import Picture from './Picture'
 import { API_ROUTES, EmailFormFields, USER_TYPE } from '../utils/constants'
 import axios from 'axios'
 import { useState } from 'react'
@@ -76,7 +76,7 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
     <div>
       <Card bg="success" style={{ width: '18rem' }}>
         <Card.Body>
-          <PictureBetter
+          <Picture
             uid={props.housitterId}
             email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved
             url={props.avatarUrl}

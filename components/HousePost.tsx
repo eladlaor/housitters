@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux'
 import { selectPrimaryUseState } from '../slices/userSlice'
 import { USER_TYPE } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
-import PictureBetter from './PictureBetter'
+import Picture from './Picture'
 
 /*
   if no active posts: allow create new post
@@ -175,7 +175,7 @@ export default function HousePost({
             <div>
               {' '}
               <Card.Text>post by: {landlordFirstName}</Card.Text>
-              <PictureBetter
+              <Picture
                 isAvatar={true}
                 url={landlordAvatarUrl}
                 email=""

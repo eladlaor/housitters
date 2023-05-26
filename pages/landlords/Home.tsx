@@ -45,7 +45,7 @@ import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
 import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
 import { ImageData } from '../../types/clientSide'
-import PictureBetter from '../../components/PictureBetter'
+import Picture from '../../components/Picture'
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
 
 export default function Home() {
@@ -399,7 +399,7 @@ export default function Home() {
         <div>
           <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
           {user && (
-            <PictureBetter
+            <Picture
               isIntro={false}
               uid={user.id}
               url={avatarUrl}

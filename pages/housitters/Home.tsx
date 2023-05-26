@@ -20,7 +20,6 @@ import Col from 'react-bootstrap/Col'
 import { selectImagesUrlsState } from '../../slices/postSlice'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import Picture from '../../components/Picture'
-import PictureBetter from '../../components/PictureBetter'
 
 export default function Home() {
   const user = useUser()
@@ -146,7 +145,7 @@ export default function Home() {
       <div>
         <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
         {user && (
-          <PictureBetter
+          <Picture
             isIntro={false}
             uid={user.id}
             url={avatarUrl}
