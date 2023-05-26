@@ -140,7 +140,7 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
               <Button onClick={handleCloseEmailModal}>Close</Button>
             </Modal.Footer>
           </Modal>
-          <Button variant="primary" onClick={() => setShowRecModal(true)}>
+          <Button variant="warning" onClick={() => setShowRecModal(true)}>
             Recommend
           </Button>
 

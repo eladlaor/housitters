@@ -88,7 +88,11 @@ export default function PictureBetter({
   }
 
   useEffect(() => {
-    if (url) downloadImage(url)
+    if (url) {
+      downloadImage(url)
+    } else {
+      console.log('no url received in PictureBetter')
+    }
   }, [url])
 
   const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<Blob> => {
@@ -291,6 +295,7 @@ export default function PictureBetter({
           )}
         </div>
       )}
+      {previewDataUrls.length > 0 && <h1>got previewdata</h1>}
       {previewDataUrls.map((previewData: ImageData, index: number) => (
         <div key={index}>
           <Image src={previewData.url} height={size} width={size} key={index} />

@@ -1,6 +1,8 @@
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { Card, Modal } from 'react-bootstrap'
+import PictureBetter from './PictureBetter'
+import { USER_TYPE } from '../utils/constants'
 
 export default function Recommendations(props: any) {
   // TODO:
@@ -22,11 +24,14 @@ export default function Recommendations(props: any) {
         .from('recommendations')
         .select(
           `duration, sit_included, description, start_month, profiles!inner(
-            first_name, last_name, avatar_url
+            id, first_name, last_name, avatar_url
         )`
         )
         .eq('recommended_user_id', housitterId)
+      /* recommendations table has only one foreign key relation to profiles table - recommender_user_id. 
+        thats why the inner join will apply only for landlords, and that why the first_name last_name etc refers to landlords. 
 
+        */
       if (error) {
         alert(`error querying recommendations: ${error.message}`)
         debugger
@@ -43,7 +48,12 @@ export default function Recommendations(props: any) {
               sit_included: sitIncluded,
               description,
               start_month: startMonth,
-              profiles: { first_name: firstName },
+              profiles: {
+                id: landlordId,
+                first_name: landlordFirstName,
+                last_name: landlordLastName,
+                avatar_url: landlordAvatarUrl,
+              },
             } = rec
 
             modifiedRecs.push({
@@ -51,8 +61,10 @@ export default function Recommendations(props: any) {
               sitIncluded,
               description,
               startMonth,
-              firstName,
-              lastName,
+              landlordId,
+              landlordFirstName,
+              landlordLastName,
+              landlordAvatarUrl,
             })
           })
 
@@ -63,7 +75,12 @@ export default function Recommendations(props: any) {
             sit_included: sitIncluded,
             description,
             start_month: startMonth,
-            profiles: { first_name: firstName, last_name: lastName },
+            profiles: {
+              id: landlordId,
+              first_name: landlordFirstName,
+              last_name: landlordLastName,
+              avatar_url: landlordAvatarUrl,
+            },
           } = data
 
           setRecommendations([
@@ -72,8 +89,10 @@ export default function Recommendations(props: any) {
               sitIncluded,
               description,
               startMonth,
-              firstName,
-              lastName,
+              landlordId,
+              landlordFirstName,
+              landlordLastName,
+              landlordAvatarUrl,
             },
           ])
         }
@@ -91,17 +110,50 @@ export default function Recommendations(props: any) {
   return (
     <Modal show={showAllRecsModal} onHide={handleCloseModal}>
       <Modal.Header closeButton>
-        <Modal.Title>all recommendations</Modal.Title>
+        <Modal.Title>
+          all recommendations for {firstName} {lastName}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {recommendations.map((rec: any, index: number) => (
-          <Card key={index}>
-            <Card.Body>
-              <Card.Text>
-                description: {rec.description}. by: {rec.firstName}
-              </Card.Text>
-            </Card.Body>
-          </Card>
+          <div key={index}>
+            <Card bg="primary" style={{ width: '18rem' }} key={index}>
+              <Card.Body>
+                <Card.Title>
+                  <div>
+                    {rec.landlordFirstName} {rec.landlordLastName}
+                    <PictureBetter
+                      uid={rec.landlordId}
+                      email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved
+                      url={rec.landlordAvatarUrl}
+                      isIntro={false}
+                      primaryUse={USER_TYPE.Landlord}
+                      size={100}
+                      width={100} // should persist dimensions of image upon upload
+                      height={100}
+                      disableUpload={true}
+                      bucketName="avatars"
+                      isAvatar={true}
+                      promptMessage=""
+                    />
+                  </div>
+                </Card.Title>
+                <hr />
+                <Card.Text>Sit included: {rec.sitIncluded}</Card.Text>
+                <hr />
+                <Card.Text>
+                  description: {rec.description}. by: {rec.firstName}
+                </Card.Text>
+                <hr />
+                <Card.Text>
+                  month: {rec.startMonth}. <br /> duration: {rec.duration} days.
+                </Card.Text>
+                <hr />
+              </Card.Body>
+            </Card>
+            <br />
+            <br />
+          </div>
         ))}
       </Modal.Body>
     </Modal>
