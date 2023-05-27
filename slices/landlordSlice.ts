@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { USER_TYPE, LocationIds } from '../utils/constants'
 
 export const initialState = {
   location: '',
@@ -9,6 +8,7 @@ export const initialState = {
     cats: 0,
     other: '',
   },
+  sittersContacted: [] as { housitterId: string; lastContacted: Date }[],
 }
 
 export type landlordState = typeof initialState
@@ -29,14 +29,21 @@ export const landlordSlice = createSlice({
         pets: action.payload,
       }
     },
+    setSittersContactedState(state = initialState, action) {
+      return {
+        ...state,
+        sittersContacted: action.payload,
+      }
+    },
   },
 })
 
 // Action creators (landlordSlice.action) are generated (automatically) for each case reducer function
-export const { setLocationState, setPetsState } = landlordSlice.actions
+export const { setLocationState, setPetsState, setSittersContactedState } = landlordSlice.actions
 
 export const selectLocationState = (state: RootState) => state.landlord.location
 export const selectPetsState = (state: RootState) => state.landlord.pets
+export const selectSittersContactedState = (state: RootState) => state.landlord.sittersContacted
 export type SettersToInitialStates = {
   matchingSetter: any
   initialState: any
