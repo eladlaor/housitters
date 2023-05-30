@@ -1,7 +1,9 @@
-import { Button, Modal } from 'react-bootstrap'
+import { Button, ListGroup, Modal, Badge } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCalendar, faCalendarCheck } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
-import { useSessionContext } from '@supabase/auth-helpers-react'
+import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Image from 'next/image'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -9,7 +11,7 @@ import React from 'react'
 import { countDays } from '../utils/dates'
 import { useSelector } from 'react-redux'
 import { selectPrimaryUseState } from '../slices/userSlice'
-import { USER_TYPE } from '../utils/constants'
+import { USER_TYPE, ClosedSit } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import Picture from './Picture'
 
@@ -38,13 +40,14 @@ export default function HousePost({
   cats: number
   imagesUrls: ImageData[]
 }) {
+  const supabaseClient = useSupabaseClient()
+
   const [landlordFirstName, setLandlordFirstName] = useState('')
   const [landlordAvatarUrl, setLandlordAvatarUrl] = useState('')
-
   const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as ImageData[])
-
-  const { session, error, supabaseClient } = useSessionContext()
   const [showModal, setShowModal] = useState(false)
+  const [closedSits, setClosedSits] = useState([] as ClosedSit[])
+
   const primaryUse = useSelector(selectPrimaryUseState)
 
   function handleModalOpen() {
@@ -72,9 +75,47 @@ export default function HousePost({
           setLandlordFirstName(landlordData.first_name)
           setLandlordAvatarUrl(landlordData.avatar_url)
         }
+
+        let { data: closedSitsData, error: closedSitsError } = await supabaseClient
+          .from('closed_sits')
+          .select(
+            `housitter_id, start_date, profiles!inner (
+          first_name, last_name, avatar_url
+        )`
+          )
+          .eq('landlord_id', landlordId)
+
+        if (closedSitsError) {
+          alert(`error querying db for closed sits: ${closedSitsError.message}`)
+          debugger
+          throw closedSitsError
+        }
+
+        if (closedSitsData) {
+          let modifiedClosedSits: ClosedSit[] = []
+
+          closedSitsData.forEach((closedSit) => {
+            modifiedClosedSits.push({
+              housitterId: closedSit.housitter_id,
+              housitterFirstName: Array.isArray(closedSit.profiles)
+                ? closedSit.profiles[0].first_name
+                : closedSit.profiles?.first_name,
+              housitterLastName: Array.isArray(closedSit.profiles)
+                ? closedSit.profiles[0].last_name
+                : closedSit.profiles?.last_name,
+              housitterAvatarUrl: Array.isArray(closedSit.profiles)
+                ? closedSit.profiles[0].avatar_url
+                : closedSit.profiles?.avatar_url,
+              startDate: closedSit.start_date,
+            })
+          })
+
+          setClosedSits(modifiedClosedSits)
+        }
       } catch (e: any) {
-        // TODO: fix type
-        alert(e.message)
+        alert(e)
+        debugger
+        throw e
       }
     }
 
@@ -111,6 +152,10 @@ export default function HousePost({
       alert('error in downloadPostImagesAndSetPostPicturesPreview' + error)
       debugger
     }
+  }
+
+  function isClosedPeriod(startDate: string) {
+    return closedSits.map((closedSit) => closedSit.startDate).includes(startDate)
   }
 
   return (
@@ -162,10 +207,30 @@ export default function HousePost({
             <Card.Text>
               {availability.map((period, index) => (
                 <React.Fragment key={index}>
-                  {`${period.startDate} - ${period.endDate}`}
-                  <br />
-                  {`total days: ${countDays(period.startDate, period.endDate)}`}
-                  <br />
+                  <ListGroup>
+                    <ListGroup.Item>
+                      {isClosedPeriod(period.startDate) ? (
+                        <>
+                          <Badge bg="success">Closed</Badge>
+                          <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
+                          This sit is complete
+                          <br />
+                        </>
+                      ) : (
+                        <>
+                          <Badge bg="danger">Open</Badge>
+                          <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
+                          This sit is still open
+                          <br />
+                        </>
+                      )}
+
+                      {`${period.startDate} - ${period.endDate}`}
+                      <br />
+                      {`total days: ${countDays(period.startDate, period.endDate)}`}
+                      <br />
+                    </ListGroup.Item>
+                  </ListGroup>
                 </React.Fragment>
               ))}
             </Card.Text>

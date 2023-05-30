@@ -56,7 +56,7 @@ export interface RecommendationProps {
   setShowAllRecsModal: Function
 }
 
-/* Component Props */
+/* Component Props / interfaces */
 
 export interface RecommendationFormProps {
   housitterId: string
@@ -66,6 +66,14 @@ export interface RecommendationFormProps {
   recommendedUserAvatarUrl: string
   showRecModal: boolean
   setShowRecModal: Function
+}
+
+export interface ClosedSit {
+  housitterId: string
+  housitterFirstName: string
+  housitterLastName: string
+  housitterAvatarUrl: string
+  startDate: string
 }
 
 /* Location Selector */
