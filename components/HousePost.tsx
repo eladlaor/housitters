@@ -128,7 +128,7 @@ export default function HousePost({
 
     loadLandlordData(landlordId)
     downloadPostImagesAndSetPostPicturesPreview(landlordId, imagesUrls)
-  }, [landlordId, imagesUrls])
+  }, [landlordId, imagesUrls, closedSits])
 
   // TODO: duplicated in Picture.tsx
   // TODO: this is a bad mixup of getter and setter, a getter should not set.
@@ -261,20 +261,22 @@ export default function HousePost({
                             <br />
                             Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
                             {closedPeriodIfExists.housitterLastName}
-                            <Picture
-                              isIntro={false}
-                              uid={closedPeriodIfExists.housitterId}
-                              primaryUse={USER_TYPE.Housitter}
-                              url={closedPeriodIfExists.housitterAvatarUrl}
-                              size={100}
-                              width={100} // should persist dimensions of image upon upload
-                              height={100}
-                              disableUpload={true}
-                              bucketName="avatars"
-                              isAvatar={true}
-                              promptMessage=""
-                              email=""
-                            />
+                            {closedPeriodIfExists.housitterAvatarUrl && (
+                              <Picture
+                                isIntro={false}
+                                uid={closedPeriodIfExists.housitterId}
+                                primaryUse={USER_TYPE.Housitter}
+                                url={closedPeriodIfExists.housitterAvatarUrl}
+                                size={100}
+                                width={100} // should persist dimensions of image upon upload
+                                height={100}
+                                disableUpload={true}
+                                bucketName="avatars"
+                                isAvatar={true}
+                                promptMessage=""
+                                email=""
+                              />
+                            )}
                             <br />
                             <Button
                               variant="danger"

@@ -18,6 +18,7 @@ import {
   selectClosedSitsState,
   selectLocationState,
   selectPetsState,
+  setClosedSitsState,
   setLocationState,
   setPetsState,
 } from '../../slices/landlordSlice'
@@ -407,7 +408,10 @@ export default function Home() {
 
   async function handleConfirmSitterSelection(e: any) {
     e.preventDefault()
-    closedSit.startDates.forEach(async (startDate) => {
+    const modifiedClosedSits = [...closedSits]
+
+    // for...of will ensure that each iteration will begin after the previous async operation completed
+    for (const startDate of closedSit.startDates) {
       const { error } = await supabaseClient.from('closed_sits').upsert({
         landlord_id: user?.id,
         housitter_id: selectedHousitterId,
@@ -419,7 +423,18 @@ export default function Home() {
         debugger
         throw error
       }
-    })
+
+      // TODO: should be in HousePost, like the delete operation.
+      modifiedClosedSits.push({
+        housitterId: selectedHousitterId,
+        housitterAvatarUrl: '',
+        housitterFirstName: '',
+        housitterLastName: '',
+        startDate: startDate,
+      })
+    }
+
+    dispatch(setClosedSitsState(modifiedClosedSits))
 
     alert(`successfuly closed sit`)
     setShowFoundSitterModal(false)
