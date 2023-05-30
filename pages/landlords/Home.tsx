@@ -518,9 +518,12 @@ export default function Home() {
                   <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
                     Delete post
                   </Button>
-                  <Button variant="success" onClick={handleFoundSitter}>
-                    I found a sitter
-                  </Button>
+                  {availability.length > closedSits.length && (
+                    <Button variant="success" onClick={handleFoundSitter}>
+                      I found a sitter
+                    </Button>
+                  )}
+
                   <Modal show={showFoundSitterModal} onHide={() => setShowFoundSitterModal(false)}>
                     <Modal.Header>
                       <Modal.Title>Select the sitter you found</Modal.Title>
