@@ -5,9 +5,11 @@ import Picture from './Picture'
 import { API_ROUTES, EmailFormFields, USER_TYPE } from '../utils/constants'
 import axios from 'axios'
 import { useState } from 'react'
-import { useSupabaseClient } from '@supabase/auth-helpers-react'
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import RecommendationForm from './RecommendationForm'
 import Recommendations from './Recommendations'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectSittersContactedState, setSittersContactedState } from '../slices/landlordSlice'
 
 // TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
 export default function AvailableHousitter({ props }: { props: HousitterProps }) {
@@ -16,6 +18,10 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
   const [showRecModal, setShowRecModal] = useState(false)
   const [showAllRecsModal, setShowAllRecsModal] = useState(false)
   const [recommendations, setRecommendations] = useState([] as any[]) // TODO: type it
+
+  const user = useUser()
+  const dispatch = useDispatch()
+  const sittersContacted = useSelector(selectSittersContactedState)
 
   const [emailForm, setEmailForm] = useState({
     title: '',
@@ -61,6 +67,29 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
       )
       debugger
     }
+
+    const { error: persistMessageError } = await supabaseClient.from('communications').upsert({
+      housitter_id: props.housitterId,
+      landlord_id: user?.id, // TODO: make sure always
+      title: emailForm.title,
+      message: emailForm.message,
+    })
+
+    if (persistMessageError) {
+      alert(`error persisting communication: ${persistMessageError}`)
+      debugger
+      throw persistMessageError
+    }
+
+    console.log('successfully persisted communication')
+    // TODO: should have a redux slice of communications ready to always know which sitters have been clicked.
+
+    dispatch(
+      setSittersContactedState([
+        ...sittersContacted,
+        { housitterId: props.housitterId, lastContacted: new Date() },
+      ])
+    )
   }
 
   function handleCloseEmailModal() {
@@ -91,7 +120,33 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
           />
           <Card.Title>
             {props.firstName} {props.lastName}
+            <hr />
           </Card.Title>
+          {(() => {
+            let foundSitter = sittersContacted.find(
+              (sitter) => sitter.housitterId === props.housitterId
+            )
+            if (foundSitter) {
+              const { lastContacted } = foundSitter
+              return (
+                <div>
+                  <Card.Text>
+                    Email Sent at:{' '}
+                    {new Date(lastContacted).toLocaleString('heb-IL', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </Card.Text>
+                  <hr />
+                </div>
+              )
+            } else {
+              return null
+            }
+          })()}
+
           <Card.Text>{props.about_me}</Card.Text>
           <Button variant="secondary" onClick={handleOpenEmailModal}>
             Send Email
