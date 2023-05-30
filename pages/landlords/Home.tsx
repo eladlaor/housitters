@@ -32,7 +32,7 @@ import {
 } from '../../slices/postSlice'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import SignOut from '../../components/Buttons/SignOut'
-import { Dropdown, DropdownButton, FormControl } from 'react-bootstrap'
+import { Dropdown, DropdownButton, FormControl, ListGroup, ListGroupItem } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
@@ -43,10 +43,10 @@ import NavDropdown from 'react-bootstrap/NavDropdown'
 import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
-import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
 import { ImageData } from '../../types/clientSide'
 import Picture from '../../components/Picture'
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
+import Alert from 'react-bootstrap/Alert'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -56,20 +56,26 @@ export default function Home() {
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
   const availability = useSelector(selectAvailabilityState)
-  const [showNewPostModal, setShowNewPostModal] = useState(false)
-  const isActivePost = useSelector(selectIsActiveState)
 
+  const [showNewPostModal, setShowNewPostModal] = useState(false)
+  const [showFoundSitterModal, setShowFoundSitterModal] = useState(false)
+  const [showSitterSelectionVerification, setShowSitterSelectionVerification] = useState(false)
+  const [postPreviewDataUrls, setPostPreviewDataUrls] = useState([] as ImageData[])
+  const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
+  const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
+  const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
+  const [closedSit, setClosedSit] = useState({
+    housitterId: selectedHousitterId,
+    startDates: [] as string[],
+  })
+
+  const isActivePost = useSelector(selectIsActiveState)
   const title = useSelector(selectTitleState)
   const description = useSelector(selectDescriptionState)
   const fileNames = useSelector(selectImagesUrlsState)
   const avatarUrl = useSelector(selectAvatarUrlState)
-
-  const [postPreviewDataUrls, setPostPreviewDataUrls] = useState([] as ImageData[])
-
   const location = useSelector(selectLocationState)
-  const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
   const isLogged = useSelector(selectIsLoggedState)
-
   const pets = useSelector(selectPetsState)
 
   useEffect(() => {
@@ -379,6 +385,66 @@ export default function Home() {
     alert('successfully deleted the post')
   }
 
+  function handleFoundSitter(e: any) {
+    e.preventDefault()
+    setShowFoundSitterModal(true)
+  }
+
+  function handleSelectedFoundSitter(e: any) {
+    e.preventDefault()
+
+    setIsThereAnySelectedSitter(true)
+
+    // knowingly, this is a bit of a strange workaround, but it seems that even though the order of operations are fine, still - the checkbox 'checked' prop is not able to successfuly get the 'true' value in isThisSelectedSitter.
+    const sitterId = e.target.value
+    setTimeout(() => {
+      setSelectedHousitterId(sitterId)
+      setClosedSit({ ...closedSit, housitterId: sitterId })
+    }, 0)
+  }
+
+  async function handleConfirmSitterSelection(e: any) {
+    e.preventDefault()
+    closedSit.startDates.forEach(async (startDate) => {
+      const { error } = await supabaseClient.from('closed_sits').upsert({
+        landlord_id: user?.id,
+        housitter_id: selectedHousitterId,
+        start_date: startDate,
+      })
+
+      if (error) {
+        alert(`error upserting closed sit for date:${startDate}. Error: ${error.message}`)
+        debugger
+        throw error
+      }
+    })
+
+    alert(`successfuly closed sit`)
+    setShowFoundSitterModal(false)
+  }
+
+  async function handleBindSitterWithPeriod(e: any) {
+    e.preventDefault()
+
+    const startPeriodsToModify = [...closedSit.startDates]
+    const selectedStartDate = e.target.value
+    const indexOfSelectedStartDate = startPeriodsToModify.indexOf(selectedStartDate)
+
+    if (indexOfSelectedStartDate === -1) {
+      startPeriodsToModify.push(selectedStartDate)
+    } else {
+      startPeriodsToModify.splice(indexOfSelectedStartDate, 1)
+    }
+
+    // again, strangely, the code seems to be structured properly in terms of order of operations, but still setTimeout seems to be the only solution for the race condition
+    setTimeout(() => {
+      setClosedSit({
+        housitterId: selectedHousitterId,
+        startDates: startPeriodsToModify,
+      })
+    }, 0)
+  }
+
   return (
     <>
       <Navbar bg="dark" variant="dark">
@@ -435,7 +501,76 @@ export default function Home() {
                   <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
                     Delete post
                   </Button>
-                  <Button variant="success">I found a sitter</Button>
+                  <Button variant="success" onClick={handleFoundSitter}>
+                    I found a sitter
+                  </Button>
+                  <Modal show={showFoundSitterModal} onHide={() => setShowFoundSitterModal(false)}>
+                    <Modal.Header>
+                      <Modal.Title>Select the sitter you found</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <div>
+                        <Form>
+                          {housitters.map((sitter: any, index: number) => {
+                            const isThisTheSelectedHousitter =
+                              sitter.housitterId === selectedHousitterId
+
+                            return (
+                              <div key={index}>
+                                <Form.Group>
+                                  <Form.Check
+                                    type="radio"
+                                    key={index}
+                                    onChange={handleSelectedFoundSitter}
+                                    value={sitter.housitterId}
+                                    label={`${sitter.firstName} ${sitter.lastName}`}
+                                    name="singleSitterChoice"
+                                    checked={isThisTheSelectedHousitter}
+                                  />
+                                  {isThereAnySelectedSitter && isThisTheSelectedHousitter && (
+                                    <ListGroup>
+                                      <ListGroup.Item>
+                                        {availability.map((period, index) => {
+                                          const startDateAsString = period.startDate.toString()
+                                          return (
+                                            <Form.Check
+                                              type="checkbox"
+                                              key={index}
+                                              label={`${startDateAsString} until ${period.endDate.toString()}`}
+                                              name={startDateAsString}
+                                              value={startDateAsString}
+                                              onChange={handleBindSitterWithPeriod}
+                                              checked={closedSit.startDates.includes(
+                                                startDateAsString
+                                              )}
+                                            />
+                                          )
+                                        })}
+                                      </ListGroup.Item>
+                                    </ListGroup>
+                                  )}
+                                </Form.Group>
+                              </div>
+                            )
+                          })}
+                          <hr />
+                          <Button variant="primary" onClick={handleConfirmSitterSelection}>
+                            Confirm
+                          </Button>
+                          <Button
+                            type="submit"
+                            variant="warning"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              setShowFoundSitterModal(false)
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </Form>
+                      </div>
+                    </Modal.Body>
+                  </Modal>
                   <Button onClick={handleShowNewPostModal}>Edit Post</Button>
                 </Accordion.Body>
               </Accordion.Item>
