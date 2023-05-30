@@ -235,8 +235,7 @@ export default function AvailabilitySelector({
 
   async function removeAvailabilitySelector() {
     const modifiedAvailability = JSON.parse(JSON.stringify(availability))
-    modifiedAvailability.splice(index, 1) // TODO: yeah, it's possible, but there's a simpler way.
-    // instead of doing this, I can use the map and filter func: https://beta.reactjs.org/learn/updating-arrays-in-state
+    modifiedAvailability.splice(index, 1)
 
     if (updateDbInstantly) {
       console.log('removing for index: ' + index)

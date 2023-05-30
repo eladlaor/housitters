@@ -535,7 +535,7 @@ export default function Home() {
                                         {availability.map((period, index) => {
                                           const startDateAsString = period.startDate.toString()
                                           if (
-                                            closedSits.find(
+                                            !closedSits.find(
                                               (closedSit) =>
                                                 closedSit.startDate === startDateAsString
                                             )

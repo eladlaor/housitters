@@ -112,7 +112,12 @@ export default function HousePost({
             })
           })
 
-          dispatch(setClosedSitsState(modifiedClosedSits))
+          const closedSitsChanged =
+            JSON.stringify(modifiedClosedSits) !== JSON.stringify(closedSits)
+
+          if (closedSitsChanged) {
+            dispatch(setClosedSitsState(modifiedClosedSits))
+          }
         }
       } catch (e: any) {
         alert(e)
@@ -157,9 +162,41 @@ export default function HousePost({
   }
 
   function isClosedPeriod(currentPeriodStartDate: string) {
-    if (closedSits.length > 0) {
-      return closedSits.find((closedSit) => closedSit.startDate === currentPeriodStartDate)
+    return closedSits.find((closedSit) => closedSit.startDate === currentPeriodStartDate)
+  }
+
+  async function handleMySitterCancelled(
+    e: any,
+    props: {
+      housitterId: string
+      landlordId: string
+      startDate: string
     }
+  ) {
+    const { housitterId, landlordId, startDate } = props
+
+    const { error } = await supabaseClient
+      .from('closed_sits')
+      .delete()
+      .eq('housitter_id', housitterId)
+      .eq('landlord_id', landlordId)
+      .eq('start_date', startDate)
+
+    if (error) {
+      alert(`error removing closed sit from db: ${error.message}`)
+      debugger
+      throw error
+    }
+
+    const modifiedClosedSits = [...closedSits]
+    const indexOfRemovedSit = modifiedClosedSits.findIndex(
+      (closedSit) => closedSit.startDate === startDate
+    )
+
+    modifiedClosedSits.splice(indexOfRemovedSit, 1)
+    dispatch(setClosedSitsState(modifiedClosedSits))
+
+    // TODO: add logic to send an email to housitters.com with the reason for cancellation, and if you feel it is too short notice and irresponsible we give the sitter a yellow card
   }
 
   return (
@@ -239,6 +276,18 @@ export default function HousePost({
                               email=""
                             />
                             <br />
+                            <Button
+                              variant="danger"
+                              onClick={(e) =>
+                                handleMySitterCancelled(e, {
+                                  housitterId: closedPeriodIfExists.housitterId,
+                                  landlordId: landlordId,
+                                  startDate: closedPeriodIfExists.startDate,
+                                })
+                              }
+                            >
+                              my sitter cancelled
+                            </Button>
                           </>
                         ) : (
                           <>
