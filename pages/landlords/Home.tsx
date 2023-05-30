@@ -15,6 +15,7 @@ import Modal from 'react-bootstrap/Modal'
 import { useEffect, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
 import {
+  selectClosedSitsState,
   selectLocationState,
   selectPetsState,
   setLocationState,
@@ -77,6 +78,7 @@ export default function Home() {
   const location = useSelector(selectLocationState)
   const isLogged = useSelector(selectIsLoggedState)
   const pets = useSelector(selectPetsState)
+  const closedSits = useSelector(selectClosedSitsState)
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -532,19 +534,26 @@ export default function Home() {
                                       <ListGroup.Item>
                                         {availability.map((period, index) => {
                                           const startDateAsString = period.startDate.toString()
-                                          return (
-                                            <Form.Check
-                                              type="checkbox"
-                                              key={index}
-                                              label={`${startDateAsString} until ${period.endDate.toString()}`}
-                                              name={startDateAsString}
-                                              value={startDateAsString}
-                                              onChange={handleBindSitterWithPeriod}
-                                              checked={closedSit.startDates.includes(
-                                                startDateAsString
-                                              )}
-                                            />
-                                          )
+                                          if (
+                                            closedSits.find(
+                                              (closedSit) =>
+                                                closedSit.startDate === startDateAsString
+                                            )
+                                          ) {
+                                            return (
+                                              <Form.Check
+                                                type="checkbox"
+                                                key={index}
+                                                label={`${startDateAsString} until ${period.endDate.toString()}`}
+                                                name={startDateAsString}
+                                                value={startDateAsString}
+                                                onChange={handleBindSitterWithPeriod}
+                                                checked={closedSit.startDates.includes(
+                                                  startDateAsString
+                                                )}
+                                              />
+                                            )
+                                          }
                                         })}
                                       </ListGroup.Item>
                                     </ListGroup>

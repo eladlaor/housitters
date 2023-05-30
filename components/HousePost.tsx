@@ -9,11 +9,12 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import React from 'react'
 import { countDays } from '../utils/dates'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { selectPrimaryUseState } from '../slices/userSlice'
 import { USER_TYPE, ClosedSit } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import Picture from './Picture'
+import { selectClosedSitsState, setClosedSitsState } from '../slices/landlordSlice'
 
 /*
   if no active posts: allow create new post
@@ -41,13 +42,14 @@ export default function HousePost({
   imagesUrls: ImageData[]
 }) {
   const supabaseClient = useSupabaseClient()
+  const dispatch = useDispatch()
 
   const [landlordFirstName, setLandlordFirstName] = useState('')
   const [landlordAvatarUrl, setLandlordAvatarUrl] = useState('')
   const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as ImageData[])
   const [showModal, setShowModal] = useState(false)
-  const [closedSits, setClosedSits] = useState([] as ClosedSit[])
 
+  const closedSits = useSelector(selectClosedSitsState)
   const primaryUse = useSelector(selectPrimaryUseState)
 
   function handleModalOpen() {
@@ -110,7 +112,7 @@ export default function HousePost({
             })
           })
 
-          setClosedSits(modifiedClosedSits)
+          dispatch(setClosedSitsState(modifiedClosedSits))
         }
       } catch (e: any) {
         alert(e)
@@ -154,8 +156,10 @@ export default function HousePost({
     }
   }
 
-  function isClosedPeriod(startDate: string) {
-    return closedSits.map((closedSit) => closedSit.startDate).includes(startDate)
+  function isClosedPeriod(currentPeriodStartDate: string) {
+    if (closedSits.length > 0) {
+      return closedSits.find((closedSit) => closedSit.startDate === currentPeriodStartDate)
+    }
   }
 
   return (
@@ -209,21 +213,42 @@ export default function HousePost({
                 <React.Fragment key={index}>
                   <ListGroup>
                     <ListGroup.Item>
-                      {isClosedPeriod(period.startDate) ? (
-                        <>
-                          <Badge bg="success">Closed</Badge>
-                          <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
-                          This sit is complete
-                          <br />
-                        </>
-                      ) : (
-                        <>
-                          <Badge bg="danger">Open</Badge>
-                          <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
-                          This sit is still open
-                          <br />
-                        </>
-                      )}
+                      {(() => {
+                        const closedPeriodIfExists = isClosedPeriod(period.startDate)
+                        return closedPeriodIfExists ? (
+                          <>
+                            <Badge bg="success">Closed</Badge>
+                            <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
+                            <br />
+                            This sit is set!
+                            <br />
+                            Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
+                            {closedPeriodIfExists.housitterLastName}
+                            <Picture
+                              isIntro={false}
+                              uid={closedPeriodIfExists.housitterId}
+                              primaryUse={USER_TYPE.Housitter}
+                              url={closedPeriodIfExists.housitterAvatarUrl}
+                              size={100}
+                              width={100} // should persist dimensions of image upon upload
+                              height={100}
+                              disableUpload={true}
+                              bucketName="avatars"
+                              isAvatar={true}
+                              promptMessage=""
+                              email=""
+                            />
+                            <br />
+                          </>
+                        ) : (
+                          <>
+                            <Badge bg="danger">Open</Badge>
+                            <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
+                            This sit is still open
+                            <br />
+                          </>
+                        )
+                      })()}
 
                       {`${period.startDate} - ${period.endDate}`}
                       <br />

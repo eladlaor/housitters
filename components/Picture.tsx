@@ -311,7 +311,6 @@ export default function Picture({
           )}
         </div>
       ))}
-      <hr />
     </div>
   )
 }
