@@ -84,6 +84,8 @@ export default function Home() {
   const pets = useSelector(selectPetsState)
   const closedSits = useSelector(selectClosedSitsState)
 
+  const isAfterSignup = router.query.isAfterSignup
+
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
     // definitely seems like it would be a better way to implement it, in one call to the server.
@@ -92,11 +94,6 @@ export default function Home() {
 
     if (user) {
       const asyncWrapper = async () => {
-        const isAfterSignup = router.query.isAfterSignup
-        if (isAfterSignup) {
-          console.log('is after signup')
-        }
-
         let { data: landlordData, error: landlordError } = await supabaseClient
           .from('landlords')
           .select(
@@ -509,7 +506,6 @@ export default function Home() {
         </div>
         {isActivePost ? (
           <div>
-            <h1>here is your current post</h1>
             <Accordion defaultActiveKey="0">
               <Accordion.Item eventKey="0">
                 <Accordion.Header>My Active Post</Accordion.Header>
@@ -619,7 +615,7 @@ export default function Home() {
               variant="primary"
               onClick={handleShowNewPostModal}
             >
-              Create new post
+              {isAfterSignup ? 'Complete your post' : 'Create new post'}
             </Button>
             <br />
             <br />
@@ -721,9 +717,15 @@ export default function Home() {
           </Modal>
           <div className="sitters-and-filter">
             <div id="available-housitters" className="available-housitters">
-              <h3>
-                here are the housitters who are available in your specified dates and location:
-              </h3>
+              {isAfterSignup ? (
+                ''
+              ) : isActivePost ? (
+                <h3>
+                  here are the housitters who are available in your specified dates and location:
+                </h3>
+              ) : (
+                <></>
+              )}
 
               {housitters.map(
                 (

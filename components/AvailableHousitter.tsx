@@ -87,7 +87,15 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
     dispatch(
       setSittersContactedState([
         ...sittersContacted,
-        { housitterId: props.housitterId, lastContacted: new Date() },
+        {
+          housitterId: props.housitterId,
+          lastContacted: new Date().toLocaleString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          }),
+        },
       ])
     )
   }
@@ -153,7 +161,9 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
           </Button>
           <Modal show={showEmailModal} onHide={handleCloseEmailModal}>
             <Modal.Header closeButton>
-              <Modal.Title>Send Email</Modal.Title>
+              <Modal.Title>
+                Send Email to {props.firstName} {props.lastName}
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form>

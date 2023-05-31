@@ -22,11 +22,10 @@ import Modal from 'react-bootstrap/Modal'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Form from 'react-bootstrap/Form'
 import { useState } from 'react'
-import { ImageData } from '../../types/clientSide'
 
 import Container from 'react-bootstrap/Container'
 import Navbar from 'react-bootstrap/Navbar'
-import Picture from '../../components/PictureDeprecated'
+import Picture from '../../components/Picture'
 
 export default function HousitterIntro() {
   const router = useRouter()
@@ -41,13 +40,9 @@ export default function HousitterIntro() {
     [SIGNUP_FORM_PROPS.VISIBLE]: true,
   } as any) // TODO: type it (try better than string | boolean which is not good)
 
-  const [errors, setErrors] = useState({} as any)
-
   const availability = useSelector(selectAvailabilityState)
   const primaryUse = useSelector(selectPrimaryUseState)
   const locations = useSelector(selectLocationsState)
-  const [previewDataUrls, setPreviewDataUrls] = useState([] as ImageData[])
-  const [fileNames, setFileNames] = useState([] as ImageData[])
   const avatarUrl = useSelector(selectAvatarUrlState)
 
   dispatch(setPrimaryUse(USER_TYPE.Housitter))
@@ -99,6 +94,7 @@ export default function HousitterIntro() {
         visible: form[SIGNUP_FORM_PROPS.VISIBLE],
         primary_use: primaryUse,
         avatar_url: avatarUrl,
+        email: form[SIGNUP_FORM_PROPS.EMAIL],
       }
 
       let { error: profileUpsertError } = await supabaseClient
@@ -254,21 +250,6 @@ export default function HousitterIntro() {
                       />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.VISIBLE}>
-                      <h2 style={{ color: 'blue' }}>which type of user are you</h2>
-                      <Form.Text className="text-muted">
-                        an anonymous profile can approach other visible or anonymous profiles.
-                      </Form.Text>
-                      <Form.Check
-                        type="checkbox"
-                        label="anonymous"
-                        id="anonymous"
-                        value={form[SIGNUP_FORM_PROPS.VISIBLE]}
-                        onChange={(e) => {
-                          setProfileVisibility()
-                        }}
-                      />
-                    </Form.Group>
                     <Button variant="primary" type="submit" onClick={handleSignUp}>
                       Submit
                     </Button>

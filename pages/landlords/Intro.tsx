@@ -23,7 +23,6 @@ import Modal from 'react-bootstrap/Modal'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Form from 'react-bootstrap/Form'
 import { useState } from 'react'
-import { ImageData } from '../../types/clientSide'
 import PetsCounter from '../../components/PetsCounter'
 
 import Picture from '../../components/Picture'
@@ -41,9 +40,6 @@ export default function landlordIntro() {
     visible: true,
   } as SignupForm)
 
-  const [errors, setErrors] = useState({} as any)
-  const [previewDataUrls, setPreviewDataUrls] = useState([] as ImageData[])
-  const [fileNames, setFileNames] = useState([] as ImageData[])
   const avatarUrl = useSelector(selectAvatarUrlState)
 
   const availability = useSelector(selectAvailabilityState)
@@ -348,23 +344,6 @@ export default function landlordIntro() {
                 />
               </Form.Group>
 
-              <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.VISIBLE}>
-                <h2 style={{ color: 'blue' }}>which type of user are you</h2>
-                <Form.Text className="text-muted">
-                  an anonymous profile can approach other visible or anonymous profiles.
-                </Form.Text>
-                <Form.Check
-                  type="checkbox"
-                  label="anonymous"
-                  id="anonymous"
-                  onChange={() => {
-                    setForm({
-                      ...form,
-                      visible: !form.visible,
-                    })
-                  }}
-                />
-              </Form.Group>
               <Button variant="primary" type="submit" onClick={handleSignUp}>
                 Submit
               </Button>
