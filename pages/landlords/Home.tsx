@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router'
-import GoToProfileButton from '../../components/GoToProfileButton'
 import {
   selectAvatarUrlState,
   selectFirstNameState,
@@ -7,7 +6,7 @@ import {
   setAvatarUrl,
   setFirstName,
 } from '../../slices/userSlice'
-import { LANDLORDS_ROUTES, LocationIds, USER_TYPE } from '../../utils/constants'
+import { LANDLORDS_ROUTES, LocationIds, USER_TYPE, ClosedSit } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -48,7 +47,6 @@ import Accordion from 'react-bootstrap/Accordion'
 import { ImageData } from '../../types/clientSide'
 import Picture from '../../components/Picture'
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
-import Alert from 'react-bootstrap/Alert'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -61,14 +59,19 @@ export default function Home() {
 
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [showFoundSitterModal, setShowFoundSitterModal] = useState(false)
-  const [showSitterSelectionVerification, setShowSitterSelectionVerification] = useState(false)
   const [postPreviewDataUrls, setPostPreviewDataUrls] = useState([] as ImageData[])
   const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
   const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
   const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
-  const [closedSit, setClosedSit] = useState({
-    housitterId: selectedHousitterId,
-    startDates: [] as string[],
+  const [
+    preConfirmedSelectionOfClosedSitsPerSitter,
+    setPreConfirmedSelectionOfClosedSitsPerSitter,
+  ] = useState({
+    housitterId: '',
+    startDates: [],
+  } as {
+    housitterId: string
+    startDates: string[]
   })
 
   const isActivePost = useSelector(selectIsActiveState)
@@ -402,16 +405,19 @@ export default function Home() {
     const sitterId = e.target.value
     setTimeout(() => {
       setSelectedHousitterId(sitterId)
-      setClosedSit({ ...closedSit, housitterId: sitterId })
+      setPreConfirmedSelectionOfClosedSitsPerSitter({
+        housitterId: sitterId,
+        startDates: [...preConfirmedSelectionOfClosedSitsPerSitter.startDates],
+      })
     }, 0)
   }
 
   async function handleConfirmSitterSelection(e: any) {
     e.preventDefault()
-    const modifiedClosedSits = [...closedSits]
+    let confirmedClosedSitsToUpdate: ClosedSit[] = []
 
     // for...of will ensure that each iteration will begin after the previous async operation completed
-    for (const startDate of closedSit.startDates) {
+    for (const startDate of preConfirmedSelectionOfClosedSitsPerSitter.startDates) {
       const { error } = await supabaseClient.from('closed_sits').upsert({
         landlord_id: user?.id,
         housitter_id: selectedHousitterId,
@@ -425,7 +431,7 @@ export default function Home() {
       }
 
       // TODO: should be in HousePost, like the delete operation.
-      modifiedClosedSits.push({
+      confirmedClosedSitsToUpdate.push({
         housitterId: selectedHousitterId,
         housitterAvatarUrl: '',
         housitterFirstName: '',
@@ -434,7 +440,8 @@ export default function Home() {
       })
     }
 
-    dispatch(setClosedSitsState(modifiedClosedSits))
+    dispatch(setClosedSitsState(confirmedClosedSitsToUpdate))
+    setPreConfirmedSelectionOfClosedSitsPerSitter({ housitterId: '', startDates: [] })
 
     alert(`successfuly closed sit`)
     setShowFoundSitterModal(false)
@@ -443,21 +450,23 @@ export default function Home() {
   async function handleBindSitterWithPeriod(e: any) {
     e.preventDefault()
 
-    const startPeriodsToModify = [...closedSit.startDates]
+    const preConfirmedStartPeriodsToModify = [
+      ...preConfirmedSelectionOfClosedSitsPerSitter.startDates,
+    ]
     const selectedStartDate = e.target.value
-    const indexOfSelectedStartDate = startPeriodsToModify.indexOf(selectedStartDate)
+    const indexOfSelectedStartDate = preConfirmedStartPeriodsToModify.indexOf(selectedStartDate)
 
     if (indexOfSelectedStartDate === -1) {
-      startPeriodsToModify.push(selectedStartDate)
+      preConfirmedStartPeriodsToModify.push(selectedStartDate)
     } else {
-      startPeriodsToModify.splice(indexOfSelectedStartDate, 1)
+      preConfirmedStartPeriodsToModify.splice(indexOfSelectedStartDate, 1)
     }
 
     // again, strangely, the code seems to be structured properly in terms of order of operations, but still setTimeout seems to be the only solution for the race condition
     setTimeout(() => {
-      setClosedSit({
+      setPreConfirmedSelectionOfClosedSitsPerSitter({
         housitterId: selectedHousitterId,
-        startDates: startPeriodsToModify,
+        startDates: preConfirmedStartPeriodsToModify,
       })
     }, 0)
   }
@@ -566,7 +575,7 @@ export default function Home() {
                                                 name={startDateAsString}
                                                 value={startDateAsString}
                                                 onChange={handleBindSitterWithPeriod}
-                                                checked={closedSit.startDates.includes(
+                                                checked={preConfirmedSelectionOfClosedSitsPerSitter.startDates.includes(
                                                   startDateAsString
                                                 )}
                                               />
