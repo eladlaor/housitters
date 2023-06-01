@@ -32,9 +32,12 @@ import {
   setTitleState,
 } from '../../slices/postSlice'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
+import Picture from '../../components/Picture'
+import Inbox from '../../components/Inbox'
 import SignOut from '../../components/Buttons/SignOut'
-import { Dropdown, DropdownButton, FormControl, ListGroup, ListGroupItem } from 'react-bootstrap'
 import PetsCounter from '../../components/PetsCounter'
+
+import { Dropdown, DropdownButton, FormControl, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
 import Image from 'next/image'
@@ -45,7 +48,7 @@ import SidebarFilter from '../../components/SidebarFilter'
 import HousePost from '../../components/HousePost'
 import Accordion from 'react-bootstrap/Accordion'
 import { ImageData } from '../../types/clientSide'
-import Picture from '../../components/Picture'
+
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
 
 export default function Home() {
@@ -750,6 +753,9 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        <Inbox />
       </div>
     </>
   )

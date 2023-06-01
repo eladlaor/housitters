@@ -68,11 +68,11 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
       debugger
     }
 
-    const { error: persistMessageError } = await supabaseClient.from('communications').upsert({
+    const { error: persistMessageError } = await supabaseClient.from('messages').upsert({
       housitter_id: props.housitterId,
       landlord_id: user?.id, // TODO: make sure always
       title: emailForm.title,
-      message: emailForm.message,
+      message_content: emailForm.message,
     })
 
     if (persistMessageError) {
@@ -82,7 +82,6 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
     }
 
     console.log('successfully persisted communication')
-    // TODO: should have a redux slice of communications ready to always know which sitters have been clicked.
 
     dispatch(
       setSittersContactedState([

@@ -97,5 +97,17 @@ a {
   position: relative; 
 }
 
+.inbox {
+  border-right: 1px solid #8804bd;
+  border-left: 1px solid #8804bd;
+  border-top: 1px solid #8804bd;
+  border-bottom: 1px solid #8804bd;
+}
+
+.inbox-column {
+  border-right: 1px solid #1114b8;
+  border-left: 1px solid #1114b8;
+}
+
 /* then import bootstrap */
 @import "bootstrap/dist/css/bootstrap.css";
