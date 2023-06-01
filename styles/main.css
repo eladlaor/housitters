@@ -109,5 +109,37 @@ a {
   border-left: 1px solid #1114b8;
 }
 
+/* CSS Styles */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.sender-message {
+  align-self: flex-end;
+  background-color: #DCF8C6;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.recipient-message {
+  align-self: flex-start;
+  background-color: #E8E8E8;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.message-content {
+  color: #333;
+}
+
+.message-sent-at {
+  font-size: 12px;
+  color: #888;
+}
+
+
 /* then import bootstrap */
 @import "bootstrap/dist/css/bootstrap.css";

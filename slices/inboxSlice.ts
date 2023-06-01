@@ -3,11 +3,11 @@ import { RootState } from '../store'
 
 // TODO: move it to client side types or something
 export interface Conversation {
-  recipientFirstName: ''
-  recipientLastName: ''
-  recipientAvatarUrl: ''
-  lastMessage: { messageContent: ''; sentAt: '' }
-  pastMessages: [{ messageContent: ''; sentAt: '' }]
+  recipientFirstName: string
+  recipientLastName: string
+  recipientAvatarUrl: string
+  lastMessage: { messageContent: string; sentAt: string }
+  pastMessages: [{ messageContent: string; isSender: boolean; sentAt: string }]
   unreadMessages: 0
 }
 
