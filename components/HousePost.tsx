@@ -250,56 +250,57 @@ export default function HousePost({
                 <React.Fragment key={index}>
                   <ListGroup>
                     <ListGroup.Item>
-                      {(() => {
-                        const closedPeriodIfExists = isClosedPeriod(period.startDate)
-                        return closedPeriodIfExists ? (
-                          <>
-                            <Badge bg="success">Closed</Badge>
-                            <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
-                            <br />
-                            This sit is set!
-                            <br />
-                            Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
-                            {closedPeriodIfExists.housitterLastName}
-                            {closedPeriodIfExists.housitterAvatarUrl && (
-                              <Picture
-                                isIntro={false}
-                                uid={closedPeriodIfExists.housitterId}
-                                primaryUse={USER_TYPE.Housitter}
-                                url={closedPeriodIfExists.housitterAvatarUrl}
-                                size={100}
-                                width={100} // should persist dimensions of image upon upload
-                                height={100}
-                                disableUpload={true}
-                                bucketName="avatars"
-                                isAvatar={true}
-                                promptMessage=""
-                                email=""
-                              />
-                            )}
-                            <br />
-                            <Button
-                              variant="danger"
-                              onClick={(e) =>
-                                handleMySitterCancelled(e, {
-                                  housitterId: closedPeriodIfExists.housitterId,
-                                  landlordId: landlordId,
-                                  startDate: closedPeriodIfExists.startDate,
-                                })
-                              }
-                            >
-                              my sitter cancelled
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Badge bg="danger">Open</Badge>
-                            <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
-                            This sit is still open
-                            <br />
-                          </>
-                        )
-                      })()}
+                      {primaryUse === USER_TYPE.Landlord &&
+                        (() => {
+                          const closedPeriodIfExists = isClosedPeriod(period.startDate)
+                          return closedPeriodIfExists ? (
+                            <>
+                              <Badge bg="success">Closed</Badge>
+                              <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
+                              <br />
+                              This sit is set!
+                              <br />
+                              Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
+                              {closedPeriodIfExists.housitterLastName}
+                              {closedPeriodIfExists.housitterAvatarUrl && (
+                                <Picture
+                                  isIntro={false}
+                                  uid={closedPeriodIfExists.housitterId}
+                                  primaryUse={USER_TYPE.Housitter}
+                                  url={closedPeriodIfExists.housitterAvatarUrl}
+                                  size={100}
+                                  width={100} // should persist dimensions of image upon upload
+                                  height={100}
+                                  disableUpload={true}
+                                  bucketName="avatars"
+                                  isAvatar={true}
+                                  promptMessage=""
+                                  email=""
+                                />
+                              )}
+                              <br />
+                              <Button
+                                variant="danger"
+                                onClick={(e) =>
+                                  handleMySitterCancelled(e, {
+                                    housitterId: closedPeriodIfExists.housitterId,
+                                    landlordId: landlordId,
+                                    startDate: closedPeriodIfExists.startDate,
+                                  })
+                                }
+                              >
+                                my sitter cancelled
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Badge bg="danger">Open</Badge>
+                              <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
+                              This sit is still open
+                              <br />
+                            </>
+                          )
+                        })()}
 
                       {`${period.startDate} - ${period.endDate}`}
                       <br />
