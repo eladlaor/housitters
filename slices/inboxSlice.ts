@@ -6,7 +6,7 @@ export interface Conversation {
   recipientFirstName: string
   recipientLastName: string
   recipientAvatarUrl: string
-  lastMessage: { messageContent: string; sentAt: string }
+  latestMessage: { messageContent: string; sentAt: string }
   pastMessages: [{ messageContent: string; isSender: boolean; sentAt: string }]
   unreadMessages: 0
 }

@@ -40,6 +40,7 @@ export default function Inbox() {
           .from('messages')
           .select(`created_at, message_content, housitter_id, title, is_read_by_recipient, sent_by`)
           .eq('landlord_id', user?.id)
+          .order('created_at', { ascending: false })
 
         if (error) {
           alert(`error loading inbox data: ${error.message}`)
@@ -53,6 +54,7 @@ export default function Inbox() {
           .from('messages')
           .select(`created_at, message_content, landlord_id, title, is_read_by_recipient, sent_by`)
           .eq('housitter_id', user?.id)
+          .order('created_at', { ascending: false })
 
         if (error) {
           alert(`error loading inbox data: ${error.message}`)
@@ -70,7 +72,7 @@ export default function Inbox() {
 
         let totalUnreadMessages = 0
 
-        let modifiedConversations = {} as any
+        let parsedConversations = {} as any
 
         for (const message of messagesData) {
           const keyNameOfRecipientId =
@@ -79,25 +81,29 @@ export default function Inbox() {
               : `${USER_TYPE.Housitter}_id`
 
           // adding a new converstaion key if needed
-          if (!modifiedConversations[message[keyNameOfRecipientId]]) {
-            modifiedConversations[message[keyNameOfRecipientId]] = {
-              unreadMessages: 0,
+          if (!parsedConversations[message[keyNameOfRecipientId]]) {
+            parsedConversations[message[keyNameOfRecipientId]] = {
+              recipientFirstName: '',
+              recipientLastName: '',
+              recipientAvatarUrl: '',
+              latestMessage: message, // due to the order {ascending: false} clause in the db query
               pastMessages: [] as unknown as Conversation['pastMessages'],
-            } as Partial<Conversation>
+              unreadMessages: 0,
+            } as Conversation
           }
 
-          modifiedConversations[message[keyNameOfRecipientId]]
+          parsedConversations[message[keyNameOfRecipientId]]
 
           if (message.sent_by !== currentUserType && !message.is_read_by_recipient) {
-            modifiedConversations[message[keyNameOfRecipientId]].unreadMessages =
-              modifiedConversations[message[keyNameOfRecipientId]].unreadMessages + 1
+            parsedConversations[message[keyNameOfRecipientId]].unreadMessages =
+              parsedConversations[message[keyNameOfRecipientId]].unreadMessages + 1
 
             totalUnreadMessages = totalUnreadMessages + 1
           }
 
           // adding a new message to the pastMessages array of an existing conversation object
-          modifiedConversations[message[keyNameOfRecipientId]].pastMessages = [
-            ...modifiedConversations[message[keyNameOfRecipientId]].pastMessages,
+          parsedConversations[message[keyNameOfRecipientId]].pastMessages = [
+            ...parsedConversations[message[keyNameOfRecipientId]].pastMessages,
             {
               sentAt: new Date(message.created_at).toLocaleString('en-US', {
                 weekday: 'short',
@@ -114,7 +120,7 @@ export default function Inbox() {
           ] as Conversation['pastMessages']
         }
 
-        const recipientIds = Object.keys(modifiedConversations)
+        const recipientIds = Object.keys(parsedConversations)
 
         for (const recipientId of recipientIds) {
           const { error: recipientProfileError, data: recipientProfileData } = await supabaseClient
@@ -131,21 +137,21 @@ export default function Inbox() {
           }
 
           if (recipientProfileData) {
-            modifiedConversations[recipientId].recipientFirstName = recipientProfileData.first_name
-            modifiedConversations[recipientId].recipientLastName = recipientProfileData.last_name
-            modifiedConversations[recipientId].recipientAvatarUrl = recipientProfileData.avatar_url
+            parsedConversations[recipientId].recipientFirstName = recipientProfileData.first_name
+            parsedConversations[recipientId].recipientLastName = recipientProfileData.last_name
+            parsedConversations[recipientId].recipientAvatarUrl = recipientProfileData.avatar_url
           }
         }
 
         dispatch(setTotalUnreadMessagesState(totalUnreadMessages))
-        dispatch(setConversationsState(modifiedConversations))
+        dispatch(setConversationsState(parsedConversations))
       }
     }
 
     loadInboxData()
 
     // sortMessagesByConvesation() including getting last messages
-  }, [user])
+  }, [user, currentUserType])
 
   return (
     <div>

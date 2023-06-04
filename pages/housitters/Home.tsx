@@ -1,10 +1,6 @@
-import { useRouter } from 'next/router'
-import SignOut from '../../components/Buttons/SignOut'
-import SidebarFilter from '../../components/SidebarFilter'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectFirstNameState,
-  setAvailability,
   selectAvailabilityState,
   selectIsLoggedState,
   selectAvatarUrlState,
@@ -14,23 +10,25 @@ import { selectLocationsState, setLocationsState } from '../../slices/housitterS
 import { LANDLORDS_ROUTES, LocationIds, USER_TYPE } from '../../utils/constants'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
-import HousePost from '../../components/HousePost'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { selectImagesUrlsState } from '../../slices/postSlice'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
+
+import HousePost from '../../components/HousePost'
 import Picture from '../../components/Picture'
+import SignOut from '../../components/Buttons/SignOut'
+import SidebarFilter from '../../components/SidebarFilter'
+import Inbox from '../../components/Inbox'
 
 export default function Home() {
   const user = useUser()
-  const router = useRouter()
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
   const locations = useSelector(selectLocationsState)
   const availability = useSelector(selectAvailabilityState)
   const supabase = useSupabaseClient()
   const [posts, setPosts] = useState([] as Object[])
-  const imagesUrls = useSelector(selectImagesUrlsState)
   const isLogged = useSelector(selectIsLoggedState)
   const avatarUrl = useSelector(selectAvatarUrlState)
 
@@ -196,6 +194,7 @@ export default function Home() {
         showCustomLocations={locations.length < Object.values(LocationIds).length}
         selectionType="checkbox"
       />
+      <Inbox />
     </>
   )
 }
