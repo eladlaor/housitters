@@ -96,6 +96,8 @@ export default function Home() {
   const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
   const conversations = useSelector(selectConversationsState)
 
+  const [showConversationModal, setShowConversationModal] = useState(false)
+
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
     // definitely seems like it would be a better way to implement it, in one call to the server.
@@ -260,6 +262,16 @@ export default function Home() {
 
   function handleLocationSelection(key: string | null) {
     setLocationState(key ? key : '')
+  }
+
+  function handleShowConversationModal(e: any) {
+    e.stopPropagation()
+    setShowConversationModal(true)
+  }
+
+  function handleHideConversationModal(e: any) {
+    e.stopPropagation()
+    setShowConversationModal(false)
   }
 
   async function handleShowNewPostModal() {
@@ -493,7 +505,12 @@ export default function Home() {
             <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
             <NavDropdown title={`Inbox: (${totalUnreadMessages})`} id="basic-nav-dropdown">
               {Object.entries(conversations).map(([id, conversation], index) => (
-                <NavDropdown.Item href="#" key={id} style={{ width: '100%' }}>
+                <NavDropdown.Item
+                  href="#"
+                  key={id}
+                  style={{ width: '100%' }}
+                  onClick={(e) => handleShowConversationModal(e)}
+                >
                   <div
                     style={{
                       display: 'flex',
@@ -545,12 +562,35 @@ export default function Home() {
                       {conversation.latestMessage.messageContent}
                     </div>
                   </div>
+                  {showConversationModal && (
+                    <Modal
+                      show={showConversationModal}
+                      onHide={() => setShowConversationModal(false)}
+                    >
+                      <Modal.Header>
+                        <Modal.Title>
+                          your convesation with{' '}
+                          {conversation &&
+                            `${conversation.recipientFirstName} ${conversation.recipientLastName}`}
+                        </Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <Inbox />
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <Button variant="secondary" onClick={(e) => handleHideConversationModal(e)}>
+                          Close
+                        </Button>
+                      </Modal.Footer>
+                    </Modal>
+                  )}
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
+
       <div className="container">
         <div>
           <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
@@ -691,7 +731,7 @@ export default function Home() {
 
         <div>
           <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
-            <Modal.Header closeButton>
+            <Modal.Header>
               <Modal.Title style={{ color: 'blue' }}>lets create new post</Modal.Title>
             </Modal.Header>
             <Modal.Body>
