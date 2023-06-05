@@ -183,7 +183,7 @@ export default function Inbox() {
               onClick={() => setSelectedConversationId(id)}
               className={selectedConversationId === id ? 'selected-conversation' : ''}
             >
-              <Col className="inbox-column" md={4}>
+              <Col className="inbox-column" md={4} key={index}>
                 <div key={index}>
                   {conversation.recipientFirstName} {conversation.recipientLastName}
                   <Picture
@@ -212,15 +212,6 @@ export default function Inbox() {
               selectedConversationId &&
               selectedConversationId === id && (
                 <Row className="chat-container">
-                  {conversation.pastMessages.map((pastMessage, index) => (
-                    <div
-                      key={index}
-                      className={pastMessage.isSender ? 'sender-message' : 'recipient-message'}
-                    >
-                      <div className="message-content">{pastMessage.messageContent}</div>
-                      <div className="message-sent-at">{pastMessage.sentAt}</div>
-                    </div>
-                  ))}
                   {selectedConversationId && (
                     <MessageSender
                       recipientFirstName={conversation.recipientFirstName}
@@ -230,6 +221,16 @@ export default function Inbox() {
                       senderLastName={userLastName}
                     />
                   )}
+                  {conversation.pastMessages.map((pastMessage, index) => (
+                    <div
+                      key={index}
+                      className={pastMessage.isSender ? 'sender-message' : 'recipient-message'}
+                    >
+                      <div className="message-content">{pastMessage.messageContent}</div>
+                      <div className="message-sent-at">{pastMessage.sentAt}</div>
+                    </div>
+                  ))}
+
                   <hr />
                 </Row>
               )
