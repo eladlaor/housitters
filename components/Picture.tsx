@@ -44,6 +44,7 @@ export default function Picture({
 
   const avatarUrl = useSelector(selectAvatarUrlState)
   const [uploading, setUploading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const [previewDataUrls, setPreviewDataUrls] = useState([] as ImageData[])
   const [fileNames, setFileNames] = useState([] as ImageData[])
@@ -170,7 +171,6 @@ export default function Picture({
         // it might cause a Network Error when trying to upload the file.
         const resizedImage = await resizeImage(file, 1920, 1080)
 
-        console.log('uploading to avatars')
         let { error: uploadError } = await supabaseClient.storage
           .from('avatars')
           .upload(fileName, resizedImage, { upsert: true })
@@ -252,6 +252,7 @@ export default function Picture({
 
   async function downloadImage(fileName: string) {
     try {
+      setLoading(true)
       const { data: downloadedFileData, error } = await supabaseClient.storage
         .from(bucketName)
         .download(fileName)
@@ -268,6 +269,7 @@ export default function Picture({
       const updatedPreviews = [{ url: previewDataUrl, id: 0 }]
 
       setPreviewDataUrls(updatedPreviews)
+      setLoading(false)
 
       // const url = URL.createObjectURL(data)
       // dispatch(setAvatarUrl(url))
@@ -297,22 +299,24 @@ export default function Picture({
           )}
         </div>
       )}
-      {previewDataUrls.map((previewData: ImageData, index: number) => (
-        <div key={index}>
-          <Image src={previewData.url} height={size} width={size} key={index} />
+      {loading
+        ? 'loading picture'
+        : previewDataUrls.map((previewData: ImageData, index: number) => (
+            <div key={index}>
+              <Image src={previewData.url} height={size} width={size} key={index} />
 
-          {!disableUpload && (
-            <Button
-              variant="danger"
-              onClick={(e) => handleDeleteImage(previewData, e)}
-              key={`delete-${index}`}
-              name={`image-${index}`}
-            >
-              delete
-            </Button>
-          )}
-        </div>
-      ))}
+              {!disableUpload && (
+                <Button
+                  variant="danger"
+                  onClick={(e) => handleDeleteImage(previewData, e)}
+                  key={`delete-${index}`}
+                  name={`image-${index}`}
+                >
+                  delete
+                </Button>
+              )}
+            </div>
+          ))}
     </div>
   )
 }

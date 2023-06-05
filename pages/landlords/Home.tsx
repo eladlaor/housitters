@@ -3,6 +3,7 @@ import {
   selectAvatarUrlState,
   selectFirstNameState,
   selectIsLoggedState,
+  selectPrimaryUseState,
   setAvatarUrl,
   setFirstName,
 } from '../../slices/userSlice'
@@ -50,6 +51,7 @@ import Accordion from 'react-bootstrap/Accordion'
 import { ImageData } from '../../types/clientSide'
 
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
+import { selectConversationsState, selectTotalUnreadMessagesState } from '../../slices/inboxSlice'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -58,6 +60,7 @@ export default function Home() {
 
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
+  const currentUserType = useSelector(selectPrimaryUseState)
   const availability = useSelector(selectAvailabilityState)
 
   const [showNewPostModal, setShowNewPostModal] = useState(false)
@@ -88,6 +91,9 @@ export default function Home() {
   const closedSits = useSelector(selectClosedSitsState)
 
   const isAfterSignup = router.query.isAfterSignup
+
+  const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
+  const conversations = useSelector(selectConversationsState)
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -475,7 +481,7 @@ export default function Home() {
     <>
       <Navbar bg="dark" variant="dark">
         <Navbar.Brand className="mr-auto" href="#">
-          Housitters
+          Housitters.com
         </Navbar.Brand>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
@@ -484,6 +490,31 @@ export default function Home() {
               <SignOut />
             </NavDropdown>
             <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
+            <NavDropdown title={`Inbox: (${totalUnreadMessages})`} id="basic-nav-dropdown">
+              {Object.entries(conversations).map(([id, conversation]) => (
+                <NavDropdown.Item href={`#conversation/${id}`} key={id}>
+                  <div>
+                    <Picture
+                      isIntro={false}
+                      uid={id}
+                      primaryUse={currentUserType}
+                      url={conversation.recipientAvatarUrl}
+                      size={30}
+                      width={30}
+                      height={30}
+                      disableUpload={true}
+                      bucketName={'avatars'}
+                      isAvatar={true}
+                      promptMessage={''}
+                      email={''}
+                    />
+                    {conversation.recipientFirstName} {conversation.recipientLastName}
+                  </div>
+                  <div>Unread messages: {conversation.unreadMessages}</div>
+                  <div>Latest message: {conversation.latestMessage.messageContent}</div>
+                </NavDropdown.Item>
+              ))}
+            </NavDropdown>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
