@@ -102,7 +102,10 @@ export default function Inbox() {
               recipientFirstName: '',
               recipientLastName: '',
               recipientAvatarUrl: '',
-              latestMessage: message, // due to the order {ascending: false} clause in the db query
+              latestMessage: {
+                messageContent: message.message_content,
+                sentAt: message.created_at,
+              } as Conversation['latestMessage'], // due to the order {ascending: false} clause in the db query
               pastMessages: [] as unknown as Conversation['pastMessages'],
               unreadMessages: 0,
             } as Conversation
