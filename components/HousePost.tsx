@@ -10,16 +10,17 @@ import Col from 'react-bootstrap/Col'
 import React from 'react'
 import { countDays } from '../utils/dates'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectPrimaryUseState } from '../slices/userSlice'
+import {
+  selectFirstNameState,
+  selectLastNameState,
+  selectPrimaryUseState,
+} from '../slices/userSlice'
 import { USER_TYPE, ClosedSit } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import Picture from './Picture'
 import { selectClosedSitsState, setClosedSitsState } from '../slices/landlordSlice'
-
-/*
-  if no active posts: allow create new post
-
-*/
+import MessageSender from './MessageSender'
+import { HousePostProps } from '../utils/constants'
 
 // can maybe type as HousePostInput
 export default function HousePost({
@@ -31,26 +32,22 @@ export default function HousePost({
   dogs,
   cats,
   imagesUrls,
-}: {
-  landlordId: string
-  title: string
-  description: string
-  location: string
-  availability: { startDate: string; endDate: string }[]
-  dogs: number
-  cats: number
-  imagesUrls: ImageData[]
-}) {
+}: HousePostProps) {
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
 
-  const [landlordFirstName, setLandlordFirstName] = useState('')
+  // TODO: maybe better differentiate between the sitter/lord use cases, specifically for userFirstName
   const [landlordAvatarUrl, setLandlordAvatarUrl] = useState('')
   const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as ImageData[])
   const [showModal, setShowModal] = useState(false)
+  const userType = useSelector(selectPrimaryUseState)
+  const [landlordFirstName, setLandlordFirstName] = useState('')
+  const [landlordLastName, setLandlordLastName] = useState('')
+
+  let userFirstName: string = useSelector(selectFirstNameState)
+  let userLastName: string = useSelector(selectLastNameState)
 
   const closedSits = useSelector(selectClosedSitsState)
-  const primaryUse = useSelector(selectPrimaryUseState)
 
   function handleModalOpen() {
     setShowModal(true)
@@ -64,17 +61,19 @@ export default function HousePost({
     if (!landlordId) {
       return
     }
+
     async function loadLandlordData(landlordId: string) {
       try {
         let { data: landlordData, error: landlordError } = await supabaseClient
           .from('profiles')
-          .select('first_name, avatar_url')
+          .select('first_name, last_name, avatar_url')
           .eq('id', landlordId)
           .single()
         if (landlordError) {
           alert(landlordError.message)
         } else if (landlordData) {
           setLandlordFirstName(landlordData.first_name)
+          setLandlordLastName(landlordData.last_name)
           setLandlordAvatarUrl(landlordData.avatar_url)
         }
 
@@ -209,13 +208,13 @@ export default function HousePost({
           ) : (
             'Loading Title Image'
           )}
-          <div>
+          <>
             {postPicturesFullUrl.length > 1 ? (
               <Button onClick={handleModalOpen}>See More Pictures</Button>
             ) : (
               <Button disabled={true}>No Other Pictures</Button>
             )}
-          </div>
+          </>
 
           <Modal show={showModal} onHide={handleModalClose}>
             <Modal.Header closeButton>
@@ -245,16 +244,16 @@ export default function HousePost({
           <hr />
           <div>
             <h3>dates:</h3>
-            <Card.Text>
-              {availability.map((period, index) => (
-                <React.Fragment key={index}>
-                  <ListGroup>
-                    <ListGroup.Item>
-                      {primaryUse === USER_TYPE.Landlord &&
-                        (() => {
-                          const closedPeriodIfExists = isClosedPeriod(period.startDate)
-                          return closedPeriodIfExists ? (
-                            <>
+            {availability.map((period, index) => (
+              <React.Fragment key={index}>
+                <ListGroup>
+                  <ListGroup.Item>
+                    {userType === USER_TYPE.Landlord &&
+                      (() => {
+                        const closedPeriodIfExists = isClosedPeriod(period.startDate)
+                        return closedPeriodIfExists ? (
+                          <>
+                            <Card.Text>
                               <Badge bg="success">Closed</Badge>
                               <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
                               <br />
@@ -262,58 +261,59 @@ export default function HousePost({
                               <br />
                               Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
                               {closedPeriodIfExists.housitterLastName}
-                              {closedPeriodIfExists.housitterAvatarUrl && (
-                                <Picture
-                                  isIntro={false}
-                                  uid={closedPeriodIfExists.housitterId}
-                                  primaryUse={USER_TYPE.Housitter}
-                                  url={closedPeriodIfExists.housitterAvatarUrl}
-                                  size={100}
-                                  width={100} // should persist dimensions of image upon upload
-                                  height={100}
-                                  disableUpload={true}
-                                  bucketName="avatars"
-                                  isAvatar={true}
-                                  promptMessage=""
-                                  email=""
-                                />
-                              )}
-                              <br />
-                              <Button
-                                variant="danger"
-                                onClick={(e) =>
-                                  handleMySitterCancelled(e, {
-                                    housitterId: closedPeriodIfExists.housitterId,
-                                    landlordId: landlordId,
-                                    startDate: closedPeriodIfExists.startDate,
-                                  })
-                                }
-                              >
-                                my sitter cancelled
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Badge bg="danger">Open</Badge>
-                              <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
-                              This sit is still open
-                              <br />
-                            </>
-                          )
-                        })()}
+                            </Card.Text>
 
-                      {`${period.startDate} - ${period.endDate}`}
-                      <br />
-                      {`total days: ${countDays(period.startDate, period.endDate)}`}
-                      <br />
-                    </ListGroup.Item>
-                  </ListGroup>
-                </React.Fragment>
-              ))}
-            </Card.Text>
+                            {closedPeriodIfExists.housitterAvatarUrl && (
+                              <Picture
+                                isIntro={false}
+                                uid={closedPeriodIfExists.housitterId}
+                                primaryUse={USER_TYPE.Housitter}
+                                url={closedPeriodIfExists.housitterAvatarUrl}
+                                size={100}
+                                width={100} // should persist dimensions of image upon upload
+                                height={100}
+                                disableUpload={true}
+                                bucketName="avatars"
+                                isAvatar={true}
+                                promptMessage=""
+                                email=""
+                              />
+                            )}
+                            <br />
+                            <Button
+                              variant="danger"
+                              onClick={(e) =>
+                                handleMySitterCancelled(e, {
+                                  housitterId: closedPeriodIfExists.housitterId,
+                                  landlordId: landlordId,
+                                  startDate: closedPeriodIfExists.startDate,
+                                })
+                              }
+                            >
+                              my sitter cancelled
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Badge bg="danger">Open</Badge>
+                            <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
+                            This sit is still open
+                            <br />
+                          </>
+                        )
+                      })()}
+
+                    {`${period.startDate} - ${period.endDate}`}
+                    <br />
+                    {`total days: ${countDays(period.startDate, period.endDate)}`}
+                    <br />
+                  </ListGroup.Item>
+                </ListGroup>
+              </React.Fragment>
+            ))}
             <hr />
           </div>
-          {primaryUse === USER_TYPE.Housitter && (
+          {userType === USER_TYPE.Housitter && (
             <div>
               {' '}
               <Card.Text>post by: {landlordFirstName}</Card.Text>
@@ -331,7 +331,13 @@ export default function HousePost({
                 height={100}
                 bucketName="avatars"
               />
-              <Button variant="secondary">Send {landlordFirstName} a message</Button>
+              <MessageSender
+                recipientFirstName={landlordFirstName}
+                recipientLastName={landlordLastName}
+                recipientUserId={landlordId}
+                senderFirstName={userFirstName}
+                senderLastName={userLastName}
+              />
             </div>
           )}
         </Card.Body>

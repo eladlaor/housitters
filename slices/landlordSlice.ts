@@ -9,7 +9,6 @@ export const initialState = {
     cats: 0,
     other: '',
   },
-  sittersContacted: [] as { housitterId: string; lastContacted: Date }[],
   closedSits: [] as ClosedSit[],
 }
 
@@ -31,12 +30,6 @@ export const landlordSlice = createSlice({
         pets: action.payload,
       }
     },
-    setSittersContactedState(state = initialState, action) {
-      return {
-        ...state,
-        sittersContacted: action.payload,
-      }
-    },
     setClosedSitsState(state = initialState, action) {
       return {
         ...state,
@@ -47,12 +40,10 @@ export const landlordSlice = createSlice({
 })
 
 // Action creators (landlordSlice.action) are generated (automatically) for each case reducer function
-export const { setLocationState, setPetsState, setSittersContactedState, setClosedSitsState } =
-  landlordSlice.actions
+export const { setLocationState, setPetsState, setClosedSitsState } = landlordSlice.actions
 
 export const selectLocationState = (state: RootState) => state.landlord.location
 export const selectPetsState = (state: RootState) => state.landlord.pets
-export const selectSittersContactedState = (state: RootState) => state.landlord.sittersContacted
 export const selectClosedSitsState = (state: RootState) => state.landlord.closedSits
 
 export type SettersToInitialStates = {

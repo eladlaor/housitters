@@ -1,4 +1,5 @@
 //TODO: rename all to be PascalCase
+import { ImageData } from '../types/clientSide'
 
 export const USER_TYPE = {
   Landlord: 'landlord',
@@ -38,7 +39,6 @@ export interface SignupForm {
 }
 
 export interface EmailFormFields {
-  title: string
   message: string
   reciepientEmail: string
 }
@@ -110,4 +110,24 @@ export const LocationDescriptions = {
 
 export const API_ROUTES = {
   SEND_EMAILS: '/api/send-emails',
+}
+
+/* COMPONENT PROPS */
+export interface HousePostProps {
+  landlordId: string
+  title: string
+  description: string
+  location: string
+  availability: { startDate: string; endDate: string }[]
+  dogs: number
+  cats: number
+  imagesUrls: ImageData[]
+}
+
+export interface MessageSenderProps {
+  recipientFirstName: string
+  recipientLastName: string
+  recipientUserId: string
+  senderFirstName: string
+  senderLastName: string
 }

@@ -11,6 +11,7 @@ import Resizer from 'react-image-file-resizer'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
+// TODO: should unify the way i get props for each component
 export default function Picture({
   isIntro,
   uid,
@@ -183,6 +184,7 @@ export default function Picture({
 
         console.log('SUCCESSFULLY uploaded to avatars')
         dispatch(setAvatarUrl(fileName))
+        console.log(`dispatched ${fileName} as avatarUrl to redux`)
 
         const buffer = await blobToBuffer(resizedImage)
 

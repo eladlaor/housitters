@@ -5,7 +5,7 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzc3puZXRmdnVxY3RueGZ3dnpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjgyNjAyODksImV4cCI6MTk4MzgzNjI4OX0.fyWaISimfSUGQoavOyLah6loAkm3LwJl_YfFDspauIg'
 )
 
-const bucketName = 'posts'
+const bucketName = process.argv[2] || 'missing-bucketName-arg'
 
 async function deleteAllFilesInBucket() {
   console.log(`removing all files from: ${bucketName} `)

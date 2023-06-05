@@ -5,29 +5,32 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
-import { API_ROUTES, EmailFormFields, USER_TYPE } from '../utils/constants'
-import { selectSittersContactedState, setSittersContactedState } from '../slices/landlordSlice'
+import { API_ROUTES, EmailFormFields, MessageSenderProps, USER_TYPE } from '../utils/constants'
+import {
+  selectUsersContactedState,
+  setUsersContactedState,
+  selectPrimaryUseState,
+} from '../slices/userSlice'
 
 // TODO: probably a better way to type the props, lets find out.
-export default function MessageSender({
-  props,
-}: {
-  props: {
-    firstName: string
-    lastName: string
-    housitterId: string
-  }
-}) {
+export default function MessageSender(props: MessageSenderProps) {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
-
   const dispatch = useDispatch()
 
+  const {
+    recipientFirstName,
+    recipientLastName,
+    recipientUserId,
+    senderFirstName,
+    senderLastName,
+  } = props
+
   const [showEmailModal, setShowEmailModal] = useState(false)
-  const sittersContacted = useSelector(selectSittersContactedState)
+  const sittersContacted = useSelector(selectUsersContactedState)
+  const userType = useSelector(selectPrimaryUseState)
 
   const [emailForm, setEmailForm] = useState({
-    title: '',
     message: '',
     reciepientEmail: '',
   } as EmailFormFields)
@@ -44,12 +47,10 @@ export default function MessageSender({
     e.preventDefault()
     setShowEmailModal(false)
 
-    // in supabase database, I created a function which triggers after every new user signup, which creates a queryable public.users view
-    // trigger name: on_new_user_created | function name: create_public_users_view
     const { error, data } = await supabaseClient
       .from('profiles')
       .select(`email`)
-      .eq('id', props.housitterId)
+      .eq('id', recipientUserId)
       .single()
 
     if (error) {
@@ -59,15 +60,16 @@ export default function MessageSender({
     }
 
     if (!data || !data.email) {
-      alert(`no email found for housitter id: ${props.housitterId}`)
+      alert(`no email found for housitter id: ${recipientUserId}`)
       debugger
-      throw new Error(`no email found for housitter id: ${props.housitterId}`)
+      throw new Error(`no email found for housitter id: ${recipientUserId}`)
     }
 
     const response = await axios.post(API_ROUTES.SEND_EMAILS, {
-      title: emailForm.title,
       message: emailForm.message,
       recipientEmail: data.email,
+      senderFirstName,
+      senderLastName,
     })
 
     if (response.status === 200) {
@@ -80,10 +82,10 @@ export default function MessageSender({
     }
 
     const { error: persistMessageError } = await supabaseClient.from('messages').upsert({
-      housitter_id: props.housitterId,
-      landlord_id: user?.id, // TODO: make sure always
-      title: emailForm.title,
+      [userType === USER_TYPE.Housitter ? 'landlord_id' : 'housitter_id']: recipientUserId,
+      [userType === USER_TYPE.Housitter ? 'housitter_id' : 'landlord_id']: user!.id,
       message_content: emailForm.message,
+      sent_by: userType,
     })
 
     if (persistMessageError) {
@@ -95,10 +97,10 @@ export default function MessageSender({
     console.log('successfully persisted communication')
 
     dispatch(
-      setSittersContactedState([
+      setUsersContactedState([
         ...sittersContacted,
         {
-          housitterId: props.housitterId,
+          userId: recipientUserId,
           lastContacted: new Date().toLocaleString('en-US', {
             weekday: 'short',
             month: 'short',
@@ -118,29 +120,17 @@ export default function MessageSender({
       <Modal show={showEmailModal} onHide={handleCloseEmailModal}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Send Email to {props.firstName} {props.lastName}
+            Send Email to {recipientFirstName} {recipientLastName}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="title">
-              <Form.Label>Title</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder=""
-                value={emailForm.title}
-                onChange={(e) => {
-                  setEmailForm({
-                    ...emailForm,
-                    title: e.target.value,
-                  })
-                }}
-              />
-            </Form.Group>
             <Form.Group controlId="message">
               <Form.Label>Message</Form.Label>
               <Form.Control
-                type="text"
+                className="text-end"
+                size="lg"
+                as="textarea"
                 placeholder=""
                 value={emailForm.message}
                 onChange={(e) => {

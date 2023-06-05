@@ -5,13 +5,13 @@ import {
   settersToInitialStates as userSettersToInitialStates,
   SettersToInitialStates,
   selectPrimaryUseState,
-  selectIsLoggedState,
   setIsLoggedState,
 } from '../../slices/userSlice'
 import { settersToInitialStates as postSettersToInitialStates } from '../../slices/postSlice'
-
 import { settersToInitialStates as housitterSettersToInitialStates } from '../../slices/housitterSlice'
 import { settersToInitialStates as landlordSettersToInitialStates } from '../../slices/landlordSlice'
+import { settersToInitialStates as inboxSettersToInitialStates } from '../../slices/inboxSlice'
+
 import { useSelector, useDispatch } from 'react-redux'
 import { useRouter } from 'next/router'
 
@@ -44,6 +44,7 @@ export default function SignOut() {
         }
         await clearState(userSettersToInitialStates)
         await clearState(postSettersToInitialStates)
+        await clearState(inboxSettersToInitialStates)
 
         await supabaseClient.auth.signOut()
         router.push('/')

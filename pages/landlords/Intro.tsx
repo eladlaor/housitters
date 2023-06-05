@@ -122,8 +122,6 @@ export default function landlordIntro() {
         throw profileError
       }
 
-      dispatch(setAvatarUrl(newProfile.avatar_url))
-
       const newlandlord = {
         user_id: userId,
         location,

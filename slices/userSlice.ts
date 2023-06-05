@@ -16,6 +16,7 @@ export const initialState = {
       endDate: new Date(0).toISOString(),
     },
   ],
+  usersContacted: [] as { userId: string; lastContacted: Date }[],
 }
 
 export type UserState = typeof initialState
@@ -72,6 +73,12 @@ export const userSlice = createSlice({
         availability: action.payload,
       }
     },
+    setUsersContactedState(state = initialState, action) {
+      return {
+        ...state,
+        usersContacted: action.payload,
+      }
+    },
   },
 })
 
@@ -85,6 +92,7 @@ export const {
   setAvatarUrl,
   setBirthday,
   setAvailability,
+  setUsersContactedState,
 } = userSlice.actions
 
 export const selectIsLoggedState = (state: RootState) => state.user.isLogged
@@ -95,6 +103,7 @@ export const selectPrimaryUseState = (state: RootState) => state.user.primaryUse
 export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
 export const selectBirthdayState = (state: RootState) => state.user.birthday
 export const selectAvailabilityState = (state: RootState) => state.user.availability
+export const selectUsersContactedState = (state: RootState) => state.user.usersContacted
 
 export type SettersToInitialStates = {
   matchingSetter: any

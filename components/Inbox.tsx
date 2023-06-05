@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import React, { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { Container, Row, Col } from 'react-bootstrap'
-import { selectPrimaryUseState } from '../slices/userSlice'
+import { selectIsLoggedState, selectPrimaryUseState } from '../slices/userSlice'
 import { USER_TYPE } from '../utils/constants'
 import {
   Conversation,
@@ -24,8 +24,10 @@ export default function Inbox() {
   const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
   const conversations = useSelector(selectConversationsState)
 
+  const isLogged = useSelector(selectIsLoggedState)
+
   useEffect(() => {
-    if (!user) {
+    if (!user || !isLogged) {
       console.log('running useEffect of inbox: no user')
       return
     }
@@ -164,7 +166,7 @@ export default function Inbox() {
         <hr />
 
         {Object.values(conversations).map((conversation, index) => (
-          <Row>
+          <Row key={index}>
             <Col className="inbox-column" md={4}>
               <div key={index}>
                 {conversation.recipientFirstName} {conversation.recipientLastName}

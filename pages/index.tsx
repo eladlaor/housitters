@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { settersToInitialStates as housitterSettersToInitialStates } from '../slices/housitterSlice'
 import { settersToInitialStates as landlordSettersToInitialStates } from '../slices/landlordSlice'
+import { settersToInitialStates as inboxSettersToInitialStates } from '../slices/inboxSlice'
+import { settersToInitialStates as recommendationsSettersToInitialStates } from '../slices/recommendationSlice'
 
 const Home: NextPage = () => {
   const router = useRouter()
@@ -42,17 +44,26 @@ const Home: NextPage = () => {
       console.log('reached index: no authenticated user')
       const nonUserSetters =
         userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
-      nonUserSetters.forEach((attributeSetterAndInitialState) => {
+
+      for (const attributeSetterAndInitialState of nonUserSetters) {
         dispatch(
           attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
         )
+      }
 
-        postSettersToInitialStates.forEach((postSetter) => {
-          dispatch(postSetter.matchingSetter(postSetter.initialState))
-        })
+      for (const postSetter of postSettersToInitialStates) {
+        dispatch(postSetter.matchingSetter(postSetter.initialState))
+      }
 
-        userLogout()
-      })
+      for (const inboxSetter of inboxSettersToInitialStates) {
+        dispatch(inboxSetter.matchingSetter(inboxSetter.initialState))
+      }
+
+      for (const recommendationSetter of recommendationsSettersToInitialStates) {
+        dispatch(recommendationSetter.matchingSetter(recommendationSetter.initialState))
+      }
+
+      userLogout()
     } else {
       console.log('reached index: yes there is an authenticated user')
       supabaseClient.auth.signOut()

@@ -7,16 +7,23 @@ import { useState } from 'react'
 import RecommendationForm from './RecommendationForm'
 import Recommendations from './Recommendations'
 import { useSelector } from 'react-redux'
-import { selectSittersContactedState } from '../slices/landlordSlice'
+import {
+  selectFirstNameState,
+  selectLastNameState,
+  selectUsersContactedState,
+} from '../slices/userSlice'
 import MessageSender from './MessageSender'
 
 // TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
-export default function AvailableHousitter({ props }: { props: HousitterProps }) {
+export default function AvailableHousitter(props: HousitterProps) {
   const [showRecModal, setShowRecModal] = useState(false)
   const [showAllRecsModal, setShowAllRecsModal] = useState(false)
   const [recommendations, setRecommendations] = useState([] as any[]) // TODO: type it
 
-  const sittersContacted = useSelector(selectSittersContactedState)
+  const landlordFirstName = useSelector(selectFirstNameState)
+  const landlordLastName = useSelector(selectLastNameState)
+
+  const usersContacted = useSelector(selectUsersContactedState)
 
   return (
     <div>
@@ -42,17 +49,15 @@ export default function AvailableHousitter({ props }: { props: HousitterProps })
           </Card.Title>
 
           <MessageSender
-            props={{
-              firstName: props.firstName,
-              lastName: props.lastName,
-              housitterId: props.housitterId,
-            }}
+            recipientFirstName={props.firstName}
+            recipientLastName={props.lastName}
+            recipientUserId={props.housitterId}
+            senderFirstName={landlordFirstName}
+            senderLastName={landlordLastName}
           />
 
           {(() => {
-            let foundSitter = sittersContacted.find(
-              (sitter) => sitter.housitterId === props.housitterId
-            )
+            let foundSitter = usersContacted.find((user) => user.userId === props.housitterId)
             if (foundSitter) {
               const { lastContacted } = foundSitter
               return (
