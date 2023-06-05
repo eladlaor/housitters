@@ -6,7 +6,9 @@ import { Container, Row, Col } from 'react-bootstrap'
 import { USER_TYPE } from '../utils/constants'
 
 import {
+  selectFirstNameState,
   selectIsLoggedState,
+  selectLastNameState,
   selectPrimaryUseState,
   selectUsersContactedState,
 } from '../slices/userSlice'
@@ -19,6 +21,8 @@ import {
 } from '../slices/inboxSlice'
 
 import Picture from './Picture'
+import MessageSender from './MessageSender'
+import { propTypes } from 'react-bootstrap/esm/Image'
 
 export default function Inbox() {
   const user = useUser()
@@ -31,6 +35,10 @@ export default function Inbox() {
   const usersContacted = useSelector(selectUsersContactedState)
   const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
   const conversations = useSelector(selectConversationsState)
+  const [selectedConversationId, setSelectedConversationId] = useState('')
+
+  const userFirstName = useSelector(selectFirstNameState)
+  const userLastName = useSelector(selectLastNameState)
 
   useEffect(() => {
     if (!user || !isLogged) {
@@ -123,7 +131,7 @@ export default function Inbox() {
               }),
 
               messageContent: message.message_content,
-              isSender: keyNameOfRecipientId.startsWith(currentUserType),
+              isSender: message.sent_by === currentUserType,
             },
           ] as Conversation['pastMessages']
         }
@@ -168,44 +176,65 @@ export default function Inbox() {
       <br />
       <br />
       <Container fluid className="inbox">
-        <Row>Unread messages: {totalUnreadMessages}</Row>
-        <hr />
-
-        {Object.values(conversations).map((conversation, index) => (
-          <Row key={index}>
-            <Col className="inbox-column" md={4}>
-              <div key={index}>
-                {conversation.recipientFirstName} {conversation.recipientLastName}
-                <Picture
-                  isIntro={false}
-                  uid="" // currently not needed. if needed: {Object.keys(conversations)[index]}
-                  primaryUse={USER_TYPE.Housitter}
-                  url={conversation.recipientAvatarUrl}
-                  size={50}
-                  width={50} // should persist dimensions of image upon upload
-                  height={50}
-                  disableUpload={true}
-                  bucketName="avatars"
-                  isAvatar={true}
-                  promptMessage=""
-                  email=""
-                />
-              </div>
-            </Col>
-            <Col className="chat-container" md={8}>
-              {conversation.pastMessages.map((pastMessage, index) => (
-                <div
-                  key={index}
-                  className={pastMessage.isSender ? 'sender-message' : 'recipient-message'}
-                >
-                  <div className="message-content">{pastMessage.messageContent}</div>
-                  <div className="message-sent-at">{pastMessage.sentAt}</div>
+        <Col md={4}>
+          {Object.entries(conversations).map(([id, conversation], index: number) => (
+            <Row
+              key={index}
+              onClick={() => setSelectedConversationId(id)}
+              className={selectedConversationId === id ? 'selected-conversation' : ''}
+            >
+              <Col className="inbox-column" md={4}>
+                <div key={index}>
+                  {conversation.recipientFirstName} {conversation.recipientLastName}
+                  <Picture
+                    isIntro={false}
+                    uid="" // currently not needed. if needed: {Object.keys(conversations)[index]}
+                    primaryUse={USER_TYPE.Housitter}
+                    url={conversation.recipientAvatarUrl}
+                    size={50}
+                    width={50} // should persist dimensions of image upon upload
+                    height={50}
+                    disableUpload={true}
+                    bucketName="avatars"
+                    isAvatar={true}
+                    promptMessage=""
+                    email=""
+                  />
                 </div>
-              ))}
-            </Col>
-            <hr />
-          </Row>
-        ))}
+              </Col>
+            </Row>
+          ))}
+        </Col>
+
+        <Col md={8}>
+          {Object.entries(conversations).map(
+            ([id, conversation], index) =>
+              selectedConversationId &&
+              selectedConversationId === id && (
+                <Row className="chat-container">
+                  {conversation.pastMessages.map((pastMessage, index) => (
+                    <div
+                      key={index}
+                      className={pastMessage.isSender ? 'sender-message' : 'recipient-message'}
+                    >
+                      <div className="message-content">{pastMessage.messageContent}</div>
+                      <div className="message-sent-at">{pastMessage.sentAt}</div>
+                    </div>
+                  ))}
+                  {selectedConversationId && (
+                    <MessageSender
+                      recipientFirstName={conversation.recipientFirstName}
+                      recipientLastName={conversation.recipientLastName}
+                      recipientUserId={id}
+                      senderFirstName={userFirstName}
+                      senderLastName={userLastName}
+                    />
+                  )}
+                  <hr />
+                </Row>
+              )
+          )}
+        </Col>
       </Container>
       <br />
       <br />

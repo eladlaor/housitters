@@ -140,6 +140,62 @@ a {
   color: #888;
 }
 
+.inbox {
+  display: flex;
+  border: 1px solid #ccc;
+  height: 80vh;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.inbox-column {
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.chat-container {
+  flex-grow: 1;
+  padding: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sender-message,
+.recipient-message {
+  max-width: 60%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.sender-message {
+  align-self: flex-end;
+  background: #0b93f6;
+  color: white;
+}
+
+.recipient-message {
+  align-self: flex-start;
+  background: #f1f0f0;
+  color: black;
+}
+
+.message-content {
+  margin-bottom: 5px;
+}
+
+.selected-conversation {
+  background-color: #E8E8E8; /* Adjust this color as you need */
+}
+
+.inbox-column:hover {
+  background-color: #F8F8F8; /* Adjust this color as you need */
+  cursor: pointer;
+}
+
 
 /* then import bootstrap */
 @import "bootstrap/dist/css/bootstrap.css";
