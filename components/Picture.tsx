@@ -2,8 +2,7 @@ import React, { BlockquoteHTMLAttributes, useEffect, useState } from 'react'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { Database } from '../types/supabase'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAvatarUrlState, setAvatarUrl } from '../slices/userSlice'
-import { selectImagesUrlsState, setImagesUrlsState } from '../slices/postSlice'
+import { setAvatarUrl } from '../slices/userSlice'
 import Image from 'next/image'
 import { Button, Form } from 'react-bootstrap'
 import { ImageData } from '../types/clientSide'
@@ -42,7 +41,6 @@ export default function Picture({
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
 
-  const avatarUrl = useSelector(selectAvatarUrlState)
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -91,6 +89,7 @@ export default function Picture({
 
   useEffect(() => {
     if (url) {
+      console.log(`downloading picture: ${url}`)
       downloadImage(url)
     } else {
       console.log('no url received in Picture')

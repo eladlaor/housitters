@@ -42,11 +42,8 @@ export default function Inbox() {
 
   useEffect(() => {
     if (!user || !isLogged) {
-      console.log('running useEffect of inbox: no user')
       return
     }
-
-    console.log('running useEffect of inbox')
 
     async function loadInboxData() {
       let messagesData: any[] = []
@@ -84,8 +81,6 @@ export default function Inbox() {
       // a separate call because cant inner join becaue: error loading inbox data: Could not embed because more than one relationship was found for 'messages' and 'profiles'
 
       if (messagesData.length > 0) {
-        console.log(`messagesData lenght: ${messagesData.length}`)
-
         let totalUnreadMessages = 0
 
         let parsedConversations = {} as any

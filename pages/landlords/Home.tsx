@@ -43,6 +43,7 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
 import Image from 'next/image'
 import Nav from 'react-bootstrap/Nav'
+import Badge from 'react-bootstrap/Badge'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import SidebarFilter from '../../components/SidebarFilter'
@@ -491,27 +492,59 @@ export default function Home() {
             </NavDropdown>
             <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
             <NavDropdown title={`Inbox: (${totalUnreadMessages})`} id="basic-nav-dropdown">
-              {Object.entries(conversations).map(([id, conversation]) => (
-                <NavDropdown.Item href={`#conversation/${id}`} key={id}>
-                  <div>
-                    <Picture
-                      isIntro={false}
-                      uid={id}
-                      primaryUse={currentUserType}
-                      url={conversation.recipientAvatarUrl}
-                      size={30}
-                      width={30}
-                      height={30}
-                      disableUpload={true}
-                      bucketName={'avatars'}
-                      isAvatar={true}
-                      promptMessage={''}
-                      email={''}
-                    />
-                    {conversation.recipientFirstName} {conversation.recipientLastName}
+              {Object.entries(conversations).map(([id, conversation], index) => (
+                <NavDropdown.Item href="#" key={id} style={{ width: '100%' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      minWidth: '0',
+                    }}
+                    key={index}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexGrow: 1,
+                        marginRight: '10px',
+                      }}
+                    >
+                      <Picture
+                        isIntro={false}
+                        uid=""
+                        primaryUse={currentUserType}
+                        url={conversation.recipientAvatarUrl}
+                        size={30}
+                        width={30}
+                        height={30}
+                        disableUpload={true}
+                        bucketName={'avatars'}
+                        isAvatar={true}
+                        promptMessage=""
+                        email=""
+                      />
+                      <div style={{ marginLeft: '10px' }}>
+                        {conversation.recipientFirstName} {conversation.recipientLastName}
+                        {conversation.unreadMessages > 0 ? (
+                          <Badge pill bg="primary" style={{ marginLeft: '10px' }}>
+                            {conversation.unreadMessages}
+                          </Badge>
+                        ) : null}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        textAlign: 'right',
+                      }}
+                    >
+                      {conversation.latestMessage.messageContent}
+                    </div>
                   </div>
-                  <div>Unread messages: {conversation.unreadMessages}</div>
-                  <div>Latest message: {conversation.latestMessage.messageContent}</div>
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
