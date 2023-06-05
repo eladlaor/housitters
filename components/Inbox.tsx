@@ -211,7 +211,7 @@ export default function Inbox() {
             ([id, conversation], index) =>
               selectedConversationId &&
               selectedConversationId === id && (
-                <Row className="chat-container">
+                <Row className="chat-container" key={index}>
                   {selectedConversationId && (
                     <MessageSender
                       recipientFirstName={conversation.recipientFirstName}
