@@ -2,8 +2,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import React, { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { Container, Row, Col } from 'react-bootstrap'
-import { selectIsLoggedState, selectPrimaryUseState } from '../slices/userSlice'
+
 import { USER_TYPE } from '../utils/constants'
+
+import {
+  selectIsLoggedState,
+  selectPrimaryUseState,
+  selectUsersContactedState,
+} from '../slices/userSlice'
 import {
   Conversation,
   selectConversationsState,
@@ -11,6 +17,7 @@ import {
   setConversationsState,
   setTotalUnreadMessagesState,
 } from '../slices/inboxSlice'
+
 import Picture from './Picture'
 
 export default function Inbox() {
@@ -20,11 +27,10 @@ export default function Inbox() {
   const dispatch = useDispatch()
 
   const currentUserType = useSelector(selectPrimaryUseState)
-
+  const isLogged = useSelector(selectIsLoggedState)
+  const usersContacted = useSelector(selectUsersContactedState)
   const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
   const conversations = useSelector(selectConversationsState)
-
-  const isLogged = useSelector(selectIsLoggedState)
 
   useEffect(() => {
     if (!user || !isLogged) {
@@ -153,7 +159,7 @@ export default function Inbox() {
     loadInboxData()
 
     // sortMessagesByConvesation() including getting last messages
-  }, [user, currentUserType])
+  }, [user, currentUserType, usersContacted])
 
   return (
     <div>
