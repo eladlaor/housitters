@@ -38,6 +38,32 @@ export interface Database {
           user_type?: string | null
         }
       }
+      closed_sits: {
+        Row: {
+          created_at: string | null
+          end_date: string | null
+          housitter_id: string
+          id: number
+          landlord_id: string
+          start_date: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date?: string | null
+          housitter_id: string
+          id?: number
+          landlord_id: string
+          start_date: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string | null
+          housitter_id?: string
+          id?: number
+          landlord_id?: string
+          start_date?: string
+        }
+      }
       housitters: {
         Row: {
           created_at: string | null
@@ -82,6 +108,35 @@ export interface Database {
           favorite_sitters?: string[] | null
           location?: string | null
           user_id?: string
+        }
+      }
+      messages: {
+        Row: {
+          created_at: string
+          housitter_id: string | null
+          id: number
+          is_read_by_recipient: boolean | null
+          landlord_id: string | null
+          message_content: string | null
+          sent_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          housitter_id?: string | null
+          id?: number
+          is_read_by_recipient?: boolean | null
+          landlord_id?: string | null
+          message_content?: string | null
+          sent_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          housitter_id?: string | null
+          id?: number
+          is_read_by_recipient?: boolean | null
+          landlord_id?: string | null
+          message_content?: string | null
+          sent_by?: string | null
         }
       }
       pets: {
@@ -141,6 +196,7 @@ export interface Database {
           about_me: string | null
           avatar_url: string | null
           birthday: string | null
+          email: string | null
           first_name: string | null
           id: string
           last_name: string | null
@@ -154,6 +210,7 @@ export interface Database {
           about_me?: string | null
           avatar_url?: string | null
           birthday?: string | null
+          email?: string | null
           first_name?: string | null
           id: string
           last_name?: string | null
@@ -167,6 +224,7 @@ export interface Database {
           about_me?: string | null
           avatar_url?: string | null
           birthday?: string | null
+          email?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
@@ -184,7 +242,7 @@ export interface Database {
           duration: number | null
           id: number
           recommended_by: string
-          recommended_user_id: string
+          recommended_user_id: string | null
           recommended_user_type: string
           sit_included: string
           start_month: string | null
@@ -195,7 +253,7 @@ export interface Database {
           duration?: number | null
           id?: number
           recommended_by: string
-          recommended_user_id: string
+          recommended_user_id?: string | null
           recommended_user_type: string
           sit_included: string
           start_month?: string | null
@@ -206,7 +264,7 @@ export interface Database {
           duration?: number | null
           id?: number
           recommended_by?: string
-          recommended_user_id?: string
+          recommended_user_id?: string | null
           recommended_user_type?: string
           sit_included?: string
           start_month?: string | null
@@ -214,119 +272,13 @@ export interface Database {
       }
     }
     Views: {
-      users: {
-        Row: {
-          aud: string | null
-          banned_until: string | null
-          confirmation_sent_at: string | null
-          confirmation_token: string | null
-          confirmed_at: string | null
-          created_at: string | null
-          deleted_at: string | null
-          email: string | null
-          email_change: string | null
-          email_change_confirm_status: number | null
-          email_change_sent_at: string | null
-          email_change_token_current: string | null
-          email_change_token_new: string | null
-          email_confirmed_at: string | null
-          encrypted_password: string | null
-          id: string | null
-          instance_id: string | null
-          invited_at: string | null
-          is_sso_user: boolean | null
-          is_super_admin: boolean | null
-          last_sign_in_at: string | null
-          phone: string | null
-          phone_change: string | null
-          phone_change_sent_at: string | null
-          phone_change_token: string | null
-          phone_confirmed_at: string | null
-          raw_app_meta_data: Json | null
-          raw_user_meta_data: Json | null
-          reauthentication_sent_at: string | null
-          reauthentication_token: string | null
-          recovery_sent_at: string | null
-          recovery_token: string | null
-          role: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          aud?: string | null
-          banned_until?: string | null
-          confirmation_sent_at?: string | null
-          confirmation_token?: string | null
-          confirmed_at?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          email?: string | null
-          email_change?: string | null
-          email_change_confirm_status?: number | null
-          email_change_sent_at?: string | null
-          email_change_token_current?: string | null
-          email_change_token_new?: string | null
-          email_confirmed_at?: string | null
-          encrypted_password?: string | null
-          id?: string | null
-          instance_id?: string | null
-          invited_at?: string | null
-          is_sso_user?: boolean | null
-          is_super_admin?: boolean | null
-          last_sign_in_at?: string | null
-          phone?: string | null
-          phone_change?: string | null
-          phone_change_sent_at?: string | null
-          phone_change_token?: string | null
-          phone_confirmed_at?: string | null
-          raw_app_meta_data?: Json | null
-          raw_user_meta_data?: Json | null
-          reauthentication_sent_at?: string | null
-          reauthentication_token?: string | null
-          recovery_sent_at?: string | null
-          recovery_token?: string | null
-          role?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          aud?: string | null
-          banned_until?: string | null
-          confirmation_sent_at?: string | null
-          confirmation_token?: string | null
-          confirmed_at?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          email?: string | null
-          email_change?: string | null
-          email_change_confirm_status?: number | null
-          email_change_sent_at?: string | null
-          email_change_token_current?: string | null
-          email_change_token_new?: string | null
-          email_confirmed_at?: string | null
-          encrypted_password?: string | null
-          id?: string | null
-          instance_id?: string | null
-          invited_at?: string | null
-          is_sso_user?: boolean | null
-          is_super_admin?: boolean | null
-          last_sign_in_at?: string | null
-          phone?: string | null
-          phone_change?: string | null
-          phone_change_sent_at?: string | null
-          phone_change_token?: string | null
-          phone_confirmed_at?: string | null
-          raw_app_meta_data?: Json | null
-          raw_user_meta_data?: Json | null
-          reauthentication_sent_at?: string | null
-          reauthentication_token?: string | null
-          recovery_sent_at?: string | null
-          recovery_token?: string | null
-          role?: string | null
-          updated_at?: string | null
-        }
-      }
+      [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_users_view: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

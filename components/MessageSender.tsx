@@ -52,7 +52,6 @@ export default function MessageSender(props: MessageSenderProps) {
   async function handleSendEmail(e: any) {
     try {
       e.preventDefault()
-      setShowEmailModal(false)
       setIsSendingInProgress(true)
 
       const { error, data } = await supabaseClient
@@ -92,6 +91,7 @@ export default function MessageSender(props: MessageSenderProps) {
         [userType === USER_TYPE.Housitter ? 'housitter_id' : 'landlord_id']: user!.id,
         message_content: messageContent,
         sent_by: userType,
+        created_at: new Date(),
       })
 
       if (persistMessageError) {
@@ -119,6 +119,8 @@ export default function MessageSender(props: MessageSenderProps) {
 
       setMessageContent('')
       setIsSendingInProgress(false)
+      setShowEmailModal(false)
+
       alert(response.data.message)
     } catch (error) {
       setIsSendingInProgress(false)
@@ -185,8 +187,17 @@ export default function MessageSender(props: MessageSenderProps) {
                 }}
               />
             </Form.Group>
-            <Button variant="success" type="submit" onClick={(e: any) => handleSendEmail(e)}>
-              Send the email
+            <Button
+              variant="success"
+              type="submit"
+              onClick={(e: any) => handleSendEmail(e)}
+              disabled={isSendingInProgress}
+            >
+              {isSendingInProgress ? (
+                <Spinner animation="border" role="status"></Spinner>
+              ) : (
+                ' Send the email'
+              )}
             </Button>
           </Form>
         </Modal.Body>

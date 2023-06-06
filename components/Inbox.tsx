@@ -14,6 +14,7 @@ import {
 } from '../slices/userSlice'
 import {
   Conversation,
+  Conversations,
   selectConversationsState,
   selectTotalUnreadMessagesState,
   setConversationsState,
@@ -46,6 +47,11 @@ export default function Inbox() {
   const userFirstName = useSelector(selectFirstNameState)
   const userLastName = useSelector(selectLastNameState)
 
+  const keyNameOfRecipientId =
+    currentUserType === USER_TYPE.Housitter
+      ? `${USER_TYPE.Landlord}_id`
+      : `${USER_TYPE.Housitter}_id`
+
   useEffect(() => {
     if (!user || !isLogged) {
       return
@@ -57,7 +63,7 @@ export default function Inbox() {
       if (currentUserType === USER_TYPE.Landlord) {
         const { error, data } = await supabaseClient
           .from('messages')
-          .select(`created_at, message_content, housitter_id, title, is_read_by_recipient, sent_by`)
+          .select(`id, created_at, message_content, housitter_id, is_read_by_recipient, sent_by`)
           .eq('landlord_id', user?.id)
           .order('created_at', { ascending: false })
 
@@ -71,7 +77,7 @@ export default function Inbox() {
       } else {
         const { error, data } = await supabaseClient
           .from('messages')
-          .select(`created_at, message_content, landlord_id, title, is_read_by_recipient, sent_by`)
+          .select(`id, created_at, message_content, landlord_id, is_read_by_recipient, sent_by`)
           .eq('housitter_id', user?.id)
           .order('created_at', { ascending: false })
 
@@ -92,11 +98,6 @@ export default function Inbox() {
         let parsedConversations = {} as any
 
         for (const message of messagesData) {
-          const keyNameOfRecipientId =
-            currentUserType === USER_TYPE.Housitter
-              ? `${USER_TYPE.Landlord}_id`
-              : `${USER_TYPE.Housitter}_id`
-
           // adding a new converstaion key if needed
           if (!parsedConversations[message[keyNameOfRecipientId]]) {
             parsedConversations[message[keyNameOfRecipientId]] = {
@@ -114,7 +115,9 @@ export default function Inbox() {
 
           parsedConversations[message[keyNameOfRecipientId]]
 
-          if (message.sent_by !== currentUserType && !message.is_read_by_recipient) {
+          const isReadByRecipient = message.is_read_by_recipient
+
+          if (message.sent_by !== currentUserType && !isReadByRecipient) {
             parsedConversations[message[keyNameOfRecipientId]].unreadMessages =
               parsedConversations[message[keyNameOfRecipientId]].unreadMessages + 1
 
@@ -133,9 +136,10 @@ export default function Inbox() {
                 hour: 'numeric',
                 minute: 'numeric',
               }),
-
+              isReadByRecipient,
               messageContent: message.message_content,
               isSender: message.sent_by === currentUserType,
+              id: message.id,
             },
           ] as Conversation['pastMessages']
         }
@@ -169,17 +173,46 @@ export default function Inbox() {
     }
 
     loadInboxData()
-
-    // sortMessagesByConvesation() including getting last messages
   }, [user, currentUserType, usersContacted])
 
-  function handleShowConversationModal(e: any, recipientId: string) {
+  async function handleShowConversationModal(
+    e: any,
+    recipientId: string,
+    conversation: Conversation
+  ) {
     e.stopPropagation()
     setSelectedConversationId(recipientId)
     setShowConversationModalStates((previousState) => ({
       ...previousState,
       [recipientId]: true,
     }))
+
+    dispatch(setTotalUnreadMessagesState(totalUnreadMessages - conversation.unreadMessages))
+
+    const updatedConversations = {
+      ...conversations,
+      [recipientId]: {
+        ...conversations[recipientId],
+        unreadMessages: 0,
+      } as Conversation,
+    } as Conversations
+
+    for (const message of conversation.pastMessages) {
+      if (!message.isSender && !message.isReadByRecipient) {
+        const { error } = await supabaseClient.from('messages').upsert({
+          is_read_by_recipient: true,
+          id: message.id,
+        })
+
+        if (error) {
+          alert(`failed upserting read message. Error: ${error.message}`)
+          debugger
+          throw error
+        }
+      }
+    }
+
+    dispatch(setConversationsState(updatedConversations))
   }
 
   function handleHideConversationModal(e: any, recipientId: string) {
@@ -212,7 +245,7 @@ export default function Inbox() {
           href="#"
           key={`${recipientId}-${index}`}
           style={{ width: '100%' }}
-          onClick={(e) => handleShowConversationModal(e, recipientId)}
+          onClick={(e) => handleShowConversationModal(e, recipientId, conversation)}
         >
           <div
             style={{

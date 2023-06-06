@@ -7,13 +7,25 @@ export interface Conversation {
   recipientLastName: string
   recipientAvatarUrl: string
   latestMessage: { messageContent: string; sentAt: string }
-  pastMessages: [{ messageContent: string; isSender: boolean; sentAt: string }]
+  pastMessages: [
+    {
+      messageContent: string
+      isSender: boolean
+      isReadByRecipient: boolean
+      sentAt: string
+      id: number
+    }
+  ]
   unreadMessages: 0
+}
+
+export interface Conversations {
+  [key: string]: Conversation
 }
 
 export const initialState = {
   totalUnreadMessages: 0,
-  conversations: {} as { [key: string]: Conversation },
+  conversations: {} as Conversations,
 }
 
 export type inboxState = typeof initialState
