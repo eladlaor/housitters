@@ -8,6 +8,11 @@ import { Provider } from 'react-redux'
 import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
 
+import { library as fontLibrary } from '@fortawesome/fontawesome-svg-core'
+import { faEnvelopeOpenText, faMailBulk, faBoxOpen } from '@fortawesome/free-solid-svg-icons'
+
+fontLibrary.add(faEnvelopeOpenText, faMailBulk, faBoxOpen)
+
 function MyApp({
   Component,
   pageProps,

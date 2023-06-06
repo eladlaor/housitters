@@ -89,10 +89,7 @@ export default function Picture({
 
   useEffect(() => {
     if (url) {
-      console.log(`downloading picture: ${url}`)
       downloadImage(url)
-    } else {
-      console.log('no url received in Picture')
     }
   }, [url])
 

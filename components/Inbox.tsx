@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import React, { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import { Container, Row, Col } from 'react-bootstrap'
+import { NavDropdown, Modal, Button } from 'react-bootstrap'
 
 import { USER_TYPE } from '../utils/constants'
 
@@ -22,7 +22,10 @@ import {
 
 import Picture from './Picture'
 import MessageSender from './MessageSender'
-import { propTypes } from 'react-bootstrap/esm/Image'
+
+import Badge from 'react-bootstrap/Badge'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEnvelopeOpenText } from '@fortawesome/free-solid-svg-icons'
 
 export default function Inbox() {
   const user = useUser()
@@ -36,6 +39,7 @@ export default function Inbox() {
   const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
   const conversations = useSelector(selectConversationsState)
   const [selectedConversationId, setSelectedConversationId] = useState('')
+  const [showConversationModal, setShowConversationModal] = useState(false)
 
   const userFirstName = useSelector(selectFirstNameState)
   const userLastName = useSelector(selectLastNameState)
@@ -167,78 +171,111 @@ export default function Inbox() {
     // sortMessagesByConvesation() including getting last messages
   }, [user, currentUserType, usersContacted])
 
+  function handleShowConversationModal(e: any) {
+    e.stopPropagation()
+    setShowConversationModal(true)
+  }
+
+  function handleHideConversationModal(e: any) {
+    e.stopPropagation()
+    setShowConversationModal(false)
+  }
+
   return (
-    <div>
-      <br />
-      <br />
-      <br />
-      <br />
-      <Container fluid className="inbox">
-        <Col md={4}>
-          {Object.entries(conversations).map(([id, conversation], index: number) => (
-            <Row
-              key={index}
-              onClick={() => setSelectedConversationId(id)}
-              className={selectedConversationId === id ? 'selected-conversation' : ''}
+    <NavDropdown
+      title={
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <FontAwesomeIcon
+            icon={faEnvelopeOpenText}
+            style={{ marginRight: '10px', marginLeft: '5px' }}
+          />
+          Inbox
+          <Badge pill bg="primary" style={{ marginLeft: '5px' }}>
+            {totalUnreadMessages}
+          </Badge>
+        </div>
+      }
+      id="basic-nav-dropdown"
+    >
+      {Object.entries(conversations).map(([id, conversation], index) => (
+        <NavDropdown.Item
+          href="#"
+          key={id}
+          style={{ width: '100%' }}
+          onClick={(e) => handleShowConversationModal(e)}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              minWidth: '0',
+            }}
+            key={index}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexGrow: 1,
+                marginRight: '10px',
+              }}
             >
-              <Col className="inbox-column" md={4} key={index}>
-                <div key={index}>
-                  {conversation.recipientFirstName} {conversation.recipientLastName}
-                  <Picture
-                    isIntro={false}
-                    uid="" // currently not needed. if needed: {Object.keys(conversations)[index]}
-                    primaryUse={USER_TYPE.Housitter}
-                    url={conversation.recipientAvatarUrl}
-                    size={50}
-                    width={50} // should persist dimensions of image upon upload
-                    height={50}
-                    disableUpload={true}
-                    bucketName="avatars"
-                    isAvatar={true}
-                    promptMessage=""
-                    email=""
-                  />
-                </div>
-              </Col>
-            </Row>
-          ))}
-        </Col>
-
-        <Col md={8}>
-          {Object.entries(conversations).map(
-            ([id, conversation], index) =>
-              selectedConversationId &&
-              selectedConversationId === id && (
-                <Row className="chat-container" key={index}>
-                  {selectedConversationId && (
-                    <MessageSender
-                      recipientFirstName={conversation.recipientFirstName}
-                      recipientLastName={conversation.recipientLastName}
-                      recipientUserId={id}
-                      senderFirstName={userFirstName}
-                      senderLastName={userLastName}
-                    />
-                  )}
-                  {conversation.pastMessages.map((pastMessage, index) => (
-                    <div
-                      key={index}
-                      className={pastMessage.isSender ? 'sender-message' : 'recipient-message'}
-                    >
-                      <div className="message-content">{pastMessage.messageContent}</div>
-                      <div className="message-sent-at">{pastMessage.sentAt}</div>
-                    </div>
-                  ))}
-
-                  <hr />
-                </Row>
-              )
+              <Picture
+                isIntro={false}
+                uid=""
+                primaryUse={currentUserType}
+                url={conversation.recipientAvatarUrl}
+                size={30}
+                width={30}
+                height={30}
+                disableUpload={true}
+                bucketName={'avatars'}
+                isAvatar={true}
+                promptMessage=""
+                email=""
+              />
+              <div style={{ marginLeft: '10px' }}>
+                {conversation.recipientFirstName} {conversation.recipientLastName}
+                {conversation.unreadMessages > 0 ? (
+                  <Badge pill bg="primary" style={{ marginLeft: '10px' }}>
+                    {conversation.unreadMessages}
+                  </Badge>
+                ) : null}
+              </div>
+            </div>
+            <div
+              style={{
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                textAlign: 'right',
+              }}
+            >
+              {conversation.latestMessage.messageContent}
+            </div>
+          </div>
+          {showConversationModal && (
+            <Modal show={showConversationModal} onHide={() => setShowConversationModal(false)}>
+              <Modal.Header>
+                <Modal.Title>
+                  your convesation with{' '}
+                  {conversation &&
+                    `${conversation.recipientFirstName} ${conversation.recipientLastName}`}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Inbox />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={(e) => handleHideConversationModal(e)}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
           )}
-        </Col>
-      </Container>
-      <br />
-      <br />
-      <br />
-      <br />
-    </div>
+        </NavDropdown.Item>
+      ))}
+    </NavDropdown>
   )
 }

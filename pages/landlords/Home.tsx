@@ -43,7 +43,6 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
 import Image from 'next/image'
 import Nav from 'react-bootstrap/Nav'
-import Badge from 'react-bootstrap/Badge'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import SidebarFilter from '../../components/SidebarFilter'
@@ -95,8 +94,6 @@ export default function Home() {
 
   const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
   const conversations = useSelector(selectConversationsState)
-
-  const [showConversationModal, setShowConversationModal] = useState(false)
 
   useEffect(() => {
     // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
@@ -262,16 +259,6 @@ export default function Home() {
 
   function handleLocationSelection(key: string | null) {
     setLocationState(key ? key : '')
-  }
-
-  function handleShowConversationModal(e: any) {
-    e.stopPropagation()
-    setShowConversationModal(true)
-  }
-
-  function handleHideConversationModal(e: any) {
-    e.stopPropagation()
-    setShowConversationModal(false)
   }
 
   async function handleShowNewPostModal() {
@@ -503,90 +490,7 @@ export default function Home() {
               <SignOut />
             </NavDropdown>
             <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
-            <NavDropdown title={`Inbox: (${totalUnreadMessages})`} id="basic-nav-dropdown">
-              {Object.entries(conversations).map(([id, conversation], index) => (
-                <NavDropdown.Item
-                  href="#"
-                  key={id}
-                  style={{ width: '100%' }}
-                  onClick={(e) => handleShowConversationModal(e)}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      minWidth: '0',
-                    }}
-                    key={index}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        flexGrow: 1,
-                        marginRight: '10px',
-                      }}
-                    >
-                      <Picture
-                        isIntro={false}
-                        uid=""
-                        primaryUse={currentUserType}
-                        url={conversation.recipientAvatarUrl}
-                        size={30}
-                        width={30}
-                        height={30}
-                        disableUpload={true}
-                        bucketName={'avatars'}
-                        isAvatar={true}
-                        promptMessage=""
-                        email=""
-                      />
-                      <div style={{ marginLeft: '10px' }}>
-                        {conversation.recipientFirstName} {conversation.recipientLastName}
-                        {conversation.unreadMessages > 0 ? (
-                          <Badge pill bg="primary" style={{ marginLeft: '10px' }}>
-                            {conversation.unreadMessages}
-                          </Badge>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        textAlign: 'right',
-                      }}
-                    >
-                      {conversation.latestMessage.messageContent}
-                    </div>
-                  </div>
-                  {showConversationModal && (
-                    <Modal
-                      show={showConversationModal}
-                      onHide={() => setShowConversationModal(false)}
-                    >
-                      <Modal.Header>
-                        <Modal.Title>
-                          your convesation with{' '}
-                          {conversation &&
-                            `${conversation.recipientFirstName} ${conversation.recipientLastName}`}
-                        </Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <Inbox />
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={(e) => handleHideConversationModal(e)}>
-                          Close
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
-                  )}
-                </NavDropdown.Item>
-              ))}
-            </NavDropdown>
+            <Inbox />
           </Nav>
         </Navbar.Collapse>
       </Navbar>
@@ -855,9 +759,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <Inbox />
       </div>
     </>
   )
