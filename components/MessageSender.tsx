@@ -14,6 +14,8 @@ import { API_ROUTES, MessageSenderProps, USER_TYPE } from '../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
+import Spinner from 'react-bootstrap/Spinner'
+
 // import { Input } from 'react-chat-elements'
 
 // TODO: probably a better way to type the props, lets find out.
@@ -37,6 +39,8 @@ export default function MessageSender(props: MessageSenderProps) {
 
   const [messageContent, setMessageContent] = useState('')
 
+  const [isSendingInProgress, setIsSendingInProgress] = useState(false)
+
   function handleCloseEmailModal() {
     setShowEmailModal(false)
   }
@@ -46,74 +50,82 @@ export default function MessageSender(props: MessageSenderProps) {
   }
 
   async function handleSendEmail(e: any) {
-    e.preventDefault()
-    setShowEmailModal(false)
+    try {
+      e.preventDefault()
+      setShowEmailModal(false)
+      setIsSendingInProgress(true)
 
-    const { error, data } = await supabaseClient
-      .from('profiles')
-      .select(`email`)
-      .eq('id', recipientUserId)
-      .single()
+      const { error, data } = await supabaseClient
+        .from('profiles')
+        .select(`email`)
+        .eq('id', recipientUserId)
+        .single()
 
-    if (error) {
-      alert(`error trying to get housitter email: ${error.message}`)
+      if (error) {
+        alert(`error trying to get housitter email: ${error.message}`)
+        debugger
+        throw error
+      }
+
+      if (!data || !data.email) {
+        alert(`no email found for housitter id: ${recipientUserId}`)
+        debugger
+        throw new Error(`no email found for housitter id: ${recipientUserId}`)
+      }
+
+      const response = await axios.post(API_ROUTES.SEND_EMAILS, {
+        message: messageContent,
+        recipientEmail: data.email,
+        senderFirstName,
+        senderLastName,
+      })
+
+      if (response.status !== 200) {
+        alert(
+          `error when trying to send email. Status: ${response.status}. Message: ${response.data?.error}`
+        )
+        debugger
+      }
+
+      const { error: persistMessageError } = await supabaseClient.from('messages').upsert({
+        [userType === USER_TYPE.Housitter ? 'landlord_id' : 'housitter_id']: recipientUserId,
+        [userType === USER_TYPE.Housitter ? 'housitter_id' : 'landlord_id']: user!.id,
+        message_content: messageContent,
+        sent_by: userType,
+      })
+
+      if (persistMessageError) {
+        alert(`error persisting communication: ${persistMessageError}`)
+        debugger
+        throw persistMessageError
+      }
+
+      console.log('successfully persisted communication')
+
+      dispatch(
+        setUsersContactedState([
+          ...sittersContacted,
+          {
+            userId: recipientUserId,
+            lastContacted: new Date().toLocaleString('en-US', {
+              weekday: 'short',
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+          },
+        ])
+      )
+
+      setMessageContent('')
+      setIsSendingInProgress(false)
+      alert(response.data.message)
+    } catch (error) {
+      setIsSendingInProgress(false)
+      alert(`Failed sending email. Error: ${JSON.stringify(error)}`)
       debugger
       throw error
     }
-
-    if (!data || !data.email) {
-      alert(`no email found for housitter id: ${recipientUserId}`)
-      debugger
-      throw new Error(`no email found for housitter id: ${recipientUserId}`)
-    }
-
-    const response = await axios.post(API_ROUTES.SEND_EMAILS, {
-      message: messageContent,
-      recipientEmail: data.email,
-      senderFirstName,
-      senderLastName,
-    })
-
-    if (response.status === 200) {
-      alert(response.data.message)
-    } else {
-      alert(
-        `error when trying to send email. Status: ${response.status}. Message: ${response.data?.error}`
-      )
-      debugger
-    }
-
-    const { error: persistMessageError } = await supabaseClient.from('messages').upsert({
-      [userType === USER_TYPE.Housitter ? 'landlord_id' : 'housitter_id']: recipientUserId,
-      [userType === USER_TYPE.Housitter ? 'housitter_id' : 'landlord_id']: user!.id,
-      message_content: messageContent,
-      sent_by: userType,
-    })
-
-    if (persistMessageError) {
-      alert(`error persisting communication: ${persistMessageError}`)
-      debugger
-      throw persistMessageError
-    }
-
-    console.log('successfully persisted communication')
-
-    dispatch(
-      setUsersContactedState([
-        ...sittersContacted,
-        {
-          userId: recipientUserId,
-          lastContacted: new Date().toLocaleString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          }),
-        },
-      ])
-    )
-
-    setMessageContent('')
   }
 
   return isChat ? (
@@ -138,14 +150,19 @@ export default function MessageSender(props: MessageSenderProps) {
             }}
           />
         </Form.Group>
-        <Button variant="success" type="submit" onClick={(e: any) => handleSendEmail(e)}>
-          Send that shit
+        <Button
+          variant="success"
+          type="submit"
+          onClick={(e: any) => handleSendEmail(e)}
+          disabled={isSendingInProgress}
+        >
+          {isSendingInProgress ? <Spinner animation="border" role="status"></Spinner> : 'Send'}
         </Button>
       </Form>
     </div>
   ) : (
     <div>
-      <Button variant="secondary" onClick={handleOpenEmailModal}>
+      <Button variant="secondary" onClick={handleOpenEmailModal} disabled={isSendingInProgress}>
         Send Email
       </Button>
       <Modal show={showEmailModal} onHide={handleCloseEmailModal}>
