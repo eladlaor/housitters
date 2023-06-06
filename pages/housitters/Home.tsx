@@ -1,3 +1,5 @@
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectFirstNameState,
@@ -8,12 +10,6 @@ import {
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
 import { LANDLORDS_ROUTES, LocationIds, USER_TYPE } from '../../utils/constants'
-import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import { useEffect, useState } from 'react'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import { selectImagesUrlsState } from '../../slices/postSlice'
-import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 
 import HousePost from '../../components/HousePost'
 import Picture from '../../components/Picture'
@@ -21,16 +17,23 @@ import SignOut from '../../components/Buttons/SignOut'
 import SidebarFilter from '../../components/SidebarFilter'
 import Inbox from '../../components/Inbox'
 
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
+import { Typeahead, Hint } from 'react-bootstrap-typeahead'
+import UserSearcher from '../../components/UserSearcher'
+
 export default function Home() {
+  const supabase = useSupabaseClient()
   const user = useUser()
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
   const locations = useSelector(selectLocationsState)
   const availability = useSelector(selectAvailabilityState)
-  const supabase = useSupabaseClient()
-  const [posts, setPosts] = useState([] as Object[])
   const isLogged = useSelector(selectIsLoggedState)
   const avatarUrl = useSelector(selectAvatarUrlState)
+
+  const [posts, setPosts] = useState([] as Object[])
 
   // TODO: can set loading states if needed
 
@@ -138,6 +141,7 @@ export default function Home() {
               <SignOut />
             </NavDropdown>
             <Inbox />
+            <UserSearcher />
           </Nav>
         </Navbar.Collapse>
       </Navbar>

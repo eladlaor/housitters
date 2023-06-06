@@ -135,7 +135,6 @@ export default function MessageSender(props: MessageSenderProps) {
       {/*might want to use the Input component from react-chat */}
       <Form>
         <Form.Group controlId="chat-message">
-          <Form.Label>New Message</Form.Label>
           <Form.Control
             size="lg"
             as="textarea"
