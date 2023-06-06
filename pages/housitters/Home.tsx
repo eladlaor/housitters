@@ -137,6 +137,7 @@ export default function Home() {
               <NavDropdown.Item href={LANDLORDS_ROUTES.ACCOUNT}>Edit Profile</NavDropdown.Item>
               <SignOut />
             </NavDropdown>
+            <Inbox />
           </Nav>
         </Navbar.Collapse>
       </Navbar>
@@ -194,7 +195,6 @@ export default function Home() {
         showCustomLocations={locations.length < Object.values(LocationIds).length}
         selectionType="checkbox"
       />
-      <Inbox />
     </>
   )
 }

@@ -1,16 +1,20 @@
-import Button from 'react-bootstrap/Button'
-import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
-import { API_ROUTES, EmailFormFields, MessageSenderProps, USER_TYPE } from '../utils/constants'
+
 import {
   selectUsersContactedState,
   setUsersContactedState,
   selectPrimaryUseState,
 } from '../slices/userSlice'
+
+import { API_ROUTES, MessageSenderProps, USER_TYPE } from '../utils/constants'
+
+import Button from 'react-bootstrap/Button'
+import Modal from 'react-bootstrap/Modal'
+import Form from 'react-bootstrap/Form'
+// import { Input } from 'react-chat-elements'
 
 // TODO: probably a better way to type the props, lets find out.
 export default function MessageSender(props: MessageSenderProps) {
@@ -24,16 +28,14 @@ export default function MessageSender(props: MessageSenderProps) {
     recipientUserId,
     senderFirstName,
     senderLastName,
+    isChat,
   } = props
 
   const [showEmailModal, setShowEmailModal] = useState(false)
   const sittersContacted = useSelector(selectUsersContactedState)
   const userType = useSelector(selectPrimaryUseState)
 
-  const [emailForm, setEmailForm] = useState({
-    message: '',
-    reciepientEmail: '',
-  } as EmailFormFields)
+  const [messageContent, setMessageContent] = useState('')
 
   function handleCloseEmailModal() {
     setShowEmailModal(false)
@@ -66,7 +68,7 @@ export default function MessageSender(props: MessageSenderProps) {
     }
 
     const response = await axios.post(API_ROUTES.SEND_EMAILS, {
-      message: emailForm.message,
+      message: messageContent,
       recipientEmail: data.email,
       senderFirstName,
       senderLastName,
@@ -84,7 +86,7 @@ export default function MessageSender(props: MessageSenderProps) {
     const { error: persistMessageError } = await supabaseClient.from('messages').upsert({
       [userType === USER_TYPE.Housitter ? 'landlord_id' : 'housitter_id']: recipientUserId,
       [userType === USER_TYPE.Housitter ? 'housitter_id' : 'landlord_id']: user!.id,
-      message_content: emailForm.message,
+      message_content: messageContent,
       sent_by: userType,
     })
 
@@ -110,9 +112,38 @@ export default function MessageSender(props: MessageSenderProps) {
         },
       ])
     )
+
+    setMessageContent('')
   }
 
-  return (
+  return isChat ? (
+    <div>
+      {/*might want to use the Input component from react-chat */}
+      <Form>
+        <Form.Group controlId="chat-message">
+          <Form.Label>New Message</Form.Label>
+          <Form.Control
+            size="lg"
+            as="textarea"
+            placeholder="type message"
+            value={messageContent}
+            onChange={(e) => {
+              setMessageContent(e.target.value)
+            }}
+            // this is a fix to the strange fact that the onChange handler - in this case only (not when !isChat) - is not triggered when the space key is pressed.
+            onKeyDown={(e) => {
+              if (e.key === ' ') {
+                setMessageContent(messageContent + ' ')
+              }
+            }}
+          />
+        </Form.Group>
+        <Button variant="success" type="submit" onClick={(e: any) => handleSendEmail(e)}>
+          Send that shit
+        </Button>
+      </Form>
+    </div>
+  ) : (
     <div>
       <Button variant="secondary" onClick={handleOpenEmailModal}>
         Send Email
@@ -128,20 +159,16 @@ export default function MessageSender(props: MessageSenderProps) {
             <Form.Group controlId="message">
               <Form.Label>Message</Form.Label>
               <Form.Control
-                className="text-end"
                 size="lg"
                 as="textarea"
                 placeholder=""
-                value={emailForm.message}
+                value={messageContent}
                 onChange={(e) => {
-                  setEmailForm({
-                    ...emailForm,
-                    message: e.target.value,
-                  })
+                  setMessageContent(e.target.value)
                 }}
               />
             </Form.Group>
-            <Button variant="success" type="submit" onClick={handleSendEmail}>
+            <Button variant="success" type="submit" onClick={(e: any) => handleSendEmail(e)}>
               Send the email
             </Button>
           </Form>

@@ -289,6 +289,7 @@ export default function Inbox() {
                   recipientUserId={recipientId}
                   senderFirstName={userFirstName}
                   senderLastName={userLastName}
+                  isChat={true}
                 />
                 <div className="chat-container">
                   {recipientId === selectedConversationId &&

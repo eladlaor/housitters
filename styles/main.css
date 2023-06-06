@@ -161,6 +161,7 @@ a {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  min-height: 0; 
 }
 
 .sender-message,

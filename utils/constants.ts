@@ -38,11 +38,6 @@ export interface SignupForm {
   visible: boolean
 }
 
-export interface EmailFormFields {
-  message: string
-  reciepientEmail: string
-}
-
 export interface RecommendationProps {
   housitterId: string
   firstName: string
@@ -130,4 +125,5 @@ export interface MessageSenderProps {
   recipientUserId: string
   senderFirstName: string
   senderLastName: string
+  isChat: boolean
 }

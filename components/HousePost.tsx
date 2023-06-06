@@ -337,6 +337,7 @@ export default function HousePost({
                 recipientUserId={landlordId}
                 senderFirstName={userFirstName}
                 senderLastName={userLastName}
+                isChat={false}
               />
             </div>
           )}
