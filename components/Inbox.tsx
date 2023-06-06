@@ -38,8 +38,10 @@ export default function Inbox() {
   const usersContacted = useSelector(selectUsersContactedState)
   const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
   const conversations = useSelector(selectConversationsState)
-  const [selectedConversationId, setSelectedConversationId] = useState('')
-  const [showConversationModal, setShowConversationModal] = useState(false)
+  const [selectedConversationId, setSelectedConversationId] = useState('') // add States to the name
+  const [showConversationModalStates, setShowConversationModalStates] = useState<
+    Record<string, boolean>
+  >({})
 
   const userFirstName = useSelector(selectFirstNameState)
   const userLastName = useSelector(selectLastNameState)
@@ -171,14 +173,22 @@ export default function Inbox() {
     // sortMessagesByConvesation() including getting last messages
   }, [user, currentUserType, usersContacted])
 
-  function handleShowConversationModal(e: any) {
+  function handleShowConversationModal(e: any, recipientId: string) {
     e.stopPropagation()
-    setShowConversationModal(true)
+    setSelectedConversationId(recipientId)
+    setShowConversationModalStates((previousState) => ({
+      ...previousState,
+      [recipientId]: true,
+    }))
   }
 
-  function handleHideConversationModal(e: any) {
+  function handleHideConversationModal(e: any, recipientId: string) {
     e.stopPropagation()
-    setShowConversationModal(false)
+    setSelectedConversationId('')
+    setShowConversationModalStates((previousState) => ({
+      ...previousState,
+      [recipientId]: false,
+    }))
   }
 
   return (
@@ -197,12 +207,12 @@ export default function Inbox() {
       }
       id="basic-nav-dropdown"
     >
-      {Object.entries(conversations).map(([id, conversation], index) => (
+      {Object.entries(conversations).map(([recipientId, conversation], index) => (
         <NavDropdown.Item
           href="#"
-          key={id}
+          key={`${recipientId}-${index}`}
           style={{ width: '100%' }}
-          onClick={(e) => handleShowConversationModal(e)}
+          onClick={(e) => handleShowConversationModal(e, recipientId)}
         >
           <div
             style={{
@@ -211,7 +221,7 @@ export default function Inbox() {
               alignItems: 'center',
               minWidth: '0',
             }}
-            key={index}
+            key={`${recipientId}-${index}`}
           >
             <div
               style={{
@@ -255,8 +265,16 @@ export default function Inbox() {
               {conversation.latestMessage.messageContent}
             </div>
           </div>
-          {showConversationModal && (
-            <Modal show={showConversationModal} onHide={() => setShowConversationModal(false)}>
+          {showConversationModalStates[recipientId] && (
+            <Modal
+              show={showConversationModalStates[recipientId]}
+              onHide={() =>
+                setShowConversationModalStates((previousState) => ({
+                  ...previousState,
+                  [recipientId]: false,
+                }))
+              }
+            >
               <Modal.Header>
                 <Modal.Title>
                   your convesation with{' '}
@@ -265,10 +283,31 @@ export default function Inbox() {
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                <Inbox />
+                <MessageSender
+                  recipientFirstName={conversation.recipientFirstName}
+                  recipientLastName={conversation.recipientLastName}
+                  recipientUserId={recipientId}
+                  senderFirstName={userFirstName}
+                  senderLastName={userLastName}
+                />
+                <div className="chat-container">
+                  {recipientId === selectedConversationId &&
+                    conversation.pastMessages.map((pastMessage, index) => (
+                      <div
+                        key={`${recipientId}-${index}`}
+                        className={pastMessage.isSender ? 'sender-message' : 'recipient-message'}
+                      >
+                        <div className="message-content">{pastMessage.messageContent}</div>
+                        <div className="message-sent-at">{pastMessage.sentAt}</div>
+                      </div>
+                    ))}
+                </div>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={(e) => handleHideConversationModal(e)}>
+                <Button
+                  variant="secondary"
+                  onClick={(e) => handleHideConversationModal(e, recipientId)}
+                >
                   Close
                 </Button>
               </Modal.Footer>

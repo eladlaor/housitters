@@ -196,6 +196,7 @@ a {
   cursor: pointer;
 }
 
+/* this is the order suggested by react-bootstrap, but it's possible that now bootstrap overrides my css definitions which is something that can cause unexpected behavior */
 
 /* then import bootstrap */
 @import "bootstrap/dist/css/bootstrap.css";
