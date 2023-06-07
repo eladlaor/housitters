@@ -4,7 +4,7 @@ import { HousitterProps } from '../types/clientSide'
 import Picture from './Picture'
 import { USER_TYPE } from '../utils/constants'
 import { useState } from 'react'
-import RecommendationForm from './RecommendationForm'
+import RecommendationSender from './RecommendationSender'
 import Recommendations from './Recommendations'
 import { useSelector } from 'react-redux'
 import {
@@ -82,7 +82,7 @@ export default function AvailableHousitter(props: HousitterProps) {
 
           <Card.Text>{props.about_me}</Card.Text>
 
-          <RecommendationForm
+          <RecommendationSender
             housitterId={props.housitterId}
             firstName={props.firstName}
             lastName={props.lastName}

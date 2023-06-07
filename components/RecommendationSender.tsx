@@ -19,8 +19,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { startOfMonth, format, isDate } from 'date-fns'
 import { Database } from '../types/supabase'
+import { useState } from 'react'
 
-export default function RecommendationForm(props: RecommendationFormProps) {
+export default function RecommendationSender(props: RecommendationFormProps) {
   const { housitterId, firstName, lastName, recommendedUserType } = props
 
   const supabaseClient = useSupabaseClient()
@@ -31,10 +32,11 @@ export default function RecommendationForm(props: RecommendationFormProps) {
   const duration = useSelector(selectDurationState)
   const description = useSelector(selectDescriptionState)
   const sitIncluded = useSelector(selectSitIncludedState)
-
   const showRecommendationFormModal = useSelector(selectShowRecommendationFormModalState)
 
-  function handleDatesChange(date: Date) {
+  const [selectedUserToRecommendId, setSelectedUserToRecommendId] = useState('')
+
+  function handleStartMonthChange(date: Date) {
     dispatch(setStartMonthState(date.toISOString())) // redux needs serializable value, hence string
   }
 
@@ -67,26 +69,33 @@ export default function RecommendationForm(props: RecommendationFormProps) {
 
     alert(`successfully submitted recommendation for ${firstName}`)
 
-    // TODO: in this case its ok because its separate setters, but generally not good to set state in forEach, should create a new array and then set it.
-    settersToInitialStates.forEach((attributeSetterAndInitialState) => {
+    for (const attributeSetterAndInitialState of settersToInitialStates) {
       dispatch(
         attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
       )
-    })
+    }
 
+    setSelectedUserToRecommendId('')
+    dispatch(setShowRecommendationFormModalState(false))
+  }
+
+  function handleSelectedUserToRecommend(e: any) {
+    setSelectedUserToRecommendId(e.target.value as string)
+    dispatch(setShowRecommendationFormModalState(true))
+  }
+
+  function handleCloseModal() {
+    setSelectedUserToRecommendId('')
     dispatch(setShowRecommendationFormModalState(false))
   }
 
   return (
     <div>
-      <Button variant="warning" onClick={() => dispatch(setShowRecommendationFormModalState(true))}>
+      <Button variant="warning" value={housitterId} onClick={handleSelectedUserToRecommend}>
         Recommend
       </Button>
-      {showRecommendationFormModal && (
-        <Modal
-          show={showRecommendationFormModal}
-          onHide={() => dispatch(setShowRecommendationFormModalState(false))}
-        >
+      {showRecommendationFormModal && selectedUserToRecommendId === housitterId && (
+        <Modal show={showRecommendationFormModal} onHide={handleCloseModal}>
           <Modal.Header closeButton>
             <Modal.Title>
               Recommend {firstName} {lastName}
@@ -94,7 +103,6 @@ export default function RecommendationForm(props: RecommendationFormProps) {
           </Modal.Header>
           <Modal.Body>
             <Form>
-              // Just select a month and a year
               <Form.Group controlId="start-date">
                 <Form.Label>start date of sit</Form.Label>
                 <DatePicker
@@ -102,7 +110,7 @@ export default function RecommendationForm(props: RecommendationFormProps) {
                   openToDate={new Date()}
                   dateFormat="MM/yyyy"
                   showMonthYearPicker
-                  onChange={(date: any) => handleDatesChange(date)}
+                  onChange={(date: any) => handleStartMonthChange(date)}
                   customInput={<Form.Control type="text" />}
                   value={format(startOfMonth(new Date(startMonth)), 'MM/yyyy')}
                 />

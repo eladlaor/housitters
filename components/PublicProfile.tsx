@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
 import Picture from './Picture'
-import RecommendationForm from './RecommendationForm'
+import RecommendationSender from './RecommendationSender'
 import { selectShowRecommendationFormModalState } from '../slices/recommendationSlice'
 
 export default function PublicProfile(props: {
@@ -29,7 +29,7 @@ export default function PublicProfile(props: {
         promptMessage={''}
         email={email ? email : ''}
       />
-      <RecommendationForm
+      <RecommendationSender
         housitterId={''}
         firstName={''}
         lastName={''}
