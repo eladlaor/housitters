@@ -1,4 +1,5 @@
-/* first make any wanted customizations */
+@import "bootstrap/dist/css/bootstrap.css";
+/* importing it here means i choose to override bootstrap with the following, instead of it overriding the following */
 
 body {
   margin: 0;
@@ -197,7 +198,32 @@ a {
   cursor: pointer;
 }
 
-/* this is the order suggested by react-bootstrap, but it's possible that now bootstrap overrides my css definitions which is something that can cause unexpected behavior */
 
-/* then import bootstrap */
-@import "bootstrap/dist/css/bootstrap.css";
+.custom-form-select {
+  color: #343a40; /* Dark colored text for contrast */
+  background: #ffffff; /* Light colored background for visibility */
+  border: none;
+  outline: none;
+  padding: 5px;
+  border-radius: 5px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23235485" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right .75rem center; /* position the background image to the right and vertically center */
+  background-size: 8px 10px; /* size of your background image, you can adjust as needed */
+  text-align: center;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* make items the same height */
+  margin: 1rem; /* space between items */
+}
+
+#user-search,
+.custom-form-select {
+  flex: 1; /* make items take up equal width */
+}
+
+
+

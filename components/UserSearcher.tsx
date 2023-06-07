@@ -1,4 +1,5 @@
-import { Modal } from 'react-bootstrap'
+import Modal from 'react-bootstrap/Modal'
+import Form from 'react-bootstrap/Form'
 import { Typeahead } from 'react-bootstrap-typeahead'
 
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
@@ -6,6 +7,7 @@ import { useEffect, useState } from 'react'
 
 import { Database } from '../types/supabase'
 import PublicProfile from './PublicProfile'
+import { USER_TYPE } from '../utils/constants'
 
 export default function UserSearcher() {
   const user = useUser()
@@ -33,6 +35,7 @@ export default function UserSearcher() {
   const [allProfiles, setAllProfiles] = useState(
     [] as Database['public']['Tables']['profiles']['Row'][]
   )
+  const [searchFilter, setSearchFilter] = useState('')
 
   function handleSelectedSearchedUser(selectedUser: any[]) {
     if (selectedUser && selectedUser.length > 0) {
@@ -71,14 +74,16 @@ export default function UserSearcher() {
     }
 
     loadProfiles()
-  }, [user])
+  }, [user, searchFilter])
 
   return (
-    <>
+    <div className="search-container">
       <Typeahead
         id="user-search"
         labelKey="first_name"
-        options={allProfiles}
+        options={allProfiles.filter(
+          (profile) => searchFilter === 'all' || profile.primary_use === searchFilter
+        )}
         placeholder="Search for a user by name"
         onChange={handleSelectedSearchedUser}
       ></Typeahead>
@@ -100,6 +105,17 @@ export default function UserSearcher() {
           </Modal.Body>
         </Modal>
       )}
-    </>
+      <Form>
+        <Form.Select
+          className="custom-form-select"
+          value={searchFilter}
+          onChange={(e) => setSearchFilter(e.target.value)}
+        >
+          <option value="all">All</option>
+          <option value={USER_TYPE.Landlord}>Landlord</option>
+          <option value={USER_TYPE.Housitter}>Housitter</option>
+        </Form.Select>
+      </Form>
+    </div>
   )
 }
