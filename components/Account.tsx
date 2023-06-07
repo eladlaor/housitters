@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
-import PictureDeprecated from './PictureDeprecated'
+import Picture from './Picture'
 import { useRouter } from 'next/router'
 
 import AvailabilitySelector from '../components/AvailabilitySelector'
@@ -211,25 +211,21 @@ export default function Account() {
       >
         go to dashboard
       </button>
-      <PictureDeprecated
+      <Picture
+        isIntro={false}
         uid={user!.id}
+        primaryUse={primary_use}
         url={avatar_url}
-        size={150}
-        onUpload={(url) => {
-          dispatch(setAvatarUrl(url))
-          updateProfile({
-            username,
-            first_name,
-            last_name,
-            primary_use,
-            avatar_url: url,
-            birthday,
-            locations,
-          })
-        }}
+        size={50}
+        width={50}
+        height={50}
         disableUpload={false}
-        bucketName="avatars"
+        bucketName={'avatars'}
+        isAvatar={true}
+        promptMessage={''}
+        email={user.email ? user.email : ''}
       />
+
       <div>
         <label htmlFor="email">Email</label>
         <input id="email" type="text" value={user.email} disabled />
