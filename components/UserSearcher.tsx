@@ -35,7 +35,7 @@ export default function UserSearcher() {
   const [allProfiles, setAllProfiles] = useState(
     [] as Database['public']['Tables']['profiles']['Row'][]
   )
-  const [searchFilter, setSearchFilter] = useState('')
+  const [searchFilter, setSearchFilter] = useState('all')
 
   function handleSelectedSearchedUser(selectedUser: any[]) {
     if (selectedUser && selectedUser.length > 0) {
@@ -55,6 +55,7 @@ export default function UserSearcher() {
     }
 
     const loadProfiles = async () => {
+      console.log('loading')
       const { error, data } = await supabaseClient
         .from('profiles')
         .select(
@@ -96,11 +97,13 @@ export default function UserSearcher() {
           </Modal.Header>
           <Modal.Body>
             <PublicProfile
+              firstName={selectedSearchedUser.first_name as string}
+              lastName={selectedSearchedUser.last_name as string}
               userId={selectedSearchedUser.id}
               primaryUse={selectedSearchedUser.primary_use as string}
               email={selectedSearchedUser.email}
               aboutMe={selectedSearchedUser.about_me}
-              avatarUrl={selectedSearchedUser.avatar_url}
+              avatarUrl={selectedSearchedUser.avatar_url as string}
             />
           </Modal.Body>
         </Modal>
