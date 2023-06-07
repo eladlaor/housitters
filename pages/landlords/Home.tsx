@@ -97,11 +97,6 @@ export default function Home() {
   const conversations = useSelector(selectConversationsState)
 
   useEffect(() => {
-    // TODO: read about reading foreign tables. https://supabase.com/docs/reference/javascript/select
-    // definitely seems like it would be a better way to implement it, in one call to the server.
-
-    // search Filter Foreign Tables https://supabase.com/docs/reference/javascript/using-filters
-
     if (user) {
       const asyncWrapper = async () => {
         let { data: landlordData, error: landlordError } = await supabaseClient
@@ -186,12 +181,6 @@ export default function Home() {
           .eq('primary_use', 'housitter')
           .contains('housitters.locations', [location])
 
-        // filtering by availability, maybe there's a way to filter by availability on server-side?
-        // meanwhile we'll do it client side, using user_id to kind of join the dates with the relavant sitter.
-        // maybe there's a server-side solution, which will be better.
-
-        // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
-
         if (housitterError) {
           alert(
             'error when querying housitters from profiles in landlords home' +
@@ -229,6 +218,11 @@ export default function Home() {
                 : housitter.housitters?.locations,
             })
 
+            // filtering by availability, maybe there's a way to filter by availability on server-side?
+            // meanwhile we'll do it client side, using user_id to kind of join the dates with the relavant sitter.
+            // maybe there's a server-side solution, which will be better.
+
+            // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
             availableHousitters = availableHousitters.filter((sitter) => {
               return sitter.availability.some((sitterPeriod) => {
                 return availability.some((landlordPeriod) => {
@@ -255,8 +249,6 @@ export default function Home() {
       })
     }
   }, [user, availability, location, isActivePost])
-
-  // TODO: should move about_me text to the housitters table.
 
   function handleLocationSelection(key: string | null) {
     setLocationState(key ? key : '')
@@ -335,8 +327,6 @@ export default function Home() {
 
   async function handleSubmit(e: any) {
     e.preventDefault()
-
-    // TODO: deal with multiple availabilities
 
     let { error: postUploadError } = await supabaseClient.from('posts').upsert({
       landlord_id: user?.id,
@@ -765,14 +755,3 @@ export default function Home() {
     </>
   )
 }
-
-/*
-  on page render, i want to get from the db just the housitters that meet the filter.
-
-  then, every handler for every filter button, will get all relevant housitters.
-  
-  but the db call, and the subsequent setState func for housittersToDisplay, will need no further filtering.
-
-  so the actual component Housitter just wants the properties to show on the card
-
-*/

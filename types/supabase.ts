@@ -198,6 +198,7 @@ export interface Database {
           birthday: string | null
           email: string | null
           first_name: string | null
+          gender: Database["public"]["Enums"]["gender"] | null
           id: string
           last_name: string | null
           primary_use: string | null
@@ -212,6 +213,7 @@ export interface Database {
           birthday?: string | null
           email?: string | null
           first_name?: string | null
+          gender?: Database["public"]["Enums"]["gender"] | null
           id: string
           last_name?: string | null
           primary_use?: string | null
@@ -226,6 +228,7 @@ export interface Database {
           birthday?: string | null
           email?: string | null
           first_name?: string | null
+          gender?: Database["public"]["Enums"]["gender"] | null
           id?: string
           last_name?: string | null
           primary_use?: string | null
@@ -281,7 +284,7 @@ export interface Database {
       }
     }
     Enums: {
-      [_ in never]: never
+      gender: "male" | "female" | "non-binary" | "prefer-not-to-say"
     }
     CompositeTypes: {
       availability: {

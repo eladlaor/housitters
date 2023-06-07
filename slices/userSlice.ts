@@ -1,6 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { USER_TYPE } from '../utils/constants'
+import { DbGenderTypes, USER_TYPE } from '../utils/constants'
+import { Database } from '../types/supabase'
+
+type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export const initialState = {
   isLogged: false,
@@ -10,6 +13,7 @@ export const initialState = {
   primaryUse: '',
   avatarUrl: '', // TODO: add some default image here
   birthday: new Date(0).toISOString(),
+  gender: DbGenderTypes.Unknown as Profiles['gender'],
   availability: [
     {
       startDate: new Date().toISOString(),
@@ -67,6 +71,12 @@ export const userSlice = createSlice({
         birthday: action.payload,
       }
     },
+    setGenderState(state = initialState, action) {
+      return {
+        ...state,
+        gender: action.payload,
+      }
+    },
     setAvailability(state = initialState, action) {
       return {
         ...state,
@@ -91,6 +101,7 @@ export const {
   setPrimaryUse,
   setAvatarUrl,
   setBirthday,
+  setGenderState,
   setAvailability,
   setUsersContactedState,
 } = userSlice.actions
@@ -102,6 +113,7 @@ export const selectUsernameState = (state: RootState) => state.user.username
 export const selectPrimaryUseState = (state: RootState) => state.user.primaryUse
 export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
 export const selectBirthdayState = (state: RootState) => state.user.birthday
+export const selectGenderState = (state: RootState) => state.user.gender
 export const selectAvailabilityState = (state: RootState) => state.user.availability
 export const selectUsersContactedState = (state: RootState) => state.user.usersContacted
 

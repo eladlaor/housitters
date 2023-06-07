@@ -99,6 +99,13 @@ export const LocationDescriptions = {
   [LocationIds.Eilat]: 'Eilat',
 }
 
+export const DbGenderTypes = {
+  Male: 'male',
+  Female: 'female',
+  NonBinary: 'non-binary',
+  Unknown: 'prefer-not-to-say',
+}
+
 /* api routes */
 
 export const API_ROUTES = {

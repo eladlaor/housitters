@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import AvailabilitySelector from '../components/AvailabilitySelector'
 
 import { Database } from '../types/supabase'
-import { LocationIds, USER_TYPE } from '../utils/constants'
+import { DbGenderTypes, LocationIds, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectAvatarUrlState,
@@ -23,13 +23,17 @@ import {
   setUsername,
   setBirthday,
   setAvailability,
+  selectGenderState,
+  setGenderState,
 } from '../slices/userSlice'
 import SignOut from './Buttons/SignOut'
 
 import LocationSelector from './LocationSelector'
 import { selectLocationsState } from '../slices/housitterSlice'
+import { Form } from 'react-bootstrap'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
+type Housitters = Database['public']['Tables']['housitters']['Row']
 
 export default function Account() {
   const router = useRouter()
@@ -47,8 +51,13 @@ export default function Account() {
   const birthday = useSelector(selectBirthdayState)
   const availability = useSelector(selectAvailabilityState)
   const locations = useSelector(selectLocationsState)
+  const gender = useSelector(selectGenderState)
 
   useEffect(() => {
+    if (!user) {
+      return
+    }
+
     getProfile()
   }, [user])
 
@@ -103,6 +112,7 @@ export default function Account() {
     primary_use,
     avatar_url,
     birthday,
+    gender,
     locations,
   }: {
     username: Profiles['username']
@@ -111,7 +121,8 @@ export default function Account() {
     primary_use: Profiles['primary_use']
     avatar_url: Profiles['avatar_url']
     birthday: Profiles['birthday']
-    locations: string[] // TODO: unify
+    gender: Profiles['gender']
+    locations: Housitters['locations']
   }) {
     try {
       setLoading(true)
@@ -126,6 +137,7 @@ export default function Account() {
         primary_use,
         avatar_url,
         birthday,
+        gender,
       }
 
       let { error } = await supabaseClient.from('profiles').upsert(profileUpdates)
@@ -198,8 +210,13 @@ export default function Account() {
     return type === typeToCompare
   }
 
+  // TODO: why and when
   if (!user) {
-    return <div>no user</div>
+    return
+  }
+
+  function handleGenderChange(e: any) {
+    dispatch(setGenderState(e.target.value as string))
   }
 
   return (
@@ -223,12 +240,12 @@ export default function Account() {
         bucketName={'avatars'}
         isAvatar={true}
         promptMessage={''}
-        email={user.email ? user.email : ''}
+        email={user!.email ? user!.email : ''}
       />
 
       <div>
         <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={user.email} disabled />
+        <input id="email" type="text" value={user!.email} disabled />
       </div>
       <div>
         <label htmlFor="username">Username</label>
@@ -311,6 +328,21 @@ export default function Account() {
       </div>
 
       <div>
+        <h2>Gender</h2>
+        <Form>
+          <Form.Select
+            value={gender ? gender : DbGenderTypes.Unknown}
+            onChange={handleGenderChange}
+          >
+            <option value={DbGenderTypes.Male}>Male</option>
+            <option value={DbGenderTypes.Female}>Female</option>
+            <option value={DbGenderTypes.NonBinary}>Non Binary</option>
+            <option value={DbGenderTypes.Unknown}>I Prefer not to say</option>
+          </Form.Select>
+        </Form>
+      </div>
+
+      <div>
         <button
           className="button primary block"
           onClick={() => {
@@ -321,6 +353,7 @@ export default function Account() {
               primary_use,
               avatar_url,
               birthday,
+              gender,
               locations,
             })
           }}

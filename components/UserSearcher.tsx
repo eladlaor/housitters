@@ -7,13 +7,15 @@ import { useEffect, useState } from 'react'
 
 import { Database } from '../types/supabase'
 import PublicProfile from './PublicProfile'
-import { USER_TYPE } from '../utils/constants'
+import { DbGenderTypes, USER_TYPE } from '../utils/constants'
 
 export default function UserSearcher() {
   const user = useUser()
   const supabaseClient = useSupabaseClient()
 
-  const noSelectedSearchedUser: Database['public']['Tables']['profiles']['Row'] = {
+  type Profiles = Database['public']['Tables']['profiles']['Row']
+
+  const noSelectedSearchedUser: Profiles = {
     about_me: '',
     avatar_url: '',
     birthday: '',
@@ -25,6 +27,7 @@ export default function UserSearcher() {
     social_media_url: '',
     updated_at: '',
     username: '',
+    gender: DbGenderTypes.Unknown as Profiles['gender'],
     visible: true,
   }
 
