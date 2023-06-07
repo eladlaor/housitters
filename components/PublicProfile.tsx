@@ -36,7 +36,9 @@ export default function PublicProfile(props: {
         promptMessage={''}
         email={email ? email : ''}
       />
-      {aboutMe}
+      <hr />
+      about me text: {aboutMe}. should see when and where the user puts it in.
+      <hr />
       <MessageSender
         recipientFirstName={firstName}
         recipientLastName={lastName}
@@ -45,6 +47,7 @@ export default function PublicProfile(props: {
         senderLastName={currentUserLastName}
         isChat={false}
       />
+      <hr />
       <RecommendationSender
         housitterId={userId}
         firstName={firstName}
