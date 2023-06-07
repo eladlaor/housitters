@@ -1,18 +1,33 @@
-import { Modal, Nav, NavDropdown, Navbar } from 'react-bootstrap'
-import { Typeahead, Hint } from 'react-bootstrap-typeahead'
+import { Modal } from 'react-bootstrap'
+import { Typeahead } from 'react-bootstrap-typeahead'
 
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 
 import { Database } from '../types/supabase'
+import PublicProfile from './PublicProfile'
 
 export default function UserSearcher() {
   const user = useUser()
   const supabaseClient = useSupabaseClient()
 
+  const noSelectedSearchedUser: Database['public']['Tables']['profiles']['Row'] = {
+    about_me: '',
+    avatar_url: '',
+    birthday: '',
+    email: '',
+    first_name: '',
+    id: 'no-user',
+    last_name: '',
+    primary_use: '',
+    social_media_url: '',
+    updated_at: '',
+    username: '',
+    visible: true,
+  }
+
   const [selectedSearchedUser, setSelectedSearchedUser] = useState(
-    {} as Database['public']['Tables']['profiles']['Row'] | null
+    noSelectedSearchedUser as Database['public']['Tables']['profiles']['Row']
   )
   const [showSelectedSearchedUserModal, setShowSelectedSearchedUserModal] = useState(false)
   const [allProfiles, setAllProfiles] = useState(
@@ -27,7 +42,7 @@ export default function UserSearcher() {
   }
 
   function handleCloseSelectedSearchedUserModal() {
-    setSelectedSearchedUser(null)
+    setSelectedSearchedUser(noSelectedSearchedUser)
     setShowSelectedSearchedUserModal(false)
   }
 
@@ -37,7 +52,12 @@ export default function UserSearcher() {
     }
 
     const loadProfiles = async () => {
-      const { error, data } = await supabaseClient.from('profiles').select('*').neq('id', user!.id)
+      const { error, data } = await supabaseClient
+        .from('profiles')
+        .select(
+          'id, first_name, last_name, primary_use, username, social_media_url, email, birthday, about_me, avatar_url'
+        )
+        .neq('id', user!.id)
 
       if (error) {
         alert(`failed loading profiles: ${error.message}`)
@@ -62,14 +82,22 @@ export default function UserSearcher() {
         placeholder="Search for a user by name"
         onChange={handleSelectedSearchedUser}
       ></Typeahead>
-      {showSelectedSearchedUserModal && (
+      {showSelectedSearchedUserModal && selectedSearchedUser.id !== 'no-user' && (
         <Modal show={showSelectedSearchedUserModal} onHide={handleCloseSelectedSearchedUserModal}>
           <Modal.Header closeButton>
             <Modal.Title>
-              This is {selectedSearchedUser!.first_name} {selectedSearchedUser!.last_name}
+              This is {selectedSearchedUser.first_name} {selectedSearchedUser.last_name}
             </Modal.Title>
           </Modal.Header>
-          <Modal.Body>according to user type, get from Profile component</Modal.Body>
+          <Modal.Body>
+            <PublicProfile
+              userId={selectedSearchedUser.id}
+              primaryUse={selectedSearchedUser.primary_use as string}
+              email={selectedSearchedUser.email}
+              aboutMe={selectedSearchedUser.about_me}
+              avatarUrl={selectedSearchedUser.avatar_url}
+            />
+          </Modal.Body>
         </Modal>
       )}
     </>

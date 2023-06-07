@@ -8,6 +8,7 @@ export const initialState = {
   duration: 0,
   sitIncluded: '',
   description: '',
+  showRecommendationFormModal: false,
 }
 
 export type recommendationState = typeof initialState
@@ -40,19 +41,30 @@ export const recommendationSlice = createSlice({
         description: action.payload,
       }
     },
+    setShowRecommendationFormModalState(state = initialState, action) {
+      return {
+        ...state,
+        showRecommendationFormModal: action.payload,
+      }
+    },
   },
 })
 
 // Action creators (recommendationsSlice.action) are generated (automatically) for each case reducer function
-export const { setStartMonthState } = recommendationSlice.actions
-export const { setDurationState } = recommendationSlice.actions
-export const { setDescriptionState } = recommendationSlice.actions
-export const { setSitIncludedState } = recommendationSlice.actions
+export const {
+  setStartMonthState,
+  setDurationState,
+  setDescriptionState,
+  setSitIncludedState,
+  setShowRecommendationFormModalState,
+} = recommendationSlice.actions
 
 export const selectStartMonthState = (state: RootState) => state.recommendation.startMonth
 export const selectDurationState = (state: RootState) => state.recommendation.duration
 export const selectSitIncludedState = (state: RootState) => state.recommendation.sitIncluded
 export const selectDescriptionState = (state: RootState) => state.recommendation.description
+export const selectShowRecommendationFormModalState = (state: RootState) =>
+  state.recommendation.showRecommendationFormModal
 
 export type SettersToInitialStates = {
   matchingSetter: any

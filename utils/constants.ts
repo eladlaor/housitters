@@ -59,8 +59,6 @@ export interface RecommendationFormProps {
   lastName: string
   recommendedUserType: string
   recommendedUserAvatarUrl: string
-  showRecModal: boolean
-  setShowRecModal: Function
 }
 
 export interface ClosedSit {

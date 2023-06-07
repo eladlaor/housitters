@@ -12,11 +12,12 @@ import {
   selectLastNameState,
   selectUsersContactedState,
 } from '../slices/userSlice'
+import { selectShowRecommendationFormModalState } from '../slices/recommendationSlice'
+
 import MessageSender from './MessageSender'
 
 // TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
 export default function AvailableHousitter(props: HousitterProps) {
-  const [showRecModal, setShowRecModal] = useState(false)
   const [showAllRecsModal, setShowAllRecsModal] = useState(false)
   const [recommendations, setRecommendations] = useState([] as any[]) // TODO: type it
 
@@ -54,8 +55,8 @@ export default function AvailableHousitter(props: HousitterProps) {
             recipientUserId={props.housitterId}
             senderFirstName={landlordFirstName}
             senderLastName={landlordLastName}
+            isChat={false}
           />
-
           {(() => {
             let foundSitter = usersContacted.find((user) => user.userId === props.housitterId)
             if (foundSitter) {
@@ -81,21 +82,13 @@ export default function AvailableHousitter(props: HousitterProps) {
 
           <Card.Text>{props.about_me}</Card.Text>
 
-          <Button variant="warning" onClick={() => setShowRecModal(true)}>
-            Recommend
-          </Button>
-
-          {showRecModal && (
-            <RecommendationForm
-              housitterId={props.housitterId}
-              firstName={props.firstName}
-              lastName={props.lastName}
-              recommendedUserType={USER_TYPE.Housitter}
-              recommendedUserAvatarUrl={props.avatarUrl as string}
-              showRecModal={showRecModal}
-              setShowRecModal={setShowRecModal}
-            />
-          )}
+          <RecommendationForm
+            housitterId={props.housitterId}
+            firstName={props.firstName}
+            lastName={props.lastName}
+            recommendedUserType={USER_TYPE.Housitter}
+            recommendedUserAvatarUrl={props.avatarUrl as string}
+          />
           <Button variant="info" onClick={() => setShowAllRecsModal(true)}>
             See recommendations
           </Button>

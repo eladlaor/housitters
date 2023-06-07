@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 
 import { userSlice } from './slices/userSlice'
 import userReducer from './slices/userSlice'

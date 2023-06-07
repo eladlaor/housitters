@@ -52,6 +52,7 @@ import { ImageData } from '../../types/clientSide'
 
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
 import { selectConversationsState, selectTotalUnreadMessagesState } from '../../slices/inboxSlice'
+import UserSearcher from '../../components/UserSearcher'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -491,6 +492,7 @@ export default function Home() {
             </NavDropdown>
             <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
             <Inbox />
+            <UserSearcher />
           </Nav>
         </Navbar.Collapse>
       </Navbar>
