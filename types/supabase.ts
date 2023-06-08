@@ -37,6 +37,14 @@ export interface Database {
           user_id?: string
           user_type?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "available_dates_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       closed_sits: {
         Row: {
@@ -63,6 +71,14 @@ export interface Database {
           landlord_id?: string
           start_date?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "closed_sits_housitter_id_fkey"
+            columns: ["housitter_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       housitters: {
         Row: {
@@ -92,6 +108,14 @@ export interface Database {
           updated_at?: string | null
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "housitters_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       landlords: {
         Row: {
@@ -109,6 +133,14 @@ export interface Database {
           location?: string | null
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "landlords_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       messages: {
         Row: {
@@ -138,6 +170,20 @@ export interface Database {
           message_content?: string | null
           sent_by?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "messages_housitter_id_fkey"
+            columns: ["housitter_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_landlord_id_fkey"
+            columns: ["landlord_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       pets: {
         Row: {
@@ -161,6 +207,14 @@ export interface Database {
           other?: string | null
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "pets_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       posts: {
         Row: {
@@ -190,6 +244,14 @@ export interface Database {
           landlord_id?: string
           title?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "posts_landlord_id_fkey"
+            columns: ["landlord_id"]
+            referencedRelation: "landlords"
+            referencedColumns: ["user_id"]
+          }
+        ]
       }
       profiles: {
         Row: {
@@ -237,41 +299,87 @@ export interface Database {
           username?: string | null
           visible?: boolean | null
         }
+        Relationships: []
       }
-      recommendations: {
+      reviews_on_housitters: {
         Row: {
           created_at: string | null
           description: string
           duration: number | null
           id: number
-          recommended_by: string
-          recommended_user_id: string | null
-          recommended_user_type: string
+          recommended_by_user_id: string
+          recommended_user_id: string
           sit_included: string
-          start_month: string | null
+          start_month: string
         }
         Insert: {
           created_at?: string | null
           description: string
           duration?: number | null
           id?: number
-          recommended_by: string
-          recommended_user_id?: string | null
-          recommended_user_type: string
+          recommended_by_user_id: string
+          recommended_user_id: string
           sit_included: string
-          start_month?: string | null
+          start_month: string
         }
         Update: {
           created_at?: string | null
           description?: string
           duration?: number | null
           id?: number
-          recommended_by?: string
-          recommended_user_id?: string | null
-          recommended_user_type?: string
+          recommended_by_user_id?: string
+          recommended_user_id?: string
           sit_included?: string
-          start_month?: string | null
+          start_month?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_on_housitters_recommended_by_user_id_fkey"
+            columns: ["recommended_by_user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      reviews_on_landlords: {
+        Row: {
+          created_at: string | null
+          description: string
+          duration: number | null
+          id: number
+          recommended_by_user_id: string
+          recommended_user_id: string
+          sit_included: string
+          start_month: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          duration?: number | null
+          id?: number
+          recommended_by_user_id: string
+          recommended_user_id: string
+          sit_included: string
+          start_month: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          duration?: number | null
+          id?: number
+          recommended_by_user_id?: string
+          recommended_user_id?: string
+          sit_included?: string
+          start_month?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_on_landlords_recommended_by_user_id_fkey"
+            columns: ["recommended_by_user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
@@ -284,7 +392,7 @@ export interface Database {
       }
     }
     Enums: {
-      gender: "male" | "female" | "non-binary" | "prefer-not-to-say"
+      gender: "male" | "female" | "non-binary" | "prefer-not-to-say" | "unknown"
     }
     CompositeTypes: {
       availability: {

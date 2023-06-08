@@ -4,6 +4,7 @@ import RecommendationSender from './RecommendationSender'
 import { selectShowRecommendationFormModalState } from '../slices/recommendationSlice'
 import MessageSender from './MessageSender'
 import { selectFirstNameState, selectLastNameState } from '../slices/userSlice'
+import ReviewsOnSelectedUser from './ReviewsOnSelectedUser'
 
 export default function PublicProfile(props: {
   userId: string
@@ -48,12 +49,17 @@ export default function PublicProfile(props: {
         isChat={false}
       />
       <hr />
+      <ReviewsOnSelectedUser
+        selectedUserId={userId}
+        selectedUserFirstName={firstName}
+        selectedUserLastName={lastName}
+        selectedUserType={primaryUse}
+      />
       <RecommendationSender
-        housitterId={userId}
-        firstName={firstName}
-        lastName={lastName}
-        recommendedUserType={primaryUse}
-        recommendedUserAvatarUrl={avatarUrl}
+        reviewedUserId={userId}
+        reviewedUserFirstName={firstName}
+        reviewedUserLastName={lastName}
+        reviewedUserType={primaryUse}
       />{' '}
     </div>
   )

@@ -166,11 +166,14 @@ export default function Home() {
         <h2>here are all the relevant posts for you</h2>
         <Row className="justify-content-center">
           {posts.length === 0 ? (
-            <p>
-              There are no available houses with your current filtering.
-              <br />
-              Try expanding your search to broader dates or locations. k?
-            </p>
+            <div>
+              <p>
+                There are no available houses with your current filtering.
+                <br />
+                Try expanding your search to broader dates or locations. k?
+              </p>
+              <h2>you should know: landlords can still find you and contact you directly </h2>
+            </div>
           ) : (
             posts.map((post: any, index: number) => (
               <Col key={index} md={4} className="mb-4">

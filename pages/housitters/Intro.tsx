@@ -106,8 +106,8 @@ export default function HousitterIntro() {
         .from('profiles')
         .upsert({ ...newProfile, updated_at: new Date() })
       if (profileUpsertError) {
-        alert(`error upserting profile: ${profileUpsertError}`)
-        throw profileUpsertError
+        alert(`error upserting profile: ${profileUpsertError.message}`)
+        router.push('/')
       }
 
       dispatch(setAvatarUrl(newProfile.avatar_url))
@@ -145,138 +145,141 @@ export default function HousitterIntro() {
   }
 
   return (
-    <Navbar bg="light" expand="lg">
-      <Container>
-        <Navbar.Brand href="#">Housitters</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <div>
-            <p className="headline">Let's find you a house!</p>
-            <div>
-              <h1>When?</h1>
-              {availability.map((period, index) => (
-                <AvailabilitySelector
-                  key={index}
-                  period={period}
-                  index={index}
-                  updateDbInstantly={false}
-                />
-              ))}
-            </div>
-            <div>
-              <h1>Where?</h1>
-              <LocationSelector
-                selectionType="checkbox"
-                isHousitter={true}
-                showCustomLocations={locations.length < Object.values(LocationIds).length}
-                updateDbInstantly={false}
-              />
-            </div>
-            <div>
-              <Button variant="primary" onClick={handleShow}>
-                Find me a house
-              </Button>
-              <Modal show={showModal} onHide={handleClose} contentClassName="my-modal">
-                <Modal.Header closeButton>
-                  <Modal.Title style={{ color: 'blue' }}>One more step</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Form>
-                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
-                      <Form.Label>First Name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder=""
-                        value={form.firstName}
-                        onChange={(e) => {
-                          setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
-                          dispatch(setFirstName(e.target.value))
-                        }}
-                      />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
-                      <Form.Label>Last Name</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder=""
-                        value={form.lastName}
-                        onChange={(e) => {
-                          setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
-                        }}
-                      />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control
-                        type="email"
-                        placeholder="Enter email"
-                        value={form.email}
-                        onChange={(e) => {
-                          setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
-                        }}
-                      />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
-                      <Form.Label>Password</Form.Label>
-                      <div className="password-input-wrapper">
-                        <Form.Control
-                          type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
-                          placeholder="Password"
-                          // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
-                          onChange={(e) => {
-                            setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
-                          }}
-                        />
-                        <Button
-                          variant="info"
-                          type="button"
-                          className="password-toggle-button"
-                          onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? 'Hide' : 'Show'}
-                        </Button>
-                        <hr />
-                      </div>
-                    </Form.Group>
-                    <Form.Group>
-                      <Form.Select
-                        value={form.gender}
-                        onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
-                      >
-                        <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>
-                        <option value={DbGenderTypes.Female}>{DbGenderTypes.Female}</option>
-                        <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
-                        <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
-                      </Form.Select>
-                    </Form.Group>
-                    <Form.Group>
-                      <Picture
-                        isIntro={true}
-                        uid=""
-                        primaryUse={USER_TYPE.Housitter}
-                        url={avatarUrl}
-                        size={100}
-                        width={100} // should persist dimensions of image upon upload
-                        height={100}
-                        disableUpload={false}
-                        bucketName="avatars"
-                        isAvatar={true}
-                        promptMessage="Choose a profile picture"
-                        email={form.email}
-                      />
-                    </Form.Group>
-
-                    <Button variant="primary" type="submit" onClick={handleSignUp}>
-                      Submit
+    <div>
+      <Navbar bg="light" expand="lg">
+        <Container>
+          <Navbar.Brand href="#">Housitters</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav"></Navbar.Collapse>
+        </Container>
+      </Navbar>
+      <div>
+        <p className="headline">Let's find you a house!</p>
+        <div>
+          <h1>When?</h1>
+          {availability.map((period, index) => (
+            <AvailabilitySelector
+              key={index}
+              period={period}
+              index={index}
+              updateDbInstantly={false}
+            />
+          ))}
+        </div>
+        <div>
+          <h1>Where?</h1>
+          <LocationSelector
+            selectionType="checkbox"
+            isHousitter={true}
+            showCustomLocations={locations.length < Object.values(LocationIds).length}
+            updateDbInstantly={false}
+          />
+        </div>
+        <div>
+          <Button variant="primary" onClick={handleShow}>
+            Find me a house
+          </Button>
+          <Modal show={showModal} onHide={handleClose} contentClassName="my-modal">
+            <Modal.Header closeButton>
+              <Modal.Title style={{ color: 'blue' }}>One more step</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
+                  <Form.Label>First Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder=""
+                    value={form.firstName}
+                    onChange={(e) => {
+                      setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
+                      dispatch(setFirstName(e.target.value))
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
+                  <Form.Label>Last Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder=""
+                    value={form.lastName}
+                    onChange={(e) => {
+                      setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    value={form.email}
+                    onChange={(e) => {
+                      setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
+                  <Form.Label>Password</Form.Label>
+                  <div className="password-input-wrapper">
+                    <Form.Control
+                      type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
+                      placeholder="Password"
+                      // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
+                      onChange={(e) => {
+                        setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
+                      }}
+                    />
+                    <Button
+                      variant="info"
+                      type="button"
+                      className="password-toggle-button"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? 'Hide' : 'Show'}
                     </Button>
-                  </Form>
-                </Modal.Body>
-              </Modal>
-            </div>
-          </div>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+                    <hr />
+                  </div>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Gender</Form.Label>
+                  <Form.Select
+                    value={DbGenderTypes.Unknown}
+                    onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
+                  >
+                    <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>
+                    <option value={DbGenderTypes.Female}>{DbGenderTypes.Female}</option>
+                    <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
+                    <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
+                  </Form.Select>
+                  <hr />
+                </Form.Group>
+                <Form.Group>
+                  <Picture
+                    isIntro={true}
+                    uid=""
+                    primaryUse={USER_TYPE.Housitter}
+                    url={avatarUrl}
+                    size={100}
+                    width={100} // should persist dimensions of image upon upload
+                    height={100}
+                    disableUpload={false}
+                    bucketName="avatars"
+                    isAvatar={true}
+                    promptMessage="Choose a profile picture"
+                    email={form.email}
+                  />
+                </Form.Group>
+
+                <Button variant="primary" type="submit" onClick={handleSignUp}>
+                  Submit
+                </Button>
+              </Form>
+            </Modal.Body>
+          </Modal>
+        </div>
+      </div>
+    </div>
   )
 }
 

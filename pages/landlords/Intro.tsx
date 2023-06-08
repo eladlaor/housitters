@@ -15,13 +15,15 @@ import { selectLocationState, selectPetsState } from '../../slices/landlordSlice
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import LocationSelector from '../../components/LocationSelector'
-import { USER_TYPE, SIGNUP_FORM_PROPS, SignupForm, DbGenderTypes } from '../../utils/constants'
+import { USER_TYPE, SIGNUP_FORM_PROPS, DbGenderTypes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Form from 'react-bootstrap/Form'
 import { useState } from 'react'
 import PetsCounter from '../../components/PetsCounter'
+
+import { SignupForm } from '../../types/clientSide'
 
 import Picture from '../../components/Picture'
 
@@ -36,7 +38,7 @@ export default function landlordIntro() {
     email: '',
     password: '',
     visible: true,
-    gender: '',
+    gender: DbGenderTypes.Unknown,
   }
 
   const [form, setForm] = useState(initialFormState)
@@ -122,8 +124,9 @@ export default function landlordIntro() {
         .from('profiles')
         .upsert({ ...newProfile, updated_at: new Date() })
       if (profileError) {
-        alert(`Error when upserting new landlord to \'profiles\' table: ${profileError}`)
-        throw profileError
+        alert(`Error when upserting new landlord to \'profiles\' table: ${profileError.message}`)
+        debugger
+        router.push('/')
       }
 
       const newlandlord = {
@@ -268,7 +271,7 @@ export default function landlordIntro() {
               </Form.Group>
               <Form.Group>
                 <Form.Select
-                  value={form.gender}
+                  value={DbGenderTypes.Unknown}
                   onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
                 >
                   <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>

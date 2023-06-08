@@ -1,26 +1,19 @@
-import { Button } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
 import { HousitterProps } from '../types/clientSide'
 import Picture from './Picture'
 import { USER_TYPE } from '../utils/constants'
-import { useState } from 'react'
-import RecommendationSender from './RecommendationSender'
-import Recommendations from './Recommendations'
+import ReviewsOnSelectedUser from './ReviewsOnSelectedUser'
 import { useSelector } from 'react-redux'
 import {
   selectFirstNameState,
   selectLastNameState,
   selectUsersContactedState,
 } from '../slices/userSlice'
-import { selectShowRecommendationFormModalState } from '../slices/recommendationSlice'
 
 import MessageSender from './MessageSender'
 
 // TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
 export default function AvailableHousitter(props: HousitterProps) {
-  const [showAllRecsModal, setShowAllRecsModal] = useState(false)
-  const [recommendations, setRecommendations] = useState([] as any[]) // TODO: type it
-
   const landlordFirstName = useSelector(selectFirstNameState)
   const landlordLastName = useSelector(selectLastNameState)
 
@@ -82,27 +75,12 @@ export default function AvailableHousitter(props: HousitterProps) {
 
           <Card.Text>{props.about_me}</Card.Text>
 
-          <RecommendationSender
-            housitterId={props.housitterId}
-            firstName={props.firstName}
-            lastName={props.lastName}
-            recommendedUserType={USER_TYPE.Housitter}
-            recommendedUserAvatarUrl={props.avatarUrl as string}
+          <ReviewsOnSelectedUser
+            selectedUserId={props.housitterId}
+            selectedUserFirstName={props.firstName}
+            selectedUserLastName={props.lastName}
+            selectedUserType={USER_TYPE.Housitter}
           />
-          <Button variant="info" onClick={() => setShowAllRecsModal(true)}>
-            See recommendations
-          </Button>
-          {showAllRecsModal && (
-            <Recommendations
-              firstName={props.firstName}
-              lastName={props.lastName}
-              housitterId={props.housitterId}
-              showAllRecsModal={showAllRecsModal}
-              setShowAllRecsModal={setShowAllRecsModal}
-              recommendations={recommendations}
-              setRecommendations={setRecommendations}
-            />
-          )}
         </Card.Body>
       </Card>
     </div>

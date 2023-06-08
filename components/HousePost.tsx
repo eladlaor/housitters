@@ -12,15 +12,17 @@ import { countDays } from '../utils/dates'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectFirstNameState,
+  selectIsLoggedState,
   selectLastNameState,
   selectPrimaryUseState,
 } from '../slices/userSlice'
-import { USER_TYPE, ClosedSit } from '../utils/constants'
+import { USER_TYPE } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import Picture from './Picture'
 import { selectClosedSitsState, setClosedSitsState } from '../slices/landlordSlice'
 import MessageSender from './MessageSender'
-import { HousePostProps } from '../utils/constants'
+import { HousePostProps, ClosedSit } from '../types/clientSide'
+import ReviewsOnSelectedUser from './ReviewsOnSelectedUser'
 
 // can maybe type as HousePostInput
 export default function HousePost({
@@ -48,6 +50,8 @@ export default function HousePost({
   let userLastName: string = useSelector(selectLastNameState)
 
   const closedSits = useSelector(selectClosedSitsState)
+
+  const isLogged = useSelector(selectIsLoggedState)
 
   function handleModalOpen() {
     setShowModal(true)
@@ -136,6 +140,10 @@ export default function HousePost({
     imagesUrls: ImageData[]
   ) {
     try {
+      if (!isLogged) {
+        return
+      }
+
       const downloadPromises = imagesUrls.map(async (imageUrl: ImageData) => {
         const { data: downloadData, error: downloadError } = await supabaseClient.storage
           .from('posts')
@@ -155,7 +163,7 @@ export default function HousePost({
       const fullUrlsForPreview = await Promise.all(downloadPromises)
       setPostPicturesFullUrl(fullUrlsForPreview as ImageData[])
     } catch (error) {
-      alert('error in downloadPostImagesAndSetPostPicturesPreview' + error)
+      alert('error in downloadPostImagesAndSetPostPicturesPreview: ' + error)
       debugger
     }
   }
@@ -330,6 +338,12 @@ export default function HousePost({
                 width={100}
                 height={100}
                 bucketName="avatars"
+              />
+              <ReviewsOnSelectedUser
+                selectedUserId={landlordId}
+                selectedUserFirstName={landlordFirstName}
+                selectedUserLastName={landlordLastName}
+                selectedUserType={USER_TYPE.Landlord}
               />
               <MessageSender
                 recipientFirstName={landlordFirstName}

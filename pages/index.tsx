@@ -92,6 +92,9 @@ const Home: NextPage = () => {
           already registered? sign in
         </button>
       </div>
+      <div>
+        <h1>Contact us</h1>
+      </div>
     </div>
   )
 }

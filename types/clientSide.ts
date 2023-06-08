@@ -1,3 +1,5 @@
+import { SIGNUP_FORM_PROPS } from '../utils/constants'
+
 export type HousitterProps = {
   housitterId: string
   firstName: string
@@ -14,4 +16,74 @@ export type HousitterProps = {
 export type ImageData = {
   url: string
   id: number
+}
+
+/* Selected User Recommendations */
+export type SelectedUserReview = {
+  reviewerFirstName: string
+  reviewerLastName: string
+  reviewerUserId: string
+  reviewerAvatarUrl: string
+  description: string
+  startMonth: string
+  duration: number
+  sitIncluded: string
+  selectedUserFirstName: string
+  selectedUserLastName: string
+}
+
+export type ReviewsOnSelectedUserProps = {
+  selectedUserId: string
+  selectedUserFirstName: string
+  selectedUserLastName: string
+  selectedUserType: string
+}
+
+/* COMPONENT PROPS */
+export interface HousePostProps {
+  landlordId: string
+  title: string
+  description: string
+  location: string
+  availability: { startDate: string; endDate: string }[]
+  dogs: number
+  cats: number
+  imagesUrls: ImageData[]
+}
+
+export interface MessageSenderProps {
+  recipientFirstName: string
+  recipientLastName: string
+  recipientUserId: string
+  senderFirstName: string
+  senderLastName: string
+  isChat: boolean
+}
+
+export type SignupFormProps = typeof SIGNUP_FORM_PROPS
+
+export interface SignupForm {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  visible: boolean
+  gender: string
+}
+
+/* Component Props / interfaces */
+
+export interface RecommendationFormProps {
+  reviewedUserId: string
+  reviewedUserFirstName: string
+  reviewedUserLastName: string
+  reviewedUserType: string
+}
+
+export interface ClosedSit {
+  housitterId: string
+  housitterFirstName: string
+  housitterLastName: string
+  housitterAvatarUrl: string
+  startDate: string
 }

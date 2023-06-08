@@ -1,5 +1,4 @@
 //TODO: rename all to be PascalCase
-import { ImageData } from '../types/clientSide'
 
 export const USER_TYPE = {
   Landlord: 'landlord',
@@ -27,48 +26,6 @@ export const SIGNUP_FORM_PROPS = {
   PASSWORD: 'password',
   VISIBLE: 'visible',
   GENDER: 'gender',
-}
-
-export type SignupFormProps = typeof SIGNUP_FORM_PROPS
-
-export interface SignupForm {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-  visible: boolean
-  gender: string
-}
-
-export interface RecommendationProps {
-  housitterId: string
-  firstName: string
-  lastName: string
-  sitDuration: number
-  startMonth: Date
-  recommended_user_type: string
-  recommended_by: string
-  description: string
-  showAllRecsModal: boolean
-  setShowAllRecsModal: Function
-}
-
-/* Component Props / interfaces */
-
-export interface RecommendationFormProps {
-  housitterId: string
-  firstName: string
-  lastName: string
-  recommendedUserType: string
-  recommendedUserAvatarUrl: string
-}
-
-export interface ClosedSit {
-  housitterId: string
-  housitterFirstName: string
-  housitterLastName: string
-  housitterAvatarUrl: string
-  startDate: string
 }
 
 /* Location Selector */
@@ -105,7 +62,7 @@ export const DbGenderTypes = {
   Male: 'male',
   Female: 'female',
   NonBinary: 'non-binary',
-  Unknown: 'prefer-not-to-say',
+  Unknown: 'unknown',
 }
 
 /* api routes */
@@ -114,23 +71,9 @@ export const API_ROUTES = {
   SEND_EMAILS: '/api/send-emails',
 }
 
-/* COMPONENT PROPS */
-export interface HousePostProps {
-  landlordId: string
-  title: string
-  description: string
-  location: string
-  availability: { startDate: string; endDate: string }[]
-  dogs: number
-  cats: number
-  imagesUrls: ImageData[]
-}
+/* */
 
-export interface MessageSenderProps {
-  recipientFirstName: string
-  recipientLastName: string
-  recipientUserId: string
-  senderFirstName: string
-  senderLastName: string
-  isChat: boolean
+export const TableNames = {
+  ReviewsOnHousitters: 'reviews_on_housitters',
+  ReviewsOnLandlords: 'reviews_on_landlords',
 }

@@ -25,11 +25,11 @@ export default function SignOut() {
   const userType = useSelector(selectPrimaryUseState)
 
   const clearState = async (settersToInitialState: SettersToInitialStates) => {
-    settersToInitialState.forEach((attributeSetterAndInitialState) => {
+    for (const attributeSetterAndInitialState of settersToInitialState) {
       dispatch(
         attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
       )
-    })
+    }
   }
 
   return (

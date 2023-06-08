@@ -187,15 +187,6 @@ export default function Picture({
         // conveting to the url format needed to display the preview image
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
 
-        // perparing the updated previewUrls array, with the updated element, adding an index which would be used at deletion
-        // the index is set this way in order to prevent mismatches between fileName id and previewId, which may be caused for example when having 3 images, and deleting the second one.
-
-        // TODO: this should be an array just when its not avatar, which is single picture
-        // const updatedPreviews = [
-        //   ...previewDataUrls,
-        //   { url: previewDataUrl, id: previewDataUrls.length },
-        // ]
-
         const updatedPreviews = [{ url: previewDataUrl, id: 0 }]
 
         setPreviewDataUrls(updatedPreviews)
@@ -224,9 +215,15 @@ export default function Picture({
       (imageData: ImageData) => imageData.id != previewData.id
     )
 
-    const fileNameToRemove = (
-      fileNames.find((fileData) => fileData.id === previewData.id) as ImageData
-    ).url
+    const fileNameToRemove = fileNames
+      ? (fileNames.find((fileData) => fileData.id === previewData.id) as ImageData).url
+      : ''
+
+    if (!fileNameToRemove) {
+      alert(`no file to remove`)
+      debugger
+      return
+    }
 
     // remove from storage
     let { error: fileRemovalError } = await supabaseClient.storage
