@@ -55,6 +55,7 @@ import { ImageData } from '../../types/clientSide'
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
 import { selectConversationsState, selectTotalUnreadMessagesState } from '../../slices/inboxSlice'
 import UserSearcher from '../../components/UserSearcher'
+import Sorter from '../../components/Sorter'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -190,6 +191,7 @@ export default function Home() {
           )
         }
 
+        // TODO: type this shit
         let availableHousitters: {
           firstName: string
           lastName: string
@@ -444,6 +446,17 @@ export default function Home() {
 
     alert(`successfuly closed sit`)
     setShowFoundSitterModal(false)
+  }
+
+  function sortElements(sortByProperty: string) {
+    let sortedHousitters: any[] = [...housitters]
+
+    if (typeof sortedHousitters[0][sortByProperty] === 'string') {
+      sortedHousitters.sort((a, b) => a.firstName.localeCompare(b.firstName))
+      setHousitters(sortedHousitters)
+    } else {
+      console.log('sorting by number')
+    }
   }
 
   async function handleBindSitterWithPeriod(e: any) {
@@ -720,7 +733,7 @@ export default function Home() {
               </Form>
             </Modal.Body>
           </Modal>
-          <div className="sitters-and-filter">
+          <div>
             <div id="available-housitters" className="available-housitters">
               {isAfterSignup ? (
                 ''
@@ -731,22 +744,28 @@ export default function Home() {
               ) : (
                 <></>
               )}
-
-              {housitters.map(
-                (
-                  sitter: any,
-                  index: number // TODO: type 'sitter' with a new type of Db housitterdata
-                ) => (
-                  <AvailableHousitter
-                    housitterId={sitter.housitterId}
-                    firstName={sitter.firstName}
-                    lastName={sitter.lastName}
-                    about_me="hard coded about_me text"
-                    avatarUrl={sitter.avatarUrl}
-                    key={index}
-                  />
-                )
-              )}
+            </div>
+            {housitters.length > 0 && (
+              <Sorter sortingProperties={['firstName', 'lastName']} sortElements={sortElements} />
+            )}
+            <div></div>
+            <div>
+              {housitters.length > 0 &&
+                housitters.map(
+                  (
+                    sitter: any,
+                    index: number // TODO: type 'sitter' with a new type of Db housitterdata
+                  ) => (
+                    <AvailableHousitter
+                      housitterId={sitter.housitterId}
+                      firstName={sitter.firstName}
+                      lastName={sitter.lastName}
+                      about_me="hard coded about_me text"
+                      avatarUrl={sitter.avatarUrl}
+                      key={index}
+                    />
+                  )
+                )}
             </div>
             <div className="sidebar-filter">
               <SidebarFilter isHousitter={false} showCustomLocations={true} selectionType="radio" />
