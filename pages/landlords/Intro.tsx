@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router'
 
-// TODO: i think change so you ask only where (one location), and what pets.
-// availability will be set later.
+// TODO: i think change so you ask only where (one location), and what pets. // debugger
 
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import {
@@ -10,14 +9,13 @@ import {
   setIsLoggedState,
   selectPrimaryUseState,
   setAvailability,
-  setAvatarUrl,
   selectAvatarUrlState,
 } from '../../slices/userSlice'
 import { selectLocationState, selectPetsState } from '../../slices/landlordSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import LocationSelector from '../../components/LocationSelector'
-import { USER_TYPE, SIGNUP_FORM_PROPS, SignupFormProps, SignupForm } from '../../utils/constants'
+import { USER_TYPE, SIGNUP_FORM_PROPS, SignupForm, DbGenderTypes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
@@ -32,13 +30,16 @@ export default function landlordIntro() {
   const dispatch = useDispatch()
   const supabaseClient = useSupabaseClient()
 
-  const [form, setForm] = useState({
+  const initialFormState: SignupForm = {
     firstName: '',
     lastName: '',
     email: '',
     password: '',
     visible: true,
-  } as SignupForm)
+    gender: '',
+  }
+
+  const [form, setForm] = useState(initialFormState)
 
   const avatarUrl = useSelector(selectAvatarUrlState)
 
@@ -59,9 +60,11 @@ export default function landlordIntro() {
   const handleShow = () => setShowModal(true)
 
   function setFormField(field: string, value: any) {
-    setForm({
-      ...form,
-      [field]: value,
+    setForm((previousState) => {
+      return {
+        ...previousState,
+        [field]: value,
+      }
     })
   }
 
@@ -112,6 +115,7 @@ export default function landlordIntro() {
         avatar_url: avatarUrl,
         visible: form.visible,
         email: form.email,
+        gender: form.gender,
       }
 
       let { error: profileError } = await supabaseClient
@@ -169,69 +173,6 @@ export default function landlordIntro() {
     alert(`Successfully created new landlord: ${form.firstName} ${form.lastName}`)
     router.push({ pathname: 'Home', query: homeProps })
   }
-
-  // // TODO: duplicated: I have Picture component, and onPostImageSelection in landlords home, and landlord intro
-  // async function handleAvatarUpload(event: any) {
-  //   try {
-  //     // set uploading image
-
-  //     if (!event.target.files || event.target.files.length === 0) {
-  //       throw new Error('You must select an image to upload.')
-  //     }
-
-  //     for (const file of event.target.files) {
-  //       const fileName = removeInvalidCharacters(`${form[SIGNUP_FORM_PROPS.EMAIL]}-${file.name}`)
-
-  //       // NOTICE: with this size, image is between 5 to 10 MB.
-  //       // if the supabse bucket is set to limit the size to less than 10MB,
-  //       // it might cause a Network Error when trying to upload the file.
-  //       const resizedImage = await resizeImage(file, 1920, 1080)
-
-  //       console.log('uploading to avatars')
-  //       let { error: uploadError } = await supabaseClient.storage
-  //         .from('avatars')
-  //         .upload(fileName, resizedImage, { upsert: true })
-  //       // TODO: not the best naming method, i should change it
-
-  //       if (uploadError) {
-  //         debugger
-  //         alert(`error in housitters/Intro trying to upload an avatar to avatars ` + uploadError)
-  //         throw uploadError
-  //       }
-
-  //       console.log('SUCCESSFULLY uploaded to avatars')
-  //       const buffer = await blobToBuffer(resizedImage)
-  //       const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
-  //       const updatedPreviews = [
-  //         ...previewDataUrls,
-  //         { url: previewDataUrl, id: previewDataUrls.length },
-  //       ]
-  //       console.log('updating these updatedPreviews: ' + JSON.stringify(updatedPreviews))
-  //       setPreviewDataUrls(updatedPreviews)
-  //       const updatedFileNames = [...fileNames, { url: fileName, id: fileNames.length }]
-
-  //       setFileNames(updatedFileNames)
-  //     }
-  //   } catch (e: any) {
-  //     debugger
-  //     alert(e)
-  //   }
-  // }
-
-  // // TODO: duplicated
-  // async function handleDeleteImage(previewData: ImageData, e: any) {
-  //   e.preventDefault()
-  //   let copyOfImagesUrls = [...previewDataUrls]
-  //   copyOfImagesUrls = copyOfImagesUrls.filter((img: ImageData) => img.url !== previewData.url)
-
-  //   let copyOfFileNames = [...fileNames]
-  //   copyOfFileNames = copyOfFileNames.filter(
-  //     (imageData: ImageData) => imageData.id != previewData.id
-  //   )
-
-  //   setPreviewDataUrls(copyOfImagesUrls)
-  //   setFileNames(copyOfFileNames)
-  // }
 
   return (
     <div className="position-absolute top-50 start-50 translate-middle">
@@ -324,6 +265,17 @@ export default function landlordIntro() {
               <Form.Group>
                 <Form.Label>Pets</Form.Label>
                 <PetsCounter />
+              </Form.Group>
+              <Form.Group>
+                <Form.Select
+                  value={form.gender}
+                  onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
+                >
+                  <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>
+                  <option value={DbGenderTypes.Female}>{DbGenderTypes.Female}</option>
+                  <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
+                  <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
+                </Form.Select>
               </Form.Group>
               <Form.Group>
                 <Picture

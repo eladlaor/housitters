@@ -16,7 +16,13 @@ import { selectLocationsState } from '../../slices/housitterSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import LocationSelector from '../../components/LocationSelector'
-import { USER_TYPE, SIGNUP_FORM_PROPS, LocationIds } from '../../utils/constants'
+import {
+  USER_TYPE,
+  SIGNUP_FORM_PROPS,
+  LocationIds,
+  DbGenderTypes,
+  SignupForm,
+} from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
@@ -32,13 +38,16 @@ export default function HousitterIntro() {
   const dispatch = useDispatch()
   const supabaseClient = useSupabaseClient()
 
-  const [form, setForm] = useState({
-    [SIGNUP_FORM_PROPS.FIRST_NAME]: '',
-    [SIGNUP_FORM_PROPS.LAST_NAME]: '',
-    [SIGNUP_FORM_PROPS.EMAIL]: '',
-    [SIGNUP_FORM_PROPS.PASSWORD]: '',
-    [SIGNUP_FORM_PROPS.VISIBLE]: true,
-  } as any) // TODO: type it (try better than string | boolean which is not good)
+  const initialFormState: SignupForm = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    visible: true,
+    gender: '',
+  }
+
+  const [form, setForm] = useState(initialFormState)
 
   const availability = useSelector(selectAvailabilityState)
   const primaryUse = useSelector(selectPrimaryUseState)
@@ -54,16 +63,11 @@ export default function HousitterIntro() {
   const handleShow = () => setShowModal(true)
 
   function setFormField(field: any, value: any) {
-    setForm({
-      ...form,
-      [field]: value,
-    })
-  }
-
-  function setProfileVisibility() {
-    setForm({
-      ...form,
-      visible: !form.visible,
+    setForm((previousState) => {
+      return {
+        ...previousState,
+        [field]: value,
+      }
     })
   }
 
@@ -72,8 +76,8 @@ export default function HousitterIntro() {
     setShowModal(false)
 
     let { data, error } = await supabaseClient.auth.signUp({
-      email: form[SIGNUP_FORM_PROPS.EMAIL],
-      password: form[SIGNUP_FORM_PROPS.PASSWORD],
+      email: form.email,
+      password: form.password,
     })
 
     if (error) {
@@ -88,13 +92,14 @@ export default function HousitterIntro() {
       // TODO: should update the above to do it without stored procedure, all here
       const newProfile = {
         id: userId,
-        first_name: form[SIGNUP_FORM_PROPS.FIRST_NAME],
-        last_name: form[SIGNUP_FORM_PROPS.LAST_NAME],
+        first_name: form.firstName,
+        last_name: form.lastName,
         username: form.email.substring(0, form.email.indexOf('@')),
-        visible: form[SIGNUP_FORM_PROPS.VISIBLE],
+        visible: form.visible,
         primary_use: primaryUse,
         avatar_url: avatarUrl,
-        email: form[SIGNUP_FORM_PROPS.EMAIL],
+        email: form.email,
+        gender: form.gender,
       }
 
       let { error: profileUpsertError } = await supabaseClient
@@ -182,7 +187,7 @@ export default function HousitterIntro() {
                       <Form.Control
                         type="text"
                         placeholder=""
-                        value={form[SIGNUP_FORM_PROPS.FIRST_NAME]}
+                        value={form.firstName}
                         onChange={(e) => {
                           setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
                           dispatch(setFirstName(e.target.value))
@@ -194,7 +199,7 @@ export default function HousitterIntro() {
                       <Form.Control
                         type="text"
                         placeholder=""
-                        value={form[SIGNUP_FORM_PROPS.LAST_NAME]}
+                        value={form.lastName}
                         onChange={(e) => {
                           setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
                         }}
@@ -205,7 +210,7 @@ export default function HousitterIntro() {
                       <Form.Control
                         type="email"
                         placeholder="Enter email"
-                        value={form[SIGNUP_FORM_PROPS.EMAIL]}
+                        value={form.email}
                         onChange={(e) => {
                           setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
                         }}
@@ -234,6 +239,17 @@ export default function HousitterIntro() {
                       </div>
                     </Form.Group>
                     <Form.Group>
+                      <Form.Select
+                        value={form.gender}
+                        onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
+                      >
+                        <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>
+                        <option value={DbGenderTypes.Female}>{DbGenderTypes.Female}</option>
+                        <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
+                        <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group>
                       <Picture
                         isIntro={true}
                         uid=""
@@ -246,7 +262,7 @@ export default function HousitterIntro() {
                         bucketName="avatars"
                         isAvatar={true}
                         promptMessage="Choose a profile picture"
-                        email={form[SIGNUP_FORM_PROPS.EMAIL]}
+                        email={form.email}
                       />
                     </Form.Group>
 

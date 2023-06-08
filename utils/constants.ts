@@ -26,6 +26,7 @@ export const SIGNUP_FORM_PROPS = {
   EMAIL: 'email',
   PASSWORD: 'password',
   VISIBLE: 'visible',
+  GENDER: 'gender',
 }
 
 export type SignupFormProps = typeof SIGNUP_FORM_PROPS
@@ -36,6 +37,7 @@ export interface SignupForm {
   email: string
   password: string
   visible: boolean
+  gender: string
 }
 
 export interface RecommendationProps {
