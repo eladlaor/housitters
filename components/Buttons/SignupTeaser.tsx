@@ -27,17 +27,15 @@ export default function SignupTeaser({ userType }: { userType: string }) {
   }
 
   return (
-    <div className="front-page-buttons">
-      <div className="relative-position">
-        <button
-          type="button"
-          className="btn btn-primary btn-lg "
-          style={{ textDecoration: 'bold' }}
-          onClick={handleUserTypeSelection}
-        >
-          <Link href={{ pathname: route, query: { userType } }}>{message}</Link>
-        </button>
-      </div>
+    <div className="front-page-buttons relative-position">
+      <button
+        type="button"
+        className="btn btn-primary btn-lg"
+        style={{ textDecoration: 'bold' }}
+        onClick={handleUserTypeSelection}
+      >
+        <Link href={{ pathname: route, query: { userType } }}>{message}</Link>
+      </button>
     </div>
   )
 }

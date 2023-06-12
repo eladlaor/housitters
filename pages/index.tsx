@@ -79,7 +79,10 @@ export default function Home() {
   return (
     <div>
       <IntroNavbar navbarItems={NavbarItems} />
-      <Row style={{ position: 'relative', height: '100vh' }}>
+      <Row
+        className="d-flex align-items-center justify-content-center"
+        style={{ position: 'relative', height: '100vh' }}
+      >
         <div className="front-page-buttons">
           <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
           <div
@@ -91,6 +94,7 @@ export default function Home() {
           </div>
           <SignupTeaser userType={USER_TYPE.Landlord} />
           <Button
+            variant="lg"
             className="signin-button"
             onClick={() => {
               router.push('/Login')
@@ -100,12 +104,16 @@ export default function Home() {
           </Button>
         </div>
       </Row>
+      <Row
+        className="d-flex justify-content-center"
+        style={{ position: 'relative', height: 'auto' }}
+      ></Row>
 
       <Row style={{ height: '20vh' }}>
-        <h1>Contact us</h1>
+        <h1>Houses</h1>
       </Row>
       <Row style={{ height: '20vh' }}>
-        <h1>some examples</h1>
+        <h1>Sitters</h1>
       </Row>
     </div>
   )

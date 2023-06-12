@@ -9,7 +9,7 @@ export default function IntroNavbar({ navbarItems }: { navbarItems: NavbarItem[]
 
   return (
     <Navbar bg="dark" variant="dark" sticky="top">
-      <Navbar.Brand href="#">Housitters.com</Navbar.Brand>
+      <Navbar.Brand href="/">Housitters.com</Navbar.Brand>
       <Navbar.Collapse>
         <Nav className="mr-auto">
           <>
