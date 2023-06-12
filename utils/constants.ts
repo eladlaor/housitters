@@ -79,3 +79,10 @@ export const TableNames = {
   ReviewsOnHousitters: 'reviews_on_housitters',
   ReviewsOnLandlords: 'reviews_on_landlords',
 }
+
+export const NavbarItems = [
+  { href: 'about-housitting', text: 'About Housitting' },
+  { href: 'about-us', text: 'About Us' },
+  { href: 'faq', text: 'FAQ' },
+  { href: 'contact-us', text: 'Contact Us' },
+]

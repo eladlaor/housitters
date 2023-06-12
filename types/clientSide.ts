@@ -86,3 +86,8 @@ export interface ClosedSit {
   housitterAvatarUrl: string
   startDate: string
 }
+
+export interface NavbarItem {
+  href: string
+  text: string
+}
