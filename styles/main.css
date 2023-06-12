@@ -81,6 +81,8 @@ a {
 
 .sidebar-filter {
   flex: 1;
+  position: sticky;
+  top: 0
 }
 
 .headline {

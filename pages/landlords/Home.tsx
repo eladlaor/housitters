@@ -40,7 +40,15 @@ import Inbox from '../../components/Inbox'
 import SignOut from '../../components/Buttons/SignOut'
 import PetsCounter from '../../components/PetsCounter'
 
-import { Dropdown, DropdownButton, FormControl, ListGroup, ListGroupItem } from 'react-bootstrap'
+import {
+  Col,
+  Dropdown,
+  DropdownButton,
+  FormControl,
+  ListGroup,
+  ListGroupItem,
+  Row,
+} from 'react-bootstrap'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
 import Image from 'next/image'
@@ -492,7 +500,9 @@ export default function Home() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
             <NavDropdown title="My Profile" id="basic-nav-dropdown">
-              <NavDropdown.Item href={PageRoutes.LandlordRoutes.Account}>Edit Profile</NavDropdown.Item>
+              <NavDropdown.Item href={PageRoutes.LandlordRoutes.Account}>
+                Edit Profile
+              </NavDropdown.Item>
               <SignOut />
             </NavDropdown>
             <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
@@ -503,275 +513,286 @@ export default function Home() {
       </Navbar>
 
       <div className="container">
-        <div>
-          <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
-          {user && (
-            <Picture
-              isIntro={false}
-              uid={user.id}
-              url={avatarUrl}
-              email={user.email as string}
-              primaryUse={USER_TYPE.Landlord}
-              size={100}
-              width={100} // should persist dimensions of image upon upload
-              height={100}
-              disableUpload={true}
-              bucketName="avatars"
-              isAvatar={true}
-              promptMessage=""
-            />
-          )}
-        </div>
-        {isActivePost ? (
-          <div>
-            <Accordion defaultActiveKey="0">
-              <Accordion.Item eventKey="0">
-                <Accordion.Header>My Active Post</Accordion.Header>
-                <Accordion.Body>
-                  <HousePost
-                    landlordId={user ? user.id : ''}
-                    title={title}
-                    description={description}
-                    location={location}
-                    availability={availability}
-                    dogs={pets.dogs}
-                    cats={pets.cats}
-                    imagesUrls={fileNames} // TODO: should have default image
-                  />
-                  <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
-                    Delete post
-                  </Button>
-                  {availability.length > closedSits.length && (
-                    <Button variant="success" onClick={handleFoundSitter}>
-                      I found a sitter
-                    </Button>
-                  )}
-
-                  <Modal show={showFoundSitterModal} onHide={() => setShowFoundSitterModal(false)}>
-                    <Modal.Header>
-                      <Modal.Title>Select the sitter you found</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      <div>
-                        <Form>
-                          {housitters.map((sitter: any, index: number) => {
-                            const isThisTheSelectedHousitter =
-                              sitter.housitterId === selectedHousitterId
-
-                            return (
-                              <div key={index}>
-                                <Form.Group>
-                                  <Form.Check
-                                    type="radio"
-                                    key={index}
-                                    onChange={handleSelectedFoundSitter}
-                                    value={sitter.housitterId}
-                                    label={`${sitter.firstName} ${sitter.lastName}`}
-                                    name="singleSitterChoice"
-                                    checked={isThisTheSelectedHousitter}
-                                  />
-                                  {isThereAnySelectedSitter && isThisTheSelectedHousitter && (
-                                    <ListGroup>
-                                      <ListGroup.Item>
-                                        {availability.map((period, index) => {
-                                          const startDateAsString = period.startDate.toString()
-                                          if (
-                                            !closedSits.find(
-                                              (closedSit) =>
-                                                closedSit.startDate === startDateAsString
-                                            )
-                                          ) {
-                                            return (
-                                              <Form.Check
-                                                type="checkbox"
-                                                key={index}
-                                                label={`${startDateAsString} until ${period.endDate.toString()}`}
-                                                name={startDateAsString}
-                                                value={startDateAsString}
-                                                onChange={handleBindSitterWithPeriod}
-                                                checked={preConfirmedSelectionOfClosedSitsPerSitter.startDates.includes(
-                                                  startDateAsString
-                                                )}
-                                              />
-                                            )
-                                          }
-                                        })}
-                                      </ListGroup.Item>
-                                    </ListGroup>
-                                  )}
-                                </Form.Group>
-                              </div>
-                            )
-                          })}
-                          <hr />
-                          <Button variant="primary" onClick={handleConfirmSitterSelection}>
-                            Confirm
-                          </Button>
-                          <Button
-                            type="submit"
-                            variant="warning"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setShowFoundSitterModal(false)
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        </Form>
-                      </div>
-                    </Modal.Body>
-                  </Modal>
-                  <Button onClick={handleShowNewPostModal}>Edit Post</Button>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-          </div>
-        ) : (
-          <div>
-            <Button
-              style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
-              variant="primary"
-              onClick={handleShowNewPostModal}
-            >
-              {isAfterSignup ? 'Complete your post' : 'Create new post'}
-            </Button>
-            <br />
-            <br />
-          </div>
-        )}
-
-        <div>
-          <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
-            <Modal.Header>
-              <Modal.Title style={{ color: 'blue' }}>lets create new post</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form>
-                <Form.Group>
-                  <Form.Label>availability</Form.Label>
-
-                  {availability.map((period, index) => (
-                    <AvailabilitySelector
-                      key={index}
-                      period={period}
-                      index={index}
-                      updateDbInstantly={true}
-                    />
-                  ))}
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Location</Form.Label>
-                  <DropdownButton
-                    id="dropdown-basic-button"
-                    title={location}
-                    onSelect={handleLocationSelection}
-                  >
-                    <Dropdown.Item eventKey={LocationIds.Abroad}>
-                      {LocationIds.Abroad}
-                    </Dropdown.Item>
-                    <Dropdown.Item eventKey={LocationIds.TelAviv}>
-                      {LocationIds.TelAviv}
-                    </Dropdown.Item>
-                    <Dropdown.Item eventKey={LocationIds.Eilat}>{LocationIds.Eilat}</Dropdown.Item>
-                  </DropdownButton>
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Pets</Form.Label>
-                  <PetsCounter />
-                </Form.Group>
-                <Form.Group>
-                  <Form.Group>
-                    <Form.Label>this could be title</Form.Label>
-                    <FormControl
-                      type="text"
-                      value={title}
-                      onChange={(e) => {
-                        dispatch(setTitleState(e.target.value))
-                      }}
-                    />
-                  </Form.Group>
-                  <h1>Description</h1>
-                  <Form.Control
-                    className="text-end"
-                    size="sm"
-                    as="textarea"
-                    rows={5}
-                    value={description}
-                    onChange={(e) => {
-                      dispatch(setDescriptionState(e.target.value))
-                    }}
-                  ></Form.Control>
-                </Form.Group>
-                <Form.Group>
-                  <Form.Label>Upload some pics </Form.Label>
-                  <input
-                    onChange={onPostImageSelection}
-                    type="file"
-                    name="file"
-                    accept="image/*"
-                    multiple
-                  />
-
-                  {postPreviewDataUrls.map((previewData: ImageData, index: number) => (
-                    <div key={index}>
-                      <Image src={previewData.url} height={50} width={50} key={index} />
-                      <Button
-                        variant="danger"
-                        onClick={(e) => handleDeleteImage(previewData, e)}
-                        key={`delete-${index}`}
-                        name={`image-${index}`}
-                      >
-                        delete
-                      </Button>
-                    </div>
-                  ))}
-                </Form.Group>
-
-                <Button type="submit" onClick={(e) => handleSubmit(e)}>
-                  find me a sitter
-                </Button>
-              </Form>
-            </Modal.Body>
-          </Modal>
-          <div>
-            <div id="available-housitters" className="available-housitters">
-              {isAfterSignup ? (
-                ''
-              ) : isActivePost ? (
-                <h3>
-                  here are the housitters who are available in your specified dates and location:
-                </h3>
-              ) : (
-                <></>
+        <Row>
+          <Col md={8}>
+            <div>
+              <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
+              {user && (
+                <Picture
+                  isIntro={false}
+                  uid={user.id}
+                  url={avatarUrl}
+                  email={user.email as string}
+                  primaryUse={USER_TYPE.Landlord}
+                  size={100}
+                  width={100} // should persist dimensions of image upon upload
+                  height={100}
+                  disableUpload={true}
+                  bucketName="avatars"
+                  isAvatar={true}
+                  promptMessage=""
+                />
               )}
             </div>
-            {housitters.length > 0 && (
-              <Sorter sortingProperties={['firstName', 'lastName']} sortElements={sortElements} />
+            {isActivePost ? (
+              <div>
+                <Accordion defaultActiveKey="0">
+                  <Accordion.Item eventKey="0">
+                    <Accordion.Header>My Active Post</Accordion.Header>
+                    <Accordion.Body>
+                      <HousePost
+                        landlordId={user ? user.id : ''}
+                        title={title}
+                        description={description}
+                        location={location}
+                        availability={availability}
+                        dogs={pets.dogs}
+                        cats={pets.cats}
+                        imagesUrls={fileNames} // TODO: should have default image
+                      />
+                      <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
+                        Delete post
+                      </Button>
+                      {availability.length > closedSits.length && (
+                        <Button variant="success" onClick={handleFoundSitter}>
+                          I found a sitter
+                        </Button>
+                      )}
+
+                      <Modal
+                        show={showFoundSitterModal}
+                        onHide={() => setShowFoundSitterModal(false)}
+                      >
+                        <Modal.Header>
+                          <Modal.Title>Select the sitter you found</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <div>
+                            <Form>
+                              {housitters.map((sitter: any, index: number) => {
+                                const isThisTheSelectedHousitter =
+                                  sitter.housitterId === selectedHousitterId
+
+                                return (
+                                  <div key={index}>
+                                    <Form.Group>
+                                      <Form.Check
+                                        type="radio"
+                                        key={index}
+                                        onChange={handleSelectedFoundSitter}
+                                        value={sitter.housitterId}
+                                        label={`${sitter.firstName} ${sitter.lastName}`}
+                                        name="singleSitterChoice"
+                                        checked={isThisTheSelectedHousitter}
+                                      />
+                                      {isThereAnySelectedSitter && isThisTheSelectedHousitter && (
+                                        <ListGroup>
+                                          <ListGroup.Item>
+                                            {availability.map((period, index) => {
+                                              const startDateAsString = period.startDate.toString()
+                                              if (
+                                                !closedSits.find(
+                                                  (closedSit) =>
+                                                    closedSit.startDate === startDateAsString
+                                                )
+                                              ) {
+                                                return (
+                                                  <Form.Check
+                                                    type="checkbox"
+                                                    key={index}
+                                                    label={`${startDateAsString} until ${period.endDate.toString()}`}
+                                                    name={startDateAsString}
+                                                    value={startDateAsString}
+                                                    onChange={handleBindSitterWithPeriod}
+                                                    checked={preConfirmedSelectionOfClosedSitsPerSitter.startDates.includes(
+                                                      startDateAsString
+                                                    )}
+                                                  />
+                                                )
+                                              }
+                                            })}
+                                          </ListGroup.Item>
+                                        </ListGroup>
+                                      )}
+                                    </Form.Group>
+                                  </div>
+                                )
+                              })}
+                              <hr />
+                              <Button variant="primary" onClick={handleConfirmSitterSelection}>
+                                Confirm
+                              </Button>
+                              <Button
+                                type="submit"
+                                variant="warning"
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  setShowFoundSitterModal(false)
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </Form>
+                          </div>
+                        </Modal.Body>
+                      </Modal>
+                      <Button onClick={handleShowNewPostModal}>Edit Post</Button>
+                    </Accordion.Body>
+                  </Accordion.Item>
+                </Accordion>
+              </div>
+            ) : (
+              <div>
+                <Button
+                  style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
+                  variant="primary"
+                  onClick={handleShowNewPostModal}
+                >
+                  {isAfterSignup ? 'Complete your post' : 'Create new post'}
+                </Button>
+                <br />
+                <br />
+              </div>
             )}
-            <div></div>
-            <div>
-              {housitters.length > 0 &&
-                housitters.map(
-                  (
-                    sitter: any,
-                    index: number // TODO: type 'sitter' with a new type of Db housitterdata
-                  ) => (
-                    <AvailableHousitter
-                      housitterId={sitter.housitterId}
-                      firstName={sitter.firstName}
-                      lastName={sitter.lastName}
-                      about_me="hard coded about_me text"
-                      avatarUrl={sitter.avatarUrl}
-                      key={index}
+
+            <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
+              <Modal.Header>
+                <Modal.Title style={{ color: 'blue' }}>lets create new post</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form>
+                  <Form.Group>
+                    <Form.Label>availability</Form.Label>
+
+                    {availability.map((period, index) => (
+                      <AvailabilitySelector
+                        key={index}
+                        period={period}
+                        index={index}
+                        updateDbInstantly={true}
+                      />
+                    ))}
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Location</Form.Label>
+                    <DropdownButton
+                      id="dropdown-basic-button"
+                      title={location}
+                      onSelect={handleLocationSelection}
+                    >
+                      <Dropdown.Item eventKey={LocationIds.Abroad}>
+                        {LocationIds.Abroad}
+                      </Dropdown.Item>
+                      <Dropdown.Item eventKey={LocationIds.TelAviv}>
+                        {LocationIds.TelAviv}
+                      </Dropdown.Item>
+                      <Dropdown.Item eventKey={LocationIds.Eilat}>
+                        {LocationIds.Eilat}
+                      </Dropdown.Item>
+                    </DropdownButton>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Pets</Form.Label>
+                    <PetsCounter />
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Group>
+                      <Form.Label>this could be title</Form.Label>
+                      <FormControl
+                        type="text"
+                        value={title}
+                        onChange={(e) => {
+                          dispatch(setTitleState(e.target.value))
+                        }}
+                      />
+                    </Form.Group>
+                    <h1>Description</h1>
+                    <Form.Control
+                      className="text-end"
+                      size="sm"
+                      as="textarea"
+                      rows={5}
+                      value={description}
+                      onChange={(e) => {
+                        dispatch(setDescriptionState(e.target.value))
+                      }}
+                    ></Form.Control>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Upload some pics </Form.Label>
+                    <input
+                      onChange={onPostImageSelection}
+                      type="file"
+                      name="file"
+                      accept="image/*"
+                      multiple
                     />
-                  )
+
+                    {postPreviewDataUrls.map((previewData: ImageData, index: number) => (
+                      <div key={index}>
+                        <Image src={previewData.url} height={50} width={50} key={index} />
+                        <Button
+                          variant="danger"
+                          onClick={(e) => handleDeleteImage(previewData, e)}
+                          key={`delete-${index}`}
+                          name={`image-${index}`}
+                        >
+                          delete
+                        </Button>
+                      </div>
+                    ))}
+                  </Form.Group>
+
+                  <Button type="submit" onClick={(e) => handleSubmit(e)}>
+                    find me a sitter
+                  </Button>
+                </Form>
+              </Modal.Body>
+            </Modal>
+            <div>
+              <div id="available-housitters" className="available-housitters">
+                {isAfterSignup ? (
+                  ''
+                ) : isActivePost ? (
+                  <h3>
+                    here are the housitters who are available in your specified dates and location:
+                  </h3>
+                ) : (
+                  <></>
                 )}
+              </div>
+              {housitters.length > 0 && (
+                <Sorter sortingProperties={['firstName', 'lastName']} sortElements={sortElements} />
+              )}
+
+              <Row>
+                {housitters.length > 0 &&
+                  housitters.map(
+                    (
+                      sitter: any,
+                      index: number // TODO: type 'sitter' with a new type of Db housitterdata
+                    ) => (
+                      <Col md={4} index={index}>
+                        <AvailableHousitter
+                          housitterId={sitter.housitterId}
+                          firstName={sitter.firstName}
+                          lastName={sitter.lastName}
+                          about_me="hard coded about_me text"
+                          avatarUrl={sitter.avatarUrl}
+                          key={index}
+                        />
+                      </Col>
+                    )
+                  )}
+              </Row>
             </div>
+          </Col>
+          <Col md={4}>
             <div className="sidebar-filter">
               <SidebarFilter isHousitter={false} showCustomLocations={true} selectionType="radio" />
             </div>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
     </>
   )
