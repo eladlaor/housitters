@@ -9,7 +9,7 @@ import {
 } from '../../slices/userSlice'
 
 import { ClosedSit } from '../../types/clientSide'
-import { LANDLORDS_ROUTES, LocationIds, USER_TYPE } from '../../utils/constants'
+import { PageRoutes, LocationIds, USER_TYPE } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -492,7 +492,7 @@ export default function Home() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
             <NavDropdown title="My Profile" id="basic-nav-dropdown">
-              <NavDropdown.Item href={LANDLORDS_ROUTES.ACCOUNT}>Edit Profile</NavDropdown.Item>
+              <NavDropdown.Item href={PageRoutes.LandlordRoutes.Account}>Edit Profile</NavDropdown.Item>
               <SignOut />
             </NavDropdown>
             <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>

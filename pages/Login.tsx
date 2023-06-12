@@ -3,7 +3,7 @@ import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { LANDLORDS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
+import { USER_TYPE, PageRoutes } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsLoggedState, setFirstName, setPrimaryUse, setGenderState } from '../slices/userSlice'
 
@@ -42,9 +42,9 @@ export default function LoginPage() {
 
           // TODO: shouldnt route in a loadUserData func.
           if (primary_use === USER_TYPE.Housitter) {
-            router.push(`${HOUSITTERS_ROUTES.HOME}`)
+            router.push(`${PageRoutes.HousitterRoutes.Home}`)
           } else if (primary_use === USER_TYPE.Landlord) {
-            router.push(`${LANDLORDS_ROUTES.HOME}`)
+            router.push(`${PageRoutes.LandlordRoutes.Home}`)
           }
         }
       } catch (e) {

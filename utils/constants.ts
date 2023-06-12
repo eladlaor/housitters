@@ -6,16 +6,18 @@ export const USER_TYPE = {
   None: 'none',
 }
 
-export const HOUSITTERS_ROUTES = {
-  HOME: '/housitters/Home',
-  INTRO: '/housitters/Intro',
-  ACCOUNT: '/housitters/HousitterAccount',
-}
-
-export const LANDLORDS_ROUTES = {
-  HOME: '/landlords/Home',
-  INTRO: '/landlords/Intro',
-  ACCOUNT: '/landlords/LandlordAccount',
+export const PageRoutes = {
+  Intro: 'Intro',
+  HousitterRoutes: {
+    Home: '/housitters/Home',
+    Intro: '/housitters/Intro',
+    Account: '/housitters/HousitterAccount',
+  },
+  LandlordRoutes: {
+    Home: '/landlords/Home',
+    Intro: '/landlords/Intro',
+    Account: '/landlords/LandlordAccount',
+  },
 }
 
 /* Forms */

@@ -67,7 +67,6 @@ export interface SignupForm {
   lastName: string
   email: string
   password: string
-  visible: boolean
   gender: string
 }
 

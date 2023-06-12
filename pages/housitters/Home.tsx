@@ -9,7 +9,7 @@ import {
   setAvatarUrl,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
-import { LANDLORDS_ROUTES, LocationIds, USER_TYPE } from '../../utils/constants'
+import { PageRoutes, LocationIds, USER_TYPE } from '../../utils/constants'
 
 import HousePost from '../../components/HousePost'
 import Picture from '../../components/Picture'
@@ -137,7 +137,9 @@ export default function Home() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
             <NavDropdown title="My Profile" id="basic-nav-dropdown">
-              <NavDropdown.Item href={LANDLORDS_ROUTES.ACCOUNT}>Edit Profile</NavDropdown.Item>
+              <NavDropdown.Item href={PageRoutes.HousitterRoutes.Account}>
+                Edit Profile
+              </NavDropdown.Item>
               <SignOut />
             </NavDropdown>
             <Inbox />

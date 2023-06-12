@@ -2,9 +2,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setPrimaryUse } from '../../slices/userSlice'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES, USER_TYPE } from '../../utils/constants'
+import { PageRoutes, USER_TYPE } from '../../utils/constants'
 
-export default function NewUserTeaser({ userType }: { userType: string }) {
+// TODO: test doing this destructing inside other components too, to omit that additional line
+export default function SignupTeaser({ userType }: { userType: string }) {
   const router = useRouter()
   const dispatch = useDispatch()
 
@@ -13,14 +14,16 @@ export default function NewUserTeaser({ userType }: { userType: string }) {
   }
 
   let message = ''
+
+  // TODO: no need for that now
   let route = ''
 
   if (userType === USER_TYPE.Housitter) {
-    message = '\nfind me a house'
-    route = HOUSITTERS_ROUTES.INTRO
+    message = 'find me a house'
+    route = PageRoutes.Intro
   } else {
     message = 'find me a housitter'
-    route = LANDLORDS_ROUTES.INTRO
+    route = PageRoutes.Intro
   }
 
   return (
@@ -32,7 +35,7 @@ export default function NewUserTeaser({ userType }: { userType: string }) {
           style={{ textDecoration: 'bold' }}
           onClick={handleUserTypeSelection}
         >
-          <Link href={route}>{message}</Link>
+          <Link href={{ pathname: route, query: { userType } }}>{message}</Link>
         </button>
       </div>
     </div>

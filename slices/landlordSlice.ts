@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { ClosedSit } from '../utils/constants'
+import { ClosedSit } from '../types/clientSide'
 
 export const initialState = {
   location: '',

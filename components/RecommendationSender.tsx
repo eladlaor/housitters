@@ -21,6 +21,7 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { startOfMonth, format } from 'date-fns'
 import { Database } from '../types/supabase'
 import { useState } from 'react'
+import CountAndUpdate from './utils/CountAndUpdate'
 
 export default function RecommendationSender(props: RecommendationFormProps) {
   const { reviewedUserId, reviewedUserFirstName, reviewedUserLastName, reviewedUserType } = props
@@ -41,13 +42,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
     dispatch(setStartMonthState(date.toISOString())) // redux needs serializable value, hence string
   }
 
-  function handleDurationChange(e: any) {
-    e.preventDefault()
-    const newValue = e.target.value
-    if (newValue >= 0) {
-      dispatch(setDurationState(newValue))
-    }
-  }
+  // TODO: i can now use CountAndUpdate instead, as a component.
 
   async function handleSubmit(e: any) {
     e.preventDefault()
@@ -132,18 +127,13 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                   value={format(startOfMonth(new Date(startMonth)), 'MM/yyyy')}
                 />
               </Form.Group>
+
               {reviewedUserType === USER_TYPE.Housitter && (
-                <Form.Group controlId="duration">
-                  <Form.Label>how many days was it</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={duration}
-                    placeholder="how many days was it"
-                    onChange={(e) => {
-                      handleDurationChange(e)
-                    }}
-                  />
-                </Form.Group>
+                <CountAndUpdate
+                  placeholderMessage="how many days was it"
+                  valueToCount={duration}
+                  reduxReducer={setDurationState}
+                />
               )}
               <Form.Group controlId="sit-included">
                 <Form.Label>what did the sit include</Form.Label>

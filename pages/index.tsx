@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import { USER_TYPE } from '../utils/constants'
 import Image from 'next/image'
 import cuteDog from '../public/cuteDog.jpg'
-import NewUserTeaser from '../components/Buttons/NewUserTeaser'
+import SignupTeaser from '../components/Buttons/SignupTeaser'
 import {
   selectPrimaryUseState,
   settersToInitialStates as userSettersToInitialStates,
@@ -80,9 +80,9 @@ const Home: NextPage = () => {
             marginRight: '30px',
           }}
         >
-          <NewUserTeaser userType={USER_TYPE.Housitter} />
+          <SignupTeaser userType={USER_TYPE.Housitter} />
         </div>
-        <NewUserTeaser userType={USER_TYPE.Landlord} />
+        <SignupTeaser userType={USER_TYPE.Landlord} />
         <button
           className="signin-button"
           onClick={() => {
