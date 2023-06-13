@@ -19,7 +19,7 @@ import Inbox from '../../components/Inbox'
 
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
+import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import { Typeahead, Hint } from 'react-bootstrap-typeahead'
 import UserSearcher from '../../components/UserSearcher'
 
@@ -128,6 +128,17 @@ export default function Home() {
     asyncWrapper()
   }, [user, locations, availability])
 
+  function sortPosts(sortByProperty: string) {
+    let sortedposts: any[] = [...posts]
+
+    if (typeof sortedposts[0][sortByProperty] === 'string') {
+      // TODO: add some sorting logic here
+      setPosts(sortedposts)
+    } else {
+      console.log('sorting by number')
+    }
+  }
+
   return (
     <>
       <Navbar bg="dark" variant="dark">
@@ -147,7 +158,7 @@ export default function Home() {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
-      <div>
+      <Container>
         <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
         {user && (
           <Picture
@@ -166,44 +177,54 @@ export default function Home() {
           />
         )}
         <h2>here are all the relevant posts for you</h2>
-        <Row className="justify-content-center">
-          {posts.length === 0 ? (
-            <div>
-              <p>
-                There are no available houses with your current filtering.
-                <br />
-                Try expanding your search to broader dates or locations. k?
-              </p>
-              <h2>you should know: landlords can still find you and contact you directly </h2>
-            </div>
-          ) : (
-            posts.map((post: any, index: number) => (
-              <Col key={index} md={4} className="mb-4">
-                <HousePost
-                  landlordId={post.landlord_id}
-                  title={post.title}
-                  description={post.description}
-                  location={post.landlords ? post.landlords.location : ''}
-                  availability={availability}
-                  dogs={post.dogs}
-                  cats={post.cats}
-                  key={index}
-                  imagesUrls={
-                    post.images_urls
-                      ? post.images_urls.map((imageUrl: string) => ({ url: imageUrl, id: index }))
-                      : ''
-                  } // TODO: should have default image
-                />
-              </Col>
-            ))
-          )}
+        <Row>
+          <Col md={9}>
+            <Row>
+              {posts.length === 0 ? (
+                <div>
+                  <p>
+                    There are no available houses with your current filtering.
+                    <br />
+                    Try expanding your search to broader dates or locations. k?
+                  </p>
+                  <h2>you should know: landlords can still find you and contact you directly </h2>
+                </div>
+              ) : (
+                posts.map((post: any, index: number) => (
+                  <Col key={index} md={4} className="mb-4">
+                    <HousePost
+                      landlordId={post.landlord_id}
+                      title={post.title}
+                      description={post.description}
+                      location={post.landlords ? post.landlords.location : ''}
+                      availability={availability}
+                      dogs={post.dogs}
+                      cats={post.cats}
+                      key={index}
+                      imagesUrls={
+                        post.images_urls
+                          ? post.images_urls.map((imageUrl: string) => ({
+                              url: imageUrl,
+                              id: index,
+                            }))
+                          : ''
+                      } // TODO: should have default image
+                    />
+                  </Col>
+                ))
+              )}
+            </Row>
+          </Col>
+          <Col md={3}>
+            <SidebarFilter
+              isHousitter={true}
+              showCustomLocations={locations.length < Object.values(LocationIds).length}
+              selectionType="checkbox"
+              sortElementsHandler={sortPosts}
+            />
+          </Col>
         </Row>
-      </div>
-      <SidebarFilter
-        isHousitter={true}
-        showCustomLocations={locations.length < Object.values(LocationIds).length}
-        selectionType="checkbox"
-      />
+      </Container>
     </>
   )
 }
