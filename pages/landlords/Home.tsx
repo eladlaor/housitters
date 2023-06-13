@@ -9,7 +9,7 @@ import {
 } from '../../slices/userSlice'
 
 import { ClosedSit } from '../../types/clientSide'
-import { PageRoutes, LocationIds, USER_TYPE } from '../../utils/constants'
+import { PageRoutes, LocationIds, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -498,11 +498,34 @@ export default function Home() {
         </Navbar.Brand>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
-            <NavDropdown title="My Profile" id="basic-nav-dropdown">
+            <NavDropdown
+              title={
+                <span>
+                  {user && (
+                    <Picture
+                      isIntro={false}
+                      uid={user.id}
+                      url={avatarUrl}
+                      email={user.email as string}
+                      primaryUse={USER_TYPE.Landlord}
+                      size={80}
+                      width={80} // should persist dimensions of image upon upload
+                      height={80}
+                      disableUpload={true}
+                      bucketName="avatars"
+                      isAvatar={true}
+                      promptMessage=""
+                      isRounded={true}
+                    />
+                  )}
+                  {firstName}
+                </span>
+              }
+            >
               <NavDropdown.Item href={PageRoutes.LandlordRoutes.Account}>
                 Edit Profile
               </NavDropdown.Item>
-              <SignOut />
+              <SignOut elementType={SignOutElementTypes.Link} />
             </NavDropdown>
             <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
             <Inbox />
@@ -514,22 +537,6 @@ export default function Home() {
       <Container>
         <div>
           <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
-          {user && (
-            <Picture
-              isIntro={false}
-              uid={user.id}
-              url={avatarUrl}
-              email={user.email as string}
-              primaryUse={USER_TYPE.Landlord}
-              size={100}
-              width={100} // should persist dimensions of image upon upload
-              height={100}
-              disableUpload={true}
-              bucketName="avatars"
-              isAvatar={true}
-              promptMessage=""
-            />
-          )}
         </div>
         {isActivePost ? (
           <div>

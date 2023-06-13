@@ -24,6 +24,7 @@ export default function Picture({
   isAvatar,
   promptMessage,
   email,
+  isRounded,
 }: {
   isIntro: boolean
   uid: string
@@ -37,6 +38,7 @@ export default function Picture({
   isAvatar: boolean
   promptMessage: string
   email: string
+  isRounded: boolean
 }) {
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
@@ -296,7 +298,13 @@ export default function Picture({
         ? 'loading picture'
         : previewDataUrls.map((previewData: ImageData, index: number) => (
             <div key={index}>
-              <Image src={previewData.url} height={size} width={size} key={index} />
+              <Image
+                src={previewData.url}
+                height={size}
+                width={size}
+                key={index}
+                className={isRounded ? 'rounded-image' : ''}
+              />
 
               {!disableUpload && (
                 <Button

@@ -221,4 +221,8 @@ a {
   flex-direction: horizontal;
 }
 
+.rounded-image {
+  border-radius: 50%;
+}
+
 

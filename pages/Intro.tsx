@@ -344,6 +344,7 @@ export default function Intro() {
                     isAvatar={true}
                     promptMessage="Choose a profile picture"
                     email={form.email}
+                    isRounded={true}
                   />
                 </Form.Group>
                 <Button variant="primary" type="submit" onClick={handleSignUp}>

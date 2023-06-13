@@ -86,3 +86,8 @@ export const NavbarItems = [
   { href: 'faq', text: 'FAQ' },
   { href: 'contact-us', text: 'Contact Us' },
 ]
+
+export enum SignOutElementTypes {
+  Button = 'Button',
+  Link = 'Link',
+}

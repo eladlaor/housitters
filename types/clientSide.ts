@@ -1,4 +1,4 @@
-import { SIGNUP_FORM_PROPS } from '../utils/constants'
+import { SIGNUP_FORM_PROPS, SignOutElementTypes } from '../utils/constants'
 
 export type HousitterProps = {
   housitterId: string
@@ -90,4 +90,8 @@ export interface ClosedSit {
 export interface NavbarItem {
   href: string
   text: string
+}
+
+export interface SignOutProps {
+  elementType: SignOutElementTypes
 }
