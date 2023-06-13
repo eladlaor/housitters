@@ -171,6 +171,7 @@ export default function Intro() {
           user_id: userId,
           locations: housitterLocations,
           experience,
+          updated_at: new Date(),
         }
 
         let { error } = await supabaseClient.from('housitters').upsert(newHousitter)
@@ -235,7 +236,7 @@ export default function Intro() {
         </div>
         <div>
           <Button variant="primary" onClick={handleShow}>
-            Find me a sitter
+            {isHousitter ? 'find me a house' : 'find me a sitter'}{' '}
           </Button>
           <Modal show={showModal} onHide={handleClose} contentClassName="landlord-signup-modal">
             <Modal.Header closeButton>

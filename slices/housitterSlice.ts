@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
+import { LocationIds } from '../utils/constants'
 
 export const initialState = {
-  locations: [] as string[],
+  locations: [...Object.values(LocationIds)] as string[],
   experience: 0,
 }
 

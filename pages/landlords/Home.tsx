@@ -772,7 +772,7 @@ export default function Home() {
                       sitter: any,
                       index: number // TODO: type 'sitter' with a new type of Db housitterdata
                     ) => (
-                      <Col md={4} index={index}>
+                      <Col md={4} index={index} key={index}>
                         <AvailableHousitter
                           housitterId={sitter.housitterId}
                           firstName={sitter.firstName}

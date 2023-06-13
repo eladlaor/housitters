@@ -64,7 +64,7 @@ export const DbGenderTypes = {
   Male: 'male',
   Female: 'female',
   NonBinary: 'non-binary',
-  Unknown: 'unknown',
+  Unknown: '',
 }
 
 /* api routes */
