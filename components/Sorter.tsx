@@ -17,7 +17,6 @@ export default function Sorter(props: {
 
   return (
     <div>
-      <h3>Sort by:</h3>
       <Form>
         {sortingProperties.map((property, index) => (
           <Form.Check
@@ -33,7 +32,6 @@ export default function Sorter(props: {
           />
         ))}
       </Form>
-      <hr />
     </div>
   )
 }

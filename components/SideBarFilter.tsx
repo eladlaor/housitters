@@ -23,8 +23,12 @@ export default function SidebarFilter({
   const availabaility = useSelector(selectAvailabilityState)
   return (
     <Card>
+      <h2>Sort by:</h2>
+
       <Sorter sortingProperties={['firstName']} sortElementsHandler={sortElementsHandler} />
-      <h3>Filter by:</h3>
+      <hr style={{ borderTop: '20px solid #000' }} />
+
+      <h2>Filter by:</h2>
       <LocationSelector
         isHousitter={isHousitter}
         showCustomLocations={showCustomLocations}

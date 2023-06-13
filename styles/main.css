@@ -59,24 +59,8 @@ a {
   border-radius: 10px 10px 10px 10px;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-}
-
 .housitter-card {
   background-color: blue
-}
-
-.sitters-and-filter {
-  /* Adjust as needed */
-  display: flex;
-  flex-direction: row;
-}
-
-.available-housitters {
-  /* Adjust width as needed */
-  width: 50%;
 }
 
 .sidebar-filter {

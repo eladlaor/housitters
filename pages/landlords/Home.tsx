@@ -515,7 +515,7 @@ export default function Home() {
         </Navbar>
       </Row>
 
-      <div className="container">
+      <Container>
         <Row>
           <div>
             <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
@@ -538,7 +538,7 @@ export default function Home() {
           </div>
           {isActivePost ? (
             <div>
-              <Accordion defaultActiveKey="0">
+              <Accordion>
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>My Active Post</Accordion.Header>
                   <Accordion.Body>
@@ -749,7 +749,7 @@ export default function Home() {
               </Form>
             </Modal.Body>
           </Modal>
-          <div id="available-housitters" className="available-housitters">
+          <div id="available-housitters">
             {isAfterSignup ? (
               ''
             ) : isActivePost ? (
@@ -796,7 +796,7 @@ export default function Home() {
             </Col>
           </Row>
         </Row>
-      </div>
+      </Container>
     </>
   )
 }
