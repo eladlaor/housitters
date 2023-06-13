@@ -108,13 +108,28 @@ export default function Home() {
         className="d-flex justify-content-center"
         style={{ position: 'relative', height: 'auto' }}
       ></Row>
-
-      <Row style={{ height: '20vh' }}>
-        <h1>Houses</h1>
-      </Row>
-      <Row style={{ height: '20vh' }}>
-        <h1>Sitters</h1>
-      </Row>
     </div>
   )
 }
+
+/*
+
+[design this as a circle of love... \ light]
+
+a WIN WIN WIN circle of light:
+
+pet-parents get to spread their WINgs and travel with peace of mind, 
+knowing their loved ones are in caring hands, getting personal treatment.
+
+pets get a WINdfall of fresh-smelling love, while staying at their safe and 
+comfortable environment (and usually some cool new pics:)
+
+housitters get a WINdow to a new experience of heart-warming pets and a gratifying lifestyle,
+closing a circle
+
+
+
+
+
+
+*/
