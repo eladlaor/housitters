@@ -21,31 +21,17 @@ export default function SidebarFilter({
 }) {
   const availabaility = useSelector(selectAvailabilityState)
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'flex-end',
-      }}
-    >
-      <Card style={{ height: '100%', width: '30%' }}>
-        <LocationSelector
-          isHousitter={isHousitter}
-          showCustomLocations={showCustomLocations}
-          selectionType={selectionType as FormCheckType}
-          updateDbInstantly={true}
-        />
-        <hr style={{ borderTop: '20px solid #000' }} />
-        {availabaility.map((period, index) => (
-          <AvailabilitySelector
-            period={period}
-            index={index}
-            key={index}
-            updateDbInstantly={true}
-          />
-        ))}
-      </Card>
-    </div>
+    <Card>
+      <LocationSelector
+        isHousitter={isHousitter}
+        showCustomLocations={showCustomLocations}
+        selectionType={selectionType as FormCheckType}
+        updateDbInstantly={true}
+      />
+      <hr style={{ borderTop: '20px solid #000' }} />
+      {availabaility.map((period, index) => (
+        <AvailabilitySelector period={period} index={index} key={index} updateDbInstantly={true} />
+      ))}
+    </Card>
   )
 }

@@ -82,7 +82,8 @@ a {
 .sidebar-filter {
   flex: 1;
   position: sticky;
-  top: 0
+  top: 0;
+  margin: 30px;
 }
 
 .headline {
@@ -227,5 +228,9 @@ a {
   flex: 1; /* make items take up equal width */
 }
 
+.flexing {
+  display: flex;
+  flex-direction: horizontal;
+}
 
 
