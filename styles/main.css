@@ -59,6 +59,10 @@ a {
   border-radius: 10px 10px 10px 10px;
 }
 
+.signin-button:hover {
+  background-color: purple;
+}
+
 .housitter-card {
   background-color: blue
 }

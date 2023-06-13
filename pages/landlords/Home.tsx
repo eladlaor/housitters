@@ -178,9 +178,7 @@ export default function Home() {
           dispatch(setDescriptionState(''))
           dispatch(setTitleState(''))
           dispatch(setImagesUrlsState([])), setPostPreviewDataUrls([])
-          setHousitters([])
-          console.log('no active post, returning')
-          return
+          console.log('no active post')
         }
 
         let { data: housitterData, error: housitterError } = await supabaseClient
@@ -653,7 +651,7 @@ export default function Home() {
 
         <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
           <Modal.Header>
-            <Modal.Title style={{ color: 'blue' }}>lets create new post</Modal.Title>
+            <Modal.Title style={{ color: 'blue' }}>let's create new post</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>

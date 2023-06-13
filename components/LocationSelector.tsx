@@ -148,7 +148,7 @@ export default function LocationSelector({
         >
           {isHousitter && <Dropdown.Item eventKey={EVENT_KEYS.ANYWHERE}>Anywhere</Dropdown.Item>}
           <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_LOCATIONS}>
-            {isHousitter ? 'Relevant Areas' : 'Where Do You Live?'}
+            {isHousitter ? 'Select Areas' : 'Where Do You Live?'}
           </Dropdown.Item>
         </DropdownButton>
 
