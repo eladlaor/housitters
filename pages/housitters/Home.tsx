@@ -9,7 +9,7 @@ import {
   setAvatarUrl,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
-import { PageRoutes, LocationIds, USER_TYPE } from '../../utils/constants'
+import { PageRoutes, LocationIds, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
 
 import HousePost from '../../components/HousePost'
 import Picture from '../../components/Picture'
@@ -147,11 +147,35 @@ export default function Home() {
         </Navbar.Brand>
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
-            <NavDropdown title="My Profile" id="basic-nav-dropdown">
+            <NavDropdown
+              title={
+                <span>
+                  {user && (
+                    <Picture
+                      isIntro={false}
+                      uid={user.id}
+                      url={avatarUrl}
+                      email={user.email as string}
+                      primaryUse={USER_TYPE.Landlord}
+                      size={80}
+                      width={80} // should persist dimensions of image upon upload
+                      height={80}
+                      disableUpload={true}
+                      bucketName="avatars"
+                      isAvatar={true}
+                      promptMessage=""
+                      isRounded={true}
+                    />
+                  )}
+                  {firstName}
+                </span>
+              }
+              id="basic-nav-dropdown"
+            >
               <NavDropdown.Item href={PageRoutes.HousitterRoutes.Account}>
                 Edit Profile
               </NavDropdown.Item>
-              <SignOut />
+              <SignOut elementType={SignOutElementTypes.Link} />
             </NavDropdown>
             <Inbox />
             <UserSearcher />
@@ -160,22 +184,7 @@ export default function Home() {
       </Navbar>
       <Container>
         <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
-        {user && (
-          <Picture
-            isIntro={false}
-            uid={user.id}
-            url={avatarUrl}
-            email={user.email as string}
-            primaryUse={USER_TYPE.Housitter}
-            size={100}
-            width={100} // should persist dimensions of image upon upload
-            height={100}
-            disableUpload={true}
-            bucketName="avatars"
-            isAvatar={true}
-            promptMessage=""
-          />
-        )}
+
         <h2>here are all the relevant posts for you</h2>
         <Row>
           <Col md={9}>
