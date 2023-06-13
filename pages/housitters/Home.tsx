@@ -22,6 +22,7 @@ import Col from 'react-bootstrap/Col'
 import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import { Typeahead, Hint } from 'react-bootstrap-typeahead'
 import UserSearcher from '../../components/UserSearcher'
+import Link from 'next/link'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -33,6 +34,7 @@ export default function Home() {
   const isLogged = useSelector(selectIsLoggedState)
   const avatarUrl = useSelector(selectAvatarUrlState)
 
+  // TODO: should make it redux.
   const [posts, setPosts] = useState([] as Object[])
 
   // TODO: can set loading states if needed
@@ -201,24 +203,28 @@ export default function Home() {
               ) : (
                 posts.map((post: any, index: number) => (
                   <Col key={index} md={4} className="mb-4">
-                    <HousePost
-                      landlordId={post.landlord_id}
-                      title={post.title}
-                      description={post.description}
-                      location={post.landlords ? post.landlords.location : ''}
-                      availability={availability}
-                      dogs={post.dogs}
-                      cats={post.cats}
-                      key={index}
-                      imagesUrls={
-                        post.images_urls
-                          ? post.images_urls.map((imageUrl: string) => ({
-                              url: imageUrl,
-                              id: index,
-                            }))
-                          : ''
-                      } // TODO: should have default image
-                    />
+                    <Link href={`/housitters/house/${post.landlord_id}`}>
+                      <a>
+                        <HousePost
+                          landlordId={post.landlord_id}
+                          title={post.title}
+                          description={post.description}
+                          location={post.landlords ? post.landlords.location : ''}
+                          availability={availability}
+                          dogs={post.dogs}
+                          cats={post.cats}
+                          key={index}
+                          imagesUrls={
+                            post.images_urls
+                              ? post.images_urls.map((imageUrl: string) => ({
+                                  url: imageUrl,
+                                  id: index,
+                                }))
+                              : ''
+                          } // TODO: should have default image
+                        />
+                      </a>
+                    </Link>
                   </Col>
                 ))
               )}

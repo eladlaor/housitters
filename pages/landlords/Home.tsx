@@ -65,6 +65,7 @@ import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/
 import { selectConversationsState, selectTotalUnreadMessagesState } from '../../slices/inboxSlice'
 import UserSearcher from '../../components/UserSearcher'
 import Sorter from '../../components/Sorter'
+import LocationSelector from '../../components/LocationSelector'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -676,17 +677,12 @@ export default function Home() {
               </Form.Group>
               <Form.Group>
                 <Form.Label>Location</Form.Label>
-                <DropdownButton
-                  id="dropdown-basic-button"
-                  title={location}
-                  onSelect={handleLocationSelection}
-                >
-                  <Dropdown.Item eventKey={LocationIds.Abroad}>{LocationIds.Abroad}</Dropdown.Item>
-                  <Dropdown.Item eventKey={LocationIds.TelAviv}>
-                    {LocationIds.TelAviv}
-                  </Dropdown.Item>
-                  <Dropdown.Item eventKey={LocationIds.Eilat}>{LocationIds.Eilat}</Dropdown.Item>
-                </DropdownButton>
+                <LocationSelector
+                  selectionType="radio"
+                  isHousitter={false}
+                  showCustomLocations={true}
+                  updateDbInstantly={true}
+                />
               </Form.Group>
               <Form.Group>
                 <Form.Label>Pets</Form.Label>

@@ -39,7 +39,7 @@ export default function LocationSelector({
 
   const EVENT_KEYS = {
     ANYWHERE: 'anywhere',
-    CUSTOM_LOCATIONS: 'custom locations',
+    CUSTOM_LOCATIONS: 'select areas',
   }
 
   const [locationCurrentSelectionType, setLocationCurrentSelectionType] = useState(

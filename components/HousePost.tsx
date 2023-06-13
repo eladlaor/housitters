@@ -285,6 +285,7 @@ export default function HousePost({
                                 isAvatar={true}
                                 promptMessage=""
                                 email=""
+                                isRounded={false}
                               />
                             )}
                             <br />
@@ -338,6 +339,7 @@ export default function HousePost({
                 width={100}
                 height={100}
                 bucketName="avatars"
+                isRounded={true}
               />
               <ReviewsOnSelectedUser
                 selectedUserId={landlordId}

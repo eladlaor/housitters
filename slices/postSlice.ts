@@ -2,6 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { ImageData } from '../types/clientSide'
 
+// this is from the landlord perspective
+
 export const initialState = {
   imagesUrls: [] as ImageData[],
   isActive: false,
