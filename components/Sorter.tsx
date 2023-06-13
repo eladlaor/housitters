@@ -1,25 +1,23 @@
 import { useState } from 'react'
 import Form from 'react-bootstrap/Form'
 
-export default function Sorter(props: { sortingProperties: string[]; sortElements: Function }) {
-  const { sortingProperties, sortElements } = props
+export default function Sorter(props: {
+  sortingProperties: string[]
+  sortElementsHandler: Function
+}) {
+  const { sortingProperties, sortElementsHandler } = props
 
   const [selectedSortingProperty, setSelectedSortingProperty] = useState('')
 
   function handleSelection(e: any) {
     const sortByProperty = e.target.value
     setSelectedSortingProperty(sortByProperty)
-    sortElements(sortByProperty)
+    sortElementsHandler(sortByProperty)
   }
 
   return (
     <div>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <h1>Sorter</h1>
+      <h3>Sort by:</h3>
       <Form>
         {sortingProperties.map((property, index) => (
           <Form.Check
@@ -35,6 +33,7 @@ export default function Sorter(props: { sortingProperties: string[]; sortElement
           />
         ))}
       </Form>
+      <hr />
     </div>
   )
 }

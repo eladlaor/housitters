@@ -457,7 +457,7 @@ export default function Home() {
     setShowFoundSitterModal(false)
   }
 
-  function sortElements(sortByProperty: string) {
+  function sortHousitters(sortByProperty: string) {
     let sortedHousitters: any[] = [...housitters]
 
     if (typeof sortedHousitters[0][sortByProperty] === 'string') {
@@ -760,9 +760,6 @@ export default function Home() {
               <></>
             )}
           </div>
-          {housitters.length > 0 && (
-            <Sorter sortingProperties={['firstName', 'lastName']} sortElements={sortElements} />
-          )}
 
           <Row>
             <Col md={9} style={{ paddingRight: '30px' }}>
@@ -793,6 +790,7 @@ export default function Home() {
                   isHousitter={false}
                   showCustomLocations={true}
                   selectionType="radio"
+                  sortElementsHandler={sortHousitters}
                 />
               </div>
             </Col>
