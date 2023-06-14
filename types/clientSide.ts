@@ -1,4 +1,4 @@
-import { SIGNUP_FORM_PROPS, SignOutElementTypes } from '../utils/constants'
+import { DefaultAvailablePost, SIGNUP_FORM_PROPS, SignOutElementTypes } from '../utils/constants'
 
 export type HousitterProps = {
   housitterId: string
@@ -40,7 +40,7 @@ export type ReviewsOnSelectedUserProps = {
 }
 
 /* COMPONENT PROPS */
-export interface HousePostProps {
+export interface HousePreviewProps {
   landlordId: string
   title: string
   description: string

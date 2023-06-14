@@ -35,7 +35,7 @@ export default function SidebarFilter({
         selectionType={selectionType as FormCheckType}
         updateDbInstantly={true}
       />
-      <hr style={{ borderTop: '20px solid #000' }} />
+      <hr style={{ borderTop: '8px solid #000' }} />
       {availabaility.map((period, index) => (
         <AvailabilitySelector period={period} index={index} key={index} updateDbInstantly={true} />
       ))}

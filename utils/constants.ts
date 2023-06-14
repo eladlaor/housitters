@@ -1,4 +1,5 @@
-//TODO: rename all to be PascalCase
+//TODO: i should rename all to be PascalCase
+import { ImageData } from '../types/clientSide'
 
 export const USER_TYPE = {
   Landlord: 'landlord',
@@ -90,4 +91,29 @@ export const NavbarItems = [
 export enum SignOutElementTypes {
   Button = 'Button',
   Link = 'Link',
+}
+
+export const DefaultAvailabilityPeriod = {
+  StartDate: new Date().toISOString(),
+  EndDate: new Date(0).toISOString(),
+}
+
+export const DefaultAvailabilityState = [DefaultAvailabilityPeriod]
+
+export const DefaultAvailablePost = {
+  landlordId: '',
+  landlordAvatarUrl: '',
+  landlordFirstName: '',
+  landlordLastName: '',
+  title: '',
+  description: '',
+  location: '',
+  dogs: 0,
+  cats: 0,
+  imagesUrls: [
+    {
+      url: '',
+      id: 0,
+    },
+  ] as ImageData[],
 }

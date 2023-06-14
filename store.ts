@@ -5,14 +5,17 @@ import userReducer from './slices/userSlice'
 import { landlordSlice } from './slices/landlordSlice'
 import landlordReducer from './slices/landlordSlice'
 import { housitterSlice } from './slices/housitterSlice'
-import { postSlice } from './slices/postSlice'
+import { postSlice } from './slices/createPostSlice'
 import { recommendationSlice } from './slices/recommendationSlice'
 import recommendationReducer from './slices/recommendationSlice'
-import postReducer from './slices/postSlice'
+import postReducer from './slices/createPostSlice'
 import housitterReducer from './slices/housitterSlice'
 
 import { inboxSlice } from './slices/inboxSlice'
 import inboxReducer from './slices/inboxSlice'
+
+import { availablePostsSlice } from './slices/availablePostsSlice'
+import availablePostsReducer from './slices/availablePostsSlice'
 
 import storage from 'redux-persist/lib/storage'
 import { combineReducers } from 'redux'
@@ -30,6 +33,7 @@ const reducers = combineReducers({
   [postSlice.name]: postReducer,
   [recommendationSlice.name]: recommendationReducer,
   [inboxSlice.name]: inboxReducer,
+  [availablePostsSlice.name]: availablePostsReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers)

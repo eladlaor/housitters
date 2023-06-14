@@ -14,7 +14,7 @@ export const initialState = {
 export type postState = typeof initialState
 
 export const postSlice = createSlice({
-  name: 'post',
+  name: 'createPost',
   initialState,
   reducers: {
     setImagesUrlsState(state = initialState, action) {
@@ -50,10 +50,10 @@ export const { setIsActiveState } = postSlice.actions
 export const { setDescriptionState } = postSlice.actions
 export const { setTitleState } = postSlice.actions
 
-export const selectImagesUrlsState = (state: RootState) => state.post.imagesUrls
-export const selectIsActiveState = (state: RootState) => state.post.isActive
-export const selectDescriptionState = (state: RootState) => state.post.description
-export const selectTitleState = (state: RootState) => state.post.title
+export const selectImagesUrlsState = (state: RootState) => state.createPost.imagesUrls
+export const selectIsActiveState = (state: RootState) => state.createPost.isActive
+export const selectDescriptionState = (state: RootState) => state.createPost.description
+export const selectTitleState = (state: RootState) => state.createPost.title
 
 export type SettersToInitialStates = {
   matchingSetter: any

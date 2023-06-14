@@ -10,7 +10,7 @@ import {
   selectPrimaryUseState,
   settersToInitialStates as userSettersToInitialStates,
 } from '../slices/userSlice'
-import { settersToInitialStates as postSettersToInitialStates } from '../slices/postSlice'
+import { settersToInitialStates as postSettersToInitialStates } from '../slices/createPostSlice'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { settersToInitialStates as housitterSettersToInitialStates } from '../slices/housitterSlice'

@@ -1,57 +1,89 @@
-import { Button, ListGroup, Modal, Badge } from 'react-bootstrap'
-import Card from 'react-bootstrap/Card'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar, faCalendarCheck } from '@fortawesome/free-solid-svg-icons'
+import React from 'react'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Image from 'next/image'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import React from 'react'
-import { countDays } from '../utils/dates'
 import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../../store'
+
+import ReviewsOnSelectedUser from '../../../components/ReviewsOnSelectedUser'
+import MessageSender from '../../../components/MessageSender'
+import Picture from '../../../components/Picture'
+
 import {
+  selectAvailabilityState,
   selectFirstNameState,
   selectIsLoggedState,
   selectLastNameState,
   selectPrimaryUseState,
-} from '../slices/userSlice'
-import { USER_TYPE } from '../utils/constants'
-import { ImageData } from '../types/clientSide'
-import Picture from './Picture'
-import { selectClosedSitsState, setClosedSitsState } from '../slices/landlordSlice'
-import MessageSender from './MessageSender'
-import { HousePostProps, ClosedSit } from '../types/clientSide'
-import ReviewsOnSelectedUser from './ReviewsOnSelectedUser'
+} from '../../../slices/userSlice'
+import { selectClosedSitsState, setClosedSitsState } from '../../../slices/landlordSlice'
+import availablePostsSlice, {
+  selectAvailablePostsState,
+  selectImagesUrlsState,
+  selectDescriptionState,
+  selectTitleState,
+  selectLandlordAvatarUrlState,
+  selectLocationState,
+  selectDogsState,
+  selectCatsState,
+  selectLandlordFirstNameState,
+  selectLandlordLastNameState,
+  setLandlordAvatarUrlState,
+} from '../../../slices/availablePostsSlice'
 
-// can maybe type as HousePostInput
-export default function HousePost({
-  landlordId,
-  title,
-  description,
-  location,
-  availability,
-  dogs,
-  cats,
-  imagesUrls,
-}: HousePostProps) {
+import { USER_TYPE } from '../../../utils/constants'
+import { ImageData, ClosedSit } from '../../../types/clientSide'
+import { countDays } from '../../../utils/dates'
+
+import { Button, ListGroup, Modal, Badge } from 'react-bootstrap'
+import Card from 'react-bootstrap/Card'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCalendar, faCalendarCheck } from '@fortawesome/free-solid-svg-icons'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+
+export default function HouseDetails() {
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
+  const router = useRouter()
 
-  // TODO: maybe better differentiate between the sitter/lord use cases, specifically for userFirstName
-  const [landlordAvatarUrl, setLandlordAvatarUrl] = useState('')
-  const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as ImageData[])
-  const [showModal, setShowModal] = useState(false)
+  const { HouseDetails: landlordId } = router.query as { HouseDetails: string }
+  if (!landlordId) {
+    return null
+  }
+
+  const isLogged = useSelector(selectIsLoggedState)
   const userType = useSelector(selectPrimaryUseState)
-  const [landlordFirstName, setLandlordFirstName] = useState('')
-  const [landlordLastName, setLandlordLastName] = useState('')
-
   let userFirstName: string = useSelector(selectFirstNameState)
   let userLastName: string = useSelector(selectLastNameState)
+  const availability = useSelector(selectAvailabilityState)
 
   const closedSits = useSelector(selectClosedSitsState)
 
-  const isLogged = useSelector(selectIsLoggedState)
+  const availablePosts = useSelector(selectAvailablePostsState)
+
+  const landlordAvatarUrl = useSelector((state: RootState) =>
+    selectLandlordAvatarUrlState(state, landlordId as string)
+  )
+
+  const imagesData = useSelector((state: RootState) => selectImagesUrlsState(state, landlordId))
+
+  const description = useSelector((state: RootState) => selectDescriptionState(state, landlordId))
+  const title = useSelector((state: RootState) => selectTitleState(state, landlordId))
+  const location = useSelector((state: RootState) => selectLocationState(state, landlordId))
+  const dogs = useSelector((state: RootState) => selectDogsState(state, landlordId))
+  const cats = useSelector((state: RootState) => selectCatsState(state, landlordId))
+  const landlordFirstName = useSelector((state: RootState) =>
+    selectLandlordFirstNameState(state, landlordId)
+  )
+  const landlordLastName = useSelector((state: RootState) =>
+    selectLandlordLastNameState(state, landlordId)
+  )
+
+  // TODO: maybe better differentiate between the sitter/lord use cases, specifically for userFirstName
+  const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as ImageData[])
+  const [showModal, setShowModal] = useState(false)
 
   function handleModalOpen() {
     setShowModal(true)
@@ -66,72 +98,8 @@ export default function HousePost({
       return
     }
 
-    async function loadLandlordData(landlordId: string) {
-      try {
-        let { data: landlordData, error: landlordError } = await supabaseClient
-          .from('profiles')
-          .select('first_name, last_name, avatar_url')
-          .eq('id', landlordId)
-          .single()
-        if (landlordError) {
-          alert(landlordError.message)
-        } else if (landlordData) {
-          setLandlordFirstName(landlordData.first_name)
-          setLandlordLastName(landlordData.last_name)
-          setLandlordAvatarUrl(landlordData.avatar_url)
-        }
-
-        let { data: closedSitsData, error: closedSitsError } = await supabaseClient
-          .from('closed_sits')
-          .select(
-            `housitter_id, start_date, profiles!inner (
-          first_name, last_name, avatar_url
-        )`
-          )
-          .eq('landlord_id', landlordId)
-
-        if (closedSitsError) {
-          alert(`error querying db for closed sits: ${closedSitsError.message}`)
-          debugger
-          throw closedSitsError
-        }
-
-        if (closedSitsData) {
-          let modifiedClosedSits: ClosedSit[] = []
-
-          closedSitsData.forEach((closedSit) => {
-            modifiedClosedSits.push({
-              housitterId: closedSit.housitter_id,
-              housitterFirstName: Array.isArray(closedSit.profiles)
-                ? closedSit.profiles[0].first_name
-                : closedSit.profiles?.first_name,
-              housitterLastName: Array.isArray(closedSit.profiles)
-                ? closedSit.profiles[0].last_name
-                : closedSit.profiles?.last_name,
-              housitterAvatarUrl: Array.isArray(closedSit.profiles)
-                ? closedSit.profiles[0].avatar_url
-                : closedSit.profiles?.avatar_url,
-              startDate: closedSit.start_date,
-            })
-          })
-
-          const closedSitsChanged =
-            JSON.stringify(modifiedClosedSits) !== JSON.stringify(closedSits)
-
-          if (closedSitsChanged) {
-            dispatch(setClosedSitsState(modifiedClosedSits))
-          }
-        }
-      } catch (e: any) {
-        alert(e)
-        debugger
-        throw e
-      }
-    }
-
-    loadLandlordData(landlordId)
-    downloadPostImagesAndSetPostPicturesPreview(landlordId, imagesUrls)
-  }, [landlordId, imagesUrls, closedSits])
+    downloadPostImagesAndSetPostPicturesPreview(landlordId, imagesData)
+  }, [landlordId, closedSits])
 
   // TODO: duplicated in Picture.tsx
   // TODO: this is a bad mixup of getter and setter, a getter should not set.
@@ -206,12 +174,14 @@ export default function HousePost({
     // TODO: add logic to send an email to housitters.com with the reason for cancellation, and if you feel it is too short notice and irresponsible we give the sitter a yellow card
   }
 
+  console.log(`images: ${JSON.stringify(imagesData)}`)
+
   return (
     <div>
       <Card bg="light" style={{ width: '18rem' }}>
         <Card.Body>
           <Card.Title>{title}</Card.Title>
-          {postPicturesFullUrl[0] ? (
+          {postPicturesFullUrl[0] && postPicturesFullUrl[0].url ? (
             <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
           ) : (
             'Loading Title Image'
@@ -230,9 +200,9 @@ export default function HousePost({
             </Modal.Header>
             <Modal.Body>
               <Row className="justify-content-center">
-                {postPicturesFullUrl.map((picUrl, index) => (
+                {postPicturesFullUrl.map((imageData: ImageData, index: number) => (
                   <Col md={4} className="mb-4" key={index}>
-                    <Image src={picUrl.url} width={100} height={100} key={index} />
+                    <Image src={imageData.url} width={100} height={100} key={index} />
                   </Col>
                 ))}
               </Row>
@@ -324,23 +294,28 @@ export default function HousePost({
           </div>
           {userType === USER_TYPE.Housitter && (
             <div>
-              {' '}
-              <Card.Text>post by: {landlordFirstName}</Card.Text>
-              <Picture
-                isAvatar={true}
-                url={landlordAvatarUrl}
-                email=""
-                promptMessage=""
-                isIntro={false}
-                disableUpload={true}
-                primaryUse={USER_TYPE.Landlord}
-                uid={landlordId ? landlordId : 'no landlord uid - not valid'}
-                size={100}
-                width={100}
-                height={100}
-                bucketName="avatars"
-                isRounded={true}
-              />
+              {landlordId && landlordAvatarUrl && (
+                <>
+                  <Card.Text>post by: {landlordFirstName}</Card.Text>
+                  <Picture
+                    isAvatar={true}
+                    url={
+                      landlordAvatarUrl ? landlordAvatarUrl : 'no landlord avatar url - not valid'
+                    }
+                    email=""
+                    promptMessage=""
+                    isIntro={false}
+                    disableUpload={true}
+                    primaryUse={USER_TYPE.Landlord}
+                    uid={landlordId ? landlordId : 'no landlord uid - not valid'}
+                    size={100}
+                    width={100}
+                    height={100}
+                    bucketName="avatars"
+                    isRounded={true}
+                  />
+                </>
+              )}
               <ReviewsOnSelectedUser
                 selectedUserId={landlordId}
                 selectedUserFirstName={landlordFirstName}

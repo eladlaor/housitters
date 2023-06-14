@@ -11,7 +11,8 @@ import {
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
 import { PageRoutes, LocationIds, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
 
-import HousePost from '../../components/HousePost'
+import { ImageData } from '../../types/clientSide'
+
 import Picture from '../../components/Picture'
 import SignOut from '../../components/Buttons/SignOut'
 import SidebarFilter from '../../components/SidebarFilter'
@@ -20,9 +21,11 @@ import Inbox from '../../components/Inbox'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
-import { Typeahead, Hint } from 'react-bootstrap-typeahead'
 import UserSearcher from '../../components/UserSearcher'
 import Link from 'next/link'
+
+import { selectAvailablePostsState, setAvailablePosts } from '../../slices/availablePostsSlice'
+import HousePreview from '../../components/HousePreview'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -34,8 +37,9 @@ export default function Home() {
   const isLogged = useSelector(selectIsLoggedState)
   const avatarUrl = useSelector(selectAvatarUrlState)
 
+  const availablePosts = useSelector(selectAvailablePostsState)
+
   // TODO: should make it redux.
-  const [posts, setPosts] = useState([] as Object[])
 
   // TODO: can set loading states if needed
 
@@ -82,7 +86,6 @@ export default function Home() {
         }
       }
 
-      // TODO: add a ifActive filter.
       try {
         let { data: postsData, error: postsError } = await supabase
           .from('posts')
@@ -103,8 +106,6 @@ export default function Home() {
           debugger
           throw postsError
         } else if (postsData) {
-          // TODO: maybe also show how many posts outside its range, so getting from db does make sense...
-
           // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
           let postsFilteredByPeriod = postsData.filter((post) => {
             return (post?.landlords as any).profiles?.available_dates.some((postPeriod: any) => {
@@ -119,7 +120,35 @@ export default function Home() {
             })
           })
 
-          setPosts(postsFilteredByPeriod)
+          const parsedAvailablePosts = postsFilteredByPeriod.map((post) => {
+            let parsedAvailabePost = {
+              landlordId: post.landlord_id,
+              title: post.title,
+              description: post.description,
+              imagesUrls: post.images_urls
+                ? post.images_urls.map((imageUrl: string, index: number) => ({
+                    url: imageUrl,
+                    id: index,
+                  }))
+                : '',
+            } as any
+
+            if (post.landlords) {
+              if (Array.isArray(post.landlords)) {
+                parsedAvailabePost.location = post.landlords[0] ? post.landlords[0].location : ''
+                parsedAvailabePost.dogs = (post.landlords as any).profiles?.pets?.dogs
+                parsedAvailabePost.cats = (post.landlords as any).profiles?.pets?.cats
+              } else {
+                parsedAvailabePost.location = post.landlords.location
+                parsedAvailabePost.dogs = (post.landlords.profiles as any).pets?.dogs
+                parsedAvailabePost.cats = (post.landlords.profiles as any).pets?.cats
+              }
+            }
+
+            return parsedAvailabePost
+          })
+
+          dispatch(setAvailablePosts(parsedAvailablePosts))
         }
       } catch (e: any) {
         alert(e.message)
@@ -133,11 +162,11 @@ export default function Home() {
   }, [user, locations, availability])
 
   function sortPosts(sortByProperty: string) {
-    let sortedposts: any[] = [...posts]
+    let sortedposts: any[] = [...availablePosts]
 
     if (typeof sortedposts[0][sortByProperty] === 'string') {
       // TODO: add some sorting logic here
-      setPosts(sortedposts)
+      dispatch(setAvailablePosts(sortedposts))
     } else {
       console.log('sorting by number')
     }
@@ -193,7 +222,7 @@ export default function Home() {
         <Row>
           <Col md={9}>
             <Row>
-              {posts.length === 0 ? (
+              {availablePosts.length === 0 ? (
                 <div>
                   <p>
                     There are no available houses with your current filtering.
@@ -203,24 +232,24 @@ export default function Home() {
                   <h2>you should know: landlords can still find you and contact you directly </h2>
                 </div>
               ) : (
-                posts.map((post: any, index: number) => (
+                availablePosts.map((post: any, index: number) => (
                   <Col key={index} md={4} className="mb-4">
-                    <Link href={`/housitters/house/${post.landlord_id}`}>
+                    <Link href={`/housitters/house/${post.landlordId}`}>
                       <a>
-                        <HousePost
-                          landlordId={post.landlord_id}
+                        <HousePreview
+                          landlordId={post.landlordId}
                           title={post.title}
                           description={post.description}
-                          location={post.landlords ? post.landlords.location : ''}
-                          availability={availability}
-                          dogs={post.landlords?.profiles?.pets?.dogs}
-                          cats={post.landlords?.profiles?.pets?.cats}
+                          location={post.location}
+                          availability={availability} // the sitter availability
+                          dogs={post.dogs}
+                          cats={post.cats}
                           key={index}
                           imagesUrls={
-                            post.images_urls
-                              ? post.images_urls.map((imageUrl: string) => ({
-                                  url: imageUrl,
-                                  id: index,
+                            post.imagesUrls
+                              ? post.imagesUrls.map((imageData: ImageData) => ({
+                                  url: imageData.url,
+                                  id: imageData.id,
                                 }))
                               : ''
                           } // TODO: should have default image

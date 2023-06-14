@@ -9,7 +9,7 @@ import {
 } from '../../slices/userSlice'
 
 import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
-import { PageRoutes, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
+import { PageRoutes,  USER_TYPE, SignOutElementTypes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -33,7 +33,7 @@ import {
   setDescriptionState,
   setIsActiveState,
   setTitleState,
-} from '../../slices/postSlice'
+} from '../../slices/createPostSlice'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import Picture from '../../components/Picture'
 import Inbox from '../../components/Inbox'
@@ -57,7 +57,7 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import SidebarFilter from '../../components/SidebarFilter'
-import HousePost from '../../components/HousePost'
+import HousePreview from '../../components/HousePreview'
 import Accordion from 'react-bootstrap/Accordion'
 import { ImageData } from '../../types/clientSide'
 
@@ -437,7 +437,6 @@ export default function Home() {
         throw error
       }
 
-      // TODO: should be in HousePost, like the delete operation.
       confirmedClosedSitsToUpdate.push({
         housitterId: selectedHousitterId,
         housitterAvatarUrl: '',
@@ -544,7 +543,7 @@ export default function Home() {
               <Accordion.Item eventKey="0">
                 <Accordion.Header>My Active Post</Accordion.Header>
                 <Accordion.Body>
-                  <HousePost
+                  <HousePreview
                     landlordId={user ? user.id : ''}
                     title={title}
                     description={description}
