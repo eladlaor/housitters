@@ -189,6 +189,11 @@ a {
   cursor: pointer;
 }
 
+.inbox-navbar {
+  align-items: center;
+  margin-top: 10%;
+}
+
 
 .custom-form-select {
   color: #343a40; /* Dark colored text for contrast */

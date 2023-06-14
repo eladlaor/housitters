@@ -95,3 +95,14 @@ export interface NavbarItem {
 export interface SignOutProps {
   elementType: SignOutElementTypes
 }
+
+export interface DbAvailableHousitter {
+  firstName: string
+  lastName: string
+  housitterId: string
+  avatarUrl: string
+  locations: string[]
+  availability: { startDate: Date; endDate: Date }[]
+  experience: number
+  about_me: string
+}

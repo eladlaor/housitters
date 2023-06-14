@@ -36,6 +36,7 @@ export default function AvailableHousitter(props: HousitterProps) {
             bucketName="avatars"
             isAvatar={true}
             promptMessage=""
+            isRounded={true}
           />
           <Card.Title>
             {props.firstName} {props.lastName}

@@ -8,8 +8,8 @@ import {
   setFirstName,
 } from '../../slices/userSlice'
 
-import { ClosedSit } from '../../types/clientSide'
-import { PageRoutes, LocationIds, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
+import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
+import { PageRoutes, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -186,7 +186,7 @@ export default function Home() {
           .from('profiles')
           .select(
             `id, first_name, last_name, avatar_url, housitters!inner (
-            id, locations, experience
+            id, locations, experience, about_me
           ), available_dates!inner (user_id, start_date, end_date)`
           )
           .eq('primary_use', 'housitter')
@@ -199,15 +199,9 @@ export default function Home() {
           )
         }
 
-        // TODO: type this shit
-        let availableHousitters: {
-          firstName: string
-          lastName: string
-          housitterId: string
-          avatarUrl: string
-          locations: string[]
-          availability: { startDate: Date; endDate: Date }[]
-        }[] = []
+        let availableHousitter: DbAvailableHousitter
+
+        let availableHousitters: (typeof availableHousitter)[] = []
 
         if (housitterData) {
           for (const housitter of housitterData) {
@@ -219,16 +213,24 @@ export default function Home() {
               endDate: new Date(end_date),
             }))
 
-            availableHousitters.push({
+            availableHousitter = {
               firstName: housitter.first_name,
               lastName: housitter.last_name,
               housitterId: housitter.id,
               avatarUrl: housitter.avatar_url,
               availability: currentSitterAvailability,
-              locations: Array.isArray(housitter.housitters)
-                ? housitter.housitters[0].locations
-                : housitter.housitters?.locations,
-            })
+              locations: [],
+              experience: 0,
+              about_me: '',
+            }
+
+            if (Array.isArray(housitter.housitters)) {
+              availableHousitter.locations = housitter.housitters[0].locations
+              availableHousitter.experience = housitter?.housitters[0].experience
+              availableHousitter.about_me = housitter?.housitters[0].about_me
+            }
+
+            availableHousitters.push(availableHousitter)
 
             // filtering by availability, maybe there's a way to filter by availability on server-side?
             // meanwhile we'll do it client side, using user_id to kind of join the dates with the relavant sitter.
@@ -261,10 +263,6 @@ export default function Home() {
       })
     }
   }, [user, availability, location, isActivePost])
-
-  function handleLocationSelection(key: string | null) {
-    setLocationState(key ? key : '')
-  }
 
   async function handleShowNewPostModal() {
     if (fileNames.length > 0) {
@@ -528,8 +526,9 @@ export default function Home() {
               </NavDropdown.Item>
               <SignOut elementType={SignOutElementTypes.Link} />
             </NavDropdown>
-            <Nav.Link href="#available-housitters">Available Housitters</Nav.Link>
-            <Inbox />
+            <div className="inbox-navbar">
+              <Inbox />
+            </div>
             <UserSearcher />
           </Nav>
         </Navbar.Collapse>
@@ -766,7 +765,11 @@ export default function Home() {
                         housitterId={sitter.housitterId}
                         firstName={sitter.firstName}
                         lastName={sitter.lastName}
-                        about_me="hard coded about_me text"
+                        about_me={
+                          sitter.about_me
+                            ? sitter.about_me
+                            : `${sitter.firstName} didn't write a bio yet`
+                        }
                         avatarUrl={sitter.avatarUrl}
                         key={index}
                       />

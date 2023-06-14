@@ -9,7 +9,8 @@ import {
   selectPrimaryUseState,
 } from '../slices/userSlice'
 
-import { API_ROUTES, MessageSenderProps, USER_TYPE } from '../utils/constants'
+import { API_ROUTES, USER_TYPE } from '../utils/constants'
+import { MessageSenderProps } from '../types/clientSide'
 
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
@@ -164,12 +165,12 @@ export default function MessageSender(props: MessageSenderProps) {
   ) : (
     <div>
       <Button variant="secondary" onClick={handleOpenEmailModal} disabled={isSendingInProgress}>
-        Send Email
+        Contact
       </Button>
       <Modal show={showEmailModal} onHide={handleCloseEmailModal}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Send Email to {recipientFirstName} {recipientLastName}
+            Contact {recipientFirstName} {recipientLastName}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
