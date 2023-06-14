@@ -16,7 +16,6 @@ export default function UserSearcher() {
   type Profiles = Database['public']['Tables']['profiles']['Row']
 
   const noSelectedSearchedUser: Profiles = {
-    about_me: '',
     avatar_url: '',
     birthday: '',
     email: '',
@@ -62,7 +61,7 @@ export default function UserSearcher() {
       const { error, data } = await supabaseClient
         .from('profiles')
         .select(
-          'id, first_name, last_name, primary_use, username, social_media_url, email, birthday, about_me, avatar_url'
+          'id, first_name, last_name, primary_use, username, social_media_url, email, birthday, avatar_url'
         )
         .neq('id', user!.id)
 
@@ -105,7 +104,6 @@ export default function UserSearcher() {
               userId={selectedSearchedUser.id}
               primaryUse={selectedSearchedUser.primary_use as string}
               email={selectedSearchedUser.email}
-              aboutMe={selectedSearchedUser.about_me}
               avatarUrl={selectedSearchedUser.avatar_url as string}
             />
           </Modal.Body>

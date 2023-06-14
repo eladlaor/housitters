@@ -89,7 +89,9 @@ export default function Home() {
           .select(
             `landlord_id, title, description, images_urls, landlords!inner (
                 location, profiles!inner (
-                  first_name, available_dates (start_date, end_date)
+                  first_name, available_dates (start_date, end_date), pets!inner (
+                    dogs, cats
+                  )
                 )
             )`
           )
@@ -211,8 +213,8 @@ export default function Home() {
                           description={post.description}
                           location={post.landlords ? post.landlords.location : ''}
                           availability={availability}
-                          dogs={post.dogs}
-                          cats={post.cats}
+                          dogs={post.landlords?.profiles?.pets?.dogs}
+                          cats={post.landlords?.profiles?.pets?.cats}
                           key={index}
                           imagesUrls={
                             post.images_urls
