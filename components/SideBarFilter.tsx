@@ -30,8 +30,10 @@ export default function SidebarFilter({
         <FaSort />
         <h3>Sort by:</h3>
       </div>
-      <Sorter sortingProperties={['firstName']} sortElementsHandler={sortElementsHandler} />
-      <hr />
+      <div>
+        <Sorter sortingProperties={['firstName']} sortElementsHandler={sortElementsHandler} />
+        <hr />
+      </div>
       <div className="sorter-filter">
         <FaFilter />
         <h3>Filter by:</h3>

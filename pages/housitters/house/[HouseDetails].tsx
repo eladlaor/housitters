@@ -9,6 +9,7 @@ import { RootState } from '../../../store'
 import ReviewsOnSelectedUser from '../../../components/ReviewsOnSelectedUser'
 import MessageSender from '../../../components/MessageSender'
 import Picture from '../../../components/Picture'
+import ImageCarousel from '../../../components/ImageCarousel'
 
 import {
   selectAvailabilityState,
@@ -81,15 +82,6 @@ export default function HouseDetails() {
 
   // TODO: maybe better differentiate between the sitter/lord use cases, specifically for userFirstName
   const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as ImageData[])
-  const [showModal, setShowModal] = useState(false)
-
-  function handleModalOpen() {
-    setShowModal(true)
-  }
-
-  function handleModalClose() {
-    setShowModal(false)
-  }
 
   useEffect(() => {
     if (!landlordId) {
@@ -172,122 +164,99 @@ export default function HouseDetails() {
     // TODO: add logic to send an email to housitters.com with the reason for cancellation, and if you feel it is too short notice and irresponsible we give the sitter a yellow card
   }
 
-  console.log(`images: ${JSON.stringify(imagesData)}`)
-
   return (
     <div className="house-page">
-      <header className="house-header">
-        <div className="house-image">
-          <h3> {title}</h3>
-          <br />
-          {postPicturesFullUrl[0] && postPicturesFullUrl[0].url ? (
-            <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
-          ) : (
-            'Loading Title Image'
-          )}
-        </div>
-        <>
-          {postPicturesFullUrl.length > 1 ? (
-            <Button onClick={handleModalOpen}>See More Pictures</Button>
-          ) : (
-            <Button disabled={true}>No Other Pictures</Button>
-          )}
-        </>
-      </header>
-      <Modal show={showModal} onHide={handleModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Additional Pictures</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row className="justify-content-center">
-            {postPicturesFullUrl.map((imageData: ImageData, index: number) => (
-              <Col md={4} className="mb-4" key={index}>
-                <Image src={imageData.url} width={100} height={100} key={index} />
-              </Col>
+      <Row>
+        <ImageCarousel imagesData={postPicturesFullUrl} title={title} />
+      </Row>
+      <Row>
+        <Col>
+          <h1>{LocationDescriptions[location]}</h1>
+        </Col>
+        <Col>
+          <div>
+            {availability.map((period, index) => (
+              <React.Fragment key={index}>
+                <ListGroup>
+                  <ListGroup.Item>
+                    {userType === USER_TYPE.Landlord &&
+                      (() => {
+                        const closedPeriodIfExists = isClosedPeriod(period.startDate)
+                        return closedPeriodIfExists ? (
+                          <>
+                            <Badge bg="success">Closed</Badge>
+                            <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
+                            <br />
+                            This sit is set!
+                            <br />
+                            Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
+                            {closedPeriodIfExists.housitterLastName}
+                            {closedPeriodIfExists.housitterAvatarUrl && (
+                              <Picture
+                                isIntro={false}
+                                uid={closedPeriodIfExists.housitterId}
+                                primaryUse={USER_TYPE.Housitter}
+                                url={closedPeriodIfExists.housitterAvatarUrl}
+                                size={100}
+                                width={100} // should persist dimensions of image upon upload
+                                height={100}
+                                disableUpload={true}
+                                bucketName="avatars"
+                                isAvatar={true}
+                                promptMessage=""
+                                email=""
+                                isRounded={false}
+                              />
+                            )}
+                            <br />
+                            <Button
+                              variant="danger"
+                              onClick={(e) =>
+                                handleMySitterCancelled(e, {
+                                  housitterId: closedPeriodIfExists.housitterId,
+                                  landlordId: landlordId,
+                                  startDate: closedPeriodIfExists.startDate,
+                                })
+                              }
+                            >
+                              my sitter cancelled
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Badge bg="danger">Open</Badge>
+                            <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
+                            This sit is still open
+                            <br />
+                          </>
+                        )
+                      })()}
+
+                    <DateDisplayer startDate={period.startDate} endDate={period.endDate} />
+
+                    <br />
+                  </ListGroup.Item>
+                </ListGroup>
+              </React.Fragment>
             ))}
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={handleModalClose}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-      {LocationDescriptions[location]}
+          </div>
+        </Col>
+      </Row>
       <hr />
-      <FontAwesomeIcon icon={faDog} /> {dogs}
-      <br />
-      <FontAwesomeIcon icon={faCat} /> {cats}
+      <Row>
+        <Col>
+          <FontAwesomeIcon icon={faDog} /> {dogs}
+        </Col>
+        <Col>
+          <FontAwesomeIcon icon={faCat} /> {cats}
+        </Col>
+      </Row>
       <hr />
-      {description}
+      <Row>{description}</Row>
       <hr />
-      <div>
-        {availability.map((period, index) => (
-          <React.Fragment key={index}>
-            <ListGroup>
-              <ListGroup.Item>
-                {userType === USER_TYPE.Landlord &&
-                  (() => {
-                    const closedPeriodIfExists = isClosedPeriod(period.startDate)
-                    return closedPeriodIfExists ? (
-                      <>
-                        <Badge bg="success">Closed</Badge>
-                        <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
-                        <br />
-                        This sit is set!
-                        <br />
-                        Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
-                        {closedPeriodIfExists.housitterLastName}
-                        {closedPeriodIfExists.housitterAvatarUrl && (
-                          <Picture
-                            isIntro={false}
-                            uid={closedPeriodIfExists.housitterId}
-                            primaryUse={USER_TYPE.Housitter}
-                            url={closedPeriodIfExists.housitterAvatarUrl}
-                            size={100}
-                            width={100} // should persist dimensions of image upon upload
-                            height={100}
-                            disableUpload={true}
-                            bucketName="avatars"
-                            isAvatar={true}
-                            promptMessage=""
-                            email=""
-                            isRounded={false}
-                          />
-                        )}
-                        <br />
-                        <Button
-                          variant="danger"
-                          onClick={(e) =>
-                            handleMySitterCancelled(e, {
-                              housitterId: closedPeriodIfExists.housitterId,
-                              landlordId: landlordId,
-                              startDate: closedPeriodIfExists.startDate,
-                            })
-                          }
-                        >
-                          my sitter cancelled
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Badge bg="danger">Open</Badge>
-                        <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
-                        This sit is still open
-                        <br />
-                      </>
-                    )
-                  })()}
-
-                <DateDisplayer startDate={period.startDate} endDate={period.endDate} />
-
-                <br />
-              </ListGroup.Item>
-            </ListGroup>
-          </React.Fragment>
-        ))}
-        <hr />
-      </div>
-      {userType === USER_TYPE.Housitter && (
-        <div>
+      <Row>
+        <Col>
+          {' '}
           {landlordId && landlordAvatarUrl && (
             <>
               post by: {landlordFirstName}
@@ -308,12 +277,22 @@ export default function HouseDetails() {
               />
             </>
           )}
-          <ReviewsOnSelectedUser
-            selectedUserId={landlordId}
-            selectedUserFirstName={landlordFirstName}
-            selectedUserLastName={landlordLastName}
-            selectedUserType={USER_TYPE.Landlord}
-          />
+        </Col>
+        <Col>
+          {' '}
+          {
+            <div>
+              <ReviewsOnSelectedUser
+                selectedUserId={landlordId}
+                selectedUserFirstName={landlordFirstName}
+                selectedUserLastName={landlordLastName}
+                selectedUserType={USER_TYPE.Landlord}
+              />
+            </div>
+          }
+        </Col>
+        <Col>
+          {' '}
           <MessageSender
             recipientFirstName={landlordFirstName}
             recipientLastName={landlordLastName}
@@ -322,8 +301,8 @@ export default function HouseDetails() {
             senderLastName={userLastName}
             isChat={false}
           />
-        </div>
-      )}
+        </Col>
+      </Row>
     </div>
   )
 }

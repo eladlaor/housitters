@@ -17,7 +17,7 @@ import React from 'react'
 import { countDays } from '../utils/dates'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsLoggedState, selectPrimaryUseState } from '../slices/userSlice'
-import { USER_TYPE } from '../utils/constants'
+import { LocationDescriptions, USER_TYPE } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import Picture from './Picture'
 import { selectClosedSitsState, setClosedSitsState } from '../slices/landlordSlice'
@@ -79,8 +79,6 @@ export default function HousePreview({
         if (landlordError) {
           alert(landlordError.message)
         } else if (landlordData) {
-          // setLandlordFirstName(landlordData.first_name)
-          // setLandlordLastName(landlordData.last_name)
           dispatch(
             setLandlordAvatarUrlState({ landlordId, landlordAvatarUrl: landlordData.avatar_url })
           )
@@ -244,7 +242,7 @@ export default function HousePreview({
             </Modal.Footer>
           </Modal>
 
-          <Card.Text>location: {location}</Card.Text>
+          <Card.Text>{LocationDescriptions[location]}</Card.Text>
           <hr />
           <Card.Text>
             <FontAwesomeIcon icon={faDog} /> {dogs}

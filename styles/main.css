@@ -81,12 +81,8 @@ a {
 }
 
 .sidebar-filter hr {
-  color: red;
   border: solid;
   width: 100%;
-  height: 10px;
-  background: #333;
-  margin: 10px 0;
 }
 
 .sidebar-filter .sorter-filter {

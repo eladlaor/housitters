@@ -106,3 +106,16 @@ export interface DbAvailableHousitter {
   experience: number
   about_me: string
 }
+
+export type DefaultAvailablePostType = {
+  landlordId: string
+  landlordAvatarUrl: string
+  landlordFirstName: string
+  landlordLastName: string
+  title: string
+  description: string
+  location: string
+  dogs: number
+  cats: number
+  imagesUrls: ImageData[]
+}
