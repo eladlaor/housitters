@@ -25,6 +25,8 @@ import { HousePreviewProps, ClosedSit } from '../types/clientSide'
 import {
   selectLandlordAvatarUrlState,
   setLandlordAvatarUrlState,
+  setLandlordFirstNameState,
+  setLandlordLastNameState,
 } from '../slices/availablePostsSlice'
 import { RootState } from '../store'
 import DateDisplayer from './utils/DateDisplayer'
@@ -79,6 +81,14 @@ export default function HousePreview({
         if (landlordError) {
           alert(landlordError.message)
         } else if (landlordData) {
+          dispatch(
+            setLandlordFirstNameState({ landlordId, landlordFirstName: landlordData.first_name })
+          )
+
+          dispatch(
+            setLandlordLastNameState({ landlordId, landlordLastName: landlordData.last_name })
+          )
+
           dispatch(
             setLandlordAvatarUrlState({ landlordId, landlordAvatarUrl: landlordData.avatar_url })
           )

@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { ImageData } from '../types/clientSide'
+import { DefaultAvailablePostType } from '../types/clientSide'
 import { DefaultAvailablePost } from '../utils/constants'
 
 // this is from the housitter perspective
@@ -8,6 +8,7 @@ import { DefaultAvailablePost } from '../utils/constants'
 export const initialState = [DefaultAvailablePost]
 
 export type availablePostsState = typeof initialState
+type DefaultAvailablePostKeys = keyof DefaultAvailablePostType
 
 export const availablePostsSlice = createSlice({
   name: 'availablePosts',
@@ -23,74 +24,44 @@ export const availablePostsSlice = createSlice({
     removePost(state = initialState, action) {
       return state.filter((post) => post.landlordId !== action.payload)
     },
+
+    setLandlordFirstNameState(
+      state = initialState,
+      action: PayloadAction<{ landlordId: string; landlordFirstName: string }>
+    ) {
+      setSpecificLandlordPropertyByIndex(
+        state,
+        action.payload.landlordId,
+        'landlordFirstName',
+        action.payload.landlordFirstName
+      )
+    },
+
+    setLandlordLastNameState(
+      state = initialState,
+      action: PayloadAction<{ landlordId: string; landlordLastName: string }>
+    ) {
+      setSpecificLandlordPropertyByIndex(
+        state,
+        action.payload.landlordId,
+        'landlordLastName',
+        action.payload.landlordLastName
+      )
+    },
+
     setLandlordAvatarUrlState(
       state,
       action: PayloadAction<{ landlordId: string; landlordAvatarUrl: string }>
     ) {
-      const index = state.findIndex((post) => post.landlordId === action.payload.landlordId)
-      if (index !== -1) {
-        state[index].landlordAvatarUrl = action.payload.landlordAvatarUrl
-      }
-    },
-    setImagesUrlsState(state = initialState, action) {
-      return {
-        ...state,
-        imagesUrls: action.payload,
-      }
-    },
-    setDescriptionState(
-      state = initialState,
-      action: PayloadAction<{ landlordId: string; description: string }>
-    ) {
-      const index = state.findIndex((post) => post.landlordId === action.payload.landlordId)
-
-      // TODO: with redux toolkit, it's possible to change in place, as it uses a lib under the hood (immer) which creates the new thing
-      if (index !== -1) {
-        state[index].description = action.payload.description
-      }
-    },
-
-    // TODO: should make the changes here as well
-
-    setTitleState(state = initialState, action) {
-      return {
-        ...state,
-        title: action.payload,
-      }
-    },
-    setDogsState(state = initialState, action) {
-      return {
-        ...state,
-        dogs: action.payload,
-      }
-    },
-    setCatsState(state = initialState, action) {
-      return {
-        ...state,
-        cats: action.payload,
-      }
-    },
-    setLocationState(state = initialState, action) {
-      return {
-        ...state,
-        location: action.payload,
-      }
+      setSpecificLandlordPropertyByIndex(
+        state,
+        action.payload.landlordId,
+        'landlordAvatarUrl',
+        action.payload.landlordAvatarUrl
+      )
     },
   },
 })
-
-// Action creators (postsSlice.action) are generated (automatically) for each case reducer function
-export const {
-  setAvailablePosts,
-  setLandlordAvatarUrlState,
-  addPost,
-  setImagesUrlsState,
-  setDescriptionState,
-  setTitleState,
-  setLocationState,
-  setDogsState,
-  setCatsState,
-} = availablePostsSlice.actions
 
 function getSpecificLandlordPropertyByIndex(
   state: RootState,
@@ -98,7 +69,9 @@ function getSpecificLandlordPropertyByIndex(
   propertyName: keyof typeof DefaultAvailablePost,
   defaultValue: any
 ) {
-  const index = state.availablePosts.findIndex((post) => post.landlordId === landlordId)
+  const index = state.availablePosts.findIndex(
+    (post: { landlordId: string }) => post.landlordId === landlordId
+  )
 
   if (index !== -1) {
     return state.availablePosts[index][propertyName]
@@ -106,6 +79,29 @@ function getSpecificLandlordPropertyByIndex(
     return defaultValue
   }
 }
+
+function setSpecificLandlordPropertyByIndex<K extends DefaultAvailablePostKeys>(
+  state: any,
+  landlordId: string,
+  propertyName: K,
+  newValue: DefaultAvailablePostType[K]
+) {
+  const index = state.findIndex((post: { landlordId: string }) => post.landlordId === landlordId)
+
+  if (index !== -1) {
+    state[index][propertyName] = newValue
+  }
+}
+
+// Action creators (postsSlice.action) are generated (automatically) for each case reducer function
+export const {
+  setAvailablePosts,
+  setLandlordFirstNameState,
+  setLandlordLastNameState,
+  setLandlordAvatarUrlState,
+  addPost,
+  removePost,
+} = availablePostsSlice.actions
 
 export const selectAvailablePostsState = (state: RootState) => state.availablePosts
 export const selectImagesUrlsState = (state: RootState, landlordId: string) =>
