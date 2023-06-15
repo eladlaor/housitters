@@ -112,7 +112,7 @@ export default function Home() {
               for (const housitterAvailabilitySelector of housitterAvailableDates) {
                 return (
                   housitterAvailabilitySelector.endDate.startsWith('1970') ||
-                  postPeriod.end_date.getFullYear().toString() === '1970' ||
+                  new Date(postPeriod.end_date).getFullYear().toString() === '1970' ||
                   (housitterAvailabilitySelector.startDate <= postPeriod.start_date &&
                     housitterAvailabilitySelector.endDate >= postPeriod.end_date)
                 )
@@ -216,7 +216,9 @@ export default function Home() {
         </Navbar.Collapse>
       </Navbar>
       <Container>
-        <h1>Hello {firstName}! Let's find you a cute pet to feel at home with.</h1>
+        <h1>
+          Hello {firstName}! <br /> Let's find you a cute pet to feel at home with.
+        </h1>
 
         <h2>here are all the relevant posts for you</h2>
         <Row>

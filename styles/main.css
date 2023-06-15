@@ -70,8 +70,48 @@ a {
 .sidebar-filter {
   flex: 1;
   position: sticky;
-  top: 0;
-  margin: 30px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.24);
+  margin-bottom: 20px;
+  border-left: 4px solid #15570f; 
+  padding-left: 10px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-filter hr {
+  color: red;
+  border: solid;
+  width: 100%;
+  height: 10px;
+  background: #333;
+  margin: 10px 0;
+}
+
+.sidebar-filter .sorter-filter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.sidebar-filter .card-body {
+  padding: 15px;
+}
+
+.sidebar-filter .card-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+
+}
+
+.sidebar-filter .card-title svg {
+  margin-right: 10px;
 }
 
 .headline {
@@ -240,3 +280,40 @@ a {
 }
 
 
+.house-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.house-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+
+.house-image-main {
+  width: 100%;
+  height: auto;
+}
+
+.house-brief {
+  flex: 1;
+  padding: 0 20px;
+}
+
+.house-title {
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+.house-location {
+  color: gray;
+}
+
+.house-content {
+  padding: 20px 0;
+}

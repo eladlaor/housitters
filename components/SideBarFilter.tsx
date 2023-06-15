@@ -9,6 +9,9 @@ import AvailabilitySelector from './AvailabilitySelector'
 import { selectAvailabilityState, setAvailability } from '../slices/userSlice'
 import Sorter from './Sorter'
 
+import { FaFilter, FaSort } from 'react-icons/fa'
+import { Row } from 'react-bootstrap'
+
 export default function SidebarFilter({
   isHousitter,
   showCustomLocations,
@@ -22,20 +25,25 @@ export default function SidebarFilter({
 }) {
   const availabaility = useSelector(selectAvailabilityState)
   return (
-    <Card>
-      <h2>Sort by:</h2>
-
+    <Card className="sidebar-filter">
+      <div className="sorter-filter">
+        <FaSort />
+        <h3>Sort by:</h3>
+      </div>
       <Sorter sortingProperties={['firstName']} sortElementsHandler={sortElementsHandler} />
-      <hr style={{ borderTop: '20px solid #000' }} />
-
-      <h2>Filter by:</h2>
+      <hr />
+      <div className="sorter-filter">
+        <FaFilter />
+        <h3>Filter by:</h3>
+      </div>
+      Location:
       <LocationSelector
         isHousitter={isHousitter}
         showCustomLocations={showCustomLocations}
         selectionType={selectionType as FormCheckType}
         updateDbInstantly={true}
       />
-      <hr style={{ borderTop: '8px solid #000' }} />
+      Dates:
       {availabaility.map((period, index) => (
         <AvailabilitySelector period={period} index={index} key={index} updateDbInstantly={true} />
       ))}

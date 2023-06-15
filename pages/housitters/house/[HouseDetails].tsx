@@ -31,12 +31,10 @@ import availablePostsSlice, {
   selectLandlordLastNameState,
 } from '../../../slices/availablePostsSlice'
 
-import { USER_TYPE } from '../../../utils/constants'
+import { LocationDescriptions, USER_TYPE } from '../../../utils/constants'
 import { ImageData, ClosedSit } from '../../../types/clientSide'
-import { countDays } from '../../../utils/dates'
 
 import { Button, ListGroup, Modal, Badge } from 'react-bootstrap'
-import Card from 'react-bootstrap/Card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendar, faCalendarCheck, faCat, faDog } from '@fortawesome/free-solid-svg-icons'
 import Row from 'react-bootstrap/Row'
@@ -177,163 +175,155 @@ export default function HouseDetails() {
   console.log(`images: ${JSON.stringify(imagesData)}`)
 
   return (
-    <div>
-      <Card bg="light" style={{ width: '18rem' }}>
-        <Card.Body className="text-center">
-          <Card.Title>{title}</Card.Title>
+    <div className="house-page">
+      <header className="house-header">
+        <div className="house-image">
+          <h3> {title}</h3>
+          <br />
           {postPicturesFullUrl[0] && postPicturesFullUrl[0].url ? (
             <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
           ) : (
             'Loading Title Image'
           )}
-          <>
-            {postPicturesFullUrl.length > 1 ? (
-              <Button onClick={handleModalOpen}>See More Pictures</Button>
-            ) : (
-              <Button disabled={true}>No Other Pictures</Button>
-            )}
-          </>
-
-          <Modal show={showModal} onHide={handleModalClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Additional Pictures</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Row className="justify-content-center">
-                {postPicturesFullUrl.map((imageData: ImageData, index: number) => (
-                  <Col md={4} className="mb-4" key={index}>
-                    <Image src={imageData.url} width={100} height={100} key={index} />
-                  </Col>
-                ))}
-              </Row>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={handleModalClose}>Close</Button>
-            </Modal.Footer>
-          </Modal>
-
-          <Card.Text>location: {location}</Card.Text>
-          <hr />
-          <Card.Text>
-            <FontAwesomeIcon icon={faDog} /> {dogs}
-            <br />
-            <FontAwesomeIcon icon={faCat} /> {cats}
-          </Card.Text>
-          <hr />
-          <Card.Text>{description}</Card.Text>
-          <hr />
-          <div>
-            {availability.map((period, index) => (
-              <React.Fragment key={index}>
-                <ListGroup>
-                  <ListGroup.Item>
-                    {userType === USER_TYPE.Landlord &&
-                      (() => {
-                        const closedPeriodIfExists = isClosedPeriod(period.startDate)
-                        return closedPeriodIfExists ? (
-                          <>
-                            <Card.Text>
-                              <Badge bg="success">Closed</Badge>
-                              <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
-                              <br />
-                              This sit is set!
-                              <br />
-                              Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
-                              {closedPeriodIfExists.housitterLastName}
-                            </Card.Text>
-
-                            {closedPeriodIfExists.housitterAvatarUrl && (
-                              <Picture
-                                isIntro={false}
-                                uid={closedPeriodIfExists.housitterId}
-                                primaryUse={USER_TYPE.Housitter}
-                                url={closedPeriodIfExists.housitterAvatarUrl}
-                                size={100}
-                                width={100} // should persist dimensions of image upon upload
-                                height={100}
-                                disableUpload={true}
-                                bucketName="avatars"
-                                isAvatar={true}
-                                promptMessage=""
-                                email=""
-                                isRounded={false}
-                              />
-                            )}
-                            <br />
-                            <Button
-                              variant="danger"
-                              onClick={(e) =>
-                                handleMySitterCancelled(e, {
-                                  housitterId: closedPeriodIfExists.housitterId,
-                                  landlordId: landlordId,
-                                  startDate: closedPeriodIfExists.startDate,
-                                })
-                              }
-                            >
-                              my sitter cancelled
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Badge bg="danger">Open</Badge>
-                            <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
-                            This sit is still open
-                            <br />
-                          </>
-                        )
-                      })()}
-
-                    <DateDisplayer startDate={period.startDate} endDate={period.endDate} />
-
-                    <br />
-                  </ListGroup.Item>
-                </ListGroup>
-              </React.Fragment>
-            ))}
-            <hr />
-          </div>
-          {userType === USER_TYPE.Housitter && (
-            <div>
-              {landlordId && landlordAvatarUrl && (
-                <>
-                  <Card.Text>post by: {landlordFirstName}</Card.Text>
-                  <Picture
-                    isAvatar={true}
-                    url={
-                      landlordAvatarUrl ? landlordAvatarUrl : 'no landlord avatar url - not valid'
-                    }
-                    email=""
-                    promptMessage=""
-                    isIntro={false}
-                    disableUpload={true}
-                    primaryUse={USER_TYPE.Landlord}
-                    uid={landlordId ? landlordId : 'no landlord uid - not valid'}
-                    size={100}
-                    width={100}
-                    height={100}
-                    bucketName="avatars"
-                    isRounded={true}
-                  />
-                </>
-              )}
-              <ReviewsOnSelectedUser
-                selectedUserId={landlordId}
-                selectedUserFirstName={landlordFirstName}
-                selectedUserLastName={landlordLastName}
-                selectedUserType={USER_TYPE.Landlord}
-              />
-              <MessageSender
-                recipientFirstName={landlordFirstName}
-                recipientLastName={landlordLastName}
-                recipientUserId={landlordId}
-                senderFirstName={userFirstName}
-                senderLastName={userLastName}
-                isChat={false}
-              />
-            </div>
+        </div>
+        <>
+          {postPicturesFullUrl.length > 1 ? (
+            <Button onClick={handleModalOpen}>See More Pictures</Button>
+          ) : (
+            <Button disabled={true}>No Other Pictures</Button>
           )}
-        </Card.Body>
-      </Card>
+        </>
+      </header>
+      <Modal show={showModal} onHide={handleModalClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Additional Pictures</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row className="justify-content-center">
+            {postPicturesFullUrl.map((imageData: ImageData, index: number) => (
+              <Col md={4} className="mb-4" key={index}>
+                <Image src={imageData.url} width={100} height={100} key={index} />
+              </Col>
+            ))}
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={handleModalClose}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+      {LocationDescriptions[location]}
+      <hr />
+      <FontAwesomeIcon icon={faDog} /> {dogs}
+      <br />
+      <FontAwesomeIcon icon={faCat} /> {cats}
+      <hr />
+      {description}
+      <hr />
+      <div>
+        {availability.map((period, index) => (
+          <React.Fragment key={index}>
+            <ListGroup>
+              <ListGroup.Item>
+                {userType === USER_TYPE.Landlord &&
+                  (() => {
+                    const closedPeriodIfExists = isClosedPeriod(period.startDate)
+                    return closedPeriodIfExists ? (
+                      <>
+                        <Badge bg="success">Closed</Badge>
+                        <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
+                        <br />
+                        This sit is set!
+                        <br />
+                        Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
+                        {closedPeriodIfExists.housitterLastName}
+                        {closedPeriodIfExists.housitterAvatarUrl && (
+                          <Picture
+                            isIntro={false}
+                            uid={closedPeriodIfExists.housitterId}
+                            primaryUse={USER_TYPE.Housitter}
+                            url={closedPeriodIfExists.housitterAvatarUrl}
+                            size={100}
+                            width={100} // should persist dimensions of image upon upload
+                            height={100}
+                            disableUpload={true}
+                            bucketName="avatars"
+                            isAvatar={true}
+                            promptMessage=""
+                            email=""
+                            isRounded={false}
+                          />
+                        )}
+                        <br />
+                        <Button
+                          variant="danger"
+                          onClick={(e) =>
+                            handleMySitterCancelled(e, {
+                              housitterId: closedPeriodIfExists.housitterId,
+                              landlordId: landlordId,
+                              startDate: closedPeriodIfExists.startDate,
+                            })
+                          }
+                        >
+                          my sitter cancelled
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Badge bg="danger">Open</Badge>
+                        <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
+                        This sit is still open
+                        <br />
+                      </>
+                    )
+                  })()}
+
+                <DateDisplayer startDate={period.startDate} endDate={period.endDate} />
+
+                <br />
+              </ListGroup.Item>
+            </ListGroup>
+          </React.Fragment>
+        ))}
+        <hr />
+      </div>
+      {userType === USER_TYPE.Housitter && (
+        <div>
+          {landlordId && landlordAvatarUrl && (
+            <>
+              post by: {landlordFirstName}
+              <Picture
+                isAvatar={true}
+                url={landlordAvatarUrl ? landlordAvatarUrl : 'no landlord avatar url - not valid'}
+                email=""
+                promptMessage=""
+                isIntro={false}
+                disableUpload={true}
+                primaryUse={USER_TYPE.Landlord}
+                uid={landlordId ? landlordId : 'no landlord uid - not valid'}
+                size={100}
+                width={100}
+                height={100}
+                bucketName="avatars"
+                isRounded={true}
+              />
+            </>
+          )}
+          <ReviewsOnSelectedUser
+            selectedUserId={landlordId}
+            selectedUserFirstName={landlordFirstName}
+            selectedUserLastName={landlordLastName}
+            selectedUserType={USER_TYPE.Landlord}
+          />
+          <MessageSender
+            recipientFirstName={landlordFirstName}
+            recipientLastName={landlordLastName}
+            recipientUserId={landlordId}
+            senderFirstName={userFirstName}
+            senderLastName={userLastName}
+            isChat={false}
+          />
+        </div>
+      )}
     </div>
   )
 }
