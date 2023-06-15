@@ -27,6 +27,10 @@ export function countDays(startDate: string | Date, endDate: string | Date): num
   let beginning: Date
   let end: Date
 
+  if (new Date(endDate).getFullYear() === 1970) {
+    return 0
+  }
+
   if (typeof startDate === 'string') {
     beginning = new Date(startDate)
     end = new Date(endDate)

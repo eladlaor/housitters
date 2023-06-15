@@ -29,7 +29,6 @@ import availablePostsSlice, {
   selectCatsState,
   selectLandlordFirstNameState,
   selectLandlordLastNameState,
-  setLandlordAvatarUrlState,
 } from '../../../slices/availablePostsSlice'
 
 import { USER_TYPE } from '../../../utils/constants'
@@ -39,9 +38,10 @@ import { countDays } from '../../../utils/dates'
 import { Button, ListGroup, Modal, Badge } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar, faCalendarCheck } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar, faCalendarCheck, faCat, faDog } from '@fortawesome/free-solid-svg-icons'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import DateDisplayer from '../../../components/utils/DateDisplayer'
 
 export default function HouseDetails() {
   const supabaseClient = useSupabaseClient()
@@ -215,13 +215,14 @@ export default function HouseDetails() {
           <Card.Text>location: {location}</Card.Text>
           <hr />
           <Card.Text>
-            dogs: {dogs} cats: {cats}
+            <FontAwesomeIcon icon={faDog} /> {dogs}
+            <br />
+            <FontAwesomeIcon icon={faCat} /> {cats}
           </Card.Text>
           <hr />
           <Card.Text>{description}</Card.Text>
           <hr />
           <div>
-            <h3>dates:</h3>
             {availability.map((period, index) => (
               <React.Fragment key={index}>
                 <ListGroup>
@@ -282,9 +283,8 @@ export default function HouseDetails() {
                         )
                       })()}
 
-                    {`${period.startDate} - ${period.endDate}`}
-                    <br />
-                    {`total days: ${countDays(period.startDate, period.endDate)}`}
+                    <DateDisplayer startDate={period.startDate} endDate={period.endDate} />
+
                     <br />
                   </ListGroup.Item>
                 </ListGroup>

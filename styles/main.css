@@ -231,3 +231,12 @@ a {
 }
 
 
+.house-preview:hover {
+  color: blue
+}
+
+.house-preview {
+  color: black
+}
+
+

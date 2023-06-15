@@ -208,7 +208,7 @@ export default function Intro() {
   return (
     <div>
       <div className="position-absolute top-50 start-50 translate-middle">
-        <h1>{isHousitter ? 'lets find a woof over your head' : 'ok lets find you a sitter'}</h1>
+        <h1>{isHousitter ? 'lets find a woof over your head' : "let's find you a sitter"}</h1>
         <div>
           <h3>When?</h3>
           {availability.map((period, index) => (

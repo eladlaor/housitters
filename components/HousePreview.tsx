@@ -1,7 +1,13 @@
 import { Button, ListGroup, Modal, Badge } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar, faCalendarCheck } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCalendar,
+  faCalendarCheck,
+  faCat,
+  faDog,
+  faDoorOpen,
+} from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Image from 'next/image'
@@ -10,12 +16,7 @@ import Col from 'react-bootstrap/Col'
 import React from 'react'
 import { countDays } from '../utils/dates'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  selectFirstNameState,
-  selectIsLoggedState,
-  selectLastNameState,
-  selectPrimaryUseState,
-} from '../slices/userSlice'
+import { selectIsLoggedState, selectPrimaryUseState } from '../slices/userSlice'
 import { USER_TYPE } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import Picture from './Picture'
@@ -26,6 +27,7 @@ import {
   setLandlordAvatarUrlState,
 } from '../slices/availablePostsSlice'
 import { RootState } from '../store'
+import DateDisplayer from './utils/DateDisplayer'
 
 export default function HousePreview({
   landlordId,
@@ -217,21 +219,13 @@ export default function HousePreview({
   return (
     <div>
       <Card bg="light" style={{ width: '18rem' }}>
-        <Card.Body>
+        <Card.Body className="text-center house-preview">
           <Card.Title>{title}</Card.Title>
           {postPicturesFullUrl[0] ? (
             <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
           ) : (
             'Loading Title Image'
           )}
-          <>
-            {postPicturesFullUrl.length > 1 ? (
-              <Button onClick={handleModalOpen}>See More Pictures</Button>
-            ) : (
-              <Button disabled={true}>No Other Pictures</Button>
-            )}
-          </>
-
           <Modal show={showModal} onHide={handleModalClose}>
             <Modal.Header closeButton>
               <Modal.Title>Additional Pictures</Modal.Title>
@@ -253,12 +247,13 @@ export default function HousePreview({
           <Card.Text>location: {location}</Card.Text>
           <hr />
           <Card.Text>
-            dogs: {dogs} cats: {cats}
+            <FontAwesomeIcon icon={faDog} /> {dogs}
+            <br />
+            <FontAwesomeIcon icon={faCat} /> {cats}
           </Card.Text>
           <hr />
 
           <div>
-            <h3>dates:</h3>
             {availability.map((period, index) => (
               <React.Fragment key={index}>
                 <ListGroup>
@@ -318,16 +313,15 @@ export default function HousePreview({
                           </>
                         )
                       })()}
-
-                    {`${period.startDate} - ${period.endDate}`}
-                    <br />
-                    {`total days: ${countDays(period.startDate, period.endDate)}`}
+                    <DateDisplayer startDate={period.startDate} endDate={period.endDate} />
                     <br />
                   </ListGroup.Item>
                 </ListGroup>
               </React.Fragment>
             ))}
             <hr />
+            The Door Is Open! <br />
+            See More {'   '} <FontAwesomeIcon icon={faDoorOpen} />
           </div>
         </Card.Body>
       </Card>
