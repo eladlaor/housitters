@@ -320,8 +320,8 @@ export default function HousePreview({
               </React.Fragment>
             ))}
             <hr />
-            The Door Is Open! <br />
-            See More {'   '} <FontAwesomeIcon icon={faDoorOpen} />
+            See More {'   '} <FontAwesomeIcon icon={faDoorOpen} /> <br />
+            The Door Is Open
           </div>
         </Card.Body>
       </Card>
