@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import React, { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import { NavDropdown, Modal, Button } from 'react-bootstrap'
+import { NavDropdown } from 'react-bootstrap'
 
 import { USER_TYPE } from '../utils/constants'
 
@@ -13,8 +13,6 @@ import {
   selectUsersContactedState,
 } from '../slices/userSlice'
 import {
-  Conversation,
-  Conversations,
   selectConversationsState,
   selectTotalUnreadMessagesState,
   setConversationsState,
@@ -22,11 +20,13 @@ import {
 } from '../slices/inboxSlice'
 
 import Picture from './Picture'
-import MessageSender from './MessageSender'
+import MessageSender from './Contact/MessageSender'
 
 import Badge from 'react-bootstrap/Badge'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelopeOpenText } from '@fortawesome/free-solid-svg-icons'
+import IndividualChat from './Contact/IndividualChat'
+import { Conversation, Conversations } from '../types/clientSide'
 
 export default function Inbox() {
   const user = useUser()
@@ -197,17 +197,19 @@ export default function Inbox() {
       } as Conversation,
     } as Conversations
 
-    for (const message of conversation.pastMessages) {
-      if (!message.isSender && !message.isReadByRecipient) {
-        const { error } = await supabaseClient.from('messages').upsert({
-          is_read_by_recipient: true,
-          id: message.id,
-        })
+    if (conversation.pastMessages) {
+      for (const message of conversation.pastMessages) {
+        if (!message.isSender && !message.isReadByRecipient) {
+          const { error } = await supabaseClient.from('messages').upsert({
+            is_read_by_recipient: true,
+            id: message.id,
+          })
 
-        if (error) {
-          alert(`failed upserting read message. Error: ${error.message}`)
-          debugger
-          throw error
+          if (error) {
+            alert(`failed upserting read message. Error: ${error.message}`)
+            debugger
+            throw error
+          }
         }
       }
     }
@@ -277,6 +279,7 @@ export default function Inbox() {
                 isAvatar={true}
                 promptMessage=""
                 email=""
+                isRounded={false}
               />
               <div style={{ marginLeft: '10px' }}>
                 {conversation.recipientFirstName} {conversation.recipientLastName}
@@ -295,57 +298,22 @@ export default function Inbox() {
                 textAlign: 'right',
               }}
             >
-              {conversation.latestMessage.messageContent}
+              {conversation.latestMessage?.messageContent}
             </div>
           </div>
           {showConversationModalStates[recipientId] && (
-            <Modal
-              show={showConversationModalStates[recipientId]}
-              onHide={() =>
-                setShowConversationModalStates((previousState) => ({
-                  ...previousState,
-                  [recipientId]: false,
-                }))
-              }
-            >
-              <Modal.Header>
-                <Modal.Title>
-                  your convesation with{' '}
-                  {conversation &&
-                    `${conversation.recipientFirstName} ${conversation.recipientLastName}`}
-                </Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <MessageSender
-                  recipientFirstName={conversation.recipientFirstName}
-                  recipientLastName={conversation.recipientLastName}
-                  recipientUserId={recipientId}
-                  senderFirstName={userFirstName}
-                  senderLastName={userLastName}
-                  isChat={true}
-                />
-                <div className="chat-container">
-                  {recipientId === selectedConversationId &&
-                    conversation.pastMessages.map((pastMessage, index) => (
-                      <div
-                        key={`${recipientId}-${index}`}
-                        className={pastMessage.isSender ? 'sender-message' : 'recipient-message'}
-                      >
-                        <div className="message-content">{pastMessage.messageContent}</div>
-                        <div className="message-sent-at">{pastMessage.sentAt}</div>
-                      </div>
-                    ))}
-                </div>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  variant="secondary"
-                  onClick={(e) => handleHideConversationModal(e, recipientId)}
-                >
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
+            <IndividualChat
+              userFirstName={userFirstName}
+              userLastName={userLastName}
+              conversation={conversation}
+              recipientId={recipientId}
+              selectedConversationId={selectedConversationId}
+              showConversationModal={recipientId === selectedConversationId}
+              setShowConversationModalStatesFromInbox={setShowConversationModalStates}
+              setShowConversationModalFromFoundUser={null}
+              handleHideConversationModalFromInbox={handleHideConversationModal}
+              handleHideConversationModalFromFoundUser={null}
+            />
           )}
         </NavDropdown.Item>
       ))}

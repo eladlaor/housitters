@@ -1,27 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-
-// TODO: move it to client side types or something
-export interface Conversation {
-  recipientFirstName: string
-  recipientLastName: string
-  recipientAvatarUrl: string
-  latestMessage: { messageContent: string; sentAt: string }
-  pastMessages: [
-    {
-      messageContent: string
-      isSender: boolean
-      isReadByRecipient: boolean
-      sentAt: string
-      id: number
-    }
-  ]
-  unreadMessages: 0
-}
-
-export interface Conversations {
-  [key: string]: Conversation
-}
+import { Conversations } from '../types/clientSide'
 
 export const initialState = {
   totalUnreadMessages: 0,

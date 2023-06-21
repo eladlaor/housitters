@@ -10,7 +10,8 @@ import {
   selectUsersContactedState,
 } from '../slices/userSlice'
 
-import MessageSender from './MessageSender'
+import MessageSender from './Contact/MessageSender'
+import ContactFoundUser from './Contact/ContactFoundUser'
 
 // TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
 export default function AvailableHousitter(props: HousitterProps) {
@@ -43,14 +44,17 @@ export default function AvailableHousitter(props: HousitterProps) {
             <hr />
           </Card.Title>
 
-          <MessageSender
+          {/* <MessageSender
             recipientFirstName={props.firstName}
             recipientLastName={props.lastName}
             recipientUserId={props.housitterId}
             senderFirstName={landlordFirstName}
             senderLastName={landlordLastName}
             isChat={false}
-          />
+          /> */}
+
+          <ContactFoundUser recipientUserId={props.housitterId} />
+
           {(() => {
             let foundSitter = usersContacted.find((user) => user.userId === props.housitterId)
             if (foundSitter) {

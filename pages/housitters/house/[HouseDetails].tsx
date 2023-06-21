@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../store'
 
 import ReviewsOnSelectedUser from '../../../components/ReviewsOnSelectedUser'
-import MessageSender from '../../../components/MessageSender'
+import MessageSender from '../../../components/Contact/MessageSender'
 import Picture from '../../../components/Picture'
 import ImageCarousel from '../../../components/ImageCarousel'
 
@@ -41,6 +41,7 @@ import { faCalendar, faCalendarCheck, faCat, faDog } from '@fortawesome/free-sol
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import DateDisplayer from '../../../components/utils/DateDisplayer'
+import ContactFoundUser from '../../../components/Contact/ContactFoundUser'
 
 export default function HouseDetails() {
   const supabaseClient = useSupabaseClient()
@@ -293,14 +294,15 @@ export default function HouseDetails() {
         </Col>
         <Col>
           {' '}
-          <MessageSender
+          {/* <MessageSender
             recipientFirstName={landlordFirstName}
             recipientLastName={landlordLastName}
             recipientUserId={landlordId}
             senderFirstName={userFirstName}
             senderLastName={userLastName}
             isChat={false}
-          />
+          /> */}
+          <ContactFoundUser recipientUserId={landlordId} />
         </Col>
       </Row>
     </div>

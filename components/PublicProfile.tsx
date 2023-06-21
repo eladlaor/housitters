@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux'
 import Picture from './Picture'
 import RecommendationSender from './RecommendationSender'
 import { selectShowRecommendationFormModalState } from '../slices/recommendationSlice'
-import MessageSender from './MessageSender'
+import MessageSender from './Contact/MessageSender'
 import { selectFirstNameState, selectLastNameState } from '../slices/userSlice'
 import ReviewsOnSelectedUser from './ReviewsOnSelectedUser'
 

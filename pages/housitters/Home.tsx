@@ -14,7 +14,7 @@ import { PageRoutes, LocationIds, USER_TYPE, SignOutElementTypes } from '../../u
 import { ImageData } from '../../types/clientSide'
 
 import Picture from '../../components/Picture'
-import SignOut from '../../components/Buttons/SignOut'
+import SignOut from '../../components/Auth/SignOut'
 import SidebarFilter from '../../components/SidebarFilter'
 import Inbox from '../../components/Inbox'
 

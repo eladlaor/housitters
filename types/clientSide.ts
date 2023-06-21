@@ -119,3 +119,26 @@ export type DefaultAvailablePostType = {
   cats: number
   imagesUrls: ImageData[]
 }
+
+export interface Conversation {
+  recipientFirstName: string
+  recipientLastName: string
+  recipientAvatarUrl: string
+  latestMessage: { messageContent: string; sentAt: string } | null
+  pastMessages:
+    | [
+        {
+          messageContent: string
+          isSender: boolean
+          isReadByRecipient: boolean
+          sentAt: string
+          id: number
+        }
+      ]
+    | null
+  unreadMessages: 0
+}
+
+export interface Conversations {
+  [key: string]: Conversation
+}

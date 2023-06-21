@@ -9,7 +9,7 @@ import {
 } from '../../slices/userSlice'
 
 import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
-import { PageRoutes,  USER_TYPE, SignOutElementTypes } from '../../utils/constants'
+import { PageRoutes, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -37,7 +37,7 @@ import {
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import Picture from '../../components/Picture'
 import Inbox from '../../components/Inbox'
-import SignOut from '../../components/Buttons/SignOut'
+import SignOut from '../../components/Auth/SignOut'
 import PetsCounter from '../../components/PetsCounter'
 
 import {
@@ -201,7 +201,7 @@ export default function Home() {
 
         let availableHousitter: DbAvailableHousitter
 
-        let availableHousitters: (typeof availableHousitter)[] = []
+        let availableHousitters: typeof availableHousitter[] = []
 
         if (housitterData) {
           for (const housitter of housitterData) {

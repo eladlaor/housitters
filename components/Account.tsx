@@ -26,7 +26,7 @@ import {
   selectGenderState,
   setGenderState,
 } from '../slices/userSlice'
-import SignOut from './Buttons/SignOut'
+import SignOut from './Auth/SignOut'
 
 import LocationSelector from './LocationSelector'
 import { selectLocationsState } from '../slices/housitterSlice'

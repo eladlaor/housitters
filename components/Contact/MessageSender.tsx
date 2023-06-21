@@ -7,17 +7,15 @@ import {
   selectUsersContactedState,
   setUsersContactedState,
   selectPrimaryUseState,
-} from '../slices/userSlice'
+} from '../../slices/userSlice'
 
-import { API_ROUTES, USER_TYPE } from '../utils/constants'
-import { MessageSenderProps } from '../types/clientSide'
+import { API_ROUTES, USER_TYPE } from '../../utils/constants'
+import { MessageSenderProps } from '../../types/clientSide'
 
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
 import Spinner from 'react-bootstrap/Spinner'
-
-// import { Input } from 'react-chat-elements'
 
 // TODO: probably a better way to type the props, lets find out.
 export default function MessageSender(props: MessageSenderProps) {
@@ -163,48 +161,6 @@ export default function MessageSender(props: MessageSenderProps) {
       </Form>
     </div>
   ) : (
-    <div>
-      <Button variant="secondary" onClick={handleOpenEmailModal} disabled={isSendingInProgress}>
-        Contact
-      </Button>
-      <Modal show={showEmailModal} onHide={handleCloseEmailModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Contact {recipientFirstName} {recipientLastName}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="message">
-              <Form.Label>Message</Form.Label>
-              <Form.Control
-                size="lg"
-                as="textarea"
-                placeholder=""
-                value={messageContent}
-                onChange={(e) => {
-                  setMessageContent(e.target.value)
-                }}
-              />
-            </Form.Group>
-            <Button
-              variant="success"
-              type="submit"
-              onClick={(e: any) => handleSendEmail(e)}
-              disabled={isSendingInProgress}
-            >
-              {isSendingInProgress ? (
-                <Spinner animation="border" role="status"></Spinner>
-              ) : (
-                ' Send the email'
-              )}
-            </Button>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={handleCloseEmailModal}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+    <h1>i think this part should not be relevant anymore due to refactor</h1>
   )
 }
