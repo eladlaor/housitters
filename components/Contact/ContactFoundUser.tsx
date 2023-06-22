@@ -161,7 +161,7 @@ export default function ContactFoundUser({ recipientUserId }: { recipientUserId:
 
   return (
     <div>
-      <Button variant="secondary" onClick={handleShowConversationModal}>
+      <Button variant="success" onClick={handleShowConversationModal}>
         Contact
       </Button>
       <IndividualChat

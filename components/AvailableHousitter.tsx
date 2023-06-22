@@ -10,8 +10,8 @@ import {
   selectUsersContactedState,
 } from '../slices/userSlice'
 
-import MessageSender from './Contact/MessageSender'
 import ContactFoundUser from './Contact/ContactFoundUser'
+import AddToFavourites from './Contact/AddToFavourites'
 
 // TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
 export default function AvailableHousitter(props: HousitterProps) {
@@ -21,30 +21,30 @@ export default function AvailableHousitter(props: HousitterProps) {
   const usersContacted = useSelector(selectUsersContactedState)
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <Card bg="primary" style={{ width: '18rem' }}>
         <Card.Body>
-          <Picture
-            uid={props.housitterId}
-            email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved
-            url={props.avatarUrl}
-            isIntro={false}
-            primaryUse={USER_TYPE.Housitter}
-            size={100}
-            width={100} // should persist dimensions of image upon upload
-            height={100}
-            disableUpload={true}
-            bucketName="avatars"
-            isAvatar={true}
-            promptMessage=""
-            isRounded={true}
-          />
-          <Card.Title>
-            {props.firstName} {props.lastName}
-            <hr />
-          </Card.Title>
-
-          <ContactFoundUser recipientUserId={props.housitterId} />
+          <div className="center-element make-column">
+            <Picture
+              uid={props.housitterId}
+              email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved
+              url={props.avatarUrl}
+              isIntro={false}
+              primaryUse={USER_TYPE.Housitter}
+              size={120}
+              width={100} // should persist dimensions of image upon upload
+              height={100}
+              disableUpload={true}
+              bucketName="avatars"
+              isAvatar={true}
+              promptMessage=""
+              isRounded={true}
+            />
+            <Card.Title>
+              {props.firstName} {props.lastName}
+              <hr />
+            </Card.Title>
+          </div>
 
           {(() => {
             let foundSitter = usersContacted.find((user) => user.userId === props.housitterId)
@@ -69,14 +69,23 @@ export default function AvailableHousitter(props: HousitterProps) {
             }
           })()}
 
-          <Card.Text>{props.about_me}</Card.Text>
+          <Card.Text className="center-element">{props.about_me}</Card.Text>
 
-          <ReviewsOnSelectedUser
-            selectedUserId={props.housitterId}
-            selectedUserFirstName={props.firstName}
-            selectedUserLastName={props.lastName}
-            selectedUserType={USER_TYPE.Housitter}
-          />
+          <div className="center-element make-column">
+            <ReviewsOnSelectedUser
+              selectedUserId={props.housitterId}
+              selectedUserFirstName={props.firstName}
+              selectedUserLastName={props.lastName}
+              selectedUserType={USER_TYPE.Housitter}
+            />
+            <div className="add-to-favourites">
+              <AddToFavourites
+                favouriteUserId={props.housitterId}
+                favouriteUserType={USER_TYPE.Housitter}
+              />
+            </div>
+            <ContactFoundUser recipientUserId={props.housitterId} />
+          </div>
         </Card.Body>
       </Card>
     </div>

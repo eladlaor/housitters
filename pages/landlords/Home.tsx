@@ -498,7 +498,7 @@ export default function Home() {
           <Nav className="ml-auto">
             <NavDropdown
               title={
-                <span>
+                <div>
                   {user && (
                     <Picture
                       isIntro={false}
@@ -517,7 +517,7 @@ export default function Home() {
                     />
                   )}
                   {firstName}
-                </span>
+                </div>
               }
             >
               <NavDropdown.Item href={PageRoutes.LandlordRoutes.Account}>
@@ -535,7 +535,7 @@ export default function Home() {
 
       <Container>
         <div className="welcome-to-dashboard-msg">
-          <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
+          <h1>welcome {firstName}, enjoy your upcoming vacation!</h1>
         </div>
         {isActivePost ? (
           <div>
@@ -753,7 +753,7 @@ export default function Home() {
         <Row>
           <Col md={9} style={{ paddingRight: '30px' }}>
             <Row>
-              <h3 className="number-of-results">
+              <h3 className="center-element">
                 Found {housitters.length} available sitters for you
               </h3>
             </Row>

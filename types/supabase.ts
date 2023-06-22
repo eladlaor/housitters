@@ -80,8 +80,33 @@ export interface Database {
           }
         ]
       }
+      favourites: {
+        Row: {
+          created_at: string | null
+          favourite_user_id: string | null
+          favourite_user_type: string | null
+          id: number
+          marked_by_user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          favourite_user_id?: string | null
+          favourite_user_type?: string | null
+          id?: number
+          marked_by_user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          favourite_user_id?: string | null
+          favourite_user_type?: string | null
+          id?: number
+          marked_by_user_id?: string | null
+        }
+        Relationships: []
+      }
       housitters: {
         Row: {
+          about_me: string | null
           created_at: string | null
           experience: number | null
           id: number
@@ -91,6 +116,7 @@ export interface Database {
           user_id: string
         }
         Insert: {
+          about_me?: string | null
           created_at?: string | null
           experience?: number | null
           id?: number
@@ -100,6 +126,7 @@ export interface Database {
           user_id: string
         }
         Update: {
+          about_me?: string | null
           created_at?: string | null
           experience?: number | null
           id?: number
@@ -255,7 +282,6 @@ export interface Database {
       }
       profiles: {
         Row: {
-          about_me: string | null
           avatar_url: string | null
           birthday: string | null
           email: string | null
@@ -270,7 +296,6 @@ export interface Database {
           visible: boolean | null
         }
         Insert: {
-          about_me?: string | null
           avatar_url?: string | null
           birthday?: string | null
           email?: string | null
@@ -285,7 +310,6 @@ export interface Database {
           visible?: boolean | null
         }
         Update: {
-          about_me?: string | null
           avatar_url?: string | null
           birthday?: string | null
           email?: string | null

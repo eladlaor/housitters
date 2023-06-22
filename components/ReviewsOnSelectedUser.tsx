@@ -118,7 +118,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
 
   return (
     <div>
-      <Button variant="info" onClick={() => setShowAllRecsModal(true)}>
+      <Button variant="danger" onClick={() => setShowAllRecsModal(true)}>
         See reviews
       </Button>
       <div>
@@ -156,6 +156,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
                               bucketName="avatars"
                               isAvatar={true}
                               promptMessage=""
+                              isRounded={false}
                             />
                           </div>
                         </Card.Title>
@@ -179,12 +180,12 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
           </Modal>
         )}
       </div>
-      <RecommendationSender
+      {/* <RecommendationSender
         reviewedUserId={selectedUserId}
         reviewedUserFirstName={selectedUserFirstName}
         reviewedUserLastName={selectedUserLastName}
         reviewedUserType={selectedUserType}
-      />
+      /> */}
     </div>
   )
 }
