@@ -22,7 +22,7 @@ export default function AvailableHousitter(props: HousitterProps) {
 
   return (
     <div>
-      <Card bg="success" style={{ width: '18rem' }}>
+      <Card bg="primary" style={{ width: '18rem' }}>
         <Card.Body>
           <Picture
             uid={props.housitterId}
@@ -43,15 +43,6 @@ export default function AvailableHousitter(props: HousitterProps) {
             {props.firstName} {props.lastName}
             <hr />
           </Card.Title>
-
-          {/* <MessageSender
-            recipientFirstName={props.firstName}
-            recipientLastName={props.lastName}
-            recipientUserId={props.housitterId}
-            senderFirstName={landlordFirstName}
-            senderLastName={landlordLastName}
-            isChat={false}
-          /> */}
 
           <ContactFoundUser recipientUserId={props.housitterId} />
 

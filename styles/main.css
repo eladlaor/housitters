@@ -71,13 +71,12 @@ a {
   flex: 1;
   position: sticky;
   border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.24);
   margin-bottom: 20px;
-  border-left: 4px solid #15570f; 
-  padding-left: 10px;
+  border-left: 2px solid #15570f; 
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  top: 0
 }
 
 .sidebar-filter hr {
@@ -312,4 +311,21 @@ a {
 
 .house-content {
   padding: 20px 0;
+}
+
+.number-of-results {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.create-new-post-prompt {
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+.welcome-to-dashboard-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -534,7 +534,7 @@ export default function Home() {
       </Navbar>
 
       <Container>
-        <div>
+        <div className="welcome-to-dashboard-msg">
           <h1>Mazal tov {firstName} on your upcoming vacation!</h1>
         </div>
         {isActivePost ? (
@@ -642,7 +642,7 @@ export default function Home() {
             </Accordion>
           </div>
         ) : (
-          <div>
+          <div className="create-new-post-prompt">
             <Button
               style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
               variant="primary"
@@ -753,13 +753,18 @@ export default function Home() {
         <Row>
           <Col md={9} style={{ paddingRight: '30px' }}>
             <Row>
+              <h3 className="number-of-results">
+                Found {housitters.length} available sitters for you
+              </h3>
+            </Row>
+            <Row>
               {housitters.length > 0 &&
                 housitters.map(
                   (
                     sitter: any,
                     index: number // TODO: type 'sitter' with a new type of Db housitterdata
                   ) => (
-                    <Col md={3} key={index} style={{ margin: '30px' }}>
+                    <Col md={3} key={index} style={{ margin: '70px' }}>
                       <AvailableHousitter
                         housitterId={sitter.housitterId}
                         firstName={sitter.firstName}
