@@ -25,7 +25,7 @@ export default function ContactFoundUser({ recipientUserId }: { recipientUserId:
   const [showConversationModal, setShowConversationModal] = useState(false)
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !recipientUserId) {
       return
     }
     console.log(`value of show: ${showConversationModal}`)
