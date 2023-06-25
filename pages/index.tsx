@@ -18,11 +18,9 @@ import { settersToInitialStates as landlordSettersToInitialStates } from '../sli
 import { settersToInitialStates as inboxSettersToInitialStates } from '../slices/inboxSlice'
 import { settersToInitialStates as recommendationsSettersToInitialStates } from '../slices/recommendationSlice'
 
-import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Accordion from 'react-bootstrap/Accordion'
-import Carousel from 'react-bootstrap/Carousel'
+
 import Button from 'react-bootstrap/Button'
 import IntroNavbar from '../components/IntroNavbar'
 
@@ -103,7 +101,7 @@ export default function Home() {
               </Col>
             </Row>
             <Button
-              style={{ width: '300px' }}
+              style={{ width: '420px' }}
               variant="lg"
               className="signin-button"
               onClick={() => {
