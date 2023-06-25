@@ -19,19 +19,19 @@ export default function SignupTeaser({ userType }: { userType: string }) {
   let route = ''
 
   if (userType === USER_TYPE.Housitter) {
-    message = 'find me a house'
+    message = 'find a house'
     route = PageRoutes.Intro
   } else {
-    message = 'find me a housitter'
+    message = 'find a housitter'
     route = PageRoutes.Intro
   }
 
   return (
-    <div className="front-page-buttons relative-position">
+    <div>
       <button
         type="button"
         className="btn btn-primary btn-lg"
-        style={{ textDecoration: 'bold' }}
+        style={{ textDecoration: 'bold', color: 'white', width: '200px' }}
         onClick={handleUserTypeSelection}
       >
         <Link href={{ pathname: route, query: { userType } }}>{message}</Link>

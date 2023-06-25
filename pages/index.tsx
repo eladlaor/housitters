@@ -79,57 +79,42 @@ export default function Home() {
   return (
     <div>
       <IntroNavbar navbarItems={NavbarItems} />
-      <Row
-        className="d-flex align-items-center justify-content-center"
-        style={{ position: 'relative', height: '100vh' }}
-      >
-        <div className="front-page-buttons">
-          <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
+      <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
+      <Row className="justify-content-md-center">
+        <Col md="auto">
           <div
             style={{
-              marginRight: '30px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '30px',
             }}
           >
-            <SignupTeaser userType={USER_TYPE.Housitter} />
+            <Row style={{ position: 'relative', textDecoration: 'none' }}>
+              <Col className="text-center">
+                <div style={{ marginTop: '250px' }}>
+                  <SignupTeaser userType={USER_TYPE.Housitter} />
+                </div>
+              </Col>
+              <Col className="text-center">
+                <div style={{ marginTop: '250px' }}>
+                  <SignupTeaser userType={USER_TYPE.Landlord} />
+                </div>
+              </Col>
+            </Row>
+            <Button
+              style={{ width: '300px' }}
+              variant="lg"
+              className="signin-button"
+              onClick={() => {
+                router.push('/Login')
+              }}
+            >
+              already registered? sign in
+            </Button>
           </div>
-          <SignupTeaser userType={USER_TYPE.Landlord} />
-          <Button
-            variant="lg"
-            className="signin-button"
-            onClick={() => {
-              router.push('/Login')
-            }}
-          >
-            already registered? sign in
-          </Button>
-        </div>
+        </Col>
       </Row>
-      <Row
-        className="d-flex justify-content-center"
-        style={{ position: 'relative', height: 'auto' }}
-      ></Row>
     </div>
   )
 }
-
-/*
-
-[design this as a circle of love... \ light]
-
-a WIN WIN WIN circle of light:
-
-pet-parents get to spread their WINgs and travel with peace of mind, 
-knowing their loved ones are in caring hands, getting personal treatment.
-
-pets get a WINdfall of fresh-smelling love, while staying at their safe and 
-comfortable environment (and usually some cool new pics:)
-
-housitters get a WINdow to a new experience of heart-warming pets and a gratifying lifestyle,
-closing a circle
-
-
-
-
-
-
-*/
