@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
 import {
-  selectAvatarUrlState,
   selectFirstNameState,
   selectIsLoggedState,
   selectPrimaryUseState,
@@ -9,7 +8,7 @@ import {
 } from '../../slices/userSlice'
 
 import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
-import { PageRoutes, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
+import { USER_TYPE, DefaultFavouriteUser, PageRoutes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -34,38 +33,27 @@ import {
   setIsActiveState,
   setTitleState,
 } from '../../slices/createPostSlice'
-import AvailabilitySelector from '../../components/AvailabilitySelector'
-import Picture from '../../components/Picture'
-import Inbox from '../../components/Inbox'
-import SignOut from '../../components/Auth/SignOut'
-import PetsCounter from '../../components/PetsCounter'
+import { selectConversationsState, selectTotalUnreadMessagesState } from '../../slices/inboxSlice'
 
-import {
-  Col,
-  Container,
-  Dropdown,
-  DropdownButton,
-  FormControl,
-  ListGroup,
-  ListGroupItem,
-  Row,
-} from 'react-bootstrap'
+import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favouritesSlice'
+
+import AvailabilitySelector from '../../components/AvailabilitySelector'
+
+import PetsCounter from '../../components/PetsCounter'
+import LocationSelector from '../../components/LocationSelector'
+
+import { Col, Container, FormControl, ListGroup, Row } from 'react-bootstrap'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
 import Image from 'next/image'
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
-import NavDropdown from 'react-bootstrap/NavDropdown'
+
 import SidebarFilter from '../../components/SidebarFilter'
 import HousePreview from '../../components/HousePreview'
 import Accordion from 'react-bootstrap/Accordion'
 import { ImageData } from '../../types/clientSide'
 
 import { blobToBuffer, removeInvalidCharacters, resizeImage } from '../../utils/files'
-import { selectConversationsState, selectTotalUnreadMessagesState } from '../../slices/inboxSlice'
-import UserSearcher from '../../components/UserSearcher'
-import Sorter from '../../components/Sorter'
-import LocationSelector from '../../components/LocationSelector'
+import HomeNavbar from '../../components/HomeNavbar'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -98,7 +86,6 @@ export default function Home() {
   const title = useSelector(selectTitleState)
   const description = useSelector(selectDescriptionState)
   const fileNames = useSelector(selectImagesUrlsState)
-  const avatarUrl = useSelector(selectAvatarUrlState)
   const location = useSelector(selectLocationState)
   const isLogged = useSelector(selectIsLoggedState)
   const pets = useSelector(selectPetsState)
@@ -106,8 +93,7 @@ export default function Home() {
 
   const isAfterSignup = router.query.isAfterSignup
 
-  const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
-  const conversations = useSelector(selectConversationsState)
+  const favouriteUsers = useSelector(selectAllFavouriteUsers)
 
   useEffect(() => {
     if (user) {
@@ -201,7 +187,7 @@ export default function Home() {
 
         let availableHousitter: DbAvailableHousitter
 
-        let availableHousitters: typeof availableHousitter[] = []
+        let availableHousitters: (typeof availableHousitter)[] = []
 
         if (housitterData) {
           for (const housitter of housitterData) {
@@ -255,6 +241,36 @@ export default function Home() {
           }
 
           setHousitters(availableHousitters)
+        }
+
+        const { error: favouritesError, data: favouritesData } = await supabaseClient
+          .from('favourites')
+          .select('created_at, favourite_user_type, favourite_user_id')
+          .eq('marked_by_user_id', user!.id)
+
+        if (favouritesError) {
+          alert(`failed retrieving favourites: ${favouritesError}`)
+          debugger
+          throw favouritesError
+        }
+
+        if (favouritesData) {
+          let retrievedFavouriteUsers = [] as (typeof DefaultFavouriteUser)[]
+
+          retrievedFavouriteUsers = favouritesData.map(
+            (favouriteUser: { favourite_user_id: any }) => ({
+              favouriteUserType: USER_TYPE.Housitter,
+              favouriteUserId: favouriteUser.favourite_user_id,
+              markedByUserId: user!.id,
+            })
+          )
+
+          const favouritesChanged =
+            JSON.stringify(retrievedFavouriteUsers) !== JSON.stringify(favouriteUsers)
+
+          if (favouritesChanged) {
+            dispatch(setAllFavouriteUsers(retrievedFavouriteUsers))
+          }
         }
       }
 
@@ -490,49 +506,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar bg="dark" variant="dark">
-        <Navbar.Brand className="mr-auto" href="#">
-          Housitters.com
-        </Navbar.Brand>
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto">
-            <NavDropdown
-              title={
-                <div>
-                  {user && (
-                    <Picture
-                      isIntro={false}
-                      uid={user.id}
-                      url={avatarUrl}
-                      email={user.email as string}
-                      primaryUse={USER_TYPE.Landlord}
-                      size={80}
-                      width={80} // should persist dimensions of image upon upload
-                      height={80}
-                      disableUpload={true}
-                      bucketName="avatars"
-                      isAvatar={true}
-                      promptMessage=""
-                      isRounded={true}
-                    />
-                  )}
-                  {firstName}
-                </div>
-              }
-            >
-              <NavDropdown.Item href={PageRoutes.LandlordRoutes.Account}>
-                Edit Profile
-              </NavDropdown.Item>
-              <SignOut elementType={SignOutElementTypes.Link} />
-            </NavDropdown>
-            <div className="inbox-navbar">
-              <Inbox />
-            </div>
-            <UserSearcher />
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-
+      <HomeNavbar userType={USER_TYPE.Landlord} accountRoute={PageRoutes.LandlordRoutes.Account} />
       <Container>
         <div className="welcome-to-dashboard-msg">
           <h1>welcome {firstName}, enjoy your upcoming vacation!</h1>

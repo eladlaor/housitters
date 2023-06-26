@@ -393,3 +393,7 @@ heart icon
   80% { opacity: 1; }
   100% { opacity: 0; }
 }
+
+#signout-via-dropdown {
+  color: black
+}

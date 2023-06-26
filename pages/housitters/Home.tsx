@@ -1,5 +1,5 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectFirstNameState,
@@ -9,23 +9,21 @@ import {
   setAvatarUrl,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
-import { PageRoutes, LocationIds, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
+import { PageRoutes, LocationIds, USER_TYPE, DefaultFavouriteUser } from '../../utils/constants'
 
 import { ImageData } from '../../types/clientSide'
 
-import Picture from '../../components/Picture'
-import SignOut from '../../components/Auth/SignOut'
 import SidebarFilter from '../../components/SidebarFilter'
-import Inbox from '../../components/Inbox'
 
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
-import UserSearcher from '../../components/UserSearcher'
 import Link from 'next/link'
 
 import { selectAvailablePostsState, setAvailablePosts } from '../../slices/availablePostsSlice'
 import HousePreview from '../../components/HousePreview'
+import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favouritesSlice'
+import HomeNavbar from '../../components/HomeNavbar'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -35,13 +33,10 @@ export default function Home() {
   const locations = useSelector(selectLocationsState)
   const availability = useSelector(selectAvailabilityState)
   const isLogged = useSelector(selectIsLoggedState)
-  const avatarUrl = useSelector(selectAvatarUrlState)
 
   const availablePosts = useSelector(selectAvailablePostsState)
 
-  // TODO: should make it redux.
-
-  // TODO: can set loading states if needed
+  const favouriteUsers = useSelector(selectAllFavouriteUsers)
 
   useEffect(() => {
     if (!user) {
@@ -149,6 +144,34 @@ export default function Home() {
           })
 
           dispatch(setAvailablePosts(parsedAvailablePosts))
+
+          const { error: favouritesError, data: favouritesData } = await supabase
+            .from('favourites')
+            .select('created_at, favourite_user_type, favourite_user_id')
+            .eq('marked_by_user_id', user!.id)
+
+          if (favouritesError) {
+            alert(`failed retrieving favourites: ${favouritesError}`)
+            debugger
+            throw favouritesError
+          }
+
+          if (favouritesData) {
+            let retrievedFavouriteUsers = [] as (typeof DefaultFavouriteUser)[]
+
+            retrievedFavouriteUsers = favouritesData.map((favouriteUser) => ({
+              favouriteUserType: USER_TYPE.Landlord,
+              favouriteUserId: favouriteUser.favourite_user_id,
+              markedByUserId: user!.id,
+            }))
+
+            const favouritesChanged =
+              JSON.stringify(retrievedFavouriteUsers) !== JSON.stringify(favouriteUsers)
+
+            if (favouritesChanged) {
+              dispatch(setAllFavouriteUsers(retrievedFavouriteUsers))
+            }
+          }
         }
       } catch (e: any) {
         alert(e.message)
@@ -174,47 +197,11 @@ export default function Home() {
 
   return (
     <>
-      <Navbar bg="dark" variant="dark">
-        <Navbar.Brand className="mr-auto" href="#">
-          Housitters
-        </Navbar.Brand>
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto">
-            <NavDropdown
-              title={
-                <span>
-                  {user && (
-                    <Picture
-                      isIntro={false}
-                      uid={user.id}
-                      url={avatarUrl}
-                      email={user.email as string}
-                      primaryUse={USER_TYPE.Landlord}
-                      size={80}
-                      width={80} // should persist dimensions of image upon upload
-                      height={80}
-                      disableUpload={true}
-                      bucketName="avatars"
-                      isAvatar={true}
-                      promptMessage=""
-                      isRounded={true}
-                    />
-                  )}
-                  {firstName}
-                </span>
-              }
-              id="basic-nav-dropdown"
-            >
-              <NavDropdown.Item href={PageRoutes.HousitterRoutes.Account}>
-                Edit Profile
-              </NavDropdown.Item>
-              <SignOut elementType={SignOutElementTypes.Link} />
-            </NavDropdown>
-            <Inbox />
-            <UserSearcher />
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
+      <HomeNavbar
+        userType={USER_TYPE.Housitter}
+        accountRoute={PageRoutes.HousitterRoutes.Account}
+      />
+
       <Container>
         <h1>
           Hello {firstName}! <br /> Let's find you a cute pet to feel at home with.

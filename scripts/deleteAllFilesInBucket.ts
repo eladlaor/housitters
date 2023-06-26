@@ -7,7 +7,7 @@ const supabase = createClient(
 
 const bucketName = process.argv[2] || 'missing-bucketName-arg'
 
-async function deleteAllFilesInBucket() {
+export async function deleteAllFilesInBucket() {
   console.log(`removing all files from: ${bucketName} `)
 
   // Retrieve all files in the storage bucket

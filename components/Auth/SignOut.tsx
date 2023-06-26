@@ -11,10 +11,8 @@ import { settersToInitialStates as postSettersToInitialStates } from '../../slic
 import { settersToInitialStates as housitterSettersToInitialStates } from '../../slices/housitterSlice'
 import { settersToInitialStates as landlordSettersToInitialStates } from '../../slices/landlordSlice'
 import { settersToInitialStates as inboxSettersToInitialStates } from '../../slices/inboxSlice'
-import {
-  settersToInitialStates as availablePostsSettersToInitialStates,
-  setAvailablePosts,
-} from '../../slices/availablePostsSlice'
+import { setAvailablePosts } from '../../slices/availablePostsSlice'
+import { setAllFavouriteUsers } from '../../slices/favouritesSlice'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { useRouter } from 'next/router'
@@ -52,22 +50,25 @@ export default function SignOut({ elementType }: SignOutProps) {
     await clearState(inboxSettersToInitialStates)
 
     dispatch(setAvailablePosts([]))
+    dispatch(setAllFavouriteUsers([]))
 
     await supabaseClient.auth.signOut()
     router.push('/')
   }
 
   return (
-    <>
+    <div>
       {elementType === SignOutElementTypes.Button ? (
-        <Button onClick={handleSignOutClick} variant="danger">
-          sign out
+        <Button onClick={handleSignOutClick} variant="danger" id="signout-via-dropdown">
+          Sign out
         </Button>
       ) : (
         <Link href="/">
-          <a onClick={handleSignOutClick}>sign out</a>
+          <a id="signout-via-dropdown" onClick={handleSignOutClick}>
+            Sign out
+          </a>
         </Link>
       )}
-    </>
+    </div>
   )
 }

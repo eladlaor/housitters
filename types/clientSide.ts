@@ -32,14 +32,15 @@ export type SelectedUserReview = {
   selectedUserLastName: string
 }
 
-export type ReviewsOnSelectedUserProps = {
+/* COMPONENT PROPS */
+
+export interface ReviewsOnSelectedUserProps {
   selectedUserId: string
   selectedUserFirstName: string
   selectedUserLastName: string
   selectedUserType: string
 }
 
-/* COMPONENT PROPS */
 export interface HousePreviewProps {
   landlordId: string
   title: string
@@ -70,8 +71,6 @@ export interface SignupForm {
   gender: string
 }
 
-/* Component Props / interfaces */
-
 export interface RecommendationFormProps {
   reviewedUserId: string
   reviewedUserFirstName: string
@@ -95,6 +94,8 @@ export interface NavbarItem {
 export interface SignOutProps {
   elementType: SignOutElementTypes
 }
+
+export interface HomeNavbarProps {}
 
 export interface DbAvailableHousitter {
   firstName: string

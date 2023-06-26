@@ -17,6 +17,9 @@ import inboxReducer from './slices/inboxSlice'
 import { availablePostsSlice } from './slices/availablePostsSlice'
 import availablePostsReducer from './slices/availablePostsSlice'
 
+import { favouritesSlice } from './slices/favouritesSlice'
+import favouritesReducer from './slices/favouritesSlice'
+
 import storage from 'redux-persist/lib/storage'
 import { combineReducers } from 'redux'
 import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
@@ -34,6 +37,7 @@ const reducers = combineReducers({
   [recommendationSlice.name]: recommendationReducer,
   [inboxSlice.name]: inboxReducer,
   [availablePostsSlice.name]: availablePostsReducer,
+  [favouritesSlice.name]: favouritesReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig, reducers)

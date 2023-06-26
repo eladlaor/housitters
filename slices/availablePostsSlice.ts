@@ -21,6 +21,7 @@ export const availablePostsSlice = createSlice({
     addPost(state, action: PayloadAction<availablePostsState[0]>) {
       state.push(action.payload)
     },
+    // TODO: let's type it to make sure it works
     removePost(state = initialState, action) {
       return state.filter((post) => post.landlordId !== action.payload)
     },

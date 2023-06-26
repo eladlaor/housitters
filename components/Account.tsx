@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import AvailabilitySelector from '../components/AvailabilitySelector'
 
 import { Database } from '../types/supabase'
-import { DbGenderTypes, LocationIds, USER_TYPE } from '../utils/constants'
+import { DbGenderTypes, LocationIds, SignOutElementTypes, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectAvatarUrlState,
@@ -241,6 +241,7 @@ export default function Account() {
         isAvatar={true}
         promptMessage={''}
         email={user!.email ? user!.email : ''}
+        isRounded={false}
       />
 
       <div>
@@ -364,7 +365,7 @@ export default function Account() {
       </div>
 
       <div>
-        <SignOut />
+        <SignOut elementType={SignOutElementTypes.Button} />
       </div>
     </div>
   )

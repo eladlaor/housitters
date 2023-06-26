@@ -117,3 +117,13 @@ export const DefaultAvailablePost = {
     },
   ] as ImageData[],
 }
+
+export const DefaultFavouriteUser = {
+  favouriteUserType: '',
+  favouriteUserId: '',
+  markedByUserId: '',
+}
+
+export const SwrUniqueCachingKeys = {
+  Favourites: 'Favourites',
+}
