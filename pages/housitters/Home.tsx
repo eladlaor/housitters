@@ -9,7 +9,13 @@ import {
   setAvatarUrl,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
-import { PageRoutes, LocationIds, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
+import {
+  PageRoutes,
+  LocationIds,
+  USER_TYPE,
+  SignOutElementTypes,
+  DefaultFavouriteUser,
+} from '../../utils/constants'
 
 import { ImageData } from '../../types/clientSide'
 
@@ -26,6 +32,7 @@ import Link from 'next/link'
 
 import { selectAvailablePostsState, setAvailablePosts } from '../../slices/availablePostsSlice'
 import HousePreview from '../../components/HousePreview'
+import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favouritesSlice'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -39,9 +46,7 @@ export default function Home() {
 
   const availablePosts = useSelector(selectAvailablePostsState)
 
-  // TODO: should make it redux.
-
-  // TODO: can set loading states if needed
+  const favouriteUsers = useSelector(selectAllFavouriteUsers)
 
   useEffect(() => {
     if (!user) {
@@ -149,6 +154,34 @@ export default function Home() {
           })
 
           dispatch(setAvailablePosts(parsedAvailablePosts))
+
+          const { error: favouritesError, data: favouritesData } = await supabase
+            .from('favourites')
+            .select('created_at, favourite_user_type, favourite_user_id')
+            .eq('marked_by_user_id', user!.id)
+
+          if (favouritesError) {
+            alert(`failed retrieving favourites: ${favouritesError}`)
+            debugger
+            return
+          }
+
+          if (favouritesData) {
+            let retrievedFavouriteUsers = [] as (typeof DefaultFavouriteUser)[]
+
+            retrievedFavouriteUsers = favouritesData.map((favouriteUser) => ({
+              favouriteUserType: USER_TYPE.Landlord,
+              favouriteUserId: favouriteUser.favourite_user_id,
+              markedByUserId: user!.id,
+            }))
+
+            const favouritesChanged =
+              JSON.stringify(retrievedFavouriteUsers) !== JSON.stringify(favouriteUsers)
+
+            if (favouritesChanged) {
+              dispatch(setAllFavouriteUsers(retrievedFavouriteUsers))
+            }
+          }
         }
       } catch (e: any) {
         alert(e.message)

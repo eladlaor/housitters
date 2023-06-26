@@ -3,6 +3,8 @@ import { Database } from '../../types/supabase'
 import { useState } from 'react'
 import { FaHeart } from 'react-icons/fa'
 import Toast from 'react-bootstrap/Toast'
+import { useSelector } from 'react-redux'
+import { selectAllFavouriteUsers } from '../../slices/favouritesSlice'
 export default function AddToFavourites({
   favouriteUserId,
   favouriteUserType,
@@ -13,7 +15,11 @@ export default function AddToFavourites({
   const supabaseClient = useSupabaseClient()
   const user = useUser()
 
-  const [isFavourite, setIsFavourite] = useState(false)
+  const favouriteUsers = useSelector(selectAllFavouriteUsers)
+
+  const [isFavourite, setIsFavourite] = useState(
+    favouriteUsers.find((user) => user.favouriteUserId === favouriteUserId) ? true : false
+  )
   const [showToast, setShowToast] = useState(false)
 
   async function handleSelectedFavouriteUser() {

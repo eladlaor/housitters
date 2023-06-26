@@ -14,10 +14,9 @@ import Image from 'next/image'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import React from 'react'
-import { countDays } from '../utils/dates'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsLoggedState, selectPrimaryUseState } from '../slices/userSlice'
-import { LocationDescriptions, USER_TYPE } from '../utils/constants'
+import { LocationDescriptions, USER_TYPE, DefaultFavouriteUser } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import Picture from './Picture'
 import { selectClosedSitsState, setClosedSitsState } from '../slices/landlordSlice'
@@ -55,8 +54,6 @@ export default function HousePreview({
   const landlordAvatarUrl = useSelector((state: RootState) =>
     selectLandlordAvatarUrlState(state, landlordId)
   )
-
-  console.log(`url of lanldord: ${landlordAvatarUrl}`)
 
   function handleModalOpen() {
     setShowModal(true)
