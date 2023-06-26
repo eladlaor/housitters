@@ -14,6 +14,8 @@ import { PageRoutes, LocationIds, USER_TYPE, DefaultFavouriteUser } from '../../
 import { ImageData } from '../../types/clientSide'
 
 import SidebarFilter from '../../components/SidebarFilter'
+import HomeNavbar from '../../components/HomeNavbar'
+import HousePreview from '../../components/HousePreview'
 
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -21,9 +23,7 @@ import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import Link from 'next/link'
 
 import { selectAvailablePostsState, setAvailablePosts } from '../../slices/availablePostsSlice'
-import HousePreview from '../../components/HousePreview'
 import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favouritesSlice'
-import HomeNavbar from '../../components/HomeNavbar'
 
 export default function Home() {
   const supabase = useSupabaseClient()
