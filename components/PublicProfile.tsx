@@ -36,6 +36,7 @@ export default function PublicProfile(props: {
         isAvatar={true}
         promptMessage={''}
         email={email ? email : ''}
+        isRounded={false}
       />
       <hr />
       about me text: {aboutMe}. should see when and where the user puts it in.
