@@ -57,16 +57,18 @@ export default function SignOut({ elementType }: SignOutProps) {
   }
 
   return (
-    <>
+    <div>
       {elementType === SignOutElementTypes.Button ? (
-        <Button onClick={handleSignOutClick} variant="danger">
-          sign out
+        <Button onClick={handleSignOutClick} variant="danger" id="signout-via-dropdown">
+          Sign out
         </Button>
       ) : (
         <Link href="/">
-          <a onClick={handleSignOutClick}>sign out</a>
+          <a id="signout-via-dropdown" onClick={handleSignOutClick}>
+            Sign out
+          </a>
         </Link>
       )}
-    </>
+    </div>
   )
 }
