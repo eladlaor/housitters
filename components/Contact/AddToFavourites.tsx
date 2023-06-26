@@ -13,7 +13,7 @@ export default function AddToFavourites({
   const supabaseClient = useSupabaseClient()
   const user = useUser()
 
-  const [isFavourite, setIsFavourite] = useState(false) // track whether this item is a favourite
+  const [isFavourite, setIsFavourite] = useState(false)
   const [showToast, setShowToast] = useState(false)
 
   async function handleSelectedFavouriteUser() {

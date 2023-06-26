@@ -42,6 +42,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import DateDisplayer from '../../../components/utils/DateDisplayer'
 import ContactFoundUser from '../../../components/Contact/ContactFoundUser'
+import AddToFavourites from '../../../components/Contact/AddToFavourites'
 
 export default function HouseDetails() {
   const supabaseClient = useSupabaseClient()
@@ -241,6 +242,9 @@ export default function HouseDetails() {
               </React.Fragment>
             ))}
           </div>
+        </Col>
+        <Col>
+          <AddToFavourites favouriteUserId={landlordId} favouriteUserType={USER_TYPE.Landlord} />
         </Col>
       </Row>
       <hr />
