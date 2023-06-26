@@ -76,7 +76,7 @@ export default function Home() {
 
   return (
     <div>
-      <IntroNavbar navbarItems={NavbarItems} />
+      {/* <IntroNavbar navbarItems={NavbarItems} /> */}
       <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
       <Row className="justify-content-md-center">
         <Col md="auto">
