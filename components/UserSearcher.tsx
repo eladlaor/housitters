@@ -105,6 +105,7 @@ export default function UserSearcher() {
               primaryUse={selectedSearchedUser.primary_use as string}
               email={selectedSearchedUser.email}
               avatarUrl={selectedSearchedUser.avatar_url as string}
+              aboutMe={null}
             />
           </Modal.Body>
         </Modal>
