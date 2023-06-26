@@ -3,10 +3,10 @@ import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-reac
 import Picture from './Picture'
 import { useRouter } from 'next/router'
 
-import AvailabilityPeriod from '../components/AvailabilityPeriod'
+import AvailabilitySelector from '../components/AvailabilitySelector'
 
 import { Database } from '../types/supabase'
-import { HOUSITTERS_ROUTES, LANDLORDS_ROUTES, USER_TYPE } from '../utils/constants'
+import { DbGenderTypes, LocationIds, USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectAvatarUrlState,
@@ -23,12 +23,17 @@ import {
   setUsername,
   setBirthday,
   setAvailability,
+  selectGenderState,
+  setGenderState,
 } from '../slices/userSlice'
-import SignOut from './Buttons/SignOut'
+import SignOut from './Auth/SignOut'
 
-import { parseDateMultiRange } from '../utils/dates'
+import LocationSelector from './LocationSelector'
+import { selectLocationsState } from '../slices/housitterSlice'
+import { Form } from 'react-bootstrap'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
+type Housitters = Database['public']['Tables']['housitters']['Row']
 
 export default function Account() {
   const router = useRouter()
@@ -45,8 +50,14 @@ export default function Account() {
   const avatar_url = useSelector(selectAvatarUrlState)
   const birthday = useSelector(selectBirthdayState)
   const availability = useSelector(selectAvailabilityState)
+  const locations = useSelector(selectLocationsState)
+  const gender = useSelector(selectGenderState)
 
   useEffect(() => {
+    if (!user) {
+      return
+    }
+
     getProfile()
   }, [user])
 
@@ -101,6 +112,8 @@ export default function Account() {
     primary_use,
     avatar_url,
     birthday,
+    gender,
+    locations,
   }: {
     username: Profiles['username']
     first_name: Profiles['first_name']
@@ -108,12 +121,14 @@ export default function Account() {
     primary_use: Profiles['primary_use']
     avatar_url: Profiles['avatar_url']
     birthday: Profiles['birthday']
+    gender: Profiles['gender']
+    locations: Housitters['locations']
   }) {
     try {
       setLoading(true)
       if (!user) throw new Error('No user')
 
-      const updates = {
+      const profileUpdates = {
         id: user.id,
         updated_at: new Date().toISOString(),
         username,
@@ -122,22 +137,34 @@ export default function Account() {
         primary_use,
         avatar_url,
         birthday,
+        gender,
       }
 
-      let { error } = await supabaseClient.from('profiles').upsert(updates)
+      let { error } = await supabaseClient.from('profiles').upsert(profileUpdates)
       if (error) {
         throw error
-      } else {
-        alert('Profile successfully updated!')
-        if (primary_use === USER_TYPE.Housitter) {
-          router.push(`/housitters/Home`)
-        } else {
-          router.push(`/landlords/Home`)
+      }
+
+      if (primary_use === USER_TYPE.Housitter) {
+        let { error: housitterUpsertError } = await supabaseClient.from('housitters').upsert({
+          user_id: user?.id,
+          locations,
+        })
+
+        if (housitterUpsertError) {
+          alert('Error updating the data: ' + housitterUpsertError)
+          throw housitterUpsertError
         }
       }
+
+      alert('Profile successfully updated!')
+      if (primary_use === USER_TYPE.Housitter) {
+        router.push(`/housitters/Home`)
+      } else {
+        router.push(`/landlords/Home`)
+      }
     } catch (error) {
-      alert('Error updating the data!')
-      console.log(error)
+      alert('Error updating the data: ' + error)
     } finally {
       setLoading(false)
     }
@@ -158,7 +185,7 @@ export default function Account() {
       throw error
     }
 
-    if (availableDates) {
+    if (availableDates && availableDates.length > 0) {
       const availableDatesAsReduxType = availableDates.map((date) => {
         return {
           startDate: date.start_date,
@@ -183,8 +210,13 @@ export default function Account() {
     return type === typeToCompare
   }
 
+  // TODO: why and when
   if (!user) {
-    return <div>no user</div>
+    return
+  }
+
+  function handleGenderChange(e: any) {
+    dispatch(setGenderState(e.target.value as string))
   }
 
   return (
@@ -197,26 +229,23 @@ export default function Account() {
         go to dashboard
       </button>
       <Picture
-        uid={user!.id} // verify i know what this means
+        isIntro={false}
+        uid={user!.id}
+        primaryUse={primary_use}
         url={avatar_url}
-        size={150}
-        onUpload={(url) => {
-          dispatch(setAvatarUrl(url))
-          updateProfile({
-            username,
-            first_name,
-            last_name,
-            primary_use,
-            avatar_url: url,
-            birthday,
-          })
-        }}
+        size={50}
+        width={50}
+        height={50}
         disableUpload={false}
-        bucketName="avatars"
+        bucketName={'avatars'}
+        isAvatar={true}
+        promptMessage={''}
+        email={user!.email ? user!.email : ''}
       />
+
       <div>
         <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={user.email} disabled />
+        <input id="email" type="text" value={user!.email} disabled />
       </div>
       <div>
         <label htmlFor="username">Username</label>
@@ -271,7 +300,7 @@ export default function Account() {
         <input
           type="date"
           name="birthday" // TODO: use these names in handlers
-          value={birthday ? birthday.toString() : undefined}
+          value={birthday ? birthday.toString() : ''}
           onChange={handleBirthdayChange}
         />
       </div>
@@ -279,12 +308,38 @@ export default function Account() {
       <div>
         <h2>Availability</h2>
         {availability.map((period, index) => (
-          <AvailabilityPeriod period={period} index={index} />
+          <AvailabilitySelector
+            period={period}
+            index={index}
+            key={index}
+            updateDbInstantly={false}
+          />
         ))}
       </div>
 
       <div>
-        <h2>Preferred Location</h2>
+        <h2>Locations</h2>
+        <LocationSelector
+          selectionType="checkbox"
+          isHousitter={true}
+          showCustomLocations={locations.length < Object.values(LocationIds).length}
+          updateDbInstantly={false}
+        />
+      </div>
+
+      <div>
+        <h2>Gender</h2>
+        <Form>
+          <Form.Select
+            value={gender ? gender : DbGenderTypes.Unknown}
+            onChange={handleGenderChange}
+          >
+            <option value={DbGenderTypes.Male}>Male</option>
+            <option value={DbGenderTypes.Female}>Female</option>
+            <option value={DbGenderTypes.NonBinary}>Non Binary</option>
+            <option value={DbGenderTypes.Unknown}>I Prefer not to say</option>
+          </Form.Select>
+        </Form>
       </div>
 
       <div>
@@ -298,6 +353,8 @@ export default function Account() {
               primary_use,
               avatar_url,
               birthday,
+              gender,
+              locations,
             })
           }}
           disabled={loading}

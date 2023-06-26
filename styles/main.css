@@ -1,8 +1,13 @@
-/* first make any wanted customizations */
+@import "bootstrap/dist/css/bootstrap.css";
+/* importing it here means i choose to override bootstrap with the following, instead of it overriding the following */
 
 body {
   margin: 0;
   padding: 0;
+}
+
+.btn {
+  width: 150px;
 }
 
 
@@ -32,6 +37,7 @@ a:visited {
 
 a {
   text-decoration: none;
+  color: white
 }
 
 .front-page-buttons a:link {
@@ -44,7 +50,6 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 600px;
   text-align: center;
 }
 
@@ -58,16 +63,333 @@ a {
   border-radius: 10px 10px 10px 10px;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
+.signin-button:hover {
+  background-color: purple;
 }
 
 .housitter-card {
   background-color: blue
 }
 
+.sidebar-filter {
+  flex: 1;
+  position: sticky;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border-left: 2px solid #15570f; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  top: 0
+}
+
+.sidebar-filter hr {
+  border: solid;
+  width: 100%;
+}
+
+.sidebar-filter .sorter-filter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.sidebar-filter .card-body {
+  padding: 15px;
+}
+
+.sidebar-filter .card-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+
+}
+
+.sidebar-filter .card-title svg {
+  margin-right: 10px;
+}
+
+.headline {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #333; /* Customize the color as per your preference */
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-toggle-button {
+  position: relative; 
+}
+
+.inbox {
+  border-right: 1px solid #8804bd;
+  border-left: 1px solid #8804bd;
+  border-top: 1px solid #8804bd;
+  border-bottom: 1px solid #8804bd;
+}
+
+.inbox-column {
+  border-right: 1px solid #1114b8;
+  border-left: 1px solid #1114b8;
+}
+
+/* CSS Styles */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.sender-message {
+  align-self: flex-end;
+  background-color: #DCF8C6;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.recipient-message {
+  align-self: flex-start;
+  background-color: #E8E8E8;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.message-content {
+  color: #333;
+}
+
+.message-sent-at {
+  font-size: 12px;
+  color: #888;
+}
+
+.inbox {
+  display: flex;
+  border: 1px solid #ccc;
+  height: 80vh;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.inbox-column {
+  border-right: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.chat-container {
+  flex-grow: 1;
+  padding: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  min-height: 0; 
+}
+
+.sender-message,
+.recipient-message {
+  max-width: 60%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.sender-message {
+  align-self: flex-end;
+  background: #0b93f6;
+  color: white;
+}
+
+.recipient-message {
+  align-self: flex-start;
+  background: #f1f0f0;
+  color: black;
+}
+
+.message-content {
+  margin-bottom: 5px;
+}
+
+.selected-conversation {
+  background-color: #E8E8E8; /* Adjust this color as you need */
+}
+
+.inbox-column:hover {
+  background-color: #F8F8F8; /* Adjust this color as you need */
+  cursor: pointer;
+}
+
+.inbox-navbar {
+  align-items: center;
+  margin-top: 10%;
+}
 
 
-/* then import bootstrap */
-@import "bootstrap/dist/css/bootstrap.css";
+.custom-form-select {
+  color: #343a40; /* Dark colored text for contrast */
+  background: #ffffff; /* Light colored background for visibility */
+  border: none;
+  outline: none;
+  padding: 5px;
+  border-radius: 5px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23235485" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right .75rem center; /* position the background image to the right and vertically center */
+  background-size: 8px 10px; /* size of your background image, you can adjust as needed */
+  text-align: center;
+}
+
+.search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* make items the same height */
+  margin: 1rem; /* space between items */
+}
+
+#user-search,
+.custom-form-select {
+  flex: 1; /* make items take up equal width */
+}
+
+.flexing {
+  display: flex;
+  flex-direction: horizontal;
+}
+
+.rounded-image {
+  border-radius: 50%;
+}
+
+
+.house-preview:hover {
+  color: blue
+}
+
+.house-preview {
+  color: black
+}
+
+
+.house-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.house-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+
+.house-image-main {
+  width: 100%;
+  height: auto;
+}
+
+.house-brief {
+  flex: 1;
+  padding: 0 20px;
+}
+
+.house-title {
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+.house-location {
+  color: gray;
+}
+
+.house-content {
+  padding: 20px 0;
+}
+
+.center-element {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.make-column {
+  flex-direction: column;
+}
+
+.create-new-post-prompt {
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+
+.welcome-to-dashboard-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-to-favourites {
+  position: absolute; 
+  top: 0; 
+  right: 0;
+}
+
+.added-to-favourites-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.add-to-favourites-icon {
+  display: flex;
+  height: 3rem;
+}
+
+/*
+heart icon
+*/
+
+.heart-icon {
+  color: #999; /* non-favourite colour */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 30px
+}
+
+.heart-icon.favourited {
+  color: purple; /* favourite colour */
+  animation: favourited-animation 1s ease-in-out;
+}
+
+@keyframes favourited-animation {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.favourite-message {
+  color: purple;
+  opacity: 0;
+  animation: favourite-message-animation 3s ease-in-out;
+}
+
+@keyframes favourite-message-animation {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}

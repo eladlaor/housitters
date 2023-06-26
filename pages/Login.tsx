@@ -1,24 +1,17 @@
-import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
+import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
-import { useEffect, useState } from 'react'
-import { Router, useRouter } from 'next/router'
-import Link from 'next/link'
-import { LANDLORDS_ROUTES, HOUSITTERS_ROUTES, USER_TYPE } from '../utils/constants'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { USER_TYPE, PageRoutes } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  selectIsLoggedState,
-  setIsLoggedState,
-  setFirstName,
-  selectPrimaryUseState,
-} from '../slices/userSlice'
+import { setIsLoggedState, setFirstName, setPrimaryUse, setGenderState } from '../slices/userSlice'
 
 export default function LoginPage() {
-  const { isLoading, session, error, supabaseClient } = useSessionContext()
+  const { error, supabaseClient } = useSessionContext()
   const user = useUser()
   const router = useRouter()
   const dispatch = useDispatch()
-  const isLoggedState = useSelector(selectIsLoggedState)
-  const primaryUse = useSelector(selectPrimaryUseState)
 
   useEffect(() => {
     if (!user) {
@@ -29,7 +22,7 @@ export default function LoginPage() {
       try {
         let { data, error, status } = await supabaseClient
           .from('profiles')
-          .select('first_name, primary_use')
+          .select('first_name, primary_use, gender')
           .eq('id', userId)
           .single()
 
@@ -40,16 +33,18 @@ export default function LoginPage() {
         }
 
         if (data) {
-          const { first_name, primary_use } = data
+          const { first_name, primary_use, gender } = data
 
           dispatch(setIsLoggedState(true))
           dispatch(setFirstName(first_name))
+          dispatch(setPrimaryUse(primary_use))
+          dispatch(setGenderState(gender))
 
           // TODO: shouldnt route in a loadUserData func.
           if (primary_use === USER_TYPE.Housitter) {
-            router.push(`${HOUSITTERS_ROUTES.HOME}`)
+            router.push(`${PageRoutes.HousitterRoutes.Home}`)
           } else if (primary_use === USER_TYPE.Landlord) {
-            router.push(`${LANDLORDS_ROUTES.HOME}`)
+            router.push(`${PageRoutes.LandlordRoutes.Home}`)
           }
         }
       } catch (e) {
@@ -70,7 +65,7 @@ export default function LoginPage() {
     return (
       <div className="container" style={{ padding: '50px 0 100px 0' }}>
         <>
-          {/* why user check? maybe just testing purpose <pre>{user ? user : 'user is indeed not logged in, yaani not authenticated'}</pre> */}
+          <p>sign in using one of the methods below:</p>
           {error && <p>{error.message}</p>}
           <div className="col-6 auth-widget">
             <Auth
@@ -91,7 +86,7 @@ export default function LoginPage() {
               }}
               theme="default"
               supabaseClient={supabaseClient}
-              providers={['google', 'github']}
+              providers={['google', 'facebook', 'apple']}
               socialLayout="horizontal"
             />
           </div>
@@ -106,7 +101,7 @@ export default function LoginPage() {
             supabaseClient.auth.signinWith... */
   return (
     <>
-      <p>login page</p>
+      <p>loading dashboard</p>
     </>
   )
 }

@@ -3,7 +3,8 @@ import { RootState } from '../store'
 import { LocationIds } from '../utils/constants'
 
 export const initialState = {
-  locations: [] as string[],
+  locations: [...Object.values(LocationIds)] as string[],
+  experience: 0,
 }
 
 export type HousitterState = typeof initialState
@@ -18,13 +19,21 @@ export const housitterSlice = createSlice({
         locations: action.payload,
       }
     },
+    setExperienceState(state = initialState, action) {
+      return {
+        ...state,
+        experience: action.payload,
+      }
+    },
   },
 })
 
 // Action creators (housitterSlice.action) are generated (automatically) for each case reducer function
-export const { setLocationsState } = housitterSlice.actions
+export const { setLocationsState, setExperienceState } = housitterSlice.actions
 
 export const selectLocationsState = (state: RootState) => state.housitter.locations
+export const selectExperienceState = (state: RootState) => state.housitter.experience
+
 export type SettersToInitialStates = {
   matchingSetter: any
   initialState: any

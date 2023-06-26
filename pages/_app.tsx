@@ -4,9 +4,14 @@ import type { AppProps } from 'next/app'
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { SessionContextProvider, Session } from '@supabase/auth-helpers-react'
 import { store } from '../store'
-import { Provider } from 'react-redux'
+import { Provider as ReduxProvider } from 'react-redux'
 import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
+
+import { library as fontLibrary } from '@fortawesome/fontawesome-svg-core'
+import { faEnvelopeOpenText, faMailBulk, faBoxOpen } from '@fortawesome/free-solid-svg-icons'
+
+fontLibrary.add(faEnvelopeOpenText, faMailBulk, faBoxOpen)
 
 function MyApp({
   Component,
@@ -27,7 +32,7 @@ function MyApp({
 
   return (
     <div>
-      <Provider store={store}>
+      <ReduxProvider store={store}>
         <PersistGate persistor={persistor}>
           <SessionContextProvider
             supabaseClient={supabaseClient}
@@ -36,7 +41,7 @@ function MyApp({
             <Component {...pageProps} />
           </SessionContextProvider>
         </PersistGate>
-      </Provider>
+      </ReduxProvider>
     </div>
   )
 }
