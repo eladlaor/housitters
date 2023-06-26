@@ -19,7 +19,7 @@ import HousePreview from '../../components/HousePreview'
 
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 import Link from 'next/link'
 
 import { selectAvailablePostsState, setAvailablePosts } from '../../slices/availablePostsSlice'
