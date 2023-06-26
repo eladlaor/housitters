@@ -9,7 +9,12 @@ import {
 } from '../../slices/userSlice'
 
 import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
-import { PageRoutes, USER_TYPE, SignOutElementTypes } from '../../utils/constants'
+import {
+  PageRoutes,
+  USER_TYPE,
+  SignOutElementTypes,
+  DefaultFavouriteUser,
+} from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -34,6 +39,9 @@ import {
   setIsActiveState,
   setTitleState,
 } from '../../slices/createPostSlice'
+
+import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favouritesSlice'
+
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import Picture from '../../components/Picture'
 import Inbox from '../../components/Inbox'
@@ -108,6 +116,8 @@ export default function Home() {
 
   const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
   const conversations = useSelector(selectConversationsState)
+
+  const favouriteUsers = useSelector(selectAllFavouriteUsers)
 
   useEffect(() => {
     if (user) {
@@ -201,7 +211,7 @@ export default function Home() {
 
         let availableHousitter: DbAvailableHousitter
 
-        let availableHousitters: typeof availableHousitter[] = []
+        let availableHousitters: (typeof availableHousitter)[] = []
 
         if (housitterData) {
           for (const housitter of housitterData) {
@@ -255,6 +265,36 @@ export default function Home() {
           }
 
           setHousitters(availableHousitters)
+        }
+
+        const { error: favouritesError, data: favouritesData } = await supabaseClient
+          .from('favourites')
+          .select('created_at, favourite_user_type, favourite_user_id')
+          .eq('marked_by_user_id', user!.id)
+
+        if (favouritesError) {
+          alert(`failed retrieving favourites: ${favouritesError}`)
+          debugger
+          throw favouritesError
+        }
+
+        if (favouritesData) {
+          let retrievedFavouriteUsers = [] as (typeof DefaultFavouriteUser)[]
+
+          retrievedFavouriteUsers = favouritesData.map(
+            (favouriteUser: { favourite_user_id: any }) => ({
+              favouriteUserType: USER_TYPE.Housitter,
+              favouriteUserId: favouriteUser.favourite_user_id,
+              markedByUserId: user!.id,
+            })
+          )
+
+          const favouritesChanged =
+            JSON.stringify(retrievedFavouriteUsers) !== JSON.stringify(favouriteUsers)
+
+          if (favouritesChanged) {
+            dispatch(setAllFavouriteUsers(retrievedFavouriteUsers))
+          }
         }
       }
 

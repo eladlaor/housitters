@@ -163,7 +163,7 @@ export default function Home() {
           if (favouritesError) {
             alert(`failed retrieving favourites: ${favouritesError}`)
             debugger
-            return
+            throw favouritesError
           }
 
           if (favouritesData) {
