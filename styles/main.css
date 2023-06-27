@@ -228,9 +228,16 @@ a {
   cursor: pointer;
 }
 
-.inbox-navbar {
+.navbar-item-align-center {
+  display: flex;
+  justify-content: center ;
   align-items: center;
-  margin-top: 10%;
+}
+
+.navbar-items-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 

@@ -202,9 +202,9 @@ export default function Home() {
       />
 
       <Container>
-        <h1>
+        <h2>
           Hello {firstName}! <br /> Let's find you a cute pet to feel at home with.
-        </h1>
+        </h2>
 
         <h2>here are all the relevant posts for you</h2>
         <Row>
@@ -213,11 +213,12 @@ export default function Home() {
               {availablePosts.length === 0 ? (
                 <div>
                   <p>
-                    There are no available houses with your current filtering.
+                    There are currently no available houses for you.
                     <br />
-                    Try expanding your search to broader dates or locations. k?
+                    Try expanding your search to broader dates or locations.
+                    <br />
+                    you should know: landlords can still find you and contact you directly{' '}
                   </p>
-                  <h2>you should know: landlords can still find you and contact you directly </h2>
                 </div>
               ) : (
                 availablePosts.map((post: any, index: number) => (

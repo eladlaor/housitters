@@ -22,46 +22,54 @@ export default function HomeNavbar({ userType, accountRoute }: any) {
       <Navbar.Brand className="mr-auto" href="#">
         Housitters.com
       </Navbar.Brand>
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="ml-auto">
-          <NavDropdown
-            title={
-              <div>
-                {user && (
-                  <Picture
-                    isIntro={false}
-                    uid={user.id}
-                    url={avatarUrl}
-                    email={user.email as string}
-                    primaryUse={userType}
-                    size={80}
-                    width={80} // should persist dimensions of image upon upload
-                    height={80}
-                    disableUpload={true}
-                    bucketName="avatars"
-                    isAvatar={true}
-                    promptMessage=""
-                    isRounded={true}
-                  />
-                )}
-                {firstName}
-              </div>
-            }
-          >
-            <NavDropdown.Item href={accountRoute}>Edit Profile</NavDropdown.Item>
-            <NavDropdown.Item>
-              <SignOut elementType={SignOutElementTypes.Link} />
-            </NavDropdown.Item>
-          </NavDropdown>
-          <div className="inbox-navbar">
-            <Inbox />
-          </div>
-          <UserSearcher />
-          <Link href="/Favourites">
-            <a className="nav-link">My Favourites</a>
-          </Link>
-        </Nav>
-      </Navbar.Collapse>
+      <div className="navbar-items-wrapper">
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ml-auto">
+            <NavDropdown
+              title={
+                <div>
+                  {user && (
+                    <Picture
+                      isIntro={false}
+                      uid={user.id}
+                      url={avatarUrl}
+                      email={user.email as string}
+                      primaryUse={userType}
+                      size={80}
+                      width={80} // should persist dimensions of image upon upload
+                      height={80}
+                      disableUpload={true}
+                      bucketName="avatars"
+                      isAvatar={true}
+                      promptMessage=""
+                      isRounded={true}
+                    />
+                  )}
+                </div>
+              }
+            >
+              <NavDropdown.Item href={accountRoute}>Edit Profile</NavDropdown.Item>
+              <NavDropdown.Item>
+                <SignOut elementType={SignOutElementTypes.Link} />
+              </NavDropdown.Item>
+            </NavDropdown>
+
+            <div className="navbar-item-align-center">
+              <Nav.Item>
+                <Inbox />
+              </Nav.Item>
+              <Nav.Item>
+                <UserSearcher />
+              </Nav.Item>
+              <Nav.Item>
+                <Link href="/Favourites">
+                  <a className="nav-link">My Favourites</a>
+                </Link>
+              </Nav.Item>
+            </div>
+          </Nav>
+        </Navbar.Collapse>
+      </div>
     </Navbar>
   )
 }
