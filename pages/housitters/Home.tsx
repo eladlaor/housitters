@@ -5,7 +5,6 @@ import {
   selectFirstNameState,
   selectAvailabilityState,
   selectIsLoggedState,
-  selectAvatarUrlState,
   setAvatarUrl,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
@@ -182,7 +181,7 @@ export default function Home() {
     }
 
     asyncWrapper()
-  }, [user, locations, availability])
+  }, [user, locations, availability, firstName])
 
   function sortPosts(sortByProperty: string) {
     let sortedposts: any[] = [...availablePosts]

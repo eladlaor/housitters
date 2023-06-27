@@ -10,7 +10,9 @@ import {
   selectPrimaryUseState,
   setAvailability,
   setAvatarUrl,
+  setFirstName,
   setIsLoggedState,
+  setLastName,
   setPrimaryUse,
 } from '../slices/userSlice'
 import {
@@ -126,6 +128,8 @@ export default function Intro() {
       }
 
       dispatch(setAvatarUrl(newProfile.avatar_url))
+      dispatch(setFirstName(newProfile.first_name))
+      dispatch(setLastName(newProfile.last_name))
 
       if (!isHousitter) {
         const newlandlord = {
@@ -139,7 +143,7 @@ export default function Intro() {
           throw landlordError
         }
 
-        availability.forEach(async (period) => {
+        for (const period of availability) {
           let { error: availabilityError } = await supabaseClient.from('available_dates').upsert({
             user_id: userId,
             start_date: period.startDate,
@@ -151,7 +155,7 @@ export default function Intro() {
             debugger
             throw error
           }
-        })
+        }
 
         dispatch(setAvailability(availability))
 
