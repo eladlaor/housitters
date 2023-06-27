@@ -311,12 +311,11 @@ export default function Intro() {
                 )}
                 {isHousitter && (
                   <Form.Group>
-                    <Form.Label>Experience</Form.Label>
-                    <CountAndUpdate
-                      placeholderMessage={'how many housits have you done more or less'}
-                      valueToCount={experience}
-                      reduxReducer={setExperienceState}
-                    />
+                    <Form.Label className="mb-2">Experience</Form.Label>
+                    <Form.Text className="mb-2" muted>
+                      {'   '} | approximately how many housits have you done
+                    </Form.Text>
+                    <CountAndUpdate valueToCount={experience} reduxReducer={setExperienceState} />
                     <hr />
                   </Form.Group>
                 )}

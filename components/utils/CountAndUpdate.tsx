@@ -2,11 +2,9 @@ import Form from 'react-bootstrap/Form'
 import { useDispatch } from 'react-redux'
 
 export default function CountAndUpdate({
-  placeholderMessage,
   valueToCount,
   reduxReducer,
 }: {
-  placeholderMessage: string
   valueToCount: number
   reduxReducer: Function
 }) {
@@ -21,11 +19,12 @@ export default function CountAndUpdate({
   }
 
   return (
-    <Form.Control
-      type="number"
-      placeholder={placeholderMessage}
-      value={valueToCount}
-      onChange={handleChange}
-    />
+    <Form.Group>
+      <Form.Control
+        type="number"
+        value={valueToCount !== null && valueToCount !== undefined ? valueToCount : 0}
+        onChange={handleChange}
+      />
+    </Form.Group>
   )
 }
