@@ -5,7 +5,7 @@ import { DefaultAvailablePost } from '../utils/constants'
 
 // this is from the housitter perspective
 
-export const initialState = [DefaultAvailablePost]
+export const initialState = [] as DefaultAvailablePostType[]
 
 export type availablePostsState = typeof initialState
 type DefaultAvailablePostKeys = keyof DefaultAvailablePostType
@@ -18,7 +18,7 @@ export const availablePostsSlice = createSlice({
     setAvailablePosts(state, action: PayloadAction<availablePostsState>) {
       return action.payload
     },
-    addPost(state, action: PayloadAction<availablePostsState[0]>) {
+    addPost(state, action: PayloadAction<DefaultAvailablePostType>) {
       state.push(action.payload)
     },
     // TODO: let's type it to make sure it works

@@ -10,6 +10,7 @@ import { selectAvatarUrlState, selectFirstNameState } from '../slices/userSlice'
 import SignOut from './Auth/SignOut'
 import UserSearcher from './UserSearcher'
 import Inbox from './Inbox'
+import Link from 'next/link'
 
 export default function HomeNavbar({ userType, accountRoute }: any) {
   const user = useUser()
@@ -56,6 +57,9 @@ export default function HomeNavbar({ userType, accountRoute }: any) {
             <Inbox />
           </div>
           <UserSearcher />
+          <Link href="/Favourites">
+            <a className="nav-link">My Favourites</a>
+          </Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

@@ -129,11 +129,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
               </Form.Group>
 
               {reviewedUserType === USER_TYPE.Housitter && (
-                <CountAndUpdate
-                  placeholderMessage="how many days was it"
-                  valueToCount={duration}
-                  reduxReducer={setDurationState}
-                />
+                <CountAndUpdate valueToCount={duration} reduxReducer={setDurationState} />
               )}
               <Form.Group controlId="sit-included">
                 <Form.Label>what did the sit include</Form.Label>

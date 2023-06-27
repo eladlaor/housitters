@@ -76,7 +76,9 @@ export default function HousePreview({
           .eq('id', landlordId)
           .single()
         if (landlordError) {
-          alert(landlordError.message)
+          alert(`error loading landlord data: ${landlordError.message}`)
+          debugger
+          throw landlordError
         } else if (landlordData) {
           dispatch(
             setLandlordFirstNameState({ landlordId, landlordFirstName: landlordData.first_name })
