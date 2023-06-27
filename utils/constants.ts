@@ -127,3 +127,7 @@ export const DefaultFavouriteUser = {
 export const SwrUniqueCachingKeys = {
   Favourites: 'Favourites',
 }
+
+export const SortingProperties = {
+  PetsQuantity: 'number of pets',
+}

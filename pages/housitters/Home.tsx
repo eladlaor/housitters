@@ -8,7 +8,13 @@ import {
   setAvatarUrl,
 } from '../../slices/userSlice'
 import { selectLocationsState, setLocationsState } from '../../slices/housitterSlice'
-import { PageRoutes, LocationIds, USER_TYPE, DefaultFavouriteUser } from '../../utils/constants'
+import {
+  PageRoutes,
+  LocationIds,
+  USER_TYPE,
+  DefaultFavouriteUser,
+  SortingProperties,
+} from '../../utils/constants'
 
 import { ImageData } from '../../types/clientSide'
 
@@ -184,14 +190,16 @@ export default function Home() {
   }, [user, locations, availability, firstName])
 
   function sortPosts(sortByProperty: string) {
-    let sortedposts: any[] = [...availablePosts]
+    let sortedPosts: any[] = [...availablePosts]
 
-    if (typeof sortedposts[0][sortByProperty] === 'string') {
-      // TODO: add some sorting logic here
-      dispatch(setAvailablePosts(sortedposts))
-    } else {
-      console.log('sorting by number')
+    if (typeof sortedPosts[0][sortByProperty] === 'string') {
+      // TODO: currently no such filter for posts
+      // sortedPosts.sort((a, b) => a.firstName.localeCompare(b.firstName))
+    } else if (sortByProperty === SortingProperties.PetsQuantity) {
+      sortedPosts.sort((a, b) => a.dogs + a.cats - (b.dogs + b.cats))
     }
+
+    dispatch(setAvailablePosts(sortedPosts))
   }
 
   return (

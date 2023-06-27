@@ -11,6 +11,7 @@ import Sorter from './Sorter'
 
 import { FaFilter, FaSort } from 'react-icons/fa'
 import { Row } from 'react-bootstrap'
+import { SortingProperties } from '../utils/constants'
 
 export default function SidebarFilter({
   isHousitter,
@@ -31,7 +32,10 @@ export default function SidebarFilter({
         <h3>Sort by:</h3>
       </div>
       <div>
-        <Sorter sortingProperties={['firstName']} sortElementsHandler={sortElementsHandler} />
+        <Sorter
+          sortingProperties={[SortingProperties.PetsQuantity]}
+          sortElementsHandler={sortElementsHandler}
+        />
         <hr />
       </div>
       <div className="sorter-filter">
