@@ -506,7 +506,7 @@ export default function Home() {
 
   return (
     <>
-      <HomeNavbar userType={USER_TYPE.Landlord} accountRoute={PageRoutes.LandlordRoutes.Account} />
+      <HomeNavbar userType={USER_TYPE.Landlord} />
       <Container>
         <div className="welcome-to-dashboard-msg">
           <h1>welcome {firstName}, enjoy your upcoming vacation!</h1>

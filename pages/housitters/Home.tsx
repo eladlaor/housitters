@@ -204,10 +204,7 @@ export default function Home() {
 
   return (
     <>
-      <HomeNavbar
-        userType={USER_TYPE.Housitter}
-        accountRoute={PageRoutes.HousitterRoutes.Account}
-      />
+      <HomeNavbar userType={USER_TYPE.Housitter} />
 
       <Container>
         <h2>

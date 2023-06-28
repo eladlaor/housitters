@@ -12,7 +12,7 @@ import UserSearcher from './UserSearcher'
 import Inbox from './Inbox'
 import Link from 'next/link'
 
-export default function HomeNavbar({ userType, accountRoute }: any) {
+export default function HomeNavbar({ userType }: any) {
   const user = useUser()
   const avatarUrl = useSelector(selectAvatarUrlState)
   const firstName = useSelector(selectFirstNameState)
@@ -48,7 +48,7 @@ export default function HomeNavbar({ userType, accountRoute }: any) {
                 </div>
               }
             >
-              <NavDropdown.Item href={accountRoute}>Edit Profile</NavDropdown.Item>
+              <NavDropdown.Item href="/Account">Edit Profile</NavDropdown.Item>
               <NavDropdown.Item>
                 <SignOut elementType={SignOutElementTypes.Link} />
               </NavDropdown.Item>
