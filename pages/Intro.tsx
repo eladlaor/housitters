@@ -58,6 +58,12 @@ export default function Intro() {
   const pets = useSelector(selectPetsState)
   const experience = useSelector(selectExperienceState)
 
+  const [showSignupErrorModal, setShowSignupErrorModal] = useState(false)
+  const handleCloseSignupErrorModal = () => {
+    setShowSignupErrorModal(false)
+    setShowModal(true)
+  }
+
   useEffect(() => {
     dispatch(setPrimaryUse(isHousitter ? USER_TYPE.Housitter : USER_TYPE.Landlord))
   }, [])
@@ -89,15 +95,15 @@ export default function Intro() {
     if (error) {
       debugger
       switch (true) {
-        case error.message.includes('user already registered'):
-          alert(
-            'this email is already registered. a password recovery mechanism will be implemented soon'
-          )
+        case error.message.includes('already registered'):
+          // TODO: maybe a modal with two buttons - sign in or sign up with a different email.
+          setShowModal(false)
+          setShowSignupErrorModal(true)
           break
         default:
           alert(`Sign up failed with the follwing error: ${error.message}`)
       }
-      throw error
+      return
     }
 
     if (data && data.user) {
@@ -355,6 +361,22 @@ export default function Intro() {
                 </Button>
               </Form>
             </Modal.Body>
+          </Modal>
+          <Modal show={showSignupErrorModal} onHide={handleCloseSignupErrorModal}>
+            <Modal.Header closeButton>
+              <Modal.Title className="text-center w-100">Signup Error</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="d-flex justify-content-center">
+              This email is already registered
+            </Modal.Body>
+            <Modal.Footer className="d-flex justify-content-center">
+              <Button variant="secondary" onClick={handleCloseSignupErrorModal}>
+                Replace Email
+              </Button>
+              <Button variant="primary" onClick={() => router.push('/Login')}>
+                Sign In
+              </Button>
+            </Modal.Footer>
           </Modal>
         </div>
       </div>
