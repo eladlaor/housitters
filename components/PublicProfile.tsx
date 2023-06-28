@@ -5,6 +5,7 @@ import { selectShowRecommendationFormModalState } from '../slices/recommendation
 import MessageSender from './Contact/MessageSender'
 import { selectFirstNameState, selectLastNameState } from '../slices/userSlice'
 import ReviewsOnSelectedUser from './ReviewsOnSelectedUser'
+import ContactFoundUser from './Contact/ContactFoundUser'
 
 export default function PublicProfile(props: {
   userId: string
@@ -39,8 +40,7 @@ export default function PublicProfile(props: {
         isRounded={false}
       />
       <hr />
-      about me text: {aboutMe}. should see when and where the user puts it in.
-      <hr />
+      {aboutMe ? aboutMe : `${firstName} didn't write a bio yet.`}
       <MessageSender
         recipientFirstName={firstName}
         recipientLastName={lastName}
@@ -62,6 +62,7 @@ export default function PublicProfile(props: {
         reviewedUserLastName={lastName}
         reviewedUserType={primaryUse}
       />{' '}
+      <ContactFoundUser recipientUserId={userId} />
     </div>
   )
 }

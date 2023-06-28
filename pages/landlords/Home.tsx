@@ -147,7 +147,7 @@ export default function Home() {
           dispatch(setIsActiveState(true))
           const imagesUrlData: ImageData[] = []
 
-          activePost.images_urls.forEach((postImagesUrl: string, index: number) => {
+          activePost.images_urls?.forEach((postImagesUrl: string, index: number) => {
             imagesUrlData.push({
               url: postImagesUrl,
               id: index,
@@ -526,6 +526,7 @@ export default function Home() {
                     dogs={pets.dogs}
                     cats={pets.cats}
                     imagesUrls={fileNames} // TODO: should have default image
+                    addMissingDetailsHandler={handleShowNewPostModal}
                   />
                   <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
                     Delete post

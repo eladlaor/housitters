@@ -39,6 +39,7 @@ export default function HousePreview({
   dogs,
   cats,
   imagesUrls,
+  addMissingDetailsHandler,
 }: HousePreviewProps) {
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
@@ -230,8 +231,12 @@ export default function HousePreview({
           <Card.Title>{title}</Card.Title>
           {postPicturesFullUrl[0] ? (
             <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
+          ) : userType === USER_TYPE.Landlord ? (
+            <Button onClick={addMissingDetailsHandler!} variant="primary">
+              add pictures
+            </Button>
           ) : (
-            'Loading Title Image'
+            'this house has no pictures yet'
           )}
           <Modal show={showModal} onHide={handleModalClose}>
             <Modal.Header closeButton>

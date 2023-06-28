@@ -132,7 +132,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
             <Modal.Body>
               {selectedUserReviews.length === 0 ? (
                 <div>
-                  <p>no reviews yet, be the first</p>
+                  <p>no reviews yet</p>
                 </div>
               ) : (
                 selectedUserReviews.map((review: SelectedUserReview, index: number) => (

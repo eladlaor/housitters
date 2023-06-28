@@ -1,3 +1,4 @@
+import { MouseEventHandler } from 'react'
 import { DefaultAvailablePost, SIGNUP_FORM_PROPS, SignOutElementTypes } from '../utils/constants'
 
 export type HousitterProps = {
@@ -50,6 +51,7 @@ export interface HousePreviewProps {
   dogs: number
   cats: number
   imagesUrls: ImageData[]
+  addMissingDetailsHandler: MouseEventHandler<HTMLButtonElement> | null
 }
 
 export interface MessageSenderProps {

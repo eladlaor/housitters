@@ -30,6 +30,7 @@ import PetsCounter from '../components/PetsCounter'
 import AvailabilitySelector from '../components/AvailabilitySelector'
 import LocationSelector from '../components/LocationSelector'
 import CountAndUpdate from '../components/utils/CountAndUpdate'
+import { Database } from '../types/supabase'
 
 export default function Intro() {
   const router = useRouter()
@@ -204,10 +205,31 @@ export default function Intro() {
           }
         })
       }
-    }
 
-    dispatch(setIsLoggedState(true))
-    alert(`Successfully created new ${primaryUse}: ${form.firstName} ${form.lastName}`)
+      if (USER_TYPE.Landlord) {
+        const defaultPost: Partial<Database['public']['Tables']['posts']['Row']> = {
+          created_at: new Date().toISOString(),
+          description: `${form.firstName} didn\n't write a description yet, feel free to send ${
+            form.gender === 'male' ? 'him' : 'her'
+          } a message and ask for more details`,
+          images_urls: null,
+          is_active: true,
+          landlord_id: userId,
+          title: 'available house',
+        }
+
+        const { error: newPostError } = await supabaseClient.from('posts').upsert(defaultPost)
+        if (newPostError) {
+          alert(
+            `Error creating a default post for ${form.firstName}: ${newPostError}. Please create a new post from the dashboard`
+          )
+          debugger
+        }
+      }
+
+      dispatch(setIsLoggedState(true))
+      alert(`Successfully created new ${primaryUse}: ${form.firstName} ${form.lastName}`)
+    }
 
     const homeProps = {
       isAfterSignup: true,

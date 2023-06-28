@@ -11,7 +11,7 @@ export default function Favourites() {
       {favouriteUsers.length === 0 ? (
         <h1>You've yet to mark favourites</h1>
       ) : (
-        favouriteUsers.map((favUser) => <Row>{favUser.favouriteUserId}</Row>)
+        favouriteUsers.map((favUser, index) => <Row key={index}>{favUser.favouriteUserId}</Row>)
       )}
     </div>
   )

@@ -161,6 +161,6 @@ export default function MessageSender(props: MessageSenderProps) {
       </Form>
     </div>
   ) : (
-    <h1>i think this part should not be relevant anymore due to refactor</h1>
+    <></>
   )
 }
