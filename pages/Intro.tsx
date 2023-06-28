@@ -2,7 +2,7 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { DbGenderTypes, LocationIds, SIGNUP_FORM_PROPS, USER_TYPE } from '../utils/constants'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
-import { SignupForm } from '../types/clientSide'
+import { DefaultAvailablePostType, SignupForm } from '../types/clientSide'
 import { useEffect, useState } from 'react'
 import {
   selectAvailabilityState,
@@ -31,6 +31,7 @@ import AvailabilitySelector from '../components/AvailabilitySelector'
 import LocationSelector from '../components/LocationSelector'
 import CountAndUpdate from '../components/utils/CountAndUpdate'
 import { Database } from '../types/supabase'
+import { setAvailablePosts } from '../slices/availablePostsSlice'
 
 export default function Intro() {
   const router = useRouter()
@@ -177,6 +178,38 @@ export default function Intro() {
           alert(`error uploading pets: ${petsError}`)
           throw petsError
         }
+
+        const defaultPost: Partial<Database['public']['Tables']['posts']['Row']> = {
+          created_at: new Date().toISOString(),
+          description: `a description hasn\n't been written yet`,
+          images_urls: null,
+          is_active: true,
+          landlord_id: userId,
+          title: 'available house',
+        }
+
+        const { error: newPostError } = await supabaseClient.from('posts').upsert(defaultPost)
+        if (newPostError) {
+          alert(
+            `Error creating a default post for ${form.firstName}: ${newPostError}. Please create a new post from the dashboard`
+          )
+          debugger
+        }
+
+        const defaultPostRedux: DefaultAvailablePostType = {
+          landlordId: userId,
+          landlordAvatarUrl: avatarUrl,
+          landlordFirstName: form.firstName,
+          landlordLastName: form.lastName,
+          title: 'available house',
+          description: `a description hasn\n't been written yet`,
+          location: landlordLocation,
+          dogs: pets.dogs,
+          cats: pets.cats,
+          imagesUrls: [],
+        }
+
+        dispatch(setAvailablePosts([defaultPostRedux]))
       } else if (USER_TYPE.Housitter) {
         const newHousitter = {
           user_id: userId,
@@ -204,27 +237,6 @@ export default function Intro() {
             throw error
           }
         })
-      }
-
-      if (USER_TYPE.Landlord) {
-        const defaultPost: Partial<Database['public']['Tables']['posts']['Row']> = {
-          created_at: new Date().toISOString(),
-          description: `${form.firstName} didn\n't write a description yet, feel free to send ${
-            form.gender === 'male' ? 'him' : 'her'
-          } a message and ask for more details`,
-          images_urls: null,
-          is_active: true,
-          landlord_id: userId,
-          title: 'available house',
-        }
-
-        const { error: newPostError } = await supabaseClient.from('posts').upsert(defaultPost)
-        if (newPostError) {
-          alert(
-            `Error creating a default post for ${form.firstName}: ${newPostError}. Please create a new post from the dashboard`
-          )
-          debugger
-        }
       }
 
       dispatch(setIsLoggedState(true))

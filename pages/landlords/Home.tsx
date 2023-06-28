@@ -1,20 +1,21 @@
 import { useRouter } from 'next/router'
 import {
+  selectAvatarUrlState,
   selectFirstNameState,
   selectIsLoggedState,
-  selectPrimaryUseState,
+  selectLastNameState,
   setAvatarUrl,
   setFirstName,
 } from '../../slices/userSlice'
 
-import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
+import { ClosedSit, DbAvailableHousitter, DefaultAvailablePostType } from '../../types/clientSide'
 import { USER_TYPE, DefaultFavouriteUser, PageRoutes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
 import Modal from 'react-bootstrap/Modal'
 import { useEffect, useState } from 'react'
-import { selectAvailabilityState, setAvailability } from '../../slices/userSlice'
+import { selectAvailabilityState } from '../../slices/userSlice'
 import {
   selectClosedSitsState,
   selectLocationState,
@@ -33,7 +34,10 @@ import {
   setIsActiveState,
   setTitleState,
 } from '../../slices/createPostSlice'
-import { selectConversationsState, selectTotalUnreadMessagesState } from '../../slices/inboxSlice'
+import {
+  setImagesUrlsState as setAvailablePostSetImagesUrlsState,
+  setAvailablePosts,
+} from '../../slices/availablePostsSlice'
 
 import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favouritesSlice'
 
@@ -62,7 +66,8 @@ export default function Home() {
 
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
-  const currentUserType = useSelector(selectPrimaryUseState)
+  const lastName = useSelector(selectLastNameState)
+  const avatarUrl = useSelector(selectAvatarUrlState)
   const availability = useSelector(selectAvailabilityState)
 
   const [showNewPostModal, setShowNewPostModal] = useState(false)
@@ -158,6 +163,21 @@ export default function Home() {
           dispatch(setImagesUrlsState(imagesUrlData))
           dispatch(setDescriptionState(activePost.description))
           dispatch(setTitleState(activePost.title))
+
+          const availablePostRedux: DefaultAvailablePostType = {
+            landlordId: user.id,
+            landlordAvatarUrl: avatarUrl,
+            landlordFirstName: firstName,
+            landlordLastName: lastName,
+            title: 'available house',
+            description: `a description hasn\n't been written yet`,
+            location: landlordData?.location,
+            dogs: pets.dogs,
+            cats: pets.cats,
+            imagesUrls: imagesUrlData,
+          }
+
+          dispatch(setAvailablePosts([availablePostRedux]))
         }
 
         if (!isActivePost) {
@@ -345,6 +365,10 @@ export default function Home() {
 
         const updatedFileNames = [...fileNames, { url: fileName, id: fileNames.length }]
         dispatch(setImagesUrlsState(updatedFileNames)) // TODO: rename. this is for db, to retrieve later.
+        // TODO: dispatch to availablePosts slice
+        dispatch(
+          setAvailablePostSetImagesUrlsState({ landlordId: user!.id, imagesUrls: updatedFileNames })
+        )
       }
     } catch (e: any) {
       alert(e)
@@ -663,7 +687,7 @@ export default function Home() {
               </Form.Group>
               <Form.Group>
                 <Form.Group>
-                  <Form.Label>this could be title</Form.Label>
+                  <Form.Label>Title</Form.Label>
                   <FormControl
                     type="text"
                     value={title}

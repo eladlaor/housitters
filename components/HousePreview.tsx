@@ -29,6 +29,7 @@ import {
 } from '../slices/availablePostsSlice'
 import { RootState } from '../store'
 import DateDisplayer from './utils/DateDisplayer'
+import Link from 'next/link'
 
 export default function HousePreview({
   landlordId,
@@ -227,7 +228,7 @@ export default function HousePreview({
   return (
     <div>
       <Card bg="light" style={{ width: '18rem' }}>
-        <Card.Body className="text-center house-preview">
+        <Card.Body className="text-center">
           <Card.Title>{title}</Card.Title>
           {postPicturesFullUrl[0] ? (
             <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
@@ -276,7 +277,7 @@ export default function HousePreview({
                         return closedPeriodIfExists ? (
                           <>
                             <Card.Text>
-                              <Badge bg="success">Closed</Badge>
+                              <Badge bg="danger">Closed</Badge>
                               <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
                               <br />
                               This sit is set!
@@ -318,9 +319,8 @@ export default function HousePreview({
                           </>
                         ) : (
                           <>
-                            <Badge bg="danger">Open</Badge>
                             <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
-                            This sit is still open
+                            <Badge bg="success">Available</Badge>
                             <br />
                           </>
                         )
@@ -332,8 +332,12 @@ export default function HousePreview({
               </React.Fragment>
             ))}
             <hr />
-            See More {'   '} <FontAwesomeIcon icon={faDoorOpen} /> <br />
-            The Door Is Open
+            <Link href={`/${landlordId}`}>
+              <a className="house-preview">
+                See More {'   '} <FontAwesomeIcon icon={faDoorOpen} /> <br />
+                The Door Is Open
+              </a>
+            </Link>
           </div>
         </Card.Body>
       </Card>

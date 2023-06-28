@@ -5,7 +5,13 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { USER_TYPE, PageRoutes } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsLoggedState, setFirstName, setPrimaryUse, setGenderState } from '../slices/userSlice'
+import {
+  setIsLoggedState,
+  setFirstName,
+  setPrimaryUse,
+  setGenderState,
+  setAvatarUrl,
+} from '../slices/userSlice'
 
 export default function LoginPage() {
   const { error, supabaseClient } = useSessionContext()
@@ -22,7 +28,7 @@ export default function LoginPage() {
       try {
         let { data, error, status } = await supabaseClient
           .from('profiles')
-          .select('first_name, primary_use, gender')
+          .select('first_name, primary_use, gender, avatar_url')
           .eq('id', userId)
           .single()
 
@@ -33,12 +39,13 @@ export default function LoginPage() {
         }
 
         if (data) {
-          const { first_name, primary_use, gender } = data
+          const { first_name, primary_use, gender, avatar_url } = data
 
           dispatch(setIsLoggedState(true))
           dispatch(setFirstName(first_name))
           dispatch(setPrimaryUse(primary_use))
           dispatch(setGenderState(gender))
+          dispatch(setAvatarUrl(avatar_url))
 
           // TODO: shouldnt route in a loadUserData func.
           if (primary_use === USER_TYPE.Housitter) {

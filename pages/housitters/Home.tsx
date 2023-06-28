@@ -228,29 +228,25 @@ export default function Home() {
               ) : (
                 availablePosts.map((post: any, index: number) => (
                   <Col key={index} md={4} className="mb-4">
-                    <Link href={`/housitters/house/${post.landlordId}`}>
-                      <a>
-                        <HousePreview
-                          landlordId={post.landlordId}
-                          title={post.title}
-                          description={post.description}
-                          location={post.location}
-                          availability={availability} // the sitter availability
-                          dogs={post.dogs}
-                          cats={post.cats}
-                          key={index}
-                          imagesUrls={
-                            post.imagesUrls
-                              ? post.imagesUrls.map((imageData: ImageData) => ({
-                                  url: imageData.url,
-                                  id: imageData.id,
-                                }))
-                              : ''
-                          } // TODO: should have default image
-                          addMissingDetailsHandler={null}
-                        />
-                      </a>
-                    </Link>
+                    <HousePreview
+                      landlordId={post.landlordId}
+                      title={post.title}
+                      description={post.description}
+                      location={post.location}
+                      availability={availability} // the sitter availability
+                      dogs={post.dogs}
+                      cats={post.cats}
+                      key={index}
+                      imagesUrls={
+                        post.imagesUrls
+                          ? post.imagesUrls.map((imageData: ImageData) => ({
+                              url: imageData.url,
+                              id: imageData.id,
+                            }))
+                          : ''
+                      } // TODO: should have default image
+                      addMissingDetailsHandler={null}
+                    />
                   </Col>
                 ))
               )}
