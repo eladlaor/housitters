@@ -28,7 +28,6 @@ export default function ContactFoundUser({ recipientUserId }: { recipientUserId:
     if (!user || !recipientUserId) {
       return
     }
-    console.log(`value of show: ${showConversationModal}`)
 
     const loadSpecificConversation = async () => {
       let parsedConversation = {

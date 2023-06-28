@@ -29,7 +29,7 @@ export default function PublicProfile(props: {
         uid={userId}
         primaryUse={primaryUse}
         url={avatarUrl}
-        size={50}
+        size={80}
         width={50}
         height={50}
         disableUpload={true}
@@ -39,6 +39,10 @@ export default function PublicProfile(props: {
         email={email ? email : ''}
         isRounded={false}
       />
+      <hr />
+      <h3>
+        {firstName} {lastName}
+      </h3>
       <hr />
       {aboutMe ? aboutMe : `${firstName} didn't write a bio yet.`}
       <MessageSender
