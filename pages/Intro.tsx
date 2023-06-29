@@ -347,6 +347,7 @@ export default function Intro() {
                   <Form.Group>
                     <Form.Label>Pets</Form.Label>
                     <PetsCounter />
+                    <hr />
                   </Form.Group>
                 )}
                 {isHousitter && (

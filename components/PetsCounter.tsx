@@ -3,16 +3,12 @@ import { selectPetsState, setPetsState } from '../slices/landlordSlice'
 import Counter from './Counter'
 import { Database } from '../types/supabase'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCat, faDog } from '@fortawesome/free-solid-svg-icons'
 
 export default function PetsCounter() {
   const dispatch = useDispatch()
   const pets = useSelector(selectPetsState)
-  const supabaseClient = useSupabaseClient()
-  const user = useUser()
-
-  // as they are both async, should make sure no race condition on quick press.
-
-  // how can i make sure 'user' will never be undefined
 
   const incrementPet = async (petType: any) => {
     let modifiedPets = JSON.parse(JSON.stringify(pets))
@@ -32,15 +28,22 @@ export default function PetsCounter() {
   }
 
   return (
-    <div>
-      <div>
-        <h3>Dogs: {pets['dogs']}</h3>
-        <Counter itemToCount="dogs" incrementer={incrementPet} decrementer={decrementPet} />
-      </div>
-      <div>
-        <h3>Cats: {pets['cats']}</h3>
-        <Counter itemToCount="cats" incrementer={incrementPet} decrementer={decrementPet} />
-      </div>
+    <div className="pets-counter-container">
+      <Counter
+        itemToCount="dogs"
+        incrementer={incrementPet}
+        decrementer={decrementPet}
+        icon={faDog}
+        count={pets['dogs']}
+      />
+
+      <Counter
+        itemToCount="cats"
+        incrementer={incrementPet}
+        decrementer={decrementPet}
+        icon={faCat}
+        count={pets['cats']}
+      />
     </div>
   )
 }
