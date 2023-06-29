@@ -40,6 +40,10 @@ a {
   color: white
 }
 
+a:hover {
+  color: black
+}
+
 .front-page-buttons a:link {
   text-decoration: none;
 }
