@@ -62,7 +62,7 @@ export default function Favourites() {
 
   return (
     <div className="h-100">
-      <div className="position-absolute w-100">
+      <div className={favouriteUsers.length === 0 ? `position-absolute w-100` : ''}>
         <HomeNavbar userType={userType} />
       </div>
       <div className="d-flex align-items-center justify-content-center vh-100">

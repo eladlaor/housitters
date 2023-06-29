@@ -30,7 +30,7 @@ import SignOut from '../components/Auth/SignOut'
 
 import LocationSelector from '../components/LocationSelector'
 import { selectLocationsState } from '../slices/housitterSlice'
-import { Form } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 type Housitters = Database['public']['Tables']['housitters']['Row']
@@ -216,8 +216,8 @@ export default function Account() {
 
   return (
     user && (
-      <div className="form-widget">
-        <button
+      <div>
+        <Button
           onClick={() => {
             if (primary_use === USER_TYPE.Housitter) {
               router.push(`/housitters/Home`)
@@ -226,8 +226,8 @@ export default function Account() {
             }
           }}
         >
-          go to dashboard
-        </button>
+          back to home
+        </Button>
         <Picture
           isIntro={false}
           uid={user!.id}
@@ -277,26 +277,6 @@ export default function Account() {
         </div>
 
         <div>
-          <h2>Primary Use:</h2>
-          <input
-            type="radio"
-            value={USER_TYPE.Housitter}
-            name="primary_use"
-            checked={handleButtonMark(primary_use, USER_TYPE.Housitter)}
-            onChange={handlePrimayUseChange}
-          />{' '}
-          Housitter
-          <input
-            type="radio"
-            value={USER_TYPE.Landlord}
-            name="primary_use"
-            checked={handleButtonMark(primary_use, USER_TYPE.Landlord)}
-            onChange={handlePrimayUseChange}
-          />
-          landlord
-        </div>
-
-        <div>
           <h2>Birthday</h2>
           <input
             type="date"
@@ -338,7 +318,6 @@ export default function Account() {
               <option value={DbGenderTypes.Male}>Male</option>
               <option value={DbGenderTypes.Female}>Female</option>
               <option value={DbGenderTypes.NonBinary}>Non Binary</option>
-              <option value={DbGenderTypes.Unknown}>I Prefer not to say</option>
             </Form.Select>
           </Form>
         </div>

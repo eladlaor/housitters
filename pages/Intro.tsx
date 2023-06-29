@@ -291,7 +291,7 @@ export default function Intro() {
               </Button>
               <Modal show={showModal} onHide={handleClose} contentClassName="landlord-signup-modal">
                 <Modal.Header closeButton>
-                  <Modal.Title style={{ color: 'blue' }}>One more step</Modal.Title>
+                  <Modal.Title style={{ color: 'black' }}>One more step</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <Form>
