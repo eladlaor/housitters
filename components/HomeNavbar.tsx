@@ -4,7 +4,7 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import Picture from './Picture'
-import { SignOutElementTypes } from '../utils/constants'
+import { PageRoutes, SignOutElementTypes, USER_TYPE } from '../utils/constants'
 
 import { selectAvatarUrlState, selectFirstNameState } from '../slices/userSlice'
 import SignOut from './Auth/SignOut'
@@ -19,7 +19,14 @@ export default function HomeNavbar({ userType }: any) {
 
   return (
     <Navbar bg="dark" variant="dark">
-      <Navbar.Brand className="mr-auto" href="#">
+      <Navbar.Brand
+        className="mr-auto"
+        href={
+          userType === USER_TYPE.Landlord
+            ? PageRoutes.LandlordRoutes.Home
+            : PageRoutes.HousitterRoutes.Home
+        }
+      >
         Housitters.com
       </Navbar.Brand>
       <div className="navbar-items-wrapper">
