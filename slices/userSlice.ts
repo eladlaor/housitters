@@ -14,6 +14,7 @@ export const initialState = {
   avatarUrl: '', // TODO: add some default image here
   birthday: new Date(0).toISOString(),
   gender: DbGenderTypes.Unknown as Profiles['gender'],
+  email: '',
   availability: [
     {
       startDate: new Date().toISOString(),
@@ -77,6 +78,12 @@ export const userSlice = createSlice({
         gender: action.payload,
       }
     },
+    setEmailState(state = initialState, action) {
+      return {
+        ...state,
+        email: action.payload,
+      }
+    },
     setAvailability(state = initialState, action) {
       return {
         ...state,
@@ -102,6 +109,7 @@ export const {
   setAvatarUrl,
   setBirthday,
   setGenderState,
+  setEmailState,
   setAvailability,
   setUsersContactedState,
 } = userSlice.actions
@@ -114,6 +122,7 @@ export const selectPrimaryUseState = (state: RootState) => state.user.primaryUse
 export const selectAvatarUrlState = (state: RootState) => state.user.avatarUrl
 export const selectBirthdayState = (state: RootState) => state.user.birthday
 export const selectGenderState = (state: RootState) => state.user.gender
+export const selectEmailState = (state: RootState) => state.user.email
 export const selectAvailabilityState = (state: RootState) => state.user.availability
 export const selectUsersContactedState = (state: RootState) => state.user.usersContacted
 

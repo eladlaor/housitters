@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-react'
-import Picture from '../components/Picture'
 import { useRouter } from 'next/router'
 
-import AvailabilitySelector from '../components/AvailabilitySelector'
-
 import { Database } from '../types/supabase'
-import { DbGenderTypes, LocationIds, SignOutElementTypes, USER_TYPE } from '../utils/constants'
+import { USER_TYPE } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectAvatarUrlState,
@@ -25,12 +22,13 @@ import {
   setAvailability,
   selectGenderState,
   setGenderState,
+  setEmailState,
 } from '../slices/userSlice'
-import SignOut from '../components/Auth/SignOut'
 
-import LocationSelector from '../components/LocationSelector'
 import { selectLocationsState } from '../slices/housitterSlice'
 import { Button, Form } from 'react-bootstrap'
+import UserDetails from '../components/Profile/UserDetails'
+import HomeNavbar from '../components/HomeNavbar'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 type Housitters = Database['public']['Tables']['housitters']['Row']
@@ -76,6 +74,8 @@ export default function Account() {
               last_name,
               primary_use,
               avatar_url,
+              gender,
+              email,
               birthday`
           )
           .eq('id', user.id)
@@ -92,6 +92,8 @@ export default function Account() {
           dispatch(setLastName(data.last_name))
           dispatch(setAvatarUrl(data.avatar_url))
           dispatch(setBirthday(data.birthday))
+          dispatch(setGenderState(data.gender))
+          dispatch(setEmailState(data.email))
         }
 
         const availability = await getAvailabilityFromDb()
@@ -126,7 +128,10 @@ export default function Account() {
   }) {
     try {
       setLoading(true)
-      if (!user) throw new Error('No user')
+      if (!user) {
+        alert(`no user`)
+        return
+      }
 
       const profileUpdates = {
         id: user.id,
@@ -142,7 +147,9 @@ export default function Account() {
 
       let { error } = await supabaseClient.from('profiles').upsert(profileUpdates)
       if (error) {
-        throw error
+        alert(`failed updating profile: ${error}`)
+        debugger
+        return
       }
 
       if (primary_use === USER_TYPE.Housitter) {
@@ -197,130 +204,12 @@ export default function Account() {
     }
   }
 
-  // TODO: unify into one function, make sure you know how to pass the function as arg, since event is passed implicitly
-  function handlePrimayUseChange(event: any) {
-    dispatch(setPrimaryUse(event.target.value))
-  }
-
-  function handleBirthdayChange(event: any) {
-    dispatch(setBirthday(event.target.value))
-  }
-
-  function handleButtonMark(type: string, typeToCompare: string) {
-    return type === typeToCompare
-  }
-
-  function handleGenderChange(e: any) {
-    dispatch(setGenderState(e.target.value as string))
-  }
-
   return (
     user && (
       <div>
-        <Button
-          onClick={() => {
-            if (primary_use === USER_TYPE.Housitter) {
-              router.push(`/housitters/Home`)
-            } else {
-              router.push(`/landlords/Home`)
-            }
-          }}
-        >
-          back to home
-        </Button>
-        <Picture
-          isIntro={false}
-          uid={user!.id}
-          primaryUse={primary_use}
-          url={avatar_url}
-          size={50}
-          width={50}
-          height={50}
-          disableUpload={false}
-          bucketName={'avatars'}
-          isAvatar={true}
-          promptMessage={''}
-          email={user!.email ? user!.email : ''}
-          isRounded={false}
-        />
+        <HomeNavbar userType={primary_use} />
 
-        <div>
-          <label htmlFor="email">Email</label>
-          <input id="email" type="text" value={user!.email} disabled />
-        </div>
-        <div>
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            type="text"
-            value={username || ''}
-            onChange={(e) => dispatch(setUsername(e.target.value))}
-          />
-        </div>
-        <div>
-          <label htmlFor="first_name">First Name</label>
-          <input
-            id="first_name"
-            type="text"
-            value={first_name}
-            onChange={(e) => dispatch(setFirstName(e.target.value))}
-          />
-        </div>
-        <div>
-          <label htmlFor="last_name">Last Name</label>
-          <input
-            id="last_name"
-            type="text"
-            value={last_name}
-            onChange={(e) => dispatch(setLastName(e.target.value))}
-          />
-        </div>
-
-        <div>
-          <h2>Birthday</h2>
-          <input
-            type="date"
-            name="birthday" // TODO: use these names in handlers
-            value={birthday ? birthday.toString() : ''}
-            onChange={handleBirthdayChange}
-          />
-        </div>
-
-        <div>
-          <h2>Availability</h2>
-          {availability.map((period, index) => (
-            <AvailabilitySelector
-              period={period}
-              index={index}
-              key={index}
-              updateDbInstantly={false}
-            />
-          ))}
-        </div>
-
-        <div>
-          <h2>Locations</h2>
-          <LocationSelector
-            selectionType="checkbox"
-            isHousitter={true}
-            showCustomLocations={locations.length < Object.values(LocationIds).length}
-            updateDbInstantly={false}
-          />
-        </div>
-
-        <div>
-          <h2>Gender</h2>
-          <Form>
-            <Form.Select
-              value={gender ? gender : DbGenderTypes.Unknown}
-              onChange={handleGenderChange}
-            >
-              <option value={DbGenderTypes.Male}>Male</option>
-              <option value={DbGenderTypes.Female}>Female</option>
-              <option value={DbGenderTypes.NonBinary}>Non Binary</option>
-            </Form.Select>
-          </Form>
-        </div>
+        <UserDetails isHousitter={primary_use === USER_TYPE.Housitter} />
 
         <div>
           <button
@@ -338,13 +227,7 @@ export default function Account() {
               })
             }}
             disabled={loading}
-          >
-            {loading ? 'loading ...' : 'update'}
-          </button>
-        </div>
-
-        <div>
-          <SignOut elementType={SignOutElementTypes.Button} />
+          ></button>
         </div>
       </div>
     )

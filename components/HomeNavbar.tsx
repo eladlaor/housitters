@@ -15,7 +15,6 @@ import Link from 'next/link'
 export default function HomeNavbar({ userType }: any) {
   const user = useUser()
   const avatarUrl = useSelector(selectAvatarUrlState)
-  const firstName = useSelector(selectFirstNameState)
 
   return (
     <Navbar bg="dark" variant="dark">
@@ -27,7 +26,7 @@ export default function HomeNavbar({ userType }: any) {
             : PageRoutes.HousitterRoutes.Home
         }
       >
-        Housitters.com
+        Home
       </Navbar.Brand>
       <div className="navbar-items-wrapper">
         <Navbar.Collapse id="basic-navbar-nav">

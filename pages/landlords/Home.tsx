@@ -739,15 +739,6 @@ export default function Home() {
             </Form>
           </Modal.Body>
         </Modal>
-        <div id="available-housitters">
-          {isAfterSignup ? (
-            ''
-          ) : isActivePost ? (
-            <h3>here are the housitters who are available in your specified dates and location:</h3>
-          ) : (
-            <></>
-          )}
-        </div>
 
         <Row>
           <Col md={9} style={{ paddingRight: '30px' }}>
