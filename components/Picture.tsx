@@ -283,19 +283,28 @@ export default function Picture({
             {disableUpload ? '' : uploading ? 'Uploading ...' : promptMessage}
           </Form.Label>
           <br />
-          {isAvatar && (
+          {isAvatar && previewDataUrls.length === 0 ? (
             <input
               onChange={(e: any) => handleAvatarUpload(e)}
               type="file"
-              name="file" // TODO: make sure i understand where this is meant to be used.
+              name="file"
               accept="image/*"
               /* TODO: disbaled=? */
             />
+          ) : (
+            <Button
+              variant="danger"
+              onClick={(e) => handleDeleteImage(previewDataUrls[0], e)}
+              key={`delete-${0}`}
+              name={`image-${0}`}
+            >
+              Delete Picture
+            </Button>
           )}
         </div>
       )}
       {loading
-        ? 'loading picture'
+        ? 'Loading picture'
         : previewDataUrls.map((previewData: ImageData, index: number) => (
             <div key={index}>
               <Image
@@ -306,14 +315,14 @@ export default function Picture({
                 className={isRounded ? 'rounded-image' : ''}
               />
 
-              {!disableUpload && (
+              {!isAvatar && !disableUpload && (
                 <Button
                   variant="danger"
                   onClick={(e) => handleDeleteImage(previewData, e)}
                   key={`delete-${index}`}
                   name={`image-${index}`}
                 >
-                  delete
+                  Delete
                 </Button>
               )}
             </div>

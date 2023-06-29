@@ -24,7 +24,7 @@ import {
   selectExperienceState,
   setExperienceState,
 } from '../slices/housitterSlice'
-import { Button, Container, Form, Modal, Navbar } from 'react-bootstrap'
+import { Button, Form, Modal, Spinner } from 'react-bootstrap'
 import Picture from '../components/Picture'
 import PetsCounter from '../components/PetsCounter'
 import AvailabilitySelector from '../components/AvailabilitySelector'
@@ -50,6 +50,7 @@ export default function Intro() {
   }
 
   const [form, setForm] = useState(initialFormState)
+  const [isSignupInProgress, setIsSignupInProgress] = useState(false)
 
   const avatarUrl = useSelector(selectAvatarUrlState)
   const availability = useSelector(selectAvailabilityState)
@@ -87,7 +88,9 @@ export default function Intro() {
 
   async function handleSignUp(e: any) {
     e.preventDefault()
-    setShowModal(false) // TODO: should probably add another kind of signifier to wait until registration completes, but twice alert is no good. maybe a route to a differnet page.
+    setShowModal(false)
+
+    setIsSignupInProgress(true)
 
     let { data, error } = await supabaseClient.auth.signUp({
       email: form.email,
@@ -247,174 +250,183 @@ export default function Intro() {
       isAfterSignup: true,
     }
     router.push({ pathname: `${primaryUse}s/Home`, query: homeProps })
+    setIsSignupInProgress(false)
   }
-
   return (
     <div>
-      <div className="position-absolute top-50 start-50 translate-middle">
-        <h1>{isHousitter ? 'lets find a woof over your head' : "let's find you a sitter"}</h1>
+      {isSignupInProgress ? (
+        <Spinner animation="border" role="status" />
+      ) : (
         <div>
-          <h3>When?</h3>
-          {availability.map((period, index) => (
-            <AvailabilitySelector
-              key={index}
-              period={period}
-              index={index}
-              updateDbInstantly={false}
-            />
-          ))}
-        </div>
-        <div>
-          <h3>{isHousitter ? 'Where do you want to housit?' : 'Where do you live?'}</h3>
-          <LocationSelector
-            selectionType={isHousitter ? 'checkbox' : 'radio'}
-            isHousitter={isHousitter}
-            showCustomLocations={
-              isHousitter
-                ? housitterLocations.length > 0 &&
-                  housitterLocations.length < Object.values(LocationIds).length
-                : true
-            }
-            updateDbInstantly={false}
-          />
-        </div>
-        <div>
-          <Button variant="primary" onClick={handleShow}>
-            {isHousitter ? 'find me a house' : 'find me a sitter'}{' '}
-          </Button>
-          <Modal show={showModal} onHide={handleClose} contentClassName="landlord-signup-modal">
-            <Modal.Header closeButton>
-              <Modal.Title style={{ color: 'blue' }}>One more step</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form>
-                <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
-                  <Form.Label>First Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder=""
-                    value={form.firstName as string}
-                    onChange={(e) => {
-                      setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
-                    }}
-                  />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
-                  <Form.Label>Last Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder=""
-                    value={form.lastName}
-                    onChange={(e) => {
-                      setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
-                    }}
-                  />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="Enter email"
-                    value={form.email}
-                    onChange={(e) => {
-                      setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
-                    }}
-                  />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
-                  <Form.Label>Password</Form.Label>
-                  <div className="password-input-wrapper">
-                    <Form.Control
-                      type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
-                      placeholder="Password"
-                      // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
-                      onChange={(e) => {
-                        setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
-                      }}
-                    />
-                    <Button
-                      variant="info"
-                      type="button"
-                      className="password-toggle-button"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? 'Hide' : 'Show'}
-                    </Button>
-                    <hr />
-                  </div>
-                </Form.Group>
-                {!isHousitter && (
-                  <Form.Group>
-                    <Form.Label>Pets</Form.Label>
-                    <PetsCounter />
-                    <hr />
-                  </Form.Group>
-                )}
-                {isHousitter && (
-                  <Form.Group>
-                    <Form.Label className="mb-2">Experience</Form.Label>
-                    <Form.Text className="mb-2" muted>
-                      {'   '} | approximately how many housits have you done
-                    </Form.Text>
-                    <CountAndUpdate valueToCount={experience} reduxReducer={setExperienceState} />
-                    <hr />
-                  </Form.Group>
-                )}
-                <Form.Group>
-                  <Form.Label>Gender</Form.Label>
-                  <Form.Select
-                    value={form.gender}
-                    onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
-                  >
-                    <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>
-                    <option value={DbGenderTypes.Female}>{DbGenderTypes.Female}</option>
-                    <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
-                    <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
-                  </Form.Select>
-                  <hr />
-                </Form.Group>
+          <div className="position-absolute top-50 start-50 translate-middle">
+            <h1>{isHousitter ? "let's find a woof over your head" : "let's find you a sitter"}</h1>
+            <div>
+              <h3>When?</h3>
+              {availability.map((period, index) => (
+                <AvailabilitySelector
+                  key={index}
+                  period={period}
+                  index={index}
+                  updateDbInstantly={false}
+                />
+              ))}
+            </div>
+            <div>
+              <h3>{isHousitter ? 'Where do you want to housit?' : 'Where do you live?'}</h3>
+              <LocationSelector
+                selectionType={isHousitter ? 'checkbox' : 'radio'}
+                isHousitter={isHousitter}
+                showCustomLocations={
+                  isHousitter
+                    ? housitterLocations.length > 0 &&
+                      housitterLocations.length < Object.values(LocationIds).length
+                    : true
+                }
+                updateDbInstantly={false}
+              />
+            </div>
+            <div>
+              <Button variant="primary" onClick={handleShow}>
+                {isHousitter ? 'find me a house' : 'find me a sitter'}{' '}
+              </Button>
+              <Modal show={showModal} onHide={handleClose} contentClassName="landlord-signup-modal">
+                <Modal.Header closeButton>
+                  <Modal.Title style={{ color: 'blue' }}>One more step</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
+                      <Form.Label>First Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder=""
+                        value={form.firstName as string}
+                        onChange={(e) => {
+                          setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
+                      <Form.Label>Last Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder=""
+                        value={form.lastName}
+                        onChange={(e) => {
+                          setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        type="email"
+                        placeholder="Enter email"
+                        value={form.email}
+                        onChange={(e) => {
+                          setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
+                      <Form.Label>Password</Form.Label>
+                      <div className="password-input-wrapper">
+                        <Form.Control
+                          type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
+                          placeholder="Password"
+                          // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
+                          onChange={(e) => {
+                            setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
+                          }}
+                        />
+                        <Button
+                          variant="info"
+                          type="button"
+                          className="password-toggle-button"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? 'Hide' : 'Show'}
+                        </Button>
+                        <hr />
+                      </div>
+                    </Form.Group>
+                    {!isHousitter && (
+                      <Form.Group>
+                        <Form.Label>Pets</Form.Label>
+                        <PetsCounter />
+                        <hr />
+                      </Form.Group>
+                    )}
+                    {isHousitter && (
+                      <Form.Group>
+                        <Form.Label className="mb-2">Experience</Form.Label>
+                        <Form.Text className="mb-2" muted>
+                          {'   '} | approximately how many housits have you done
+                        </Form.Text>
+                        <CountAndUpdate
+                          valueToCount={experience}
+                          reduxReducer={setExperienceState}
+                        />
+                        <hr />
+                      </Form.Group>
+                    )}
+                    <Form.Group>
+                      <Form.Label>Gender</Form.Label>
+                      <Form.Select
+                        value={form.gender}
+                        onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
+                      >
+                        <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>
+                        <option value={DbGenderTypes.Female}>{DbGenderTypes.Female}</option>
+                        <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
+                        <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
+                      </Form.Select>
+                      <hr />
+                    </Form.Group>
 
-                <Form.Group>
-                  <Picture
-                    isIntro={true}
-                    uid=""
-                    primaryUse={USER_TYPE.Landlord}
-                    url={avatarUrl}
-                    size={100}
-                    width={100} // should persist dimensions of image upon upload
-                    height={100}
-                    disableUpload={false}
-                    bucketName="avatars"
-                    isAvatar={true}
-                    promptMessage="Choose a profile picture"
-                    email={form.email}
-                    isRounded={true}
-                  />
-                </Form.Group>
-                <Button variant="primary" type="submit" onClick={handleSignUp}>
-                  Submit
-                </Button>
-              </Form>
-            </Modal.Body>
-          </Modal>
-          <Modal show={showSignupErrorModal} onHide={handleCloseSignupErrorModal}>
-            <Modal.Header closeButton>
-              <Modal.Title className="text-center w-100">Signup Error</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="d-flex justify-content-center">
-              This email is already registered
-            </Modal.Body>
-            <Modal.Footer className="d-flex justify-content-center">
-              <Button variant="secondary" onClick={handleCloseSignupErrorModal}>
-                Replace Email
-              </Button>
-              <Button variant="primary" onClick={() => router.push('/Login')}>
-                Sign In
-              </Button>
-            </Modal.Footer>
-          </Modal>
+                    <Form.Group>
+                      <Picture
+                        isIntro={true}
+                        uid=""
+                        primaryUse={USER_TYPE.Landlord}
+                        url={avatarUrl}
+                        size={100}
+                        width={100} // should persist dimensions of image upon upload
+                        height={100}
+                        disableUpload={false}
+                        bucketName="avatars"
+                        isAvatar={true}
+                        promptMessage="Profile Picture"
+                        email={form.email}
+                        isRounded={true}
+                      />
+                    </Form.Group>
+                    <Button variant="primary" type="submit" onClick={handleSignUp}>
+                      Submit
+                    </Button>
+                  </Form>
+                </Modal.Body>
+              </Modal>
+              <Modal show={showSignupErrorModal} onHide={handleCloseSignupErrorModal}>
+                <Modal.Header closeButton>
+                  <Modal.Title className="text-center w-100">Signup Error</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="d-flex justify-content-center">
+                  This email is already registered
+                </Modal.Body>
+                <Modal.Footer className="d-flex justify-content-center">
+                  <Button variant="secondary" onClick={handleCloseSignupErrorModal}>
+                    Replace Email
+                  </Button>
+                  <Button variant="primary" onClick={() => router.push('/Login')}>
+                    Sign In
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

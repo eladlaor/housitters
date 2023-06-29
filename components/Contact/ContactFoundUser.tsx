@@ -175,45 +175,6 @@ export default function ContactFoundUser({ recipientUserId }: { recipientUserId:
         handleHideConversationModalFromInbox={null}
         handleHideConversationModalFromFoundUser={handleHideConversationModal}
       />
-      {/* 
-      <Modal show={showEmailModal} onHide={handleCloseEmailModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Contact {recipientFirstName} {recipientLastName}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="message">
-              <Form.Label>Message</Form.Label>
-              <Form.Control
-                size="lg"
-                as="textarea"
-                placeholder=""
-                value={messageContent}
-                onChange={(e) => {
-                  setMessageContent(e.target.value)
-                }}
-              />
-            </Form.Group>
-            <Button
-              variant="success"
-              type="submit"
-              onClick={(e: any) => handleSendEmail(e)}
-              disabled={isSendingInProgress}
-            >
-              {isSendingInProgress ? (
-                <Spinner animation="border" role="status"></Spinner>
-              ) : (
-                ' Send the email'
-              )}
-            </Button>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={handleCloseEmailModal}>Close</Button>
-        </Modal.Footer>
-      </Modal> */}
     </div>
   )
 }
