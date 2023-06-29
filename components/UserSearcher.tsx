@@ -89,6 +89,13 @@ export default function UserSearcher() {
         )}
         placeholder="Search for a user by name"
         onChange={handleSelectedSearchedUser}
+        maxResults={3}
+        renderMenuItemChildren={(option) => (
+          <div>
+            {(option as (typeof allProfiles)[0]).first_name}{' '}
+            {(option as (typeof allProfiles)[0]).last_name}
+          </div>
+        )}
       ></Typeahead>
       {showSelectedSearchedUserModal && selectedSearchedUser.id !== 'no-user' && (
         <Modal show={showSelectedSearchedUserModal} onHide={handleCloseSelectedSearchedUserModal}>
