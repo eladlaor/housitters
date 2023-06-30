@@ -79,29 +79,27 @@ export default function LoginPage() {
         className="container d-flex flex-column justify-content-center align-items-center"
         style={{ height: '100vh' }}
       >
-        <div className="col-6 auth-widget">
-          <Auth
-            appearance={{
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: 'red',
-                    inputBackground: 'white',
-                    inputText: 'black',
-                    defaultButtonBackground: 'white',
-                    anchorTextColor: 'pink',
-                    anchorTextHoverColor: 'blue',
-                  },
+        <Auth
+          appearance={{
+            theme: ThemeSupa,
+            variables: {
+              default: {
+                colors: {
+                  brand: 'red',
+                  inputBackground: 'white',
+                  inputText: 'black',
+                  defaultButtonBackground: 'white',
+                  anchorTextColor: 'pink',
+                  anchorTextHoverColor: 'blue',
                 },
               },
-            }}
-            theme="default"
-            supabaseClient={supabaseClient}
-            providers={['google', 'facebook', 'apple']}
-            socialLayout="horizontal"
-          />
-        </div>
+            },
+          }}
+          theme="default"
+          supabaseClient={supabaseClient}
+          providers={['google']}
+          socialLayout="horizontal"
+        />
       </div>
     )
   }
