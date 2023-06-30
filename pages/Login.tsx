@@ -70,42 +70,38 @@ export default function LoginPage() {
 
   if (!user) {
     return (
-      <div className="container" style={{ padding: '50px 0 100px 0' }}>
-        <>
-          <p>sign in using one of the methods below:</p>
-          {error && <p>{error.message}</p>}
-          <div className="col-6 auth-widget">
-            <Auth
-              appearance={{
-                theme: ThemeSupa,
-                variables: {
-                  default: {
-                    colors: {
-                      brand: 'red',
-                      inputBackground: 'white',
-                      inputText: 'black',
-                      defaultButtonBackground: 'white',
-                      anchorTextColor: 'pink',
-                      anchorTextHoverColor: 'blue',
-                    },
+      <div
+        className="container d-flex flex-column justify-content-center align-items-center"
+        style={{ height: '100vh' }}
+      >
+        {error && <p>{error.message}</p>}
+        <div className="col-6 auth-widget">
+          <Auth
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: 'red',
+                    inputBackground: 'white',
+                    inputText: 'black',
+                    defaultButtonBackground: 'white',
+                    anchorTextColor: 'pink',
+                    anchorTextHoverColor: 'blue',
                   },
                 },
-              }}
-              theme="default"
-              supabaseClient={supabaseClient}
-              providers={['google', 'facebook', 'apple']}
-              socialLayout="horizontal"
-            />
-          </div>
-        </>
+              },
+            }}
+            theme="default"
+            supabaseClient={supabaseClient}
+            providers={['google', 'facebook', 'apple']}
+            socialLayout="horizontal"
+          />
+        </div>
       </div>
     )
   }
-  /* Auth is just a component. it makes the user - which is retrireved from useUser() - become authenticated,
-            instead of undefined. you can check the docs in the readme file of the node modules of
-            it. but you can control the behavior, by checking for defined or undefined user. I'm
-            sure you can also just define a button here, if you really want, simply using the
-            supabaseClient.auth.signinWith... */
+
   return (
     <>
       <p>loading dashboard</p>
