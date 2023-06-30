@@ -24,6 +24,11 @@ export default function LoginPage() {
       return
     }
 
+    if (error) {
+      alert(`login error: ${error.message}`)
+      return
+    }
+
     async function loadUserData(userId: string) {
       try {
         let { data, error, status } = await supabaseClient
@@ -74,7 +79,6 @@ export default function LoginPage() {
         className="container d-flex flex-column justify-content-center align-items-center"
         style={{ height: '100vh' }}
       >
-        {error && <p>{error.message}</p>}
         <div className="col-6 auth-widget">
           <Auth
             appearance={{
