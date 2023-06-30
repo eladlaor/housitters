@@ -423,8 +423,15 @@ heart icon
 .pets-counter-container {
   display: flex;
   justify-content: flex-start;
-  align-content: start;
+  align-content: flex-start;
   margin-top: -30px;
   margin-bottom: -20px;
 }
 
+.my-google-button {
+  /* add your custom styles here */
+  background-color: #db4437;
+  color: white;
+  width: 300px;
+  max-width: 100%;
+}

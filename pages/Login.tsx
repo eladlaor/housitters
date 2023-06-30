@@ -1,7 +1,5 @@
-import { Auth } from '@supabase/auth-ui-react'
-import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { USER_TYPE, PageRoutes } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,12 +10,18 @@ import {
   setGenderState,
   setAvatarUrl,
 } from '../slices/userSlice'
+import { Button, Form } from 'react-bootstrap'
+import { FaGoogle } from 'react-icons/fa'
 
 export default function LoginPage() {
   const { error, supabaseClient } = useSessionContext()
   const user = useUser()
   const router = useRouter()
   const dispatch = useDispatch()
+
+  const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
     if (!user) {
@@ -71,42 +75,94 @@ export default function LoginPage() {
     }
   }, [user])
 
-  // TODO: should get rid of this Auth component and make a better sign in.
+  async function handleEmailLogin(e: any) {
+    e.preventDefault()
 
-  if (!user) {
-    return (
-      <div
-        className="container d-flex flex-column justify-content-center align-items-center"
-        style={{ height: '100vh' }}
-      >
-        <Auth
-          appearance={{
-            theme: ThemeSupa,
-            variables: {
-              default: {
-                colors: {
-                  brand: 'red',
-                  inputBackground: 'white',
-                  inputText: 'black',
-                  defaultButtonBackground: 'white',
-                  anchorTextColor: 'pink',
-                  anchorTextHoverColor: 'blue',
-                },
-              },
-            },
-          }}
-          theme="default"
-          supabaseClient={supabaseClient}
-          providers={['google']}
-          socialLayout="horizontal"
-        />
-      </div>
-    )
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      if (error.message.includes('invalid login credentials')) {
+        alert(
+          `${error.message}. A password recovery mecahnism will be added soon. In the meantime, try logging in via Google here above.`
+        )
+      } else {
+        alert(`login error: ${error.message}`)
+      }
+    }
   }
 
-  return (
-    <>
+  async function handleGoogleOAuthLogin(e: any) {
+    supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      // TODO: configure in google cloud
+      // options: {
+      //   redirectTo: 'http://localhost:3000/Login',
+      // },
+    })
+  }
+
+  return !user ? (
+    <div
+      className="container d-flex flex-column justify-content-center align-items-center"
+      style={{ height: '100vh' }}
+    >
+      <Form>
+        <Form.Group controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button
+            variant="info"
+            type="button"
+            className="password-toggle-button"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </Button>
+        </Form.Group>
+        <Form.Group className="mt-3 d-flex justify-content-center align-items-center">
+          <Button
+            variant="primary"
+            type="submit"
+            style={{ width: '300px' }}
+            onClick={(e) => handleEmailLogin(e)}
+          >
+            Log in
+          </Button>
+        </Form.Group>
+      </Form>
+      <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
+      <Button
+        className="my-google-button mt-3 d-flex justify-content-center align-items-center"
+        variant="outline-dark"
+        onClick={(e) => handleGoogleOAuthLogin(e)}
+      >
+        <div className="space-between w-100">
+          log in with Google <br />
+          <FaGoogle />
+        </div>
+      </Button>
+    </div>
+  ) : (
+    <div>
       <p>loading dashboard</p>
-    </>
+    </div>
   )
 }
