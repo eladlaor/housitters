@@ -60,15 +60,19 @@ a:hover {
 .signin-button {
   color: white;
   background-color: purple;
-  position: absolute;
-  bottom: 30%;
-  align-items: center;
+  width: 420px;
+  position: relative;
   border-style: groove;
   border-radius: 10px 10px 10px 10px;
 }
 
 .signin-button:hover {
   background-color: purple;
+}
+
+.signup-teasers-container {
+  width: 420px;
+  maxWidth: 100%;
 }
 
 .housitter-card {

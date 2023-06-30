@@ -18,9 +18,6 @@ import { settersToInitialStates as landlordSettersToInitialStates } from '../sli
 import { settersToInitialStates as inboxSettersToInitialStates } from '../slices/inboxSlice'
 import { settersToInitialStates as recommendationsSettersToInitialStates } from '../slices/recommendationSlice'
 
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-
 import Button from 'react-bootstrap/Button'
 import IntroNavbar from '../components/IntroNavbar'
 
@@ -75,44 +72,27 @@ export default function Home() {
   }, [user])
 
   return (
-    <div>
-      {/* <IntroNavbar navbarItems={NavbarItems} /> */}
+    <div className="d-flex align-items-center justify-content-center vh-100">
       <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
-      <Row className="justify-content-md-center">
-        <Col md="auto">
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '30px',
-            }}
-          >
-            <Row style={{ position: 'relative', textDecoration: 'none' }}>
-              <Col className="text-center">
-                <div style={{ marginTop: '250px' }}>
-                  <SignupTeaser userType={USER_TYPE.Housitter} />
-                </div>
-              </Col>
-              <Col className="text-center">
-                <div style={{ marginTop: '250px' }}>
-                  <SignupTeaser userType={USER_TYPE.Landlord} />
-                </div>
-              </Col>
-            </Row>
-            <Button
-              style={{ width: '420px' }}
-              variant="lg"
-              className="signin-button"
-              onClick={() => {
-                router.push('/Login')
-              }}
-            >
-              already registered? sign in
-            </Button>
+      <div className="position-relative">
+        <div className="text-center d-flex justify-content-between mx-auto signup-teasers-container">
+          <div className="w-50 pr-2">
+            <SignupTeaser userType={USER_TYPE.Housitter} />
           </div>
-        </Col>
-      </Row>
+          <div className="w-50 pl-2">
+            <SignupTeaser userType={USER_TYPE.Landlord} />
+          </div>
+        </div>
+        <Button
+          className="d-flex align-items-center justify-content-center mt-2 signin-button"
+          variant="lg"
+          onClick={() => {
+            router.push('/Login')
+          }}
+        >
+          already registered? sign in
+        </Button>
+      </div>
     </div>
   )
 }
