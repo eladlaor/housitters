@@ -21,9 +21,11 @@ export default function SignupTeaser({ userType }: { userType: string }) {
   if (userType === USER_TYPE.Housitter) {
     message = 'find a house'
     route = PageRoutes.Intro
+    dispatch(setPrimaryUse(USER_TYPE.Housitter))
   } else {
     message = 'find a housitter'
     route = PageRoutes.Intro
+    dispatch(setPrimaryUse(USER_TYPE.Landlord))
   }
 
   return (

@@ -70,6 +70,7 @@ export interface SignupForm {
   lastName: string
   email: string
   password: string
+  avatarUrl: string
   gender: string
 }
 

@@ -54,6 +54,7 @@ export default function Intro() {
     lastName: '',
     email: '',
     password: '',
+    avatarUrl: '',
     gender: DbGenderTypes.Unknown,
   }
 
@@ -79,8 +80,8 @@ export default function Intro() {
   }
 
   useEffect(() => {
-    dispatch(setPrimaryUse(isHousitter ? USER_TYPE.Housitter : USER_TYPE.Landlord))
-  }, [])
+    setFormField('avatarUrl', avatarUrl)
+  }, [avatarUrl])
 
   const [showModal, setShowModal] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -141,17 +142,8 @@ export default function Intro() {
   async function handleSignUp(e: any) {
     e.preventDefault()
 
-    const possiblyMissingMandatoryFields = {
-      firstName: form.firstName,
-      lastName: form.lastName,
-      email: form.email,
-      password: form.password,
-      avatarUrl: avatarUrl,
-      gender: form.gender,
-    } as any
-
-    const missingFieldsKeyNames = Object.keys(possiblyMissingMandatoryFields).filter(
-      (fieldKey: string) => (possiblyMissingMandatoryFields[fieldKey] as string) === ''
+    const missingFieldsKeyNames = Object.keys(form).filter(
+      (fieldKey: string) => ((form as unknown as Record<string, string>)[fieldKey] as string) === ''
     )
 
     const missingFieldsDefinitionsForUser: string[] = []
