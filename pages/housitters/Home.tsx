@@ -44,7 +44,7 @@ export default function Home() {
   const favouriteUsers = useSelector(selectAllFavouriteUsers)
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !isLogged) {
       return
     }
 

@@ -6,6 +6,7 @@ import {
   SettersToInitialStates,
   selectPrimaryUseState,
   setIsLoggedState,
+  selectIsLoggedState,
 } from '../../slices/userSlice'
 import { settersToInitialStates as postSettersToInitialStates } from '../../slices/createPostSlice'
 import { settersToInitialStates as housitterSettersToInitialStates } from '../../slices/housitterSlice'
@@ -15,6 +16,7 @@ import { setAvailablePosts } from '../../slices/availablePostsSlice'
 import { setAllFavouriteUsers } from '../../slices/favouritesSlice'
 
 import { useSelector, useDispatch } from 'react-redux'
+import { persistor } from '../../store'
 import { useRouter } from 'next/router'
 
 import { USER_TYPE } from '../../utils/constants'
@@ -29,7 +31,7 @@ export default function SignOut({ elementType }: SignOutProps) {
 
   const userType = useSelector(selectPrimaryUseState)
 
-  const clearState = async (settersToInitialState: SettersToInitialStates) => {
+  const clearState = (settersToInitialState: SettersToInitialStates) => {
     for (const attributeSetterAndInitialState of settersToInitialState) {
       dispatch(
         attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
@@ -38,21 +40,22 @@ export default function SignOut({ elementType }: SignOutProps) {
   }
 
   async function handleSignOutClick() {
+    await persistor.purge()
+    await supabaseClient.auth.signOut()
     dispatch(setIsLoggedState(false))
 
     if (userType === USER_TYPE.Housitter) {
-      await clearState(housitterSettersToInitialStates)
+      clearState(housitterSettersToInitialStates)
     } else {
-      await clearState(landlordSettersToInitialStates)
+      clearState(landlordSettersToInitialStates)
     }
-    await clearState(userSettersToInitialStates)
-    await clearState(postSettersToInitialStates)
-    await clearState(inboxSettersToInitialStates)
+    clearState(userSettersToInitialStates)
+    clearState(postSettersToInitialStates)
+    clearState(inboxSettersToInitialStates)
 
     dispatch(setAvailablePosts([]))
     dispatch(setAllFavouriteUsers([]))
 
-    await supabaseClient.auth.signOut()
     router.push('/')
   }
 
@@ -63,7 +66,7 @@ export default function SignOut({ elementType }: SignOutProps) {
           Sign out
         </Button>
       ) : (
-        <Link href="/">
+        <Link href="#">
           <a id="signout-via-dropdown" onClick={handleSignOutClick}>
             Sign out
           </a>

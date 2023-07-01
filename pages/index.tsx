@@ -1,4 +1,5 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+import { persistor } from '../store'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
@@ -28,7 +29,9 @@ export default function Home() {
   const dispatch = useDispatch()
   const userType = useSelector(selectPrimaryUseState)
 
-  function userLogout() {
+  async function userClearState() {
+    await persistor.purge()
+
     for (const attributeSetterAndInitialState of userSettersToInitialStates) {
       dispatch(
         attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
@@ -59,12 +62,12 @@ export default function Home() {
 
   useEffect(() => {
     if (!user) {
-      userLogout()
     } else {
       supabaseClient.auth.signOut()
-      userLogout()
     }
-  }, [user])
+
+    userClearState()
+  }, [])
 
   return (
     <div className="d-flex align-items-center justify-content-center vh-100">

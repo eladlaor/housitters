@@ -101,203 +101,203 @@ export default function Home() {
   const favouriteUsers = useSelector(selectAllFavouriteUsers)
 
   useEffect(() => {
-    if (user) {
-      const asyncWrapper = async () => {
-        let { data: landlordData, error: landlordError } = await supabaseClient
-          .from('landlords')
-          .select(
-            `location, profiles!inner (
+    if (!user || !isLogged) {
+      return
+    }
+    const asyncWrapper = async () => {
+      let { data: landlordData, error: landlordError } = await supabaseClient
+        .from('landlords')
+        .select(
+          `location, profiles!inner (
             first_name, avatar_url, available_dates!inner (start_date, end_date, period_index), pets!inner (dogs, cats)
           )`
-          )
-          .eq('user_id', user.id)
-          .single()
+        )
+        .eq('user_id', user.id)
+        .single()
 
-        if (landlordError) {
-          alert('error when querying landlords table in landlords home' + landlordError.message)
-        } else if (landlordData && landlordData.profiles) {
-          const newLocation = landlordData.location
-          const locationChanged = JSON.stringify(location) !== JSON.stringify(newLocation)
-          if (locationChanged && isLogged) {
-            dispatch(setLocationState(landlordData.location))
-          }
-
-          dispatch(setAvatarUrl((landlordData.profiles as any).avatar_url))
-
-          // TODO: lets import the needed type from supabase types and use instead of any.
-          dispatch(
-            setPetsState({
-              dogs: (landlordData.profiles as any).pets.dogs,
-              cats: (landlordData.profiles as any).pets.cats,
-            })
-          )
-          dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
+      if (landlordError) {
+        alert('error when querying landlords table in landlords home' + landlordError.message)
+      } else if (landlordData && landlordData.profiles) {
+        const newLocation = landlordData.location
+        const locationChanged = JSON.stringify(location) !== JSON.stringify(newLocation)
+        if (locationChanged && isLogged) {
+          dispatch(setLocationState(landlordData.location))
         }
 
-        let { data: activePostData, error: postsError } = await supabaseClient
-          .from('posts')
-          .select(`description, images_urls, title`)
-          .eq('landlord_id', user.id)
-          .eq('is_active', true)
-        // not using single() filter to prevent 0 rows error when no active post
+        dispatch(setAvatarUrl((landlordData.profiles as any).avatar_url))
 
-        if (postsError) {
-          alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
-          throw postsError
-        }
-
-        if (activePostData && activePostData[0]) {
-          // never more than a single result
-          const activePost = activePostData[0] // TODO:
-          dispatch(setIsActiveState(true))
-          const imagesUrlData: ImageData[] = []
-
-          activePost.images_urls?.forEach((postImagesUrl: string, index: number) => {
-            imagesUrlData.push({
-              url: postImagesUrl,
-              id: index,
-            })
+        // TODO: lets import the needed type from supabase types and use instead of any.
+        dispatch(
+          setPetsState({
+            dogs: (landlordData.profiles as any).pets.dogs,
+            cats: (landlordData.profiles as any).pets.cats,
           })
-
-          // TODO: maybe create a utility which gets a property, checks if it's different, and only then dispatches.
-          dispatch(setImagesUrlsState(imagesUrlData))
-          dispatch(setDescriptionState(activePost.description))
-          dispatch(setTitleState(activePost.title))
-
-          const availablePostRedux: DefaultAvailablePostType = {
-            landlordId: user.id,
-            landlordAvatarUrl: avatarUrl,
-            landlordFirstName: firstName,
-            landlordLastName: lastName,
-            title: 'available house',
-            description: `a description hasn\n't been written yet`,
-            location: landlordData?.location,
-            dogs: pets.dogs,
-            cats: pets.cats,
-            imagesUrls: imagesUrlData,
-          }
-
-          dispatch(setAvailablePosts([availablePostRedux]))
-        }
-
-        if (!isActivePost) {
-          // returning all post slice to initial state except isActive, because of race condition with the above
-          dispatch(setDescriptionState(''))
-          dispatch(setTitleState(''))
-          dispatch(setImagesUrlsState([])), setPostPreviewDataUrls([])
-          console.log('no active post')
-        }
-
-        let { data: housitterData, error: housitterError } = await supabaseClient
-          .from('profiles')
-          .select(
-            `id, first_name, last_name, avatar_url, housitters!inner (
-            id, locations, experience, about_me
-          ), available_dates!inner (user_id, start_date, end_date)`
-          )
-          .eq('primary_use', 'housitter')
-          .contains('housitters.locations', [location])
-
-        if (housitterError) {
-          alert(
-            'error when querying housitters from profiles in landlords home' +
-              housitterError.message
-          )
-        }
-
-        let availableHousitter: DbAvailableHousitter
-
-        let availableHousitters: (typeof availableHousitter)[] = []
-
-        if (housitterData) {
-          for (const housitter of housitterData) {
-            let currentSitterAvailability: any[] = []
-            currentSitterAvailability = (
-              housitter.available_dates as { start_date: string; end_date: string }[]
-            ).map(({ start_date, end_date }: { start_date: string; end_date: string }) => ({
-              startDate: new Date(start_date),
-              endDate: new Date(end_date),
-            }))
-
-            availableHousitter = {
-              firstName: housitter.first_name,
-              lastName: housitter.last_name,
-              housitterId: housitter.id,
-              avatarUrl: housitter.avatar_url,
-              availability: currentSitterAvailability,
-              locations: [],
-              experience: 0,
-              about_me: '',
-            }
-
-            if (Array.isArray(housitter.housitters)) {
-              availableHousitter.locations = housitter.housitters[0].locations
-              availableHousitter.experience = housitter?.housitters[0].experience
-              availableHousitter.about_me = housitter?.housitters[0].about_me
-            }
-
-            availableHousitters.push(availableHousitter)
-
-            // filtering by availability, maybe there's a way to filter by availability on server-side?
-            // meanwhile we'll do it client side, using user_id to kind of join the dates with the relavant sitter.
-            // maybe there's a server-side solution, which will be better.
-
-            // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
-            availableHousitters = availableHousitters.filter((sitter) => {
-              return sitter.availability.some((sitterPeriod) => {
-                return availability.some((landlordPeriod) => {
-                  const landlordStartDateAsDate = new Date(landlordPeriod.startDate)
-                  const landlordEndDateAsDate = new Date(landlordPeriod.endDate)
-
-                  return (
-                    landlordPeriod.endDate.startsWith('1970') ||
-                    sitterPeriod.endDate.getFullYear().toString() == '1970' ||
-                    (landlordStartDateAsDate >= sitterPeriod.startDate &&
-                      landlordEndDateAsDate <= sitterPeriod.endDate)
-                  )
-                })
-              })
-            })
-          }
-
-          setHousitters(availableHousitters)
-        }
-
-        const { error: favouritesError, data: favouritesData } = await supabaseClient
-          .from('favourites')
-          .select('created_at, favourite_user_type, favourite_user_id')
-          .eq('marked_by_user_id', user!.id)
-
-        if (favouritesError) {
-          alert(`failed retrieving favourites: ${favouritesError}`)
-          debugger
-          throw favouritesError
-        }
-
-        if (favouritesData) {
-          let retrievedFavouriteUsers = [] as (typeof DefaultFavouriteUser)[]
-
-          retrievedFavouriteUsers = favouritesData.map(
-            (favouriteUser: { favourite_user_id: any }) => ({
-              favouriteUserType: USER_TYPE.Housitter,
-              favouriteUserId: favouriteUser.favourite_user_id,
-              markedByUserId: user!.id,
-            })
-          )
-
-          const favouritesChanged =
-            JSON.stringify(retrievedFavouriteUsers) !== JSON.stringify(favouriteUsers)
-
-          if (favouritesChanged) {
-            dispatch(setAllFavouriteUsers(retrievedFavouriteUsers))
-          }
-        }
+        )
+        dispatch(setFirstName((landlordData.profiles as { first_name: string }).first_name))
       }
 
-      asyncWrapper().catch((e) => {
-        alert(e.message)
-      })
+      let { data: activePostData, error: postsError } = await supabaseClient
+        .from('posts')
+        .select(`description, images_urls, title`)
+        .eq('landlord_id', user.id)
+        .eq('is_active', true)
+      // not using single() filter to prevent 0 rows error when no active post
+
+      if (postsError) {
+        alert(`error fetching active posts in landlords/Home: ${postsError.message}`)
+        throw postsError
+      }
+
+      if (activePostData && activePostData[0]) {
+        // never more than a single result
+        const activePost = activePostData[0] // TODO:
+        dispatch(setIsActiveState(true))
+        const imagesUrlData: ImageData[] = []
+
+        activePost.images_urls?.forEach((postImagesUrl: string, index: number) => {
+          imagesUrlData.push({
+            url: postImagesUrl,
+            id: index,
+          })
+        })
+
+        // TODO: maybe create a utility which gets a property, checks if it's different, and only then dispatches.
+        dispatch(setImagesUrlsState(imagesUrlData))
+        dispatch(setDescriptionState(activePost.description))
+        dispatch(setTitleState(activePost.title))
+
+        const availablePostRedux: DefaultAvailablePostType = {
+          landlordId: user.id,
+          landlordAvatarUrl: avatarUrl,
+          landlordFirstName: firstName,
+          landlordLastName: lastName,
+          title: 'available house',
+          description: `a description hasn\n't been written yet`,
+          location: landlordData?.location,
+          dogs: pets.dogs,
+          cats: pets.cats,
+          imagesUrls: imagesUrlData,
+        }
+
+        dispatch(setAvailablePosts([availablePostRedux]))
+      }
+
+      if (!isActivePost) {
+        // returning all post slice to initial state except isActive, because of race condition with the above
+        dispatch(setDescriptionState(''))
+        dispatch(setTitleState(''))
+        dispatch(setImagesUrlsState([])), setPostPreviewDataUrls([])
+        console.log('no active post')
+      }
+
+      let { data: housitterData, error: housitterError } = await supabaseClient
+        .from('profiles')
+        .select(
+          `id, first_name, last_name, avatar_url, housitters!inner (
+            id, locations, experience, about_me
+          ), available_dates!inner (user_id, start_date, end_date)`
+        )
+        .eq('primary_use', 'housitter')
+        .contains('housitters.locations', [location])
+
+      if (housitterError) {
+        alert(
+          'error when querying housitters from profiles in landlords home' + housitterError.message
+        )
+      }
+
+      let availableHousitter: DbAvailableHousitter
+
+      let availableHousitters: (typeof availableHousitter)[] = []
+
+      if (housitterData) {
+        for (const housitter of housitterData) {
+          let currentSitterAvailability: any[] = []
+          currentSitterAvailability = (
+            housitter.available_dates as { start_date: string; end_date: string }[]
+          ).map(({ start_date, end_date }: { start_date: string; end_date: string }) => ({
+            startDate: new Date(start_date),
+            endDate: new Date(end_date),
+          }))
+
+          availableHousitter = {
+            firstName: housitter.first_name,
+            lastName: housitter.last_name,
+            housitterId: housitter.id,
+            avatarUrl: housitter.avatar_url,
+            availability: currentSitterAvailability,
+            locations: [],
+            experience: 0,
+            about_me: '',
+          }
+
+          if (Array.isArray(housitter.housitters)) {
+            availableHousitter.locations = housitter.housitters[0].locations
+            availableHousitter.experience = housitter?.housitters[0].experience
+            availableHousitter.about_me = housitter?.housitters[0].about_me
+          }
+
+          availableHousitters.push(availableHousitter)
+
+          // filtering by availability, maybe there's a way to filter by availability on server-side?
+          // meanwhile we'll do it client side, using user_id to kind of join the dates with the relavant sitter.
+          // maybe there's a server-side solution, which will be better.
+
+          // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
+          availableHousitters = availableHousitters.filter((sitter) => {
+            return sitter.availability.some((sitterPeriod) => {
+              return availability.some((landlordPeriod) => {
+                const landlordStartDateAsDate = new Date(landlordPeriod.startDate)
+                const landlordEndDateAsDate = new Date(landlordPeriod.endDate)
+
+                return (
+                  landlordPeriod.endDate.startsWith('1970') ||
+                  sitterPeriod.endDate.getFullYear().toString() == '1970' ||
+                  (landlordStartDateAsDate >= sitterPeriod.startDate &&
+                    landlordEndDateAsDate <= sitterPeriod.endDate)
+                )
+              })
+            })
+          })
+        }
+
+        setHousitters(availableHousitters)
+      }
+
+      const { error: favouritesError, data: favouritesData } = await supabaseClient
+        .from('favourites')
+        .select('created_at, favourite_user_type, favourite_user_id')
+        .eq('marked_by_user_id', user!.id)
+
+      if (favouritesError) {
+        alert(`failed retrieving favourites: ${favouritesError}`)
+        debugger
+        throw favouritesError
+      }
+
+      if (favouritesData) {
+        let retrievedFavouriteUsers = [] as (typeof DefaultFavouriteUser)[]
+
+        retrievedFavouriteUsers = favouritesData.map(
+          (favouriteUser: { favourite_user_id: any }) => ({
+            favouriteUserType: USER_TYPE.Housitter,
+            favouriteUserId: favouriteUser.favourite_user_id,
+            markedByUserId: user!.id,
+          })
+        )
+
+        const favouritesChanged =
+          JSON.stringify(retrievedFavouriteUsers) !== JSON.stringify(favouriteUsers)
+
+        if (favouritesChanged) {
+          dispatch(setAllFavouriteUsers(retrievedFavouriteUsers))
+        }
+      }
     }
+
+    asyncWrapper().catch((e) => {
+      alert(e.message)
+    })
   }, [user, availability, location, isActivePost])
 
   async function handleShowNewPostModal() {

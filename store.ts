@@ -22,7 +22,16 @@ import favouritesReducer from './slices/favouritesSlice'
 
 import storage from 'redux-persist/lib/storage'
 import { combineReducers } from 'redux'
-import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist'
 
 const persistConfig = {
   key: 'persistedobj',
@@ -53,6 +62,8 @@ export const store = configureStore({
   },
   devTools: true,
 })
+
+export const persistor = persistStore(store)
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
