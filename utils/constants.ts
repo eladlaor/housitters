@@ -129,5 +129,14 @@ export const SwrUniqueCachingKeys = {
 }
 
 export const SortingProperties = {
-  PetsQuantity: 'number of pets',
+  HousitterDashboard: {
+    PetsQuantity: 'number of pets',
+    Duration: 'duration',
+    Reviews: 'number of reviews',
+  },
+  LandlordDashboard: {
+    FirstName: 'first name',
+    Experience: 'experience',
+    Reviews: 'number of reviews',
+  },
 }

@@ -195,7 +195,7 @@ export default function Home() {
     if (typeof sortedPosts[0][sortByProperty] === 'string') {
       // TODO: currently no such filter for posts
       // sortedPosts.sort((a, b) => a.firstName.localeCompare(b.firstName))
-    } else if (sortByProperty === SortingProperties.PetsQuantity) {
+    } else if (sortByProperty === SortingProperties.HousitterDashboard.PetsQuantity) {
       sortedPosts.sort((a, b) => a.dogs + a.cats - (b.dogs + b.cats))
     }
 
@@ -227,7 +227,7 @@ export default function Home() {
                 </div>
               ) : (
                 availablePosts.map((post: any, index: number) => (
-                  <Col key={index} md={4} className="mb-4">
+                  <Col key={index} md={3} className="mb-4" style={{ margin: '70px' }}>
                     <HousePreview
                       landlordId={post.landlordId}
                       title={post.title}

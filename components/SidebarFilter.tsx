@@ -33,7 +33,9 @@ export default function SidebarFilter({
       </div>
       <div>
         <Sorter
-          sortingProperties={[SortingProperties.PetsQuantity]}
+          sortingProperties={Object.values(
+            isHousitter ? SortingProperties.HousitterDashboard : SortingProperties.LandlordDashboard
+          )}
           sortElementsHandler={sortElementsHandler}
         />
         <hr />
