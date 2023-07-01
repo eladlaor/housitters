@@ -28,42 +28,37 @@ export default function Home() {
   const dispatch = useDispatch()
   const userType = useSelector(selectPrimaryUseState)
 
-  async function userLogout() {
-    const clearUserState = async () => {
-      for (const attributeSetterAndInitialState of userSettersToInitialStates) {
-        dispatch(
-          attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
-        )
-      }
+  function userLogout() {
+    for (const attributeSetterAndInitialState of userSettersToInitialStates) {
+      dispatch(
+        attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
+      )
     }
 
-    await clearUserState()
-    await supabaseClient.auth.signOut()
+    const nonUserSetters =
+      userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
+
+    for (const attributeSetterAndInitialState of nonUserSetters) {
+      dispatch(
+        attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
+      )
+    }
+
+    for (const postSetter of postSettersToInitialStates) {
+      dispatch(postSetter.matchingSetter(postSetter.initialState))
+    }
+
+    for (const inboxSetter of inboxSettersToInitialStates) {
+      dispatch(inboxSetter.matchingSetter(inboxSetter.initialState))
+    }
+
+    for (const recommendationSetter of recommendationsSettersToInitialStates) {
+      dispatch(recommendationSetter.matchingSetter(recommendationSetter.initialState))
+    }
   }
 
   useEffect(() => {
     if (!user) {
-      const nonUserSetters =
-        userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
-
-      for (const attributeSetterAndInitialState of nonUserSetters) {
-        dispatch(
-          attributeSetterAndInitialState.matchingSetter(attributeSetterAndInitialState.initialState)
-        )
-      }
-
-      for (const postSetter of postSettersToInitialStates) {
-        dispatch(postSetter.matchingSetter(postSetter.initialState))
-      }
-
-      for (const inboxSetter of inboxSettersToInitialStates) {
-        dispatch(inboxSetter.matchingSetter(inboxSetter.initialState))
-      }
-
-      for (const recommendationSetter of recommendationsSettersToInitialStates) {
-        dispatch(recommendationSetter.matchingSetter(recommendationSetter.initialState))
-      }
-
       userLogout()
     } else {
       supabaseClient.auth.signOut()
