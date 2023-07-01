@@ -159,7 +159,7 @@ export default function HousePreview({
     imagesUrls: ImageData[]
   ) {
     try {
-      if (!isLogged) {
+      if (!isLogged || !imagesUrls) {
         return
       }
 
@@ -182,7 +182,7 @@ export default function HousePreview({
       const fullUrlsForPreview = await Promise.all(downloadPromises)
       setPostPicturesFullUrl(fullUrlsForPreview as ImageData[])
     } catch (error) {
-      alert('error in downloadPostImagesAndSetPostPicturesPreview: ' + error)
+      alert('error downloading post images: ' + error)
       debugger
     }
   }
