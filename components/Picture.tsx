@@ -243,6 +243,7 @@ export default function Picture({
 
     setPreviewDataUrls(filteredPreviewImagesUrls)
     setFileNames(filteredFileNames)
+    dispatch(setAvatarUrl(''))
   }
 
   async function downloadImage(fileName: string) {

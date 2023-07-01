@@ -1,5 +1,12 @@
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
-import { DbGenderTypes, LocationIds, SIGNUP_FORM_PROPS, USER_TYPE } from '../utils/constants'
+import {
+  DbGenderTypes,
+  LocationIds,
+  MandatorySignupFields,
+  SIGNUP_FORM_PROPS,
+  SignupErrorMessages,
+  USER_TYPE,
+} from '../utils/constants'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import { DefaultAvailablePostType, SignupForm } from '../types/clientSide'
@@ -32,6 +39,7 @@ import LocationSelector from '../components/LocationSelector'
 import CountAndUpdate from '../components/utils/CountAndUpdate'
 import { Database } from '../types/supabase'
 import { setAvailablePosts } from '../slices/availablePostsSlice'
+import React from 'react'
 
 export default function Intro() {
   const router = useRouter()
@@ -62,6 +70,9 @@ export default function Intro() {
   const experience = useSelector(selectExperienceState)
 
   const [showSignupErrorModal, setShowSignupErrorModal] = useState(false)
+  const [signupErrorMessage, setSignupErrorMessage] = useState('')
+  const [missingMandatorySignupFields, setMissingMandatorySignupFields] = useState([] as string[])
+
   const handleCloseSignupErrorModal = () => {
     setShowSignupErrorModal(false)
     setShowModal(true)
@@ -77,6 +88,47 @@ export default function Intro() {
   const handleClose = () => setShowModal(false)
   const handleShow = () => setShowModal(true)
 
+  function renderSignupErrorHandler(signupErrorMessage: string) {
+    switch (signupErrorMessage) {
+      case SignupErrorMessages.ExistingEmail:
+        return (
+          <>
+            <Button variant="secondary" onClick={handleCloseSignupErrorModal}>
+              Replace Email
+            </Button>
+            <Button variant="primary" onClick={() => router.push('/Login')}>
+              Sign In
+            </Button>
+          </>
+        )
+      case SignupErrorMessages.MissingFields:
+        return (
+          <div>
+            <div className="d-flex flex-column justify-content-center align-items-center">
+              <h5>
+                Missing Mandatory Fields: <br />{' '}
+              </h5>
+              {Object.values(missingMandatorySignupFields).map((field, index) => (
+                <div key={index} className="align-items-center">
+                  {field}
+                  <br />
+                </div>
+              ))}
+            </div>
+            <Button
+              style={{ width: '300px', maxWidth: '100%' }}
+              variant="secondary"
+              onClick={handleCloseSignupErrorModal}
+            >
+              Complete the Form
+            </Button>
+          </div>
+        )
+      default:
+        return <div>default</div>
+    }
+  }
+
   function setFormField(field: string, value: any) {
     setForm((previousState) => {
       return {
@@ -88,8 +140,35 @@ export default function Intro() {
 
   async function handleSignUp(e: any) {
     e.preventDefault()
-    setShowModal(false)
 
+    const possiblyMissingMandatoryFields = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      password: form.password,
+      avatarUrl: avatarUrl,
+      gender: form.gender,
+    } as any
+
+    const missingFieldsKeyNames = Object.keys(possiblyMissingMandatoryFields).filter(
+      (fieldKey: string) => (possiblyMissingMandatoryFields[fieldKey] as string) === ''
+    )
+
+    const missingFieldsDefinitionsForUser: string[] = []
+    missingFieldsKeyNames.forEach((key) => {
+      missingFieldsDefinitionsForUser.push((MandatorySignupFields as Record<string, string>)[key])
+    })
+
+    if (missingFieldsDefinitionsForUser.length !== 0) {
+      setShowModal(false)
+      setSignupErrorMessage(SignupErrorMessages.MissingFields)
+      setMissingMandatorySignupFields(missingFieldsDefinitionsForUser)
+      setShowSignupErrorModal(true)
+      setForm(initialFormState)
+      return
+    }
+
+    setShowModal(false)
     setIsSignupInProgress(true)
 
     let { data, error } = await supabaseClient.auth.signUp({
@@ -100,13 +179,18 @@ export default function Intro() {
     if (error) {
       debugger
       switch (true) {
-        case error.message.includes('already registered'):
-          // TODO: maybe a modal with two buttons - sign in or sign up with a different email.
+        case error.message.includes(SignupErrorMessages.ExistingEmail.toLowerCase()):
           setShowModal(false)
+          setSignupErrorMessage(SignupErrorMessages.ExistingEmail)
+          setIsSignupInProgress(false)
+
           setShowSignupErrorModal(true)
+          setForm(initialFormState)
+
           break
         default:
           alert(`Sign up failed with the follwing error: ${error.message}`)
+          router.push('/')
       }
       return
     }
@@ -412,15 +496,10 @@ export default function Intro() {
                   <Modal.Title className="text-center w-100">Signup Error</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="d-flex justify-content-center">
-                  This email is already registered
+                  {signupErrorMessage}
                 </Modal.Body>
                 <Modal.Footer className="d-flex justify-content-center">
-                  <Button variant="secondary" onClick={handleCloseSignupErrorModal}>
-                    Replace Email
-                  </Button>
-                  <Button variant="primary" onClick={() => router.push('/Login')}>
-                    Sign In
-                  </Button>
+                  {renderSignupErrorHandler(signupErrorMessage)}
                 </Modal.Footer>
               </Modal>
             </div>

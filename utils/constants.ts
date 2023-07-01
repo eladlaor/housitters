@@ -140,3 +140,17 @@ export const SortingProperties = {
     Reviews: 'number of reviews',
   },
 }
+
+export const SignupErrorMessages = {
+  ExistingEmail: 'Already registered',
+  MissingFields: 'Incomplete Form',
+}
+
+export const MandatorySignupFields = {
+  firstName: 'First Name',
+  lastName: 'Last Name',
+  avatarUrl: 'Profile Picture',
+  email: 'Email',
+  password: 'Password',
+  gender: 'Gender',
+}
