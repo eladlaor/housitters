@@ -353,7 +353,7 @@ export default function Intro() {
               ))}
             </div>
             <div>
-              <h3>{isHousitter ? 'Where?' : 'Where do you live?'}</h3>
+              <h3>{isHousitter ? 'Where do you want to be?' : 'Where do you live?'}</h3>
               <LocationSelector
                 selectionType={isHousitter ? 'checkbox' : 'radio'}
                 isHousitter={isHousitter}

@@ -141,17 +141,16 @@ export default function LocationSelector({
   return (
     <>
       <Form>
-        <DropdownButton
-          id="dropdown-basic-button"
-          title={locationCurrentSelectionType}
-          onSelect={handleHousitterSelectionType}
-        >
-          {isHousitter && <Dropdown.Item eventKey={EVENT_KEYS.ANYWHERE}>Anywhere</Dropdown.Item>}
-          <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_LOCATIONS}>
-            {isHousitter ? 'Select Areas' : 'Where Do You Live?'}
-          </Dropdown.Item>
-        </DropdownButton>
-
+        {isHousitter && (
+          <DropdownButton
+            id="dropdown-basic-button"
+            title={locationCurrentSelectionType}
+            onSelect={handleHousitterSelectionType}
+          >
+            {isHousitter && <Dropdown.Item eventKey={EVENT_KEYS.ANYWHERE}>Anywhere</Dropdown.Item>}
+            <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_LOCATIONS}>Select Areas</Dropdown.Item>
+          </DropdownButton>
+        )}
         <div key={`default-${selectionType}`} className="mb-3">
           {shouldShowCustomLocations ? (
             Object.values(LocationIds).map((loc) => (
