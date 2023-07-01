@@ -308,7 +308,9 @@ export default function AvailabilitySelector({
           availability.length > 1 &&
           index === availability.length - 1 && (
             <div>
-              <Button onClick={removeAvailabilitySelector}>remove the above period</Button>
+              <Button variant="danger" onClick={removeAvailabilitySelector} className="mt-3">
+                remove period
+              </Button>
             </div>
           )}
       </div>

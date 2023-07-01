@@ -4,28 +4,12 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { PageRoutes, USER_TYPE } from '../../utils/constants'
 
-// TODO: test doing this destructing inside other components too, to omit that additional line
 export default function SignupTeaser({ userType }: { userType: string }) {
-  const router = useRouter()
   const dispatch = useDispatch()
+  const message = userType === USER_TYPE.Housitter ? 'Find a house' : 'Find a housitter'
 
   const handleUserTypeSelection = () => {
     dispatch(setPrimaryUse(userType))
-  }
-
-  let message = ''
-
-  // TODO: no need for that now
-  let route = ''
-
-  if (userType === USER_TYPE.Housitter) {
-    message = 'find a house'
-    route = PageRoutes.Intro
-    dispatch(setPrimaryUse(USER_TYPE.Housitter))
-  } else {
-    message = 'find a housitter'
-    route = PageRoutes.Intro
-    dispatch(setPrimaryUse(USER_TYPE.Landlord))
   }
 
   return (
@@ -36,7 +20,7 @@ export default function SignupTeaser({ userType }: { userType: string }) {
         style={{ textDecoration: 'bold', color: 'white', width: '200px' }}
         onClick={handleUserTypeSelection}
       >
-        <Link href={{ pathname: route, query: { userType } }}>{message}</Link>
+        <Link href={{ pathname: PageRoutes.Intro, query: { userType } }}>{message}</Link>
       </button>
     </div>
   )

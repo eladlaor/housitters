@@ -329,13 +329,18 @@ export default function Intro() {
     setIsSignupInProgress(false)
   }
   return (
-    <div>
+    <div className="d-flex justify-content-center align-items-center vh-100">
       {isSignupInProgress ? (
         <Spinner animation="border" role="status" />
       ) : (
         <div>
-          <div className="position-absolute top-50 start-50 translate-middle">
-            <h1>{isHousitter ? "let's find a woof over your head" : "let's find you a sitter"}</h1>
+          <div className="position-absolute top-50 start-50 translate-middle text-center">
+            <div>
+              <h1 className="mb-4">
+                let's find
+                {isHousitter ? ' a woof over your head' : ' a housitter'}
+              </h1>
+            </div>
             <div>
               <h3>When?</h3>
               {availability.map((period, index) => (
@@ -348,7 +353,7 @@ export default function Intro() {
               ))}
             </div>
             <div>
-              <h3>{isHousitter ? 'Where do you want to housit?' : 'Where do you live?'}</h3>
+              <h3>{isHousitter ? 'Where?' : 'Where do you live?'}</h3>
               <LocationSelector
                 selectionType={isHousitter ? 'checkbox' : 'radio'}
                 isHousitter={isHousitter}
@@ -362,8 +367,12 @@ export default function Intro() {
               />
             </div>
             <div>
-              <Button variant="primary" onClick={handleShow}>
-                {isHousitter ? 'find me a house' : 'find me a sitter'}{' '}
+              <Button
+                variant="success"
+                onClick={handleShow}
+                className="btn-lg rounded-pill w-50 mt-3"
+              >
+                Find
               </Button>
               <Modal show={showModal} onHide={handleClose} contentClassName="landlord-signup-modal">
                 <Modal.Header closeButton>

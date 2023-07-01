@@ -7,7 +7,6 @@ import { store, persistor } from '../store'
 import { Provider as ReduxProvider } from 'react-redux'
 import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
-
 import { library as fontLibrary } from '@fortawesome/fontawesome-svg-core'
 import { faEnvelopeOpenText, faMailBulk, faBoxOpen } from '@fortawesome/free-solid-svg-icons'
 
