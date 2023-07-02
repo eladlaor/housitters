@@ -92,6 +92,9 @@ export default function Picture({
   useEffect(() => {
     if (url) {
       downloadImage(url)
+      if (isAvatar && isIntro) {
+        setFileNames([{ url, id: 0 }])
+      }
     }
   }, [url])
 
@@ -180,13 +183,12 @@ export default function Picture({
           throw uploadError
         }
 
-        console.log('SUCCESSFULLY uploaded to avatars')
         dispatch(setAvatarUrl(fileName))
         console.log(`dispatched ${fileName} as avatarUrl to redux`)
 
         const buffer = await blobToBuffer(resizedImage)
 
-        // conveting to the url format needed to display the preview image
+        // converting to the url format needed to display the preview image
         const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
 
         const updatedPreviews = [{ url: previewDataUrl, id: 0 }]

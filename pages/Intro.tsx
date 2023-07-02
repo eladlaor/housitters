@@ -120,6 +120,7 @@ export default function Intro() {
               style={{ width: '300px', maxWidth: '100%' }}
               variant="secondary"
               onClick={handleCloseSignupErrorModal}
+              className="mt-3"
             >
               Complete the Form
             </Button>
@@ -156,7 +157,6 @@ export default function Intro() {
       setSignupErrorMessage(SignupErrorMessages.MissingFields)
       setMissingMandatorySignupFields(missingFieldsDefinitionsForUser)
       setShowSignupErrorModal(true)
-      setForm(initialFormState)
       return
     }
 
@@ -169,15 +169,12 @@ export default function Intro() {
     })
 
     if (error) {
-      debugger
       switch (true) {
         case error.message.includes(SignupErrorMessages.ExistingEmail.toLowerCase()):
           setShowModal(false)
           setSignupErrorMessage(SignupErrorMessages.ExistingEmail)
           setIsSignupInProgress(false)
-
           setShowSignupErrorModal(true)
-          setForm(initialFormState)
 
           break
         default:
@@ -486,14 +483,14 @@ export default function Intro() {
                         isRounded={true}
                       />
                     </Form.Group>
-                    <Button variant="primary" type="submit" onClick={handleSignUp}>
+                    <Button variant="primary" type="submit" onClick={handleSignUp} className="mt-3">
                       Submit
                     </Button>
                   </Form>
                 </Modal.Body>
               </Modal>
               <Modal show={showSignupErrorModal} onHide={handleCloseSignupErrorModal}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                   <Modal.Title className="text-center w-100">Signup Error</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="d-flex justify-content-center">
