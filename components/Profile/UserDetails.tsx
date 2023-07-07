@@ -115,28 +115,6 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
           }}
         />
       </Form.Group>
-      {/* <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
-        <Form.Label>Password</Form.Label>
-        <div className="password-input-wrapper">
-          <Form.Control
-            type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
-            placeholder="Password"
-            // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
-            onChange={(e) => {
-              setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
-            }}
-          />
-          <Button
-            variant="info"
-            type="button"
-            className="password-toggle-button"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? 'Hide' : 'Show'}
-          </Button>
-          <hr />
-        </div>
-      </Form.Group> */}
       {!isHousitter && (
         <Form.Group>
           <Form.Label>Pets</Form.Label>

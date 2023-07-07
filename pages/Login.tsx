@@ -12,6 +12,8 @@ import {
 } from '../slices/userSlice'
 import { Button, Form } from 'react-bootstrap'
 import { FaGoogle } from 'react-icons/fa'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
 export default function LoginPage() {
   const { error, supabaseClient } = useSessionContext()
@@ -120,22 +122,27 @@ export default function LoginPage() {
           />
         </Form.Group>
 
-        <Form.Group controlId="formBasicPassword">
+        <Form.Group controlId="formBasicPassword" className="mt-2">
           <Form.Label>Password</Form.Label>
-          <Form.Control
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button
-            variant="info"
-            type="button"
-            className="password-toggle-button"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? 'Hide' : 'Show'}
-          </Button>
+          <div className="input-group">
+            <Form.Control
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button
+              variant="info"
+              type="button"
+              className="password-toggle-button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <FontAwesomeIcon icon={faEyeSlash} />
+              ) : (
+                <FontAwesomeIcon icon={faEye} />
+              )}
+            </Button>
+          </div>
         </Form.Group>
         <Form.Group className="mt-3 d-flex justify-content-center align-items-center">
           <Button

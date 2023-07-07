@@ -127,12 +127,11 @@ a:hover {
   color: #333; /* Customize the color as per your preference */
 }
 
-.password-input-wrapper {
-  position: relative;
-}
+
 
 .password-toggle-button {
   position: relative; 
+  width: 50px;
 }
 
 .inbox {
@@ -457,3 +456,4 @@ heart icon
   text-align: center;  
   font-size: 0.7rem;  
 }
+

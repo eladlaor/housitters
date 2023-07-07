@@ -412,7 +412,7 @@ export default function Intro() {
                     </Form.Group>
                     <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
                       <Form.Label>Password</Form.Label>
-                      <div className="password-input-wrapper">
+                      <div className="position-relative">
                         <Form.Control
                           type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
                           placeholder="Password"
