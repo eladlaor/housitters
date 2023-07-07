@@ -2,7 +2,7 @@ import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { USER_TYPE, PageRoutes } from '../utils/constants'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import {
   setIsLoggedState,
   setFirstName,
@@ -10,7 +10,9 @@ import {
   setGenderState,
   setAvatarUrl,
 } from '../slices/userSlice'
-import { Button, Form } from 'react-bootstrap'
+import Spinner from 'react-bootstrap/Spinner'
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
 import { FaGoogle } from 'react-icons/fa'
 
 export default function LoginPage() {
@@ -161,8 +163,8 @@ export default function LoginPage() {
       </Button>
     </div>
   ) : (
-    <div>
-      <p>loading dashboard</p>
+    <div className="d-flex vh-100 justify-content-center align-items-center">
+      <Spinner animation="border" role="status" />
     </div>
   )
 }
