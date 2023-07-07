@@ -774,14 +774,12 @@ export default function Home() {
             </Row>
           </Col>
           <Col md={3}>
-            <div className="sidebar-filter">
-              <SidebarFilter
-                isHousitter={false}
-                showCustomLocations={true}
-                selectionType="radio"
-                sortElementsHandler={sortHousitters}
-              />
-            </div>
+            <SidebarFilter
+              isHousitter={false}
+              showCustomLocations={true}
+              selectionType="radio"
+              sortElementsHandler={sortHousitters}
+            />
           </Col>
         </Row>
       </Container>
