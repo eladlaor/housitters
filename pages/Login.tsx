@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { USER_TYPE, PageRoutes } from '../utils/constants'
 import { useDispatch } from 'react-redux'
+import Image from 'next/image'
+
 import {
   setIsLoggedState,
   setFirstName,
@@ -10,7 +12,10 @@ import {
   setGenderState,
   setAvatarUrl,
 } from '../slices/userSlice'
-import Spinner from 'react-bootstrap/Spinner'
+
+import logo from '../public/images/logo.jpg'
+
+import logoWithName from '../public/images/logo-no-dot-com.jpg'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { FaGoogle } from 'react-icons/fa'
@@ -171,7 +176,8 @@ export default function LoginPage() {
     </div>
   ) : (
     <div className="d-flex vh-100 justify-content-center align-items-center">
-      <Spinner animation="border" role="status" />
+      <Image src={logoWithName} width="300" height="300" />
+      <Image src={logo} width="300" height="300" className="rotate" />
     </div>
   )
 }

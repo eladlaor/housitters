@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { NavbarItems, USER_TYPE } from '../utils/constants'
 import Image from 'next/image'
-import cuteDog from '../public/cuteDog.jpg'
+import cuteDog from '../public/images/cuteDog.jpg'
 import SignupTeaser from '../components/Auth/SignupTeaser'
 import {
   selectPrimaryUseState,
