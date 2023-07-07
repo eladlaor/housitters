@@ -644,11 +644,17 @@ export default function Home() {
         ) : (
           <div className="create-new-post-prompt">
             <Button
-              style={{ position: 'relative', left: '50%', transform: 'translateX(-50%)' }}
+              style={{
+                position: 'relative',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '250px',
+                maxWidth: '100%',
+              }}
               variant="primary"
               onClick={handleShowNewPostModal}
             >
-              {isAfterSignup ? 'Complete your post' : 'Create new post'}
+              {isAfterSignup ? 'Complete your post' : 'Create a new post'}
             </Button>
             <br />
             <br />
@@ -657,7 +663,7 @@ export default function Home() {
 
         <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
           <Modal.Header>
-            <Modal.Title style={{ color: 'blue' }}>let's create new post</Modal.Title>
+            <Modal.Title style={{ color: 'blue' }}>let's create a new post</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>

@@ -13,9 +13,9 @@ import {
   setAvatarUrl,
 } from '../slices/userSlice'
 
-import logo from '/images/logoRegularSize.jpg'
-
+import logo from '../public/images/logoRegularSize.jpg'
 import logoWithName from '../public/images/logoWithName.jpg'
+
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { FaGoogle } from 'react-icons/fa'
@@ -176,8 +176,8 @@ export default function LoginPage() {
     </div>
   ) : (
     <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
-      <Image src={logoWithName} width="300" height="300" />
-      <Image src={logo} width="300" height="300" className="rotate" />
+      <Image src={logoWithName} width="150" height="150" />
+      <Image src={logo} width="150" height="150" className="rotate" />
     </div>
   )
 }
