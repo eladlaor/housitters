@@ -11,6 +11,7 @@ import SignOut from './Auth/SignOut'
 import UserSearcher from './UserSearcher'
 import Inbox from './Inbox'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function HomeNavbar({ userType }: any) {
   const user = useUser()
@@ -26,7 +27,7 @@ export default function HomeNavbar({ userType }: any) {
             : PageRoutes.HousitterRoutes.Home
         }
       >
-        Home
+        <Image src="/images/logo.png" width="100" height="100" />
       </Navbar.Brand>
       <div className="navbar-items-wrapper">
         <Navbar.Collapse id="basic-navbar-nav">
