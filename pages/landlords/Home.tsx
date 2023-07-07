@@ -533,7 +533,8 @@ export default function Home() {
       <HomeNavbar userType={USER_TYPE.Landlord} />
       <Container>
         <div className="welcome-to-dashboard-msg">
-          <h1>welcome {firstName}, enjoy your upcoming vacation!</h1>
+          <h2>Welcome back {firstName}</h2>
+          <h5>let's find the perfect housitter for you.</h5>
         </div>
         {isActivePost ? (
           <div>

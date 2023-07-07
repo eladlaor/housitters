@@ -207,11 +207,11 @@ export default function Home() {
       <HomeNavbar userType={USER_TYPE.Housitter} />
 
       <Container>
-        <h2>
-          Hello {firstName}! <br /> Let's find you a cute pet to feel at home with.
-        </h2>
+        <div className="welcome-to-dashboard-msg">
+          <h2>Welcome back {firstName}!</h2>
+          <h5> Let's find a cute pet for you to feel at home with. </h5>
+        </div>
 
-        <h2>here are all the relevant posts for you</h2>
         <Row>
           <Col md={9}>
             <Row>

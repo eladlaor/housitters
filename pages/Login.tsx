@@ -155,7 +155,7 @@ export default function LoginPage() {
           </Button>
         </Form.Group>
       </Form>
-      <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
+      {/* <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
       <Button
         className="my-google-button mt-3 d-flex justify-content-center align-items-center"
         variant="outline-dark"
@@ -165,7 +165,7 @@ export default function LoginPage() {
           log in with Google <br />
           <FaGoogle />
         </div>
-      </Button>
+      </Button> */}
     </div>
   ) : (
     <div>
