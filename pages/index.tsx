@@ -20,7 +20,7 @@ import { settersToInitialStates as inboxSettersToInitialStates } from '../slices
 import { settersToInitialStates as recommendationsSettersToInitialStates } from '../slices/recommendationSlice'
 
 import Button from 'react-bootstrap/Button'
-import IntroNavbar from '../components/IntroNavbar'
+import Footer from '../components/Footer'
 
 export default function Home() {
   const router = useRouter()
@@ -70,27 +70,30 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100">
-      <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
-      <div className="position-relative">
-        <div className="text-center d-flex justify-content-between mx-auto signup-teasers-container">
-          <div className="w-50 pr-2">
-            <SignupTeaser userType={USER_TYPE.Housitter} />
+    <div className="d-flex flex-column vh-100">
+      <div className="d-flex align-items-center justify-content-center vh-100">
+        <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
+        <div className="position-relative">
+          <div className="text-center d-flex justify-content-between mx-auto signup-teasers-container">
+            <div className="w-50 pr-2">
+              <SignupTeaser userType={USER_TYPE.Housitter} />
+            </div>
+            <div className="w-50 pl-2">
+              <SignupTeaser userType={USER_TYPE.Landlord} />
+            </div>
           </div>
-          <div className="w-50 pl-2">
-            <SignupTeaser userType={USER_TYPE.Landlord} />
-          </div>
+          <Button
+            className="d-flex align-items-center justify-content-center mt-4 signin-button"
+            variant="lg"
+            onClick={() => {
+              router.push('/Login')
+            }}
+          >
+            already registered? sign in
+          </Button>
         </div>
-        <Button
-          className="d-flex align-items-center justify-content-center mt-4 signin-button"
-          variant="lg"
-          onClick={() => {
-            router.push('/Login')
-          }}
-        >
-          already registered? sign in
-        </Button>
       </div>
+      <Footer />
     </div>
   )
 }

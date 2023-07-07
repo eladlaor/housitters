@@ -71,7 +71,7 @@ a:hover {
 
 .signup-teasers-container {
   width: 420px;
-  maxWidth: 100%;
+  max-width: 100%;
 }
 
 .housitter-card {
@@ -433,4 +433,27 @@ heart icon
   color: white;
   width: 300px;
   max-width: 100%;
+}
+
+.z-index-1 {
+  z-index: 1;
+}
+
+.z-index-2 {
+  z-index: 2;
+}
+
+
+.z-index-3 {
+  z-index: 3;
+}
+
+.footer {
+  background-color: #000;
+  color: #fff; 
+  padding: 10px; 
+  position: relative;
+  z-index: 2;
+  text-align: center;  
+  font-size: 0.7rem;  
 }

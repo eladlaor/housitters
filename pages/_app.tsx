@@ -20,7 +20,8 @@ function MyApp({
 }>) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient())
 
-  /* the following import in order to to only import js when the page is loaded on the browser,
+  /* the following import is for this single purpose: 
+  to import js only when the page is loaded on the browser,
   and avoid trying to use 'window' and 'document' objects on ssr (done by nextjs),
   which would cause errors as they are only client-side objects.
   */
