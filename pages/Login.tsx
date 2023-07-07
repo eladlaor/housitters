@@ -14,6 +14,8 @@ import Spinner from 'react-bootstrap/Spinner'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { FaGoogle } from 'react-icons/fa'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
 export default function LoginPage() {
   const { error, supabaseClient } = useSessionContext()
@@ -122,22 +124,27 @@ export default function LoginPage() {
           />
         </Form.Group>
 
-        <Form.Group controlId="formBasicPassword">
+        <Form.Group controlId="formBasicPassword" className="mt-2">
           <Form.Label>Password</Form.Label>
-          <Form.Control
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button
-            variant="info"
-            type="button"
-            className="password-toggle-button"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? 'Hide' : 'Show'}
-          </Button>
+          <div className="input-group">
+            <Form.Control
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button
+              variant="info"
+              type="button"
+              className="password-toggle-button"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <FontAwesomeIcon icon={faEyeSlash} />
+              ) : (
+                <FontAwesomeIcon icon={faEye} />
+              )}
+            </Button>
+          </div>
         </Form.Group>
         <Form.Group className="mt-3 d-flex justify-content-center align-items-center">
           <Button
@@ -150,7 +157,7 @@ export default function LoginPage() {
           </Button>
         </Form.Group>
       </Form>
-      <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
+      {/* <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
       <Button
         className="my-google-button mt-3 d-flex justify-content-center align-items-center"
         variant="outline-dark"
@@ -160,7 +167,7 @@ export default function LoginPage() {
           log in with Google <br />
           <FaGoogle />
         </div>
-      </Button>
+      </Button> */}
     </div>
   ) : (
     <div className="d-flex vh-100 justify-content-center align-items-center">
