@@ -325,8 +325,9 @@ export default function Intro() {
       isAfterSignup: true,
     }
     router.push({ pathname: `${primaryUse}s/Home`, query: homeProps })
-    setIsSignupInProgress(false)
+    // setIsSignupInProgress(false)
   }
+
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       {isSignupInProgress ? (
@@ -337,7 +338,7 @@ export default function Intro() {
             <div>
               <h1 className="mb-4">
                 let's find
-                {isHousitter ? ' a woof over your head' : ' a housitter'}
+                {isHousitter ? ' a woof over your head' : ' a great housitter for you'}
               </h1>
             </div>
             <div>
@@ -352,7 +353,7 @@ export default function Intro() {
               ))}
             </div>
             <div>
-              <h3>{isHousitter ? 'Where?' : 'Where do you live?'}</h3>
+              <h3>{isHousitter ? 'Where?' : 'Where?'}</h3>
               <LocationSelector
                 selectionType={isHousitter ? 'checkbox' : 'radio'}
                 isHousitter={isHousitter}
@@ -447,9 +448,10 @@ export default function Intro() {
                     )}
                     {isHousitter && (
                       <Form.Group>
-                        <Form.Label className="mb-2">Experience</Form.Label>
+                        <Form.Label className="mb-2">Experience (optional)</Form.Label>
+                        <br />
                         <Form.Text className="mb-2" muted>
-                          {'   '} | approximately how many housits have you done
+                          approximately how many housits have you done
                         </Form.Text>
                         <CountAndUpdate
                           valueToCount={experience}

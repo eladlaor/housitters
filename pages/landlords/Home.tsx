@@ -533,133 +533,148 @@ export default function Home() {
       <HomeNavbar userType={USER_TYPE.Landlord} />
       <Container>
         <div className="welcome-to-dashboard-msg">
-          <h2>Welcome back {firstName}</h2>
-          <h5>let's find the perfect housitter for you.</h5>
+          <h2>Welcome back {firstName}!</h2>
+          <h5 className="center-element">
+            There are currently {housitters.length} available sitters for you.
+          </h5>
+          <h5>You can configure your post and your search filters.</h5>
+          <hr />
         </div>
-        {isActivePost ? (
-          <div>
-            <Accordion>
-              <Accordion.Item eventKey="0">
-                <Accordion.Header>My Active Post</Accordion.Header>
-                <Accordion.Body>
-                  <HousePreview
-                    landlordId={user ? user.id : ''}
-                    title={title}
-                    description={description}
-                    location={location}
-                    availability={availability}
-                    dogs={pets.dogs}
-                    cats={pets.cats}
-                    imagesUrls={fileNames} // TODO: should have default image
-                    addMissingDetailsHandler={handleShowNewPostModal}
-                  />
-                  <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
-                    Delete post
+        <Col md={9}>
+          <Row>
+            <Col md={6}></Col>
+            <Col md={6}>
+              {isActivePost ? (
+                <div>
+                  <Accordion>
+                    <Accordion.Item eventKey="0">
+                      <Accordion.Header>My Post</Accordion.Header>
+                      <Accordion.Body>
+                        <HousePreview
+                          landlordId={user ? user.id : ''}
+                          title={title}
+                          description={description}
+                          location={location}
+                          availability={availability}
+                          dogs={pets.dogs}
+                          cats={pets.cats}
+                          imagesUrls={fileNames} // TODO: should have default image
+                          addMissingDetailsHandler={handleShowNewPostModal}
+                        />
+                        <Button variant="danger" onClick={(e) => handleDeletePost(e)}>
+                          Delete post
+                        </Button>
+                        {availability.length > closedSits.length && (
+                          <Button variant="success" onClick={handleFoundSitter}>
+                            I found a sitter
+                          </Button>
+                        )}
+
+                        <Modal
+                          show={showFoundSitterModal}
+                          onHide={() => setShowFoundSitterModal(false)}
+                        >
+                          <Modal.Header>
+                            <Modal.Title>Select the sitter you found</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <div>
+                              <Form>
+                                {housitters.map((sitter: any, index: number) => {
+                                  const isThisTheSelectedHousitter =
+                                    sitter.housitterId === selectedHousitterId
+
+                                  return (
+                                    <div key={index}>
+                                      <Form.Group>
+                                        <Form.Check
+                                          type="radio"
+                                          key={index}
+                                          onChange={handleSelectedFoundSitter}
+                                          value={sitter.housitterId}
+                                          label={`${sitter.firstName} ${sitter.lastName}`}
+                                          name="singleSitterChoice"
+                                          checked={isThisTheSelectedHousitter}
+                                        />
+                                        {isThereAnySelectedSitter && isThisTheSelectedHousitter && (
+                                          <ListGroup>
+                                            <ListGroup.Item>
+                                              {availability.map((period, index) => {
+                                                const startDateAsString =
+                                                  period.startDate.toString()
+                                                if (
+                                                  !closedSits.find(
+                                                    (closedSit) =>
+                                                      closedSit.startDate === startDateAsString
+                                                  )
+                                                ) {
+                                                  return (
+                                                    <Form.Check
+                                                      type="checkbox"
+                                                      key={index}
+                                                      label={`${startDateAsString} until ${period.endDate.toString()}`}
+                                                      name={startDateAsString}
+                                                      value={startDateAsString}
+                                                      onChange={handleBindSitterWithPeriod}
+                                                      checked={preConfirmedSelectionOfClosedSitsPerSitter.startDates.includes(
+                                                        startDateAsString
+                                                      )}
+                                                    />
+                                                  )
+                                                }
+                                              })}
+                                            </ListGroup.Item>
+                                          </ListGroup>
+                                        )}
+                                      </Form.Group>
+                                    </div>
+                                  )
+                                })}
+                                <hr />
+                                <Button variant="primary" onClick={handleConfirmSitterSelection}>
+                                  Confirm
+                                </Button>
+                                <Button
+                                  type="submit"
+                                  variant="warning"
+                                  onClick={(e) => {
+                                    e.preventDefault()
+                                    setShowFoundSitterModal(false)
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </Form>
+                            </div>
+                          </Modal.Body>
+                        </Modal>
+                        <Button onClick={handleShowNewPostModal}>Edit Post</Button>
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  </Accordion>
+                </div>
+              ) : (
+                <div className="create-new-post-prompt">
+                  <Button
+                    style={{
+                      position: 'relative',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '250px',
+                      maxWidth: '100%',
+                    }}
+                    variant="primary"
+                    onClick={handleShowNewPostModal}
+                  >
+                    {isAfterSignup ? 'Complete your post' : 'Create a new post'}
                   </Button>
-                  {availability.length > closedSits.length && (
-                    <Button variant="success" onClick={handleFoundSitter}>
-                      I found a sitter
-                    </Button>
-                  )}
-
-                  <Modal show={showFoundSitterModal} onHide={() => setShowFoundSitterModal(false)}>
-                    <Modal.Header>
-                      <Modal.Title>Select the sitter you found</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      <div>
-                        <Form>
-                          {housitters.map((sitter: any, index: number) => {
-                            const isThisTheSelectedHousitter =
-                              sitter.housitterId === selectedHousitterId
-
-                            return (
-                              <div key={index}>
-                                <Form.Group>
-                                  <Form.Check
-                                    type="radio"
-                                    key={index}
-                                    onChange={handleSelectedFoundSitter}
-                                    value={sitter.housitterId}
-                                    label={`${sitter.firstName} ${sitter.lastName}`}
-                                    name="singleSitterChoice"
-                                    checked={isThisTheSelectedHousitter}
-                                  />
-                                  {isThereAnySelectedSitter && isThisTheSelectedHousitter && (
-                                    <ListGroup>
-                                      <ListGroup.Item>
-                                        {availability.map((period, index) => {
-                                          const startDateAsString = period.startDate.toString()
-                                          if (
-                                            !closedSits.find(
-                                              (closedSit) =>
-                                                closedSit.startDate === startDateAsString
-                                            )
-                                          ) {
-                                            return (
-                                              <Form.Check
-                                                type="checkbox"
-                                                key={index}
-                                                label={`${startDateAsString} until ${period.endDate.toString()}`}
-                                                name={startDateAsString}
-                                                value={startDateAsString}
-                                                onChange={handleBindSitterWithPeriod}
-                                                checked={preConfirmedSelectionOfClosedSitsPerSitter.startDates.includes(
-                                                  startDateAsString
-                                                )}
-                                              />
-                                            )
-                                          }
-                                        })}
-                                      </ListGroup.Item>
-                                    </ListGroup>
-                                  )}
-                                </Form.Group>
-                              </div>
-                            )
-                          })}
-                          <hr />
-                          <Button variant="primary" onClick={handleConfirmSitterSelection}>
-                            Confirm
-                          </Button>
-                          <Button
-                            type="submit"
-                            variant="warning"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setShowFoundSitterModal(false)
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        </Form>
-                      </div>
-                    </Modal.Body>
-                  </Modal>
-                  <Button onClick={handleShowNewPostModal}>Edit Post</Button>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-          </div>
-        ) : (
-          <div className="create-new-post-prompt">
-            <Button
-              style={{
-                position: 'relative',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '250px',
-                maxWidth: '100%',
-              }}
-              variant="primary"
-              onClick={handleShowNewPostModal}
-            >
-              {isAfterSignup ? 'Complete your post' : 'Create a new post'}
-            </Button>
-            <br />
-            <br />
-          </div>
-        )}
+                  <br />
+                  <br />
+                </div>
+              )}
+            </Col>
+          </Row>
+        </Col>
 
         <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
           <Modal.Header>
@@ -749,11 +764,6 @@ export default function Home() {
 
         <Row>
           <Col md={9} style={{ paddingRight: '30px' }}>
-            <Row>
-              <h3 className="center-element">
-                Found {housitters.length} available sitters for you
-              </h3>
-            </Row>
             <Row>
               {housitters.length > 0 &&
                 housitters.map(
