@@ -221,8 +221,6 @@ export default function Home() {
                     There are currently no available houses for you.
                     <br />
                     Try expanding your search to broader dates or locations.
-                    <br />
-                    you should know: landlords can still find you and contact you directly{' '}
                   </p>
                 </div>
               ) : (

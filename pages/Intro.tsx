@@ -40,6 +40,8 @@ import CountAndUpdate from '../components/utils/CountAndUpdate'
 import { Database } from '../types/supabase'
 import { setAvailablePosts } from '../slices/availablePostsSlice'
 import React from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
 export default function Intro() {
   const router = useRouter()
@@ -350,7 +352,7 @@ export default function Intro() {
               ))}
             </div>
             <div>
-              <h3>{isHousitter ? 'Where do you want to be?' : 'Where do you live?'}</h3>
+              <h3>{isHousitter ? 'Where?' : 'Where do you live?'}</h3>
               <LocationSelector
                 selectionType={isHousitter ? 'checkbox' : 'radio'}
                 isHousitter={isHousitter}
@@ -412,7 +414,7 @@ export default function Intro() {
                     </Form.Group>
                     <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
                       <Form.Label>Password</Form.Label>
-                      <div className="position-relative">
+                      <div className="input-group">
                         <Form.Control
                           type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
                           placeholder="Password"
@@ -427,7 +429,11 @@ export default function Intro() {
                           className="password-toggle-button"
                           onClick={() => setShowPassword(!showPassword)}
                         >
-                          {showPassword ? 'Hide' : 'Show'}
+                          {showPassword ? (
+                            <FontAwesomeIcon icon={faEyeSlash} />
+                          ) : (
+                            <FontAwesomeIcon icon={faEye} />
+                          )}
                         </Button>
                         <hr />
                       </div>
