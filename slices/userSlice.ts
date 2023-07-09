@@ -7,6 +7,7 @@ type Profiles = Database['public']['Tables']['profiles']['Row']
 
 export const initialState = {
   isLogged: false,
+  isOngoingOAuth: false,
   firstName: '',
   lastName: '',
   username: '',
@@ -34,6 +35,12 @@ export const userSlice = createSlice({
       return {
         ...state,
         isLogged: action.payload,
+      }
+    },
+    setIsOngoingOAuthState(state = initialState, action) {
+      return {
+        ...state,
+        isOngoingOAuth: action.payload,
       }
     },
     setFirstName(state = initialState, action) {
@@ -102,6 +109,7 @@ export const userSlice = createSlice({
 // Action creators (userSlice.action) are generated (automatically) for each case reducer function
 export const {
   setIsLoggedState,
+  setIsOngoingOAuthState,
   setFirstName,
   setLastName,
   setUsername,
@@ -115,6 +123,7 @@ export const {
 } = userSlice.actions
 
 export const selectIsLoggedState = (state: RootState) => state.user.isLogged
+export const selectIsOngoingOAuthState = (state: RootState) => state.user.isOngoingOAuth
 export const selectFirstNameState = (state: RootState) => state.user.firstName
 export const selectLastNameState = (state: RootState) => state.user.lastName
 export const selectUsernameState = (state: RootState) => state.user.username

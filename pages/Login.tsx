@@ -11,6 +11,7 @@ import {
   setPrimaryUse,
   setGenderState,
   setAvatarUrl,
+  setIsOngoingOAuthState,
 } from '../slices/userSlice'
 
 import logo from '../public/images/logoRegularSize.jpg'
@@ -39,6 +40,7 @@ export default function LoginPage() {
 
     if (error) {
       alert(`login error: ${error.message}`)
+      debugger
       return
     }
 
@@ -51,7 +53,6 @@ export default function LoginPage() {
           .single()
 
         // TODO: HyperText Transfer Protocol (HTTP) 406 Not Acceptable client error response code indicates that the server cannot produce a response matching the list of acceptable values defined in the request's proactive content negotiation headers, and that the server is unwilling to supply a default representatio
-        // why 406
         if (error && status !== 406) {
           throw error
         }
@@ -73,15 +74,13 @@ export default function LoginPage() {
           }
         }
       } catch (e) {
-        console.log('error: ', e)
-        // TODO: should throw errors better
-        throw e
+        alert(`error during login: ${e}`)
+        debugger
+        return
       }
     }
 
-    if (user) {
-      loadUserData(user.id)
-    }
+    loadUserData(user.id)
   }, [user])
 
   async function handleEmailLogin(e: any) {
@@ -104,6 +103,7 @@ export default function LoginPage() {
   }
 
   async function handleGoogleOAuthLogin(e: any) {
+    dispatch(setIsOngoingOAuthState(true))
     supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       // TODO: configure in google cloud
@@ -162,7 +162,7 @@ export default function LoginPage() {
           </Button>
         </Form.Group>
       </Form>
-      {/* <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
+      <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
       <Button
         className="my-google-button mt-3 d-flex justify-content-center align-items-center"
         variant="outline-dark"
@@ -172,7 +172,7 @@ export default function LoginPage() {
           log in with Google <br />
           <FaGoogle />
         </div>
-      </Button> */}
+      </Button>
     </div>
   ) : (
     <div className="d-flex flex-column vh-100 justify-content-center align-items-center">

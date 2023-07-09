@@ -3,12 +3,15 @@ import { persistor } from '../store'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { NavbarItems, USER_TYPE } from '../utils/constants'
+import { NavbarItems, PageRoutes, USER_TYPE } from '../utils/constants'
 import Image from 'next/image'
 import cuteDog from '../public/images/cuteDog.jpg'
 import SignupTeaser from '../components/Auth/SignupTeaser'
 import {
+  selectIsOngoingOAuthState,
   selectPrimaryUseState,
+  setIsOngoingOAuthState,
+  setPrimaryUse,
   settersToInitialStates as userSettersToInitialStates,
 } from '../slices/userSlice'
 import { settersToInitialStates as postSettersToInitialStates } from '../slices/createPostSlice'
@@ -28,6 +31,7 @@ export default function Home() {
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
   const userType = useSelector(selectPrimaryUseState)
+  const isOngoingOAuth = useSelector(selectIsOngoingOAuthState)
 
   async function userClearState() {
     await persistor.purge()
@@ -39,7 +43,9 @@ export default function Home() {
     }
 
     const nonUserSetters =
-      userType === 'housitter' ? housitterSettersToInitialStates : landlordSettersToInitialStates
+      userType === USER_TYPE.Housitter
+        ? housitterSettersToInitialStates
+        : landlordSettersToInitialStates
 
     for (const attributeSetterAndInitialState of nonUserSetters) {
       dispatch(
@@ -61,12 +67,36 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (!user) {
-    } else {
-      supabaseClient.auth.signOut()
+    const handleSuccessfulOAuth = async (userId: string) => {
+      const { error, data } = await supabaseClient
+        .from('profiles')
+        .select('primary_use')
+        .eq('id', userId)
+        .single()
+      if (error) {
+        alert(`error while querying user profile after fresh login: ${error.message}`)
+        debugger
+        return
+      }
+      if (data) {
+        dispatch(setPrimaryUse(data.primary_use))
+        dispatch(setIsOngoingOAuthState(false))
+        if (userType === USER_TYPE.Housitter) {
+          router.push(`${PageRoutes.HousitterRoutes.Home}`)
+        } else {
+          router.push(`${PageRoutes.LandlordRoutes.Home}`)
+        }
+      }
     }
 
-    userClearState()
+    if (user) {
+      if (isOngoingOAuth) {
+        handleSuccessfulOAuth(user.id)
+      } else {
+        supabaseClient.auth.signOut()
+        userClearState()
+      }
+    }
   }, [])
 
   return (
