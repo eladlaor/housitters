@@ -33,6 +33,20 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [loadingDots, setLoadingDots] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  // for the sole purpose of the loadingDots state change
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLoadingDots((previousState) => (previousState === '...' ? '' : previousState + '.'))
+    }, 500)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [isLoading])
+
   useEffect(() => {
     if (!user) {
       return
@@ -85,6 +99,7 @@ export default function LoginPage() {
 
   async function handleEmailLogin(e: any) {
     e.preventDefault()
+    setIsLoading(true)
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
@@ -176,7 +191,7 @@ export default function LoginPage() {
     </div>
   ) : (
     <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
-      <Image src={logoWithName} width="150" height="150" />
+      <h5>Loading{loadingDots}</h5>
       <Image src={logo} width="150" height="150" className="rotate" />
     </div>
   )
