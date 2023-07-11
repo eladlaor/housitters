@@ -1,7 +1,7 @@
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { USER_TYPE, PageRoutes } from '../utils/constants'
+import { USER_TYPE, PageRoutes } from '../../utils/constants'
 import { useDispatch } from 'react-redux'
 import Image from 'next/image'
 
@@ -12,16 +12,16 @@ import {
   setGenderState,
   setAvatarUrl,
   setIsOngoingOAuthState,
-} from '../slices/userSlice'
+} from '../../slices/userSlice'
 
-import logo from '../public/images/logoRegularSize.jpg'
-import logoWithName from '../public/images/logoWithName.jpg'
+import logo from '../../public/images/logoRegularSize.jpg'
 
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { FaGoogle } from 'react-icons/fa'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import PasswordInput from '../../components/Auth/PasswordInput'
 
 export default function LoginPage() {
   const { error, supabaseClient } = useSessionContext()
@@ -29,7 +29,6 @@ export default function LoginPage() {
   const router = useRouter()
   const dispatch = useDispatch()
 
-  const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -117,13 +116,17 @@ export default function LoginPage() {
     }
   }
 
+  async function handleResetPassword() {
+    router.push(PageRoutes.Auth.ForgotMyPassword)
+  }
+
   async function handleGoogleOAuthLogin(e: any) {
     dispatch(setIsOngoingOAuthState(true))
     supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       // TODO: configure in google cloud
       // options: {
-      //   redirectTo: 'http://localhost:3000/Login',
+      //   redirectTo: 'http://localhost:3000/auth/Login',
       // },
     })
   }
@@ -146,25 +149,7 @@ export default function LoginPage() {
 
         <Form.Group controlId="formBasicPassword" className="mt-2">
           <Form.Label>Password</Form.Label>
-          <div className="input-group">
-            <Form.Control
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button
-              variant="info"
-              type="button"
-              className="password-toggle-button"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <FontAwesomeIcon icon={faEyeSlash} />
-              ) : (
-                <FontAwesomeIcon icon={faEye} />
-              )}
-            </Button>
-          </div>
+          <PasswordInput password={password} setPassword={setPassword} />
         </Form.Group>
         <Form.Group className="mt-3 d-flex justify-content-center align-items-center">
           <Button
@@ -188,6 +173,11 @@ export default function LoginPage() {
           <FaGoogle />
         </div>
       </Button> */}
+      <div>
+        <Button variant="danger" size="sm" onClick={handleResetPassword} className="mt-3 w-100">
+          forgot my password
+        </Button>
+      </div>
     </div>
   ) : (
     <div className="d-flex flex-column vh-100 justify-content-center align-items-center">

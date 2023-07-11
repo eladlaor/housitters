@@ -19,6 +19,16 @@ export const PageRoutes = {
     Intro: '/landlords/Intro',
     Account: '/landlords/LandlordAccount',
   },
+  Auth: {
+    Login: '/auth/Login',
+    RenewPassword: '/auth/RenewPassword',
+    ForgotMyPassword: '/auth/ForgotMyPassword',
+  },
+}
+
+export const RedirectUrls = {
+  Index: 'https://www.housitters.com/',
+  RenewPassword: `https://www.housitters.com${PageRoutes.Auth.RenewPassword}`,
 }
 
 /* Forms */

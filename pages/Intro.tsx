@@ -3,6 +3,7 @@ import {
   DbGenderTypes,
   LocationIds,
   MandatorySignupFields,
+  PageRoutes,
   SIGNUP_FORM_PROPS,
   SignupErrorMessages,
   USER_TYPE,
@@ -99,7 +100,7 @@ export default function Intro() {
             <Button variant="secondary" onClick={handleCloseSignupErrorModal}>
               Replace Email
             </Button>
-            <Button variant="primary" onClick={() => router.push('/Login')}>
+            <Button variant="primary" onClick={() => router.push(PageRoutes.Auth.Login)}>
               Sign In
             </Button>
           </>
@@ -417,9 +418,9 @@ export default function Intro() {
                       <Form.Label>Password</Form.Label>
                       <div className="input-group">
                         <Form.Control
-                          type={showPassword ? 'text' : 'password'} // TODO: is this secure enough to get password like this?
+                          type={showPassword ? 'text' : 'password'}
                           placeholder="Password"
-                          // value={form[SIGNUP_FORM_PROPS.PASSWORD]}
+                          value={form.password}
                           onChange={(e) => {
                             setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
                           }}

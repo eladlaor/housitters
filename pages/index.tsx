@@ -116,7 +116,7 @@ export default function Home() {
             className="d-flex align-items-center justify-content-center mt-4 signin-button"
             variant="lg"
             onClick={() => {
-              router.push('/Login')
+              router.push(PageRoutes.Auth.Login)
             }}
           >
             already registered? sign in
