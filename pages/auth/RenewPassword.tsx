@@ -54,7 +54,11 @@ export default function RenewPassword() {
           </Form>
           {message && (
             <Alert
-              variant={message.startsWith('Error') ? 'danger' : 'success'}
+              variant={
+                message.startsWith('Error') || message === `Passwords don't match`
+                  ? 'danger'
+                  : 'success'
+              }
               className="mt-3 text-center"
             >
               {message}
