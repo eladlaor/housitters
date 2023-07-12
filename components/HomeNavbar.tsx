@@ -56,9 +56,7 @@ export default function HomeNavbar({ userType }: any) {
               }
             >
               <NavDropdown.Item href="/Account">Edit Profile</NavDropdown.Item>
-              <NavDropdown.Item>
-                <SignOut elementType={SignOutElementTypes.Link} />
-              </NavDropdown.Item>
+              <SignOut elementType={SignOutElementTypes.NavDropdownItem} />
             </NavDropdown>
 
             <div className="navbar-item-align-center">

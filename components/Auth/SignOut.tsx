@@ -21,8 +21,9 @@ import { useRouter } from 'next/router'
 
 import { USER_TYPE } from '../../utils/constants'
 import { SignOutElementTypes } from '../../utils/constants'
-import Link from 'next/link'
 import { SignOutProps } from '../../types/clientSide'
+import { NavDropdown } from 'react-bootstrap'
+import Link from 'next/link'
 
 export default function SignOut({ elementType }: SignOutProps) {
   const { supabaseClient } = useSessionContext()
@@ -61,17 +62,28 @@ export default function SignOut({ elementType }: SignOutProps) {
 
   return (
     <div>
-      {elementType === SignOutElementTypes.Button ? (
-        <Button onClick={handleSignOutClick} variant="danger" id="signout-via-dropdown">
-          Sign out
-        </Button>
-      ) : (
-        <Link href="#">
-          <a id="signout-via-dropdown" onClick={handleSignOutClick}>
-            Sign out
-          </a>
-        </Link>
-      )}
+      {(() => {
+        switch (elementType) {
+          case SignOutElementTypes.Button:
+            return (
+              <Button onClick={handleSignOutClick} variant="danger" id="signout-via-dropdown">
+                Sign out
+              </Button>
+            )
+          case SignOutElementTypes.NavDropdownItem:
+            return (
+              <NavDropdown.Item href="#" onClick={handleSignOutClick} id="signout-via-dropdown">
+                Sign out
+              </NavDropdown.Item>
+            )
+          default:
+            return (
+              <Link href="#" onClick={handleSignOutClick} id="signout-via-dropdown">
+                Sign out
+              </Link>
+            )
+        }
+      })()}
     </div>
   )
 }

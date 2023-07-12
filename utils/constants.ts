@@ -100,6 +100,7 @@ export const NavbarItems = [
 
 export enum SignOutElementTypes {
   Button = 'Button',
+  NavDropdownItem = 'NavDropdownItem',
   Link = 'Link',
 }
 
