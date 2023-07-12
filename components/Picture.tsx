@@ -300,6 +300,7 @@ export default function Picture({
               onClick={(e) => handleDeleteImage(previewDataUrls[0], e)}
               key={`delete-${0}`}
               name={`image-${0}`}
+              className="mb-3"
             >
               Delete Picture
             </Button>

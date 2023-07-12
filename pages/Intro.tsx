@@ -326,7 +326,6 @@ export default function Intro() {
       isAfterSignup: true,
     }
     router.push({ pathname: `${primaryUse}s/Home`, query: homeProps })
-    // setIsSignupInProgress(false)
   }
 
   return (

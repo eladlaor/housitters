@@ -533,11 +533,10 @@ export default function Home() {
       <HomeNavbar userType={USER_TYPE.Landlord} />
       <Container>
         <div className="welcome-to-dashboard-msg">
-          <h2>Welcome back {firstName}!</h2>
+          Welcome{isAfterSignup ? '' : ' back'}, {firstName}!
           <h5 className="center-element">
             There are currently {housitters.length} available sitters for you.
           </h5>
-          <h5>You can configure your post and your search filters.</h5>
           <hr />
         </div>
         <Col md={9}>

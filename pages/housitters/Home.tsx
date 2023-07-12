@@ -24,23 +24,25 @@ import HousePreview from '../../components/HousePreview'
 
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import { Container } from 'react-bootstrap'
-import Link from 'next/link'
+import { Alert, Container } from 'react-bootstrap'
 
 import { selectAvailablePostsState, setAvailablePosts } from '../../slices/availablePostsSlice'
 import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favouritesSlice'
+import { useRouter } from 'next/router'
 
 export default function Home() {
   const supabase = useSupabaseClient()
   const user = useUser()
   const dispatch = useDispatch()
+  const router = useRouter()
+
   const firstName = useSelector(selectFirstNameState)
   const locations = useSelector(selectLocationsState)
   const availability = useSelector(selectAvailabilityState)
   const isLogged = useSelector(selectIsLoggedState)
+  const isAfterSignup = router.query.isAfterSignup
 
   const availablePosts = useSelector(selectAvailablePostsState)
-
   const favouriteUsers = useSelector(selectAllFavouriteUsers)
 
   useEffect(() => {
@@ -208,21 +210,28 @@ export default function Home() {
 
       <Container>
         <div className="welcome-to-dashboard-msg">
-          <h2>Welcome back {firstName}!</h2>
+          <h2>
+            Welcome{isAfterSignup ? '' : ' back'}, {firstName}!
+          </h2>
           <h5> Let's find a cute pet for you to feel at home with. </h5>
         </div>
 
         <Row>
           <Col md={9}>
-            <Row>
+            <Row
+              className={
+                availablePosts.length === 0
+                  ? 'h-100 align-items-center justify-content-center '
+                  : ''
+              }
+              style={availablePosts.length === 0 ? { minHeight: '300px' } : {}}
+            >
               {availablePosts.length === 0 ? (
-                <div>
-                  <p>
-                    There are currently no available houses for you.
-                    <br />
-                    Try expanding your search to broader dates or locations.
-                  </p>
-                </div>
+                <Alert variant="danger" className="text-center alert-trimmed mx-auto">
+                  There are currently no available houses for these settings.
+                  <br className="mb-2" />
+                  Try broader dates or locations.
+                </Alert>
               ) : (
                 availablePosts.map((post: any, index: number) => (
                   <Col key={index} md={3} className="mb-4" style={{ margin: '70px' }}>

@@ -472,3 +472,7 @@ heart icon
     transform: rotate(359deg);
   }
 }
+
+.alert-trimmed {
+  max-width: fit-content;
+}

@@ -87,7 +87,7 @@ export default function UserSearcher() {
         options={allProfiles.filter(
           (profile) => searchFilter === 'all' || profile.primary_use === searchFilter
         )}
-        placeholder="Search for a user by name"
+        placeholder="Find a specific user"
         onChange={handleSelectedSearchedUser}
         maxResults={3}
         renderMenuItemChildren={(option) => (
