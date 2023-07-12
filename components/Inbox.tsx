@@ -228,6 +228,7 @@ export default function Inbox() {
 
   return (
     <NavDropdown
+      className="mt-3"
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <FontAwesomeIcon
@@ -242,81 +243,87 @@ export default function Inbox() {
       }
       id="basic-nav-dropdown"
     >
-      {Object.entries(conversations).map(([recipientId, conversation], index) => (
-        <NavDropdown.Item
-          href="#"
-          key={`${recipientId}-${index}`}
-          style={{ width: '100%' }}
-          onClick={(e) => handleShowConversationModal(e, recipientId, conversation)}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              minWidth: '0',
-            }}
+      {Object.entries(conversations).length === 0 ? (
+        <NavDropdown.Item href="#" style={{ width: '100%' }}>
+          Contact one of the found users to create your first chat &#x1F642;
+        </NavDropdown.Item>
+      ) : (
+        Object.entries(conversations).map(([recipientId, conversation], index) => (
+          <NavDropdown.Item
+            href="#"
             key={`${recipientId}-${index}`}
+            style={{ width: '100%' }}
+            onClick={(e) => handleShowConversationModal(e, recipientId, conversation)}
           >
             <div
               style={{
                 display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                flexGrow: 1,
-                marginRight: '10px',
+                minWidth: '0',
               }}
+              key={`${recipientId}-${index}`}
             >
-              <Picture
-                isIntro={false}
-                uid=""
-                primaryUse={currentUserType}
-                url={conversation.recipientAvatarUrl}
-                size={30}
-                width={30}
-                height={30}
-                disableUpload={true}
-                bucketName={'avatars'}
-                isAvatar={true}
-                promptMessage=""
-                email=""
-                isRounded={false}
-              />
-              <div style={{ marginLeft: '10px' }}>
-                {conversation.recipientFirstName} {conversation.recipientLastName}
-                {conversation.unreadMessages > 0 ? (
-                  <Badge pill bg="primary" style={{ marginLeft: '10px' }}>
-                    {conversation.unreadMessages}
-                  </Badge>
-                ) : null}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexGrow: 1,
+                  marginRight: '10px',
+                }}
+              >
+                <Picture
+                  isIntro={false}
+                  uid=""
+                  primaryUse={currentUserType}
+                  url={conversation.recipientAvatarUrl}
+                  size={30}
+                  width={30}
+                  height={30}
+                  disableUpload={true}
+                  bucketName={'avatars'}
+                  isAvatar={true}
+                  promptMessage=""
+                  email=""
+                  isRounded={false}
+                />
+                <div style={{ marginLeft: '10px' }}>
+                  {conversation.recipientFirstName} {conversation.recipientLastName}
+                  {conversation.unreadMessages > 0 ? (
+                    <Badge pill bg="primary" style={{ marginLeft: '10px' }}>
+                      {conversation.unreadMessages}
+                    </Badge>
+                  ) : null}
+                </div>
+              </div>
+              <div
+                style={{
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  textAlign: 'right',
+                }}
+              >
+                {conversation.latestMessage?.messageContent}
               </div>
             </div>
-            <div
-              style={{
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                textAlign: 'right',
-              }}
-            >
-              {conversation.latestMessage?.messageContent}
-            </div>
-          </div>
-          {showConversationModalStates[recipientId] && (
-            <IndividualChat
-              userFirstName={userFirstName}
-              userLastName={userLastName}
-              conversation={conversation}
-              recipientId={recipientId}
-              selectedConversationId={selectedConversationId}
-              showConversationModal={recipientId === selectedConversationId}
-              setShowConversationModalStatesFromInbox={setShowConversationModalStates}
-              setShowConversationModalFromFoundUser={null}
-              handleHideConversationModalFromInbox={handleHideConversationModal}
-              handleHideConversationModalFromFoundUser={null}
-            />
-          )}
-        </NavDropdown.Item>
-      ))}
+            {showConversationModalStates[recipientId] && (
+              <IndividualChat
+                userFirstName={userFirstName}
+                userLastName={userLastName}
+                conversation={conversation}
+                recipientId={recipientId}
+                selectedConversationId={selectedConversationId}
+                showConversationModal={recipientId === selectedConversationId}
+                setShowConversationModalStatesFromInbox={setShowConversationModalStates}
+                setShowConversationModalFromFoundUser={null}
+                handleHideConversationModalFromInbox={handleHideConversationModal}
+                handleHideConversationModalFromFoundUser={null}
+              />
+            )}
+          </NavDropdown.Item>
+        ))
+      )}
     </NavDropdown>
   )
 }
