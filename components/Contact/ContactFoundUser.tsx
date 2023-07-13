@@ -74,8 +74,6 @@ export default function ContactFoundUser({ recipientUserId }: { recipientUserId:
               },
             ] as Conversation['pastMessages']
           }
-        } else {
-          console.log('no messages')
         }
       } else if (currentUserType === UserType.Housitter) {
         const { error, data: messagesData } = await supabaseClient
@@ -118,11 +116,8 @@ export default function ContactFoundUser({ recipientUserId }: { recipientUserId:
             ] as Conversation['pastMessages']
           }
 
-          // TODO:
           parsedConversation.recipientFirstName = 'test first name'
           parsedConversation.recipientLastName = 'test last name'
-        } else {
-          console.log('no messages')
         }
       }
 

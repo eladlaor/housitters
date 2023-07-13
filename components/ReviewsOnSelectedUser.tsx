@@ -24,7 +24,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
     if (!selectedUserId) {
       return
     }
-    const asyncWrapper = async () => {
+    const loadData = async () => {
       let data
 
       if (currentUserType === UserType.Landlord) {
@@ -108,7 +108,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
       }
     }
 
-    asyncWrapper()
+    loadData()
   }, [showRecommendationFormModalState, showAllRecsModal])
 
   function handleCloseModal() {

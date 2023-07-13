@@ -53,8 +53,6 @@ export default function HouseDetails() {
 
   const isLogged = useSelector(selectIsLoggedState)
   const userType = useSelector(selectPrimaryUseState)
-  let userFirstName: string = useSelector(selectFirstNameState)
-  let userLastName: string = useSelector(selectLastNameState)
   const availability = useSelector(selectAvailabilityState)
 
   const closedSits = useSelector(selectClosedSitsState)

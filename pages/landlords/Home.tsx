@@ -30,12 +30,13 @@ import {
   selectIsActiveState,
   selectTitleState,
   setImagesUrlsState,
-  setDescriptionState,
+  setDescriptionState as setCreatePostDescriptionState,
   setIsActiveState,
   setTitleState,
 } from '../../slices/createPostSlice'
 import {
   setImagesUrlsState as setAvailablePostSetImagesUrlsState,
+  setDescriptionState as setAvailablePostsDescriptionState,
   setAvailablePosts,
 } from '../../slices/availablePostsSlice'
 
@@ -73,7 +74,7 @@ export default function Home() {
   const [showNewPostModal, setShowNewPostModal] = useState(false)
   const [showFoundSitterModal, setShowFoundSitterModal] = useState(false)
   const [postPreviewDataUrls, setPostPreviewDataUrls] = useState([] as ImageData[])
-  const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
+  const [housitters, setHousitters] = useState([{} as any]) // TODO: type
   const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
   const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
   const [
@@ -97,14 +98,14 @@ export default function Home() {
   const closedSits = useSelector(selectClosedSitsState)
 
   const isAfterSignup = router.query.isAfterSignup
-
   const favouriteUsers = useSelector(selectAllFavouriteUsers)
 
   useEffect(() => {
     if (!user || !isLogged) {
       return
     }
-    const asyncWrapper = async () => {
+
+    const loadData = async () => {
       let { data: landlordData, error: landlordError } = await supabaseClient
         .from('landlords')
         .select(
@@ -126,7 +127,6 @@ export default function Home() {
 
         dispatch(setAvatarUrl((landlordData.profiles as any).avatar_url))
 
-        // TODO: lets import the needed type from supabase types and use instead of any.
         dispatch(
           setPetsState({
             dogs: (landlordData.profiles as any).pets.dogs,
@@ -150,7 +150,7 @@ export default function Home() {
 
       if (activePostData && activePostData[0]) {
         // never more than a single result
-        const activePost = activePostData[0] // TODO:
+        const activePost = activePostData[0]
         dispatch(setIsActiveState(true))
         const imagesUrlData: ImageData[] = []
 
@@ -163,7 +163,14 @@ export default function Home() {
 
         // TODO: maybe create a utility which gets a property, checks if it's different, and only then dispatches.
         dispatch(setImagesUrlsState(imagesUrlData))
-        dispatch(setDescriptionState(activePost.description))
+        dispatch(setCreatePostDescriptionState(activePost.description))
+
+        dispatch(
+          setAvailablePostsDescriptionState({
+            landlordId: user!.id,
+            description: activePost.description,
+          })
+        )
         dispatch(setTitleState(activePost.title))
 
         const availablePostRedux: DefaultAvailablePostType = {
@@ -171,8 +178,8 @@ export default function Home() {
           landlordAvatarUrl: avatarUrl,
           landlordFirstName: firstName,
           landlordLastName: lastName,
-          title: 'available house',
-          description: `a description hasn\n't been written yet`,
+          title,
+          description,
           location: landlordData?.location,
           dogs: pets.dogs,
           cats: pets.cats,
@@ -183,9 +190,6 @@ export default function Home() {
       }
 
       if (!isActivePost) {
-        // returning all post slice to initial state except isActive, because of race condition with the above
-        dispatch(setDescriptionState(''))
-        dispatch(setTitleState(''))
         dispatch(setImagesUrlsState([])), setPostPreviewDataUrls([])
       }
 
@@ -294,7 +298,7 @@ export default function Home() {
       }
     }
 
-    asyncWrapper().catch((e) => {
+    loadData().catch((e) => {
       alert(e.message)
     })
   }, [user, availability, location, isActivePost])
@@ -735,7 +739,13 @@ export default function Home() {
                   rows={5}
                   value={description}
                   onChange={(e) => {
-                    dispatch(setDescriptionState(e.target.value))
+                    dispatch(setCreatePostDescriptionState(e.target.value))
+                    dispatch(
+                      setAvailablePostsDescriptionState({
+                        landlordId: user!.id,
+                        description: e.target.value,
+                      })
+                    )
                   }}
                 ></Form.Control>
               </Form.Group>

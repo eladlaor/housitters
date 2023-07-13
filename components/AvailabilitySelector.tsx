@@ -48,7 +48,7 @@ export default function AvailabilitySelector({
       return
     }
 
-    const asyncWrapper = async () => {
+    const loadData = async () => {
       const { data: availableDates, error } = await supabaseClient
         .from('available_dates')
         .select('start_date, end_date')
@@ -83,7 +83,7 @@ export default function AvailabilitySelector({
       }
     }
 
-    asyncWrapper()
+    loadData()
   }, [user])
 
   async function handleDatesChange(changedDate: Date, isStart: boolean) {

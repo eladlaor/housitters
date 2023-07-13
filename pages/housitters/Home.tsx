@@ -33,7 +33,6 @@ import { useRouter } from 'next/router'
 export default function Home() {
   const supabase = useSupabaseClient()
   const user = useUser()
-  console.log(`user in Home exists? ${user ? 'yes' : 'no'}`)
 
   const dispatch = useDispatch()
   const router = useRouter()
@@ -52,7 +51,7 @@ export default function Home() {
       return
     }
 
-    const asyncWrapper = async () => {
+    const loadData = async () => {
       // I'm not sure you need this, check what happens after sign in
       const housitterAvailableDates: any[] = []
 
@@ -190,7 +189,7 @@ export default function Home() {
       // for Date filtering, I can also use the 'or' for at least one range, to filter on db call.
     }
 
-    asyncWrapper()
+    loadData()
   }, [user, locations, availability, firstName])
 
   function sortPosts(sortByProperty: string, sortOrder: string) {

@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
 import { DefaultAvailablePostType } from '../types/clientSide'
 import { DefaultAvailablePost } from '../utils/constants'
-import {ImageData} from '../types/clientSide'
+import { ImageData } from '../types/clientSide'
 // this is from the housitter perspective
 
 export const initialState = [] as DefaultAvailablePostType[]
@@ -63,7 +63,7 @@ export const availablePostsSlice = createSlice({
     },
     setImagesUrlsState(
       state,
-      action: PayloadAction<{landlordId: string; imagesUrls: ImageData[]}>
+      action: PayloadAction<{ landlordId: string; imagesUrls: ImageData[] }>
     ) {
       setSpecificLandlordPropertyByIndex(
         state,
@@ -71,7 +71,15 @@ export const availablePostsSlice = createSlice({
         'imagesUrls',
         action.payload.imagesUrls
       )
-    }
+    },
+    setDescriptionState(state, action: PayloadAction<{ landlordId: string; description: string }>) {
+      setSpecificLandlordPropertyByIndex(
+        state,
+        action.payload.landlordId,
+        'description',
+        action.payload.description
+      )
+    },
   },
 })
 
@@ -112,6 +120,7 @@ export const {
   setLandlordLastNameState,
   setLandlordAvatarUrlState,
   setImagesUrlsState,
+  setDescriptionState,
   addPost,
   removePost,
 } = availablePostsSlice.actions
