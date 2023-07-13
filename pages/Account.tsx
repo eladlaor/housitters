@@ -25,31 +25,18 @@ import {
   setEmailState,
 } from '../slices/userSlice'
 
-import { selectLocationsState } from '../slices/housitterSlice'
-import { Button, Form } from 'react-bootstrap'
+import { selectExperienceState, selectLocationsState } from '../slices/housitterSlice'
 import UserDetails from '../components/Profile/UserDetails'
 import HomeNavbar from '../components/HomeNavbar'
 
-type Profiles = Database['public']['Tables']['profiles']['Row']
-type Housitters = Database['public']['Tables']['housitters']['Row']
-
 export default function Account() {
-  const router = useRouter()
   const supabaseClient = useSupabaseClient<Database>()
   const user = useUser()
   const dispatch = useDispatch()
 
   const [loading, setLoading] = useState(true)
 
-  const first_name = useSelector(selectFirstNameState)
-  const last_name = useSelector(selectLastNameState)
-  const username = useSelector(selectUsernameState)
   const primary_use = useSelector(selectPrimaryUseState)
-  const avatar_url = useSelector(selectAvatarUrlState)
-  const birthday = useSelector(selectBirthdayState)
-  const availability = useSelector(selectAvailabilityState)
-  const locations = useSelector(selectLocationsState)
-  const gender = useSelector(selectGenderState)
 
   useEffect(() => {
     if (!user) {
@@ -107,76 +94,6 @@ export default function Account() {
     }
   }
 
-  async function updateProfile({
-    username,
-    first_name,
-    last_name,
-    primary_use,
-    avatar_url,
-    birthday,
-    gender,
-    locations,
-  }: {
-    username: Profiles['username']
-    first_name: Profiles['first_name']
-    last_name: Profiles['last_name']
-    primary_use: Profiles['primary_use']
-    avatar_url: Profiles['avatar_url']
-    birthday: Profiles['birthday']
-    gender: Profiles['gender']
-    locations: Housitters['locations']
-  }) {
-    try {
-      setLoading(true)
-      if (!user) {
-        alert(`no user`)
-        return
-      }
-
-      const profileUpdates = {
-        id: user.id,
-        updated_at: new Date().toISOString(),
-        username,
-        first_name,
-        last_name,
-        primary_use,
-        avatar_url,
-        birthday,
-        gender,
-      }
-
-      let { error } = await supabaseClient.from('profiles').upsert(profileUpdates)
-      if (error) {
-        alert(`failed updating profile: ${error}`)
-        debugger
-        return
-      }
-
-      if (primary_use === USER_TYPE.Housitter) {
-        let { error: housitterUpsertError } = await supabaseClient.from('housitters').upsert({
-          user_id: user?.id,
-          locations,
-        })
-
-        if (housitterUpsertError) {
-          alert('Error updating the data: ' + housitterUpsertError)
-          throw housitterUpsertError
-        }
-      }
-
-      alert('Profile successfully updated!')
-      if (primary_use === USER_TYPE.Housitter) {
-        router.push(`/housitters/Home`)
-      } else {
-        router.push(`/landlords/Home`)
-      }
-    } catch (error) {
-      alert('Error updating the data: ' + error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
   // TODO: a getter should not set
   async function getAvailabilityFromDb() {
     if (!user) {
@@ -210,25 +127,6 @@ export default function Account() {
         <HomeNavbar userType={primary_use} />
 
         <UserDetails isHousitter={primary_use === USER_TYPE.Housitter} />
-
-        <div>
-          <button
-            className="button primary block"
-            onClick={() => {
-              updateProfile({
-                username,
-                first_name,
-                last_name,
-                primary_use,
-                avatar_url,
-                birthday,
-                gender,
-                locations,
-              })
-            }}
-            disabled={loading}
-          ></button>
-        </div>
       </div>
     )
   )

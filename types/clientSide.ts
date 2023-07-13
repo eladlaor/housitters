@@ -1,5 +1,5 @@
 import { MouseEventHandler } from 'react'
-import { DefaultAvailablePost, SIGNUP_FORM_PROPS, SignOutElementTypes } from '../utils/constants'
+import { SIGNUP_FORM_PROPS, SignOutElementTypes } from '../utils/constants'
 
 export type HousitterProps = {
   housitterId: string

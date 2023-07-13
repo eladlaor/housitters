@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { NavbarItems, PageRoutes, USER_TYPE } from '../utils/constants'
 import Image from 'next/image'
-import cuteDog from '../public/images/cuteDog.jpg'
+import cuteDog from '../public/images/leika.jpg'
 import SignupTeaser from '../components/Auth/SignupTeaser'
 import {
   selectIsOngoingOAuthState,
@@ -104,6 +104,7 @@ export default function Home() {
     <div className="d-flex flex-column vh-100">
       <div className="d-flex align-items-center justify-content-center vh-100">
         <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
+
         <div className="position-relative">
           <div className="text-center d-flex justify-content-between mx-auto signup-teasers-container">
             <div className="w-50 pr-2">

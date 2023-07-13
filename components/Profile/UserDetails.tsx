@@ -25,6 +25,7 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
   const email = useSelector(selectEmailState)
   const avatarUrl = useSelector(selectAvatarUrlState)
   const router = useRouter()
+  const experience = useSelector(selectExperienceState)
 
   async function handleSubmit() {
     if (!user) {
@@ -49,16 +50,31 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
     }
 
     if (isHousitter) {
-      // TODO: update housitters with more
+      let { error: housitterUpsertError } = await supabaseClient.from('housitters').upsert({
+        user_id: user?.id,
+        experience,
+      })
+
+      if (housitterUpsertError) {
+        alert('Error updating the data: ' + housitterUpsertError)
+        throw housitterUpsertError
+      }
     } else {
-      // TODO: update landlords with more props
+      let { error: landlordUpsertError } = await supabaseClient.from('landlords').upsert({
+        user_id: user?.id,
+        location,
+      })
+
+      if (landlordUpsertError) {
+        alert('Error updating the data: ' + landlordUpsertError)
+        debugger
+        return
+      }
     }
 
     alert(`profile updated successfuly`)
     router.push(isHousitter ? PageRoutes.HousitterRoutes.Home : PageRoutes.LandlordRoutes.Home)
   }
-
-  const experience = useSelector(selectExperienceState)
 
   const initialFormState: any = {
     firstName,
@@ -68,8 +84,6 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
   }
 
   const [form, setForm] = useState(initialFormState)
-
-  // const [showPassword, setShowPassword] = useState(false)
 
   function setFormField(field: string, value: any) {
     setForm((previousState: any) => {
@@ -125,9 +139,7 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
       {isHousitter && (
         <Form.Group>
           <Form.Label className="mb-2">Experience</Form.Label>
-          <Form.Text className="mb-2" muted>
-            {'   '} | approximately how many housits have you done
-          </Form.Text>
+          <Form.Text className="mb-2" muted></Form.Text>
           <CountAndUpdate valueToCount={experience} reduxReducer={setExperienceState} />
           <hr />
         </Form.Group>

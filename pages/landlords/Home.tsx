@@ -187,7 +187,6 @@ export default function Home() {
         dispatch(setDescriptionState(''))
         dispatch(setTitleState(''))
         dispatch(setImagesUrlsState([])), setPostPreviewDataUrls([])
-        console.log('no active post')
       }
 
       let { data: housitterData, error: housitterError } = await supabaseClient
@@ -231,19 +230,19 @@ export default function Home() {
             about_me: '',
           }
 
+          // shouldn't be an array, but due to some supabase inconsistency, this is here as a safeguard
           if (Array.isArray(housitter.housitters)) {
             availableHousitter.locations = housitter.housitters[0].locations
             availableHousitter.experience = housitter?.housitters[0].experience
             availableHousitter.about_me = housitter?.housitters[0].about_me
+          } else {
+            availableHousitter.locations = housitter.housitters?.locations
+            availableHousitter.experience = housitter?.housitters?.experience
+            availableHousitter.about_me = housitter?.housitters?.about_me
           }
 
           availableHousitters.push(availableHousitter)
 
-          // filtering by availability, maybe there's a way to filter by availability on server-side?
-          // meanwhile we'll do it client side, using user_id to kind of join the dates with the relavant sitter.
-          // maybe there's a server-side solution, which will be better.
-
-          // TODO: check what you get at the response obj, when you have multiple housitters corresponsding to the location
           availableHousitters = availableHousitters.filter((sitter) => {
             return sitter.availability.some((sitterPeriod) => {
               return availability.some((landlordPeriod) => {
@@ -495,18 +494,21 @@ export default function Home() {
 
   function sortHousitters(sortByProperty: string, sortOrder: string) {
     let sortedHousitters: any[] = [...housitters]
-
     if (typeof sortedHousitters[0][sortByProperty] === 'string') {
       if (sortOrder === 'asc') {
         sortedHousitters.sort((a, b) => a[sortByProperty].localeCompare(b[sortByProperty]))
       } else {
         sortedHousitters.sort((a, b) => b[sortByProperty].localeCompare(a[sortByProperty]))
       }
-
-      setHousitters(sortedHousitters)
     } else {
-      // TODO: not implemented yet
+      if (sortOrder === 'asc') {
+        sortedHousitters.sort((a, b) => a[sortByProperty] - b[sortByProperty])
+      } else {
+        sortedHousitters.sort((a, b) => b[sortByProperty] - a[sortByProperty])
+      }
     }
+
+    setHousitters(sortedHousitters)
   }
 
   async function handleBindSitterWithPeriod(e: any) {
@@ -684,12 +686,12 @@ export default function Home() {
 
         <Modal show={showNewPostModal} onHide={handleCloseNoewPostModal}>
           <Modal.Header>
-            <Modal.Title style={{ color: 'blue' }}>let's create a new post</Modal.Title>
+            <Modal.Title>let's create a new post</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
               <Form.Group>
-                <Form.Label>availability</Form.Label>
+                <Form.Label>When?</Form.Label>
 
                 {availability.map((period, index) => (
                   <AvailabilitySelector
@@ -701,7 +703,7 @@ export default function Home() {
                 ))}
               </Form.Group>
               <Form.Group>
-                <Form.Label>Location</Form.Label>
+                <Form.Label>Where?</Form.Label>
                 <LocationSelector
                   selectionType="radio"
                   isHousitter={false}
@@ -714,17 +716,18 @@ export default function Home() {
                 <PetsCounter />
               </Form.Group>
               <Form.Group>
-                <Form.Group>
-                  <Form.Label>Title</Form.Label>
-                  <FormControl
-                    type="text"
-                    value={title}
-                    onChange={(e) => {
-                      dispatch(setTitleState(e.target.value))
-                    }}
-                  />
-                </Form.Group>
-                <h1>Description</h1>
+                <Form.Label>Title</Form.Label>
+                <FormControl
+                  type="text"
+                  value={title}
+                  onChange={(e) => {
+                    dispatch(setTitleState(e.target.value))
+                  }}
+                />
+              </Form.Group>
+
+              <Form.Group className="mt-2">
+                <Form.Label>Description</Form.Label>
                 <Form.Control
                   className="text-end"
                   size="sm"
@@ -736,7 +739,7 @@ export default function Home() {
                   }}
                 ></Form.Control>
               </Form.Group>
-              <Form.Group>
+              <Form.Group className="mt-3">
                 <Form.Label>Upload some pics </Form.Label>
                 <input
                   onChange={onPostImageSelection}
@@ -782,6 +785,7 @@ export default function Home() {
                         housitterId={sitter.housitterId}
                         firstName={sitter.firstName}
                         lastName={sitter.lastName}
+                        experience={sitter.experience}
                         about_me={
                           sitter.about_me
                             ? sitter.about_me

@@ -154,6 +154,7 @@ export const SortingProperties = {
 
 export const SortingPropertiesForHandler = {
   [SortingProperties.LandlordDashboard.FirstName]: 'firstName',
+  [SortingProperties.LandlordDashboard.Experience]: 'experience',
 }
 
 export const SignupErrorMessages = {

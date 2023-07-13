@@ -17,6 +17,7 @@ import AddToFavourites from './Contact/AddToFavourites'
 export default function AvailableHousitter(props: HousitterProps) {
   const landlordFirstName = useSelector(selectFirstNameState)
   const landlordLastName = useSelector(selectLastNameState)
+  const { housitterId, firstName, lastName, avatarUrl, experience } = props
 
   const usersContacted = useSelector(selectUsersContactedState)
 
@@ -28,7 +29,7 @@ export default function AvailableHousitter(props: HousitterProps) {
             <Picture
               uid={props.housitterId}
               email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved
-              url={props.avatarUrl}
+              url={avatarUrl}
               isIntro={false}
               primaryUse={USER_TYPE.Housitter}
               size={120}
@@ -41,19 +42,20 @@ export default function AvailableHousitter(props: HousitterProps) {
               isRounded={true}
             />
             <Card.Title>
-              {props.firstName} {props.lastName}
+              {firstName} {lastName}
               <hr />
             </Card.Title>
           </div>
 
           {(() => {
-            let foundSitter = usersContacted.find((user) => user.userId === props.housitterId)
+            let foundSitter = usersContacted.find((user) => user.userId === housitterId)
             if (foundSitter) {
               const { lastContacted } = foundSitter
               return (
                 <div>
                   <Card.Text>
-                    Email Sent at:{' '}
+                    Last Contacted:
+                    <br />
                     {new Date(lastContacted).toLocaleString('heb-IL', {
                       weekday: 'short',
                       month: 'short',
@@ -69,22 +71,26 @@ export default function AvailableHousitter(props: HousitterProps) {
             }
           })()}
 
+          <Card.Text className="center-element">
+            Experience: {experience} house{experience === 1 ? '' : 's'}
+          </Card.Text>
+          <hr />
           <Card.Text className="center-element">{props.about_me}</Card.Text>
 
           <div className="center-element make-column">
             <ReviewsOnSelectedUser
-              selectedUserId={props.housitterId}
-              selectedUserFirstName={props.firstName}
-              selectedUserLastName={props.lastName}
+              selectedUserId={housitterId}
+              selectedUserFirstName={firstName}
+              selectedUserLastName={lastName}
               selectedUserType={USER_TYPE.Housitter}
             />
             <div className="add-to-favourites">
               <AddToFavourites
-                favouriteUserId={props.housitterId}
+                favouriteUserId={housitterId}
                 favouriteUserType={USER_TYPE.Housitter}
               />
             </div>
-            <ContactFoundUser recipientUserId={props.housitterId} />
+            <ContactFoundUser recipientUserId={housitterId} />
           </div>
         </Card.Body>
       </Card>
