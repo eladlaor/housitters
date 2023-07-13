@@ -33,6 +33,8 @@ import { useRouter } from 'next/router'
 export default function Home() {
   const supabase = useSupabaseClient()
   const user = useUser()
+  console.log(`user in Home exists? ${user ? 'yes' : 'no'}`)
+
   const dispatch = useDispatch()
   const router = useRouter()
 
@@ -191,7 +193,7 @@ export default function Home() {
     asyncWrapper()
   }, [user, locations, availability, firstName])
 
-  function sortPosts(sortByProperty: string) {
+  function sortPosts(sortByProperty: string, sortOrder: string) {
     let sortedPosts: any[] = [...availablePosts]
 
     if (typeof sortedPosts[0][sortByProperty] === 'string') {

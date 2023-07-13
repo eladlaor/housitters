@@ -42,6 +42,7 @@ export default function SignOut({ elementType }: SignOutProps) {
 
   async function handleSignOutClick() {
     await persistor.purge()
+    console.log('signing out from SignOut')
     await supabaseClient.auth.signOut()
     dispatch(setIsLoggedState(false))
 

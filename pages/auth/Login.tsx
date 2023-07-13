@@ -26,27 +26,34 @@ import PasswordInput from '../../components/Auth/PasswordInput'
 export default function LoginPage() {
   const { error, supabaseClient } = useSessionContext()
   const user = useUser()
+  console.log(`user in Login exists? ${user ? 'yes' : 'no'}`)
+
   const router = useRouter()
   const dispatch = useDispatch()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const [loadingDots, setLoadingDots] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  // const [loadingDots, setLoadingDots] = useState('')
+  // const [isLoading, setIsLoading] = useState(false)
 
   // for the sole purpose of the loadingDots state change
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLoadingDots((previousState) => (previousState === '...' ? '' : previousState + '.'))
-    }, 500)
+  // useEffect(() => {
+  //   console.log('first use effect of login')
+  //   const interval = setInterval(() => {
+  //     if (isLoading) {
+  //       setLoadingDots((previousState) => (previousState === '...' ? '' : previousState + '.'))
+  //     }
+  //   }, 500)
 
-    return () => {
-      clearInterval(interval)
-    }
-  }, [isLoading])
+  //   return () => {
+  //     clearInterval(interval)
+  //   }
+  // }, [isLoading])
 
   useEffect(() => {
+    console.log('second use effect of login')
+
     if (!user) {
       return
     }
@@ -98,7 +105,7 @@ export default function LoginPage() {
 
   async function handleEmailLogin(e: any) {
     e.preventDefault()
-    setIsLoading(true)
+    // setIsLoading(true)
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
@@ -181,7 +188,7 @@ export default function LoginPage() {
     </div>
   ) : (
     <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
-      <h5>Loading{loadingDots}</h5>
+      {/* <h5>Loading{loadingDots}</h5> */}
       <Image src={logo} width="150" height="150" className="rotate" />
     </div>
   )

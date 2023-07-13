@@ -152,6 +152,10 @@ export const SortingProperties = {
   },
 }
 
+export const SortingPropertiesForHandler = {
+  [SortingProperties.LandlordDashboard.FirstName]: 'firstName',
+}
+
 export const SignupErrorMessages = {
   ExistingEmail: 'Already registered',
   MissingFields: 'Incomplete Form',

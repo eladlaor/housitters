@@ -493,14 +493,19 @@ export default function Home() {
     setShowFoundSitterModal(false)
   }
 
-  function sortHousitters(sortByProperty: string) {
+  function sortHousitters(sortByProperty: string, sortOrder: string) {
     let sortedHousitters: any[] = [...housitters]
 
     if (typeof sortedHousitters[0][sortByProperty] === 'string') {
-      sortedHousitters.sort((a, b) => a.firstName.localeCompare(b.firstName))
+      if (sortOrder === 'asc') {
+        sortedHousitters.sort((a, b) => a[sortByProperty].localeCompare(b[sortByProperty]))
+      } else {
+        sortedHousitters.sort((a, b) => b[sortByProperty].localeCompare(a[sortByProperty]))
+      }
+
       setHousitters(sortedHousitters)
     } else {
-      console.log('sorting by number')
+      // TODO: not implemented yet
     }
   }
 

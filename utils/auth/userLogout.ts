@@ -22,6 +22,7 @@ export async function userLogout({
   }
 
   await clearUserState()
+  console.log('signing out from userLogout')
   await supabaseClient.auth.signOut()
   router.push('/')
 }

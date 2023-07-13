@@ -16,6 +16,7 @@ import Image from 'next/image'
 export default function HomeNavbar({ userType }: any) {
   const user = useUser()
   const avatarUrl = useSelector(selectAvatarUrlState)
+  console.log(`user in HomeNavbar exists? ${user ? 'yes' : 'no'}`)
 
   return (
     <Navbar bg="dark" variant="dark">

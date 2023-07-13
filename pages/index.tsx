@@ -93,6 +93,7 @@ export default function Home() {
       if (isOngoingOAuth) {
         handleSuccessfulOAuth(user.id)
       } else {
+        console.log('signing out from index')
         supabaseClient.auth.signOut()
         userClearState()
       }

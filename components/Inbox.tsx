@@ -245,7 +245,7 @@ export default function Inbox() {
     >
       {Object.entries(conversations).length === 0 ? (
         <NavDropdown.Item href="#" style={{ width: '100%' }}>
-          Contact one of the found users to create your first chat &#x1F642;
+          Empty. Contact someone &#x1F642;
         </NavDropdown.Item>
       ) : (
         Object.entries(conversations).map(([recipientId, conversation], index) => (

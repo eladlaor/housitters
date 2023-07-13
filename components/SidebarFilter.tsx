@@ -28,8 +28,7 @@ export default function SidebarFilter({
   return (
     <Card className="sidebar-filter">
       <div className="sorter-filter">
-        <FaSort />
-        <h3>Sort by:</h3>
+        <h4>Sort by:</h4>
       </div>
       <div>
         <Sorter
@@ -40,17 +39,20 @@ export default function SidebarFilter({
         />
         <hr />
       </div>
-      <div className="sorter-filter">
-        <FaFilter />
-        <h3>Filter by:</h3>
-      </div>
-      Location:
-      <LocationSelector
-        isHousitter={isHousitter}
-        showCustomLocations={showCustomLocations}
-        selectionType={selectionType as FormCheckType}
-        updateDbInstantly={true}
-      />
+      {isHousitter && (
+        <>
+          <div className="sorter-filter">
+            <h4>Filter by:</h4>
+          </div>
+          Location:
+          <LocationSelector
+            isHousitter={isHousitter}
+            showCustomLocations={showCustomLocations}
+            selectionType={selectionType as FormCheckType}
+            updateDbInstantly={true}
+          />
+        </>
+      )}
       Dates:
       {availabaility.map((period, index) => (
         <AvailabilitySelector period={period} index={index} key={index} updateDbInstantly={true} />
