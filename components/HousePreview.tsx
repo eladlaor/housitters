@@ -16,7 +16,7 @@ import Col from 'react-bootstrap/Col'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsLoggedState, selectPrimaryUseState } from '../slices/userSlice'
-import { LocationDescriptions, USER_TYPE, DefaultFavouriteUser } from '../utils/constants'
+import { LocationDescriptions, UserType, DefaultFavouriteUser } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
 import Picture from './Picture'
 import { selectClosedSitsState, setClosedSitsState } from '../slices/landlordSlice'
@@ -232,7 +232,7 @@ export default function HousePreview({
           <Card.Title>{title}</Card.Title>
           {postPicturesFullUrl[0] ? (
             <Image src={postPicturesFullUrl[0].url} alt="Thumbnail" height={100} width={100} />
-          ) : userType === USER_TYPE.Landlord ? (
+          ) : userType === UserType.Landlord ? (
             <Button onClick={addMissingDetailsHandler!} variant="primary">
               add pictures
             </Button>
@@ -271,7 +271,7 @@ export default function HousePreview({
               <React.Fragment key={index}>
                 <ListGroup>
                   <ListGroup.Item>
-                    {userType === USER_TYPE.Landlord &&
+                    {userType === UserType.Landlord &&
                       (() => {
                         const closedPeriodIfExists = isClosedPeriod(period.startDate)
                         return closedPeriodIfExists ? (
@@ -290,7 +290,7 @@ export default function HousePreview({
                               <Picture
                                 isIntro={false}
                                 uid={closedPeriodIfExists.housitterId}
-                                primaryUse={USER_TYPE.Housitter}
+                                primaryUse={UserType.Housitter}
                                 url={closedPeriodIfExists.housitterAvatarUrl}
                                 size={100}
                                 width={100} // should persist dimensions of image upon upload

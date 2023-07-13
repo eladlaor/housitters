@@ -2,11 +2,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setPrimaryUse } from '../../slices/userSlice'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import { PageRoutes, USER_TYPE } from '../../utils/constants'
+import { PageRoutes, UserType } from '../../utils/constants'
 
 export default function SignupTeaser({ userType }: { userType: string }) {
   const dispatch = useDispatch()
-  const message = userType === USER_TYPE.Housitter ? 'Find a house' : 'Find a housitter'
+  const message = userType === UserType.Housitter ? 'Find a house' : 'Find a housitter'
 
   const handleUserTypeSelection = () => {
     dispatch(setPrimaryUse(userType))

@@ -1,7 +1,7 @@
 //TODO: i should rename all to be PascalCase
 import { ImageData } from '../types/clientSide'
 
-export const USER_TYPE = {
+export const UserType = {
   Landlord: 'landlord',
   Housitter: 'housitter',
   None: 'none',

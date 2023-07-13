@@ -1,7 +1,7 @@
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { USER_TYPE, PageRoutes } from '../../utils/constants'
+import { UserType, PageRoutes } from '../../utils/constants'
 import { useDispatch } from 'react-redux'
 import Image from 'next/image'
 
@@ -87,9 +87,9 @@ export default function LoginPage() {
           dispatch(setAvatarUrl(avatar_url))
 
           // TODO: shouldnt route in a loadUserData func.
-          if (primary_use === USER_TYPE.Housitter) {
+          if (primary_use === UserType.Housitter) {
             router.push(`${PageRoutes.HousitterRoutes.Home}`)
-          } else if (primary_use === USER_TYPE.Landlord) {
+          } else if (primary_use === UserType.Landlord) {
             router.push(`${PageRoutes.LandlordRoutes.Home}`)
           }
         }

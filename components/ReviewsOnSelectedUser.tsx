@@ -2,7 +2,7 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { Button, Card, Modal } from 'react-bootstrap'
 import Picture from './Picture'
-import { TableNames, USER_TYPE } from '../utils/constants'
+import { TableNames, UserType } from '../utils/constants'
 import { useSelector } from 'react-redux'
 import { selectPrimaryUseState } from '../slices/userSlice'
 import { ReviewsOnSelectedUserProps, SelectedUserReview } from '../types/clientSide'
@@ -27,7 +27,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
     const asyncWrapper = async () => {
       let data
 
-      if (currentUserType === USER_TYPE.Landlord) {
+      if (currentUserType === UserType.Landlord) {
         const { error, data: housitterReviewsData } = await supabaseClient
           .from(TableNames.ReviewsOnHousitters)
           .select(
@@ -45,7 +45,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
         if (housitterReviewsData) {
           data = housitterReviewsData
         }
-      } else if (currentUserType === USER_TYPE.Housitter) {
+      } else if (currentUserType === UserType.Housitter) {
         const { error, data: landlordReviewsData } = await supabaseClient
           .from(TableNames.ReviewsOnLandlords)
           .select(
@@ -148,7 +148,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
                               email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved
                               url={review.reviewerAvatarUrl}
                               isIntro={false}
-                              primaryUse={USER_TYPE.Landlord}
+                              primaryUse={UserType.Landlord}
                               size={100}
                               width={100} // should persist dimensions of image upon upload
                               height={100}

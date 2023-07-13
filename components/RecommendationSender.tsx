@@ -1,5 +1,5 @@
 import { Button, Form, Modal } from 'react-bootstrap'
-import { TableNames, USER_TYPE } from '../utils/constants'
+import { TableNames, UserType } from '../utils/constants'
 import { RecommendationFormProps } from '../types/clientSide'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -47,7 +47,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
   async function handleSubmit(e: any) {
     e.preventDefault()
 
-    if (reviewedUserType === USER_TYPE.Housitter) {
+    if (reviewedUserType === UserType.Housitter) {
       const { error } = await supabaseClient.from(TableNames.ReviewsOnHousitters).upsert({
         recommended_user_id: reviewedUserId,
         recommended_by_user_id: user!.id, // TODO: how to make sure i'll always have this value here as useUser is async
@@ -62,7 +62,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
         debugger
         throw error
       }
-    } else if (reviewedUserType === USER_TYPE.Landlord) {
+    } else if (reviewedUserType === UserType.Landlord) {
       const { error } = await supabaseClient.from(TableNames.ReviewsOnLandlords).upsert({
         recommended_user_id: reviewedUserId,
         recommended_by_user_id: user!.id, // TODO: how to make sure i'll always have this value here as useUser is async
@@ -128,7 +128,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                 />
               </Form.Group>
 
-              {reviewedUserType === USER_TYPE.Housitter && (
+              {reviewedUserType === UserType.Housitter && (
                 <CountAndUpdate valueToCount={duration} reduxReducer={setDurationState} />
               )}
               <Form.Group controlId="sit-included">

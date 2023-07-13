@@ -9,7 +9,7 @@ import {
   selectPrimaryUseState,
 } from '../../slices/userSlice'
 
-import { API_ROUTES, USER_TYPE } from '../../utils/constants'
+import { API_ROUTES, UserType } from '../../utils/constants'
 import { MessageSenderProps } from '../../types/clientSide'
 
 import Button from 'react-bootstrap/Button'
@@ -86,8 +86,8 @@ export default function MessageSender(props: MessageSenderProps) {
       }
 
       const { error: persistMessageError } = await supabaseClient.from('messages').upsert({
-        [userType === USER_TYPE.Housitter ? 'landlord_id' : 'housitter_id']: recipientUserId,
-        [userType === USER_TYPE.Housitter ? 'housitter_id' : 'landlord_id']: user!.id,
+        [userType === UserType.Housitter ? 'landlord_id' : 'housitter_id']: recipientUserId,
+        [userType === UserType.Housitter ? 'housitter_id' : 'landlord_id']: user!.id,
         message_content: messageContent,
         sent_by: userType,
         created_at: new Date(),

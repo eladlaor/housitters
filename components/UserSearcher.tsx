@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 
 import { Database } from '../types/supabase'
 import PublicProfile from './PublicProfile'
-import { DbGenderTypes, USER_TYPE } from '../utils/constants'
+import { DbGenderTypes, UserType } from '../utils/constants'
 
 export default function UserSearcher() {
   const user = useUser()
@@ -124,8 +124,8 @@ export default function UserSearcher() {
           onChange={(e) => setSearchFilter(e.target.value)}
         >
           <option value="all">All</option>
-          <option value={USER_TYPE.Landlord}>Landlord</option>
-          <option value={USER_TYPE.Housitter}>Housitter</option>
+          <option value={UserType.Landlord}>Landlord</option>
+          <option value={UserType.Housitter}>Housitter</option>
         </Form.Select>
       </Form>
     </div>

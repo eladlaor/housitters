@@ -3,7 +3,7 @@ import { useUser, useSupabaseClient, Session } from '@supabase/auth-helpers-reac
 import { useRouter } from 'next/router'
 
 import { Database } from '../types/supabase'
-import { USER_TYPE } from '../utils/constants'
+import { UserType } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   selectAvatarUrlState,
@@ -126,7 +126,7 @@ export default function Account() {
       <div>
         <HomeNavbar userType={primary_use} />
 
-        <UserDetails isHousitter={primary_use === USER_TYPE.Housitter} />
+        <UserDetails isHousitter={primary_use === UserType.Housitter} />
       </div>
     )
   )

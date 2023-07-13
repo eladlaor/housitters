@@ -8,7 +8,7 @@ import { Button, Card } from 'react-bootstrap'
 import PublicProfile from '../components/PublicProfile'
 import { Router, useRouter } from 'next/router'
 import { selectPrimaryUseState } from '../slices/userSlice'
-import { PageRoutes, USER_TYPE } from '../utils/constants'
+import { PageRoutes, UserType } from '../utils/constants'
 import HomeNavbar from '../components/HomeNavbar'
 
 export default function Favourites() {
@@ -72,7 +72,7 @@ export default function Favourites() {
             <Button
               onClick={() =>
                 router.push(
-                  userType === USER_TYPE.Landlord
+                  userType === UserType.Landlord
                     ? PageRoutes.LandlordRoutes.Home
                     : PageRoutes.HousitterRoutes.Home
                 )
@@ -89,7 +89,7 @@ export default function Favourites() {
                   <Card.Body>
                     <PublicProfile
                       userId={favUser.userId}
-                      primaryUse={favUser.UserType}
+                      primaryUse={favUser.userType}
                       firstName={favUser.firstName}
                       lastName={favUser.lastName}
                       email={favUser.email}

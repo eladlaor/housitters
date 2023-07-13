@@ -11,7 +11,7 @@ import { selectLocationsState, setLocationsState } from '../../slices/housitterS
 import {
   PageRoutes,
   LocationIds,
-  USER_TYPE,
+  UserType,
   DefaultFavouriteUser,
   SortingProperties,
 } from '../../utils/constants'
@@ -169,7 +169,7 @@ export default function Home() {
             let retrievedFavouriteUsers = [] as (typeof DefaultFavouriteUser)[]
 
             retrievedFavouriteUsers = favouritesData.map((favouriteUser) => ({
-              favouriteUserType: USER_TYPE.Landlord,
+              favouriteUserType: UserType.Landlord,
               favouriteUserId: favouriteUser.favourite_user_id,
               markedByUserId: user!.id,
             }))
@@ -196,11 +196,14 @@ export default function Home() {
   function sortPosts(sortByProperty: string, sortOrder: string) {
     let sortedPosts: any[] = [...availablePosts]
 
-    if (typeof sortedPosts[0][sortByProperty] === 'string') {
-      // TODO: currently no such filter for posts
-      // sortedPosts.sort((a, b) => a.firstName.localeCompare(b.firstName))
-    } else if (sortByProperty === SortingProperties.HousitterDashboard.PetsQuantity) {
-      sortedPosts.sort((a, b) => a.dogs + a.cats - (b.dogs + b.cats))
+    switch (sortByProperty) {
+      case SortingProperties.HousitterDashboard.PetsQuantity:
+        if (sortOrder === 'asc') {
+          sortedPosts.sort((a, b) => a.dogs + a.cats - (b.dogs + b.cats))
+        } else {
+          sortedPosts.sort((a, b) => b.dogs + b.cats - (a.dogs + a.cats))
+        }
+        break
     }
 
     dispatch(setAvailablePosts(sortedPosts))
@@ -208,7 +211,7 @@ export default function Home() {
 
   return (
     <>
-      <HomeNavbar userType={USER_TYPE.Housitter} />
+      <HomeNavbar userType={UserType.Housitter} />
 
       <Container>
         <div className="welcome-to-dashboard-msg">

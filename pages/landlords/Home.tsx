@@ -9,7 +9,7 @@ import {
 } from '../../slices/userSlice'
 
 import { ClosedSit, DbAvailableHousitter, DefaultAvailablePostType } from '../../types/clientSide'
-import { USER_TYPE, DefaultFavouriteUser, PageRoutes } from '../../utils/constants'
+import { UserType, DefaultFavouriteUser, PageRoutes } from '../../utils/constants'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -279,7 +279,7 @@ export default function Home() {
 
         retrievedFavouriteUsers = favouritesData.map(
           (favouriteUser: { favourite_user_id: any }) => ({
-            favouriteUserType: USER_TYPE.Housitter,
+            favouriteUserType: UserType.Housitter,
             favouriteUserId: favouriteUser.favourite_user_id,
             markedByUserId: user!.id,
           })
@@ -537,7 +537,7 @@ export default function Home() {
 
   return (
     <>
-      <HomeNavbar userType={USER_TYPE.Landlord} />
+      <HomeNavbar userType={UserType.Landlord} />
       <Container>
         <div className="welcome-to-dashboard-msg">
           <h2>

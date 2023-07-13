@@ -19,7 +19,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { persistor } from '../../store'
 import { useRouter } from 'next/router'
 
-import { USER_TYPE } from '../../utils/constants'
+import { UserType } from '../../utils/constants'
 import { SignOutElementTypes } from '../../utils/constants'
 import { SignOutProps } from '../../types/clientSide'
 import { NavDropdown } from 'react-bootstrap'
@@ -46,7 +46,7 @@ export default function SignOut({ elementType }: SignOutProps) {
     await supabaseClient.auth.signOut()
     dispatch(setIsLoggedState(false))
 
-    if (userType === USER_TYPE.Housitter) {
+    if (userType === UserType.Housitter) {
       clearState(housitterSettersToInitialStates)
     } else {
       clearState(landlordSettersToInitialStates)

@@ -1,7 +1,7 @@
 import Card from 'react-bootstrap/Card'
 import { HousitterProps } from '../types/clientSide'
 import Picture from './Picture'
-import { USER_TYPE } from '../utils/constants'
+import { UserType } from '../utils/constants'
 import ReviewsOnSelectedUser from './ReviewsOnSelectedUser'
 import { useSelector } from 'react-redux'
 import {
@@ -31,7 +31,7 @@ export default function AvailableHousitter(props: HousitterProps) {
               email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved
               url={avatarUrl}
               isIntro={false}
-              primaryUse={USER_TYPE.Housitter}
+              primaryUse={UserType.Housitter}
               size={120}
               width={100} // should persist dimensions of image upon upload
               height={100}
@@ -82,12 +82,12 @@ export default function AvailableHousitter(props: HousitterProps) {
               selectedUserId={housitterId}
               selectedUserFirstName={firstName}
               selectedUserLastName={lastName}
-              selectedUserType={USER_TYPE.Housitter}
+              selectedUserType={UserType.Housitter}
             />
             <div className="add-to-favourites">
               <AddToFavourites
                 favouriteUserId={housitterId}
-                favouriteUserType={USER_TYPE.Housitter}
+                favouriteUserType={UserType.Housitter}
               />
             </div>
             <ContactFoundUser recipientUserId={housitterId} />

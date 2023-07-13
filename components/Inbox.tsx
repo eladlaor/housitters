@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { NavDropdown } from 'react-bootstrap'
 
-import { USER_TYPE } from '../utils/constants'
+import { UserType } from '../utils/constants'
 
 import {
   selectFirstNameState,
@@ -48,9 +48,7 @@ export default function Inbox() {
   const userLastName = useSelector(selectLastNameState)
 
   const keyNameOfRecipientId =
-    currentUserType === USER_TYPE.Housitter
-      ? `${USER_TYPE.Landlord}_id`
-      : `${USER_TYPE.Housitter}_id`
+    currentUserType === UserType.Housitter ? `${UserType.Landlord}_id` : `${UserType.Housitter}_id`
 
   useEffect(() => {
     if (!user || !isLogged) {
@@ -60,7 +58,7 @@ export default function Inbox() {
     async function loadInboxData() {
       let messagesData: any[] = []
 
-      if (currentUserType === USER_TYPE.Landlord) {
+      if (currentUserType === UserType.Landlord) {
         const { error, data } = await supabaseClient
           .from('messages')
           .select(`id, created_at, message_content, housitter_id, is_read_by_recipient, sent_by`)

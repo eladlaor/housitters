@@ -6,7 +6,7 @@ import {
   PageRoutes,
   SIGNUP_FORM_PROPS,
   SignupErrorMessages,
-  USER_TYPE,
+  UserType,
 } from '../utils/constants'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
@@ -50,7 +50,7 @@ export default function Intro() {
   const supabaseClient = useSupabaseClient()
 
   const { userType } = router.query
-  const isHousitter = userType === USER_TYPE.Housitter
+  const isHousitter = userType === UserType.Housitter
 
   const initialFormState: SignupForm = {
     firstName: '',
@@ -207,7 +207,7 @@ export default function Intro() {
       if (profileError) {
         alert(
           `Error when upserting new ${
-            isHousitter ? USER_TYPE.Housitter : USER_TYPE.Landlord
+            isHousitter ? UserType.Housitter : UserType.Landlord
           } to \'profiles\' table: ${profileError.message}`
         )
         debugger
@@ -235,7 +235,7 @@ export default function Intro() {
             user_id: userId,
             start_date: period.startDate,
             end_date: period.endDate,
-            user_type: USER_TYPE.Landlord,
+            user_type: UserType.Landlord,
           })
           if (availabilityError) {
             alert(`failed upserting landlord to available_dates table: ${error}`)
@@ -289,7 +289,7 @@ export default function Intro() {
         }
 
         dispatch(setAvailablePosts([defaultPostRedux]))
-      } else if (USER_TYPE.Housitter) {
+      } else if (UserType.Housitter) {
         const newHousitter = {
           user_id: userId,
           locations: housitterLocations,
@@ -308,7 +308,7 @@ export default function Intro() {
             user_id: userId,
             start_date: period.startDate,
             end_date: period.endDate,
-            user_type: USER_TYPE.Housitter,
+            user_type: UserType.Housitter,
           })
           if (availabilityError) {
             alert(`failed upserting housitter to available_dates table: ${error}`)
@@ -478,7 +478,7 @@ export default function Intro() {
                       <Picture
                         isIntro={true}
                         uid=""
-                        primaryUse={USER_TYPE.Landlord}
+                        primaryUse={UserType.Landlord}
                         url={avatarUrl}
                         size={100}
                         width={100} // should persist dimensions of image upon upload

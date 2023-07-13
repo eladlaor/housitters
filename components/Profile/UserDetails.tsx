@@ -1,6 +1,6 @@
 import { Button, Form } from 'react-bootstrap'
 import Picture from '../Picture'
-import { DbGenderTypes, PageRoutes, SIGNUP_FORM_PROPS, USER_TYPE } from '../../utils/constants'
+import { DbGenderTypes, PageRoutes, SIGNUP_FORM_PROPS, UserType } from '../../utils/constants'
 import PetsCounter from '../PetsCounter'
 import { useSelector } from 'react-redux'
 import {
@@ -162,7 +162,7 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
         <Picture
           isIntro={true}
           uid=""
-          primaryUse={USER_TYPE.Landlord}
+          primaryUse={UserType.Landlord}
           url={avatarUrl}
           size={100}
           width={100} // should persist dimensions of image upon upload

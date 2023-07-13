@@ -8,7 +8,7 @@ import {
   selectPrimaryUseState,
   selectUsersContactedState,
 } from '../../slices/userSlice'
-import { USER_TYPE } from '../../utils/constants'
+import { UserType } from '../../utils/constants'
 import { Conversation } from '../../types/clientSide'
 import IndividualChat from './IndividualChat'
 
@@ -34,7 +34,7 @@ export default function ContactFoundUser({ recipientUserId }: { recipientUserId:
         pastMessages: [],
       } as any
 
-      if (currentUserType === USER_TYPE.Landlord) {
+      if (currentUserType === UserType.Landlord) {
         const { error, data: messagesData } = await supabaseClient
           .from('messages')
           .select(`id, created_at, message_content, housitter_id, is_read_by_recipient, sent_by`)
@@ -77,7 +77,7 @@ export default function ContactFoundUser({ recipientUserId }: { recipientUserId:
         } else {
           console.log('no messages')
         }
-      } else if (currentUserType === USER_TYPE.Housitter) {
+      } else if (currentUserType === UserType.Housitter) {
         const { error, data: messagesData } = await supabaseClient
           .from('messages')
           .select(`id, created_at, message_content, housitter_id, is_read_by_recipient, sent_by`)

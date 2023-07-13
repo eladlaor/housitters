@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../store'
-import { DbGenderTypes, USER_TYPE } from '../utils/constants'
+import { DbGenderTypes, UserType } from '../utils/constants'
 import { Database } from '../types/supabase'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']

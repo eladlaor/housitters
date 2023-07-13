@@ -29,7 +29,7 @@ import {
   selectLandlordLastNameState,
 } from '../slices/availablePostsSlice'
 
-import { LocationDescriptions, USER_TYPE } from '../utils/constants'
+import { LocationDescriptions, UserType } from '../utils/constants'
 import { ImageData, ClosedSit } from '../types/clientSide'
 
 import { Button, ListGroup, Modal, Badge } from 'react-bootstrap'
@@ -176,7 +176,7 @@ export default function HouseDetails() {
               <React.Fragment key={index}>
                 <ListGroup>
                   <ListGroup.Item>
-                    {userType === USER_TYPE.Landlord &&
+                    {userType === UserType.Landlord &&
                       (() => {
                         const closedPeriodIfExists = isClosedPeriod(period.startDate)
                         return closedPeriodIfExists ? (
@@ -192,7 +192,7 @@ export default function HouseDetails() {
                               <Picture
                                 isIntro={false}
                                 uid={closedPeriodIfExists.housitterId}
-                                primaryUse={USER_TYPE.Housitter}
+                                primaryUse={UserType.Housitter}
                                 url={closedPeriodIfExists.housitterAvatarUrl}
                                 size={100}
                                 width={100} // should persist dimensions of image upon upload
@@ -238,7 +238,7 @@ export default function HouseDetails() {
           </div>
         </Col>
         <Col>
-          <AddToFavourites favouriteUserId={landlordId} favouriteUserType={USER_TYPE.Landlord} />
+          <AddToFavourites favouriteUserId={landlordId} favouriteUserType={UserType.Landlord} />
         </Col>
       </Row>
       <hr />
@@ -266,7 +266,7 @@ export default function HouseDetails() {
                 promptMessage=""
                 isIntro={false}
                 disableUpload={true}
-                primaryUse={USER_TYPE.Landlord}
+                primaryUse={UserType.Landlord}
                 uid={landlordId ? landlordId : 'no landlord uid - not valid'}
                 size={100}
                 width={100}
@@ -285,7 +285,7 @@ export default function HouseDetails() {
                 selectedUserId={landlordId}
                 selectedUserFirstName={landlordFirstName}
                 selectedUserLastName={landlordLastName}
-                selectedUserType={USER_TYPE.Landlord}
+                selectedUserType={UserType.Landlord}
               />
             </div>
           }

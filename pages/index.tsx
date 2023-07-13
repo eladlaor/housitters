@@ -3,7 +3,7 @@ import { persistor } from '../store'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { NavbarItems, PageRoutes, USER_TYPE } from '../utils/constants'
+import { NavbarItems, PageRoutes, UserType } from '../utils/constants'
 import Image from 'next/image'
 import cuteDog from '../public/images/leika.jpg'
 import SignupTeaser from '../components/Auth/SignupTeaser'
@@ -43,7 +43,7 @@ export default function Home() {
     }
 
     const nonUserSetters =
-      userType === USER_TYPE.Housitter
+      userType === UserType.Housitter
         ? housitterSettersToInitialStates
         : landlordSettersToInitialStates
 
@@ -81,7 +81,7 @@ export default function Home() {
       if (data) {
         dispatch(setPrimaryUse(data.primary_use))
         dispatch(setIsOngoingOAuthState(false))
-        if (userType === USER_TYPE.Housitter) {
+        if (userType === UserType.Housitter) {
           router.push(`${PageRoutes.HousitterRoutes.Home}`)
         } else {
           router.push(`${PageRoutes.LandlordRoutes.Home}`)
@@ -108,10 +108,10 @@ export default function Home() {
         <div className="position-relative">
           <div className="text-center d-flex justify-content-between mx-auto signup-teasers-container">
             <div className="w-50 pr-2">
-              <SignupTeaser userType={USER_TYPE.Housitter} />
+              <SignupTeaser userType={UserType.Housitter} />
             </div>
             <div className="w-50 pl-2">
-              <SignupTeaser userType={USER_TYPE.Landlord} />
+              <SignupTeaser userType={UserType.Landlord} />
             </div>
           </div>
           <Button
