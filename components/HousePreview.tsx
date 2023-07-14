@@ -34,9 +34,9 @@ import Link from 'next/link'
 export default function HousePreview({
   landlordId,
   title,
-  description,
   location,
-  availability,
+  housitterAvailability,
+  postAvailability,
   dogs,
   cats,
   imagesUrls,
@@ -267,77 +267,86 @@ export default function HousePreview({
           <hr />
 
           <div>
-            {availability.map((period, index) => (
+            {housitterAvailability.map((period, index) => (
               <React.Fragment key={index}>
-                <ListGroup>
-                  <ListGroup.Item>
-                    {userType === UserType.Landlord &&
-                      (() => {
-                        const closedPeriodIfExists = isClosedPeriod(period.startDate)
-                        return closedPeriodIfExists ? (
-                          <>
-                            <Card.Text>
-                              <Badge bg="danger">Closed</Badge>
-                              <FontAwesomeIcon icon={faCalendarCheck} style={{ color: 'green' }} />
-                              <br />
-                              This sit is set!
-                              <br />
-                              Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
-                              {closedPeriodIfExists.housitterLastName}
-                            </Card.Text>
+                {isClosedPeriod(period.startDate) && (
+                  <ListGroup>
+                    <ListGroup.Item>
+                      {userType === UserType.Landlord &&
+                        (() => {
+                          const closedPeriodIfExists = isClosedPeriod(period.startDate)
+                          return closedPeriodIfExists ? (
+                            <>
+                              <Card.Text>
+                                <Badge bg="danger">Closed</Badge>
+                                <FontAwesomeIcon
+                                  icon={faCalendarCheck}
+                                  style={{ color: 'green' }}
+                                />
+                                <br />
+                                This sit is set!
+                                <br />
+                                Your sitter: {closedPeriodIfExists.housitterFirstName}{' '}
+                                {closedPeriodIfExists.housitterLastName}
+                              </Card.Text>
 
-                            {closedPeriodIfExists.housitterAvatarUrl && (
-                              <Picture
-                                isIntro={false}
-                                uid={closedPeriodIfExists.housitterId}
-                                primaryUse={UserType.Housitter}
-                                url={closedPeriodIfExists.housitterAvatarUrl}
-                                size={100}
-                                width={100} // should persist dimensions of image upon upload
-                                height={100}
-                                disableUpload={true}
-                                bucketName="avatars"
-                                isAvatar={true}
-                                promptMessage=""
-                                email=""
-                                isRounded={false}
-                              />
-                            )}
-                            <br />
-                            <Button
-                              variant="danger"
-                              onClick={(e) =>
-                                handleMySitterCancelled(e, {
-                                  housitterId: closedPeriodIfExists.housitterId,
-                                  landlordId: landlordId,
-                                  startDate: closedPeriodIfExists.startDate,
-                                })
-                              }
-                            >
-                              my sitter cancelled
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
-                            <Badge bg="success">Available</Badge>
-                            <br />
-                          </>
-                        )
-                      })()}
-                    <DateDisplayer startDate={period.startDate} endDate={period.endDate} />
-                    <br />
-                  </ListGroup.Item>
-                </ListGroup>
+                              {closedPeriodIfExists.housitterAvatarUrl && (
+                                <Picture
+                                  isIntro={false}
+                                  uid={closedPeriodIfExists.housitterId}
+                                  primaryUse={UserType.Housitter}
+                                  url={closedPeriodIfExists.housitterAvatarUrl}
+                                  size={100}
+                                  width={100} // should persist dimensions of image upon upload
+                                  height={100}
+                                  disableUpload={true}
+                                  bucketName="avatars"
+                                  isAvatar={true}
+                                  promptMessage=""
+                                  email=""
+                                  isRounded={false}
+                                />
+                              )}
+                              <br />
+                              <Button
+                                variant="danger"
+                                onClick={(e) =>
+                                  handleMySitterCancelled(e, {
+                                    housitterId: closedPeriodIfExists.housitterId,
+                                    landlordId: landlordId,
+                                    startDate: closedPeriodIfExists.startDate,
+                                  })
+                                }
+                              >
+                                my sitter cancelled
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <FontAwesomeIcon icon={faCalendar} style={{ color: 'grey' }} />
+                              <Badge bg="success">Available</Badge>
+                              <br />
+                            </>
+                          )
+                        })()}
+                    </ListGroup.Item>
+                  </ListGroup>
+                )}
               </React.Fragment>
             ))}
+            <DateDisplayer
+              startDate={postAvailability.startDate}
+              endDate={postAvailability.endDate}
+            />
+            <br />
             <hr />
-            <Link href={`/${landlordId}`}>
-              <a className="house-preview">
-                See More {'   '} <FontAwesomeIcon icon={faDoorOpen} /> <br />
-                The Door Is Open
-              </a>
-            </Link>
+            <div className="get-house-details">
+              <Link href={`/${landlordId}`}>
+                <a className="house-preview">
+                  Click Here to See More {'   '} <FontAwesomeIcon icon={faDoorOpen} /> <br />
+                </a>
+              </Link>
+            </div>
           </div>
         </Card.Body>
       </Card>

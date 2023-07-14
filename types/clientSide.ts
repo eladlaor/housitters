@@ -11,9 +11,11 @@ export type HousitterProps = {
   avatarUrl: string | null
 }
 
-/* Redux types */
+export type Availability = {
+  startDate: string
+  endDate: string
+}
 
-/* post slice */
 export type ImageData = {
   url: string
   id: number
@@ -45,9 +47,9 @@ export interface ReviewsOnSelectedUserProps {
 export interface HousePreviewProps {
   landlordId: string
   title: string
-  description: string
   location: string
-  availability: { startDate: string; endDate: string }[]
+  housitterAvailability: Availability[]
+  postAvailability: Availability
   dogs: number
   cats: number
   imagesUrls: ImageData[]
@@ -118,6 +120,7 @@ export type DefaultAvailablePostType = {
   landlordLastName: string
   title: string
   description: string
+  availability?: { startDate: Date; endDate: Date }
   location: string
   dogs: number
   cats: number

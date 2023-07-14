@@ -16,7 +16,7 @@ import {
   SortingProperties,
 } from '../../utils/constants'
 
-import { ImageData } from '../../types/clientSide'
+import { ImageData, DefaultAvailablePostType, Availability } from '../../types/clientSide'
 
 import SidebarFilter from '../../components/SidebarFilter'
 import HomeNavbar from '../../components/HomeNavbar'
@@ -126,6 +126,10 @@ export default function Home() {
           const parsedAvailablePosts = postsFilteredByPeriod.map((post) => {
             let parsedAvailabePost = {
               landlordId: post.landlord_id,
+              availability: {
+                startDate: (post.landlords as any).profiles?.available_dates[0].start_date,
+                endDate: (post.landlords as any).profiles?.available_dates[0].end_date,
+              } as Availability,
               title: post.title,
               description: post.description,
               imagesUrls: post.images_urls
@@ -148,7 +152,7 @@ export default function Home() {
               }
             }
 
-            return parsedAvailabePost
+            return parsedAvailabePost as DefaultAvailablePostType
           })
 
           dispatch(setAvailablePosts(parsedAvailablePosts))
@@ -185,8 +189,6 @@ export default function Home() {
         alert(e.message)
         debugger
       }
-
-      // for Date filtering, I can also use the 'or' for at least one range, to filter on db call.
     }
 
     loadData()
@@ -242,9 +244,9 @@ export default function Home() {
                     <HousePreview
                       landlordId={post.landlordId}
                       title={post.title}
-                      description={post.description}
                       location={post.location}
-                      availability={availability} // the sitter availability
+                      housitterAvailability={availability}
+                      postAvailability={post.availability}
                       dogs={post.dogs}
                       cats={post.cats}
                       key={index}

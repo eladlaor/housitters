@@ -1,12 +1,7 @@
+import { Availability } from '../../types/clientSide'
 import { countDays } from '../../utils/dates'
 
-export default function DateDisplayer({
-  startDate,
-  endDate,
-}: {
-  startDate: string
-  endDate: string
-}) {
+export default function DateDisplayer({ startDate, endDate }: Availability) {
   const daysCount = countDays(startDate, endDate)
 
   return (

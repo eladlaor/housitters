@@ -292,6 +292,10 @@ a:hover {
   color: black
 }
 
+.get-house-details {
+  background-color: lightseagreen;
+}
+
 
 .house-page {
   display: flex;

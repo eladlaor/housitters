@@ -1,16 +1,11 @@
-export function parseDateMultiRange(
-  dateRange: string | null
-): null | [{ startDate: string; endDate: string }] {
-  // TODO: type it with a name
+import { Availability } from '../types/clientSide'
 
-  // maybe regex
-  // does dateRange hold the same reference of the original obj ?
-
+export function parseDateMultiRange(dateRange: string | null): null | Availability[] {
   if (!dateRange) {
     return null
   }
 
-  let modifiedAvailability: any = [] // TODO: change 'any' to the named availability type
+  let modifiedAvailability: Availability[] = []
 
   let startDate = dateRange.substring(2, 12)
   let endDate = dateRange.substring(13, 23)
