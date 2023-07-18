@@ -267,7 +267,7 @@ export default function HousePreview({
           <hr />
 
           <div>
-            {housitterAvailability.map((period, index) => (
+            {housitterAvailability?.map((period, index) => (
               <React.Fragment key={index}>
                 {isClosedPeriod(period.startDate) && (
                   <ListGroup>

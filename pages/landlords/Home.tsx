@@ -565,9 +565,8 @@ export default function Home() {
                         <HousePreview
                           landlordId={user ? user.id : ''}
                           title={title}
-                          description={description}
                           location={location}
-                          availability={availability}
+                          postAvailability={availability[0]} // if multiple periods, current implementation means that the house-preview will only display the first period
                           dogs={pets.dogs}
                           cats={pets.cats}
                           imagesUrls={fileNames} // TODO: should have default image

@@ -258,7 +258,6 @@ export default function Home() {
                             }))
                           : ''
                       } // TODO: should have default image
-                      addMissingDetailsHandler={null}
                     />
                   </Col>
                 ))

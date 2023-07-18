@@ -48,12 +48,12 @@ export interface HousePreviewProps {
   landlordId: string
   title: string
   location: string
-  housitterAvailability: Availability[]
+  housitterAvailability?: Availability[]
   postAvailability: Availability
   dogs: number
   cats: number
   imagesUrls: ImageData[]
-  addMissingDetailsHandler: MouseEventHandler<HTMLButtonElement> | null
+  addMissingDetailsHandler?: MouseEventHandler<HTMLButtonElement>
 }
 
 export interface MessageSenderProps {
