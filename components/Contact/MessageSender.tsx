@@ -51,37 +51,37 @@ export default function MessageSender(props: MessageSenderProps) {
       e.preventDefault()
       setIsSendingInProgress(true)
 
-      const { error, data } = await supabaseClient
-        .from('profiles')
-        .select(`email`)
-        .eq('id', recipientUserId)
-        .single()
+      // const { error, data } = await supabaseClient
+      //   .from('profiles')
+      //   .select(`email`)
+      //   .eq('id', recipientUserId)
+      //   .single()
 
-      if (error) {
-        alert(`error trying to get housitter email: ${error.message}`)
-        debugger
-        throw error
-      }
+      // if (error) {
+      //   alert(`error trying to get housitter email: ${error.message}`)
+      //   debugger
+      //   throw error
+      // }
 
-      if (!data || !data.email) {
-        alert(`no email found for housitter id: ${recipientUserId}`)
-        debugger
-        throw new Error(`no email found for housitter id: ${recipientUserId}`)
-      }
+      // if (!data || !data.email) {
+      //   alert(`no email found for housitter id: ${recipientUserId}`)
+      //   debugger
+      //   throw new Error(`no email found for housitter id: ${recipientUserId}`)
+      // }
 
-      const response = await axios.post(API_ROUTES.SEND_EMAILS, {
-        message: messageContent,
-        recipientEmail: data.email,
-        senderFirstName,
-        senderLastName,
-      })
+      // const response = await axios.post(API_ROUTES.SEND_EMAILS, {
+      //   message: messageContent,
+      //   recipientEmail: data.email,
+      //   senderFirstName,
+      //   senderLastName,
+      // })
 
-      if (response.status !== 200) {
-        alert(
-          `error when trying to send email. Status: ${response.status}. Message: ${response.data?.error}`
-        )
-        debugger
-      }
+      // if (response.status !== 200) {
+      //   alert(
+      //     `error when trying to send email. Status: ${response.status}. Message: ${response.data?.error}`
+      //   )
+      //   debugger
+      // }
 
       const { error: persistMessageError } = await supabaseClient.from('messages').upsert({
         [userType === UserType.Housitter ? 'landlord_id' : 'housitter_id']: recipientUserId,
@@ -119,7 +119,7 @@ export default function MessageSender(props: MessageSenderProps) {
       setShowEmailModal(false)
 
       onUpdate && onUpdate()
-      alert(response.data.message)
+      // alert(response.data.message)
     } catch (error) {
       setIsSendingInProgress(false)
       alert(`Failed sending email. Error: ${JSON.stringify(error)}`)

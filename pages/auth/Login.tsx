@@ -14,7 +14,6 @@ import PasswordInput from '../../components/Auth/PasswordInput'
 export default function LoginPage() {
   const { error, isLoading, supabaseClient } = useSessionContext()
   const user = useUser()
-  console.log(`user in Login exists? ${user ? 'yes' : 'no'}`)
 
   const router = useRouter()
   const dispatch = useDispatch()
