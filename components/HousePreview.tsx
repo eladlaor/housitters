@@ -251,9 +251,7 @@ export default function HousePreview({
             </Button>
           </Col>
           <Col xs={6}>
-            <Button size="sm" className="w-100">
-              Contact
-            </Button>
+            <ContactFoundUser size="sm" className="w-100" recipientUserId={landlordId} />
           </Col>
         </Row>
       </Card.Body>

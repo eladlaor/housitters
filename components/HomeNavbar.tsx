@@ -43,7 +43,7 @@ export default function HomeNavbar({ className = '' }: Props) {
         }
 
         if (data) {
-          console.log('profile avatara is ' + data.avatar_url)
+          console.log('profile avatar is ' + data.avatar_url)
           setProfile({
             picture: getUrlFromSupabase(data.avatar_url, 'avatars'),
             name: data?.first_name,
@@ -51,22 +51,15 @@ export default function HomeNavbar({ className = '' }: Props) {
           dispatch(setPrimaryUse(data?.primary_use))
         }
 
-        const { error: postsError, data: postsData } = await supabaseClient
+        supabaseClient
           .from('posts')
           .select('*')
           .eq('landlord_id', session.user.id)
           .single()
-
-        if (postsError) {
-          console.log('failed querying posts in HomeNavbar. Error: ' + error)
-          debugger
-          return
-        }
-        if (postsData) {
-          setHasPost(true)
-        } else {
-          setHasPost(false)
-        }
+          .then(({ data }) => {
+            if (data) setHasPost(true)
+            else setHasPost(false)
+          })
       }
       asyncWrapper()
     }

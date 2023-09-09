@@ -309,18 +309,18 @@ export default function Home() {
 
       <Row>
         <Col md={3}>
-          <Card className="sidebar-filter">
-            {userType === UserType.Landlord && isActivePost ? (
-              <div>
-                <Accordion>
-                  <Accordion.Item eventKey="0">
-                    <Accordion.Header>My Post</Accordion.Header>
-                    <Accordion.Body></Accordion.Body>
-                  </Accordion.Item>
-                </Accordion>
-              </div>
-            ) : (
-              <>
+          {userType === UserType.Landlord && (
+            <Card className="sidebar-filter">
+              {isActivePost ? (
+                <div>
+                  <Accordion>
+                    <Accordion.Item eventKey="0">
+                      <Accordion.Header>My Post</Accordion.Header>
+                      <Accordion.Body></Accordion.Body>
+                    </Accordion.Item>
+                  </Accordion>
+                </div>
+              ) : (
                 <p style={{ marginBottom: 0 }}>
                   💡 Try&nbsp;
                   <strong
@@ -333,9 +333,9 @@ export default function Home() {
                   </strong>
                   &nbsp;to increase your chances of finding a sitter!
                 </p>
-              </>
-            )}
-          </Card>
+              )}
+            </Card>
+          )}
           <Card className="sidebar-filter">
             <h4>Dates</h4>
             <DatePicker

@@ -47,6 +47,7 @@ export default function ForgotMyPassword() {
             required
           />
           <Form.Text className="text-muted">
+            If you signed up with this email, <br />
             You'll get a password reset link. <br />
             It might reach the Spam folder.
           </Form.Text>
