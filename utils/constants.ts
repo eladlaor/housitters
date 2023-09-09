@@ -8,21 +8,21 @@ export const UserType = {
 }
 
 export const PageRoutes = {
-  Intro: 'Intro',
+  Profile: '/profile',
+  Intro: '/intro',
   HousitterRoutes: {
-    Home: '/housitters/Home',
-    Intro: '/housitters/Intro',
-    Account: '/housitters/HousitterAccount',
+    Home: '/houses',
+    EditHouse: '/houses/edit',
+    Account: '/housitters/housitter-account',
   },
   LandlordRoutes: {
-    Home: '/landlords/Home',
-    Intro: '/landlords/Intro',
-    Account: '/landlords/LandlordAccount',
+    Home: '/housitters',
   },
   Auth: {
-    Login: '/auth/Login',
-    RenewPassword: '/auth/RenewPassword',
-    ForgotMyPassword: '/auth/ForgotMyPassword',
+    Login: '/auth/login',
+    RenewPassword: '/auth/renew-password',
+    ForgotMyPassword: '/auth/forgot-my-password',
+    Signup: '/auth/signup',
   },
 }
 
@@ -36,6 +36,7 @@ export const SIGNUP_FORM_PROPS = {
   FIRST_NAME: 'firstName',
   LAST_NAME: 'lastName',
   EMAIL: 'email',
+  USER_TYPE: 'userType',
   PASSWORD: 'password',
   VISIBLE: 'visible',
   GENDER: 'gender',
@@ -69,6 +70,11 @@ export const LocationDescriptions = {
   [LocationIds.RishonToAshkelon]: 'Between Rishon and Ashkelon',
   [LocationIds.AshkelonToBash]: 'Ashkelon to Bash',
   [LocationIds.Eilat]: 'Eilat',
+}
+
+export const LocationSelectionEventKeys = {
+  Anywhere: 'Anywhere',
+  CustomLocations: 'Select areas',
 }
 
 export const DbGenderTypes = {
@@ -158,8 +164,12 @@ export const SortingPropertiesForHandler = {
 }
 
 export const SignupErrorMessages = {
-  ExistingEmail: 'Already registered',
+  ExistingEmail: 'already registered',
   MissingFields: 'Incomplete Form',
+}
+
+export const SignupErrorFeedbacks = {
+  ExistingEmail: 'This email is already registered',
 }
 
 export const MandatorySignupFields = {

@@ -27,7 +27,6 @@ import {
 
 import { selectExperienceState, selectLocationsState } from '../slices/housitterSlice'
 import UserDetails from '../components/Profile/UserDetails'
-import HomeNavbar from '../components/HomeNavbar'
 
 export default function Account() {
   const supabaseClient = useSupabaseClient<Database>()
@@ -47,7 +46,6 @@ export default function Account() {
   }, [user])
 
   async function getProfile() {
-    // TODO: maybe refactor, make a util func
     try {
       setLoading(true)
       if (!user) {
@@ -87,7 +85,7 @@ export default function Account() {
         dispatch(setAvailability(availability))
       }
     } catch (error) {
-      alert('Error loading user data!')
+      console.log('Error loading user data!')
       console.log(error)
     } finally {
       setLoading(false)
@@ -121,13 +119,5 @@ export default function Account() {
     }
   }
 
-  return (
-    user && (
-      <div>
-        <HomeNavbar userType={primary_use} />
-
-        <UserDetails isHousitter={primary_use === UserType.Housitter} />
-      </div>
-    )
-  )
+  return user && <UserDetails isHousitter={primary_use === UserType.Housitter} />
 }

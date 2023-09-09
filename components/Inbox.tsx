@@ -1,327 +1,155 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import React, { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { NavDropdown } from 'react-bootstrap'
 
 import { UserType } from '../utils/constants'
 
-import {
-  selectFirstNameState,
-  selectIsLoggedState,
-  selectLastNameState,
-  selectPrimaryUseState,
-  selectUsersContactedState,
-} from '../slices/userSlice'
-import {
-  selectConversationsState,
-  selectTotalUnreadMessagesState,
-  setConversationsState,
-  setTotalUnreadMessagesState,
-} from '../slices/inboxSlice'
-
-import Picture from './Picture'
-import MessageSender from './Contact/MessageSender'
-
+import { selectPrimaryUseState, selectUsersContactedState } from '../slices/userSlice'
+import { getUrlFromSupabase } from '../utils/helpers'
 import Badge from 'react-bootstrap/Badge'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelopeOpenText } from '@fortawesome/free-solid-svg-icons'
-import IndividualChat from './Contact/IndividualChat'
-import { Conversation, Conversations } from '../types/clientSide'
+import ChatModal from './Contact/ChatModal'
+
+const groupByKey = (list, key) =>
+  list.reduce((hash, obj) => ({ ...hash, [obj[key]]: (hash[obj[key]] || []).concat(obj) }), {})
+
+const oppositeType = (userType) => (userType === 'landlord' ? 'housitter' : 'landlord')
 
 export default function Inbox() {
   const user = useUser()
   const supabaseClient = useSupabaseClient()
 
-  const dispatch = useDispatch()
-
+  const [messages, setMessages] = useState([])
+  const [chatWithUser, setChatWithUser] = useState('')
   const currentUserType = useSelector(selectPrimaryUseState)
-  const isLogged = useSelector(selectIsLoggedState)
   const usersContacted = useSelector(selectUsersContactedState)
-  const totalUnreadMessages = useSelector(selectTotalUnreadMessagesState)
-  const conversations = useSelector(selectConversationsState)
-  const [selectedConversationId, setSelectedConversationId] = useState('') // add States to the name
-  const [showConversationModalStates, setShowConversationModalStates] = useState<
-    Record<string, boolean>
-  >({})
-
-  const userFirstName = useSelector(selectFirstNameState)
-  const userLastName = useSelector(selectLastNameState)
-
-  const keyNameOfRecipientId =
-    currentUserType === UserType.Housitter ? `${UserType.Landlord}_id` : `${UserType.Housitter}_id`
-
   useEffect(() => {
-    if (!user || !isLogged) {
-      return
-    }
-
     async function loadInboxData() {
-      let messagesData: any[] = []
+      const { error, data } = await supabaseClient
+        .from('messages')
+        .select(
+          `id, created_at, message_content, housitter_id, landlord_id, is_read_by_recipient, sent_by,
+    housitter:housitter_id ( first_name, last_name, id ),
+    housitter_profile:housitter_id ( avatar_url ),
+    landlord:landlord_id ( first_name, last_name, id ),
+    landlord_profile:landlord_id ( avatar_url )`
+        )
+        .eq(currentUserType === UserType.Landlord ? 'landlord_id' : 'housitter_id', user?.id)
+        .order('created_at', { ascending: false })
 
-      if (currentUserType === UserType.Landlord) {
-        const { error, data } = await supabaseClient
-          .from('messages')
-          .select(`id, created_at, message_content, housitter_id, is_read_by_recipient, sent_by`)
-          .eq('landlord_id', user?.id)
-          .order('created_at', { ascending: false })
-
-        if (error) {
-          alert(`error loading inbox data: ${error.message}`)
-          debugger
-          throw error
-        } else if (data) {
-          messagesData = data
-        }
-      } else {
-        const { error, data } = await supabaseClient
-          .from('messages')
-          .select(`id, created_at, message_content, landlord_id, is_read_by_recipient, sent_by`)
-          .eq('housitter_id', user?.id)
-          .order('created_at', { ascending: false })
-
-        if (error) {
-          alert(`error loading inbox data: ${error.message}`)
-          debugger
-          throw error
-        } else if (data) {
-          messagesData = data
-        }
-      }
-
-      // a separate call because cant inner join becaue: error loading inbox data: Could not embed because more than one relationship was found for 'messages' and 'profiles'
-
-      if (messagesData.length > 0) {
-        let totalUnreadMessages = 0
-
-        let parsedConversations = {} as any
-
-        for (const message of messagesData) {
-          // adding a new converstaion key if needed
-          if (!parsedConversations[message[keyNameOfRecipientId]]) {
-            parsedConversations[message[keyNameOfRecipientId]] = {
-              recipientFirstName: '',
-              recipientLastName: '',
-              recipientAvatarUrl: '',
-              latestMessage: {
-                messageContent: message.message_content,
-                sentAt: message.created_at,
-              } as Conversation['latestMessage'], // due to the order {ascending: false} clause in the db query
-              pastMessages: [] as unknown as Conversation['pastMessages'],
-              unreadMessages: 0,
-            } as Conversation
-          }
-
-          parsedConversations[message[keyNameOfRecipientId]]
-
-          const isReadByRecipient = message.is_read_by_recipient
-
-          if (message.sent_by !== currentUserType && !isReadByRecipient) {
-            parsedConversations[message[keyNameOfRecipientId]].unreadMessages =
-              parsedConversations[message[keyNameOfRecipientId]].unreadMessages + 1
-
-            totalUnreadMessages = totalUnreadMessages + 1
-          }
-
-          // adding a new message to the pastMessages array of an existing conversation object
-          parsedConversations[message[keyNameOfRecipientId]].pastMessages = [
-            ...parsedConversations[message[keyNameOfRecipientId]].pastMessages,
-            {
-              sentAt: new Date(message.created_at).toLocaleString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-              }),
-              isReadByRecipient,
-              messageContent: message.message_content,
-              isSender: message.sent_by === currentUserType,
-              id: message.id,
-            },
-          ] as Conversation['pastMessages']
-        }
-
-        const recipientIds = Object.keys(parsedConversations)
-
-        for (const recipientId of recipientIds) {
-          const { error: recipientProfileError, data: recipientProfileData } = await supabaseClient
-            .from('profiles')
-            .select(`first_name, last_name, avatar_url`)
-            .eq('id', recipientId)
-            .single()
-          if (recipientProfileError) {
-            alert(
-              `failed getting profile data for conversation recipient: ${recipientProfileError.message}`
-            )
-            debugger
-            throw recipientProfileError
-          }
-
-          if (recipientProfileData) {
-            parsedConversations[recipientId].recipientFirstName = recipientProfileData.first_name
-            parsedConversations[recipientId].recipientLastName = recipientProfileData.last_name
-            parsedConversations[recipientId].recipientAvatarUrl = recipientProfileData.avatar_url
-          }
-        }
-
-        dispatch(setTotalUnreadMessagesState(totalUnreadMessages))
-        dispatch(setConversationsState(parsedConversations))
+      if (error) {
+        console.error(`error loading inbox data: ${error.message}`)
+        throw error
+      } else if (data) {
+        setMessages(data)
       }
     }
 
     loadInboxData()
-  }, [user, currentUserType, usersContacted])
-
-  async function handleShowConversationModal(
-    e: any,
-    recipientId: string,
-    conversation: Conversation
-  ) {
-    e.stopPropagation()
-    setSelectedConversationId(recipientId)
-    setShowConversationModalStates((previousState) => ({
-      ...previousState,
-      [recipientId]: true,
-    }))
-
-    dispatch(setTotalUnreadMessagesState(totalUnreadMessages - conversation.unreadMessages))
-
-    const updatedConversations = {
-      ...conversations,
-      [recipientId]: {
-        ...conversations[recipientId],
-        unreadMessages: 0,
-      } as Conversation,
-    } as Conversations
-
-    if (conversation.pastMessages) {
-      for (const message of conversation.pastMessages) {
-        if (!message.isSender && !message.isReadByRecipient) {
-          const { error } = await supabaseClient.from('messages').upsert({
-            is_read_by_recipient: true,
-            id: message.id,
-          })
-
-          if (error) {
-            alert(`failed upserting read message. Error: ${error.message}`)
-            debugger
-            throw error
-          }
-        }
-      }
-    }
-
-    dispatch(setConversationsState(updatedConversations))
-  }
-
-  function handleHideConversationModal(e: any, recipientId: string) {
-    e.stopPropagation()
-    setSelectedConversationId('')
-    setShowConversationModalStates((previousState) => ({
-      ...previousState,
-      [recipientId]: false,
-    }))
-  }
+  }, [user, currentUserType, usersContacted, chatWithUser])
 
   return (
     <NavDropdown
-      className="mt-3"
       title={
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
           <FontAwesomeIcon
             icon={faEnvelopeOpenText}
             style={{ marginRight: '10px', marginLeft: '5px' }}
           />
           Inbox
           <Badge pill bg="primary" style={{ marginLeft: '5px' }}>
-            {totalUnreadMessages}
+            {
+              messages.filter((m) => !m.is_read_by_recipient && m.sent_by !== currentUserType)
+                .length
+            }
           </Badge>
         </div>
       }
       id="basic-nav-dropdown"
     >
-      {Object.entries(conversations).length === 0 ? (
-        <NavDropdown.Item href="#" style={{ width: '100%' }}>
-          Empty. Contact someone &#x1F642;
+      {messages.length === 0 ? (
+        <NavDropdown.Item disabled>
+          There are currently no messaegs in your inbox.
+          <br /> Try contacting someone! &#x1F642;
         </NavDropdown.Item>
       ) : (
-        Object.entries(conversations).map(([recipientId, conversation], index) => (
-          <NavDropdown.Item
-            href="#"
-            key={`${recipientId}-${index}`}
-            style={{ width: '100%' }}
-            onClick={(e) => handleShowConversationModal(e, recipientId, conversation)}
-          >
+        Object.keys(
+          groupByKey(messages, currentUserType === 'landlord' ? 'housitter_id' : 'landlord_id')
+        ).map((recipientId) => (
+          <NavDropdown.Item key={recipientId} onClick={() => setChatWithUser(recipientId)}>
             <div
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
                 alignItems: 'center',
                 minWidth: '0',
               }}
-              key={`${recipientId}-${index}`}
+              key={recipientId}
             >
+              <img
+                src={getUrlFromSupabase(
+                  messages.find((m) => m[oppositeType(currentUserType)].id === recipientId)[
+                    `${oppositeType(currentUserType)}_profile`
+                  ].avatar_url,
+                  'avatars'
+                )}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 1000,
+                }}
+              />
+
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
-                  flexGrow: 1,
-                  marginRight: '10px',
+                  flexDirection: 'column',
+                  paddingLeft: '1rem',
                 }}
               >
-                <Picture
-                  isIntro={false}
-                  uid=""
-                  primaryUse={currentUserType}
-                  url={conversation.recipientAvatarUrl}
-                  size={30}
-                  width={30}
-                  height={30}
-                  disableUpload={true}
-                  bucketName={'avatars'}
-                  isAvatar={true}
-                  promptMessage=""
-                  email=""
-                  isRounded={false}
-                />
-                <div style={{ marginLeft: '10px' }}>
-                  {conversation.recipientFirstName} {conversation.recipientLastName}
-                  {conversation.unreadMessages > 0 ? (
-                    <Badge pill bg="primary" style={{ marginLeft: '10px' }}>
-                      {conversation.unreadMessages}
-                    </Badge>
-                  ) : null}
+                <div>
+                  {
+                    messages.find((m) => m[oppositeType(currentUserType)].id === recipientId)?.[
+                      oppositeType(currentUserType)
+                    ].first_name
+                  }{' '}
+                  {
+                    messages.find((m) => m[oppositeType(currentUserType)].id === recipientId)?.[
+                      oppositeType(currentUserType)
+                    ].last_name
+                  }
+                  <Badge pill bg="primary" style={{ marginLeft: '10px' }}>
+                    {messages.filter(
+                      (m) =>
+                        m[oppositeType(currentUserType)].id === recipientId &&
+                        !m.is_read_by_recipient &&
+                        m.sent_by !== currentUserType
+                    ).length || null}
+                  </Badge>
+                </div>
+
+                <div
+                  style={{
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '10rem',
+                    color: 'darkgray',
+                  }}
+                >
+                  {
+                    messages
+                      .filter((m) => m[oppositeType(currentUserType)].id === recipientId)
+                      .sort((a, b) => a.a < b.a)[0].message_content
+                  }
                 </div>
               </div>
-              <div
-                style={{
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  textAlign: 'right',
-                }}
-              >
-                {conversation.latestMessage?.messageContent}
-              </div>
             </div>
-            {showConversationModalStates[recipientId] && (
-              <IndividualChat
-                userFirstName={userFirstName}
-                userLastName={userLastName}
-                conversation={conversation}
-                recipientId={recipientId}
-                selectedConversationId={selectedConversationId}
-                showConversationModal={recipientId === selectedConversationId}
-                setShowConversationModalStatesFromInbox={setShowConversationModalStates}
-                setShowConversationModalFromFoundUser={null}
-                handleHideConversationModalFromInbox={handleHideConversationModal}
-                handleHideConversationModalFromFoundUser={null}
-              />
-            )}
           </NavDropdown.Item>
         ))
       )}
+      <ChatModal recipientId={chatWithUser} update={setChatWithUser} />
     </NavDropdown>
   )
 }

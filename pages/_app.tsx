@@ -1,4 +1,5 @@
-import '../styles/main.css'
+import '../styles/main.scss'
+import HomeNavbar from '../components/HomeNavbar'
 import { useState, useEffect } from 'react'
 import type { AppProps } from 'next/app'
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
@@ -9,7 +10,7 @@ import { persistStore } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
 import { library as fontLibrary } from '@fortawesome/fontawesome-svg-core'
 import { faEnvelopeOpenText, faMailBulk, faBoxOpen } from '@fortawesome/free-solid-svg-icons'
-
+import Head from 'next/head'
 fontLibrary.add(faEnvelopeOpenText, faMailBulk, faBoxOpen)
 
 function MyApp({
@@ -30,18 +31,22 @@ function MyApp({
   }, [])
 
   return (
-    <div>
+    <>
+      <Head>
+        <title>Housitters</title>
+      </Head>
       <ReduxProvider store={store}>
         <PersistGate persistor={persistor}>
           <SessionContextProvider
             supabaseClient={supabaseClient}
             initialSession={pageProps.initialSession}
           >
+            <HomeNavbar className="mb-4" />
             <Component {...pageProps} />
           </SessionContextProvider>
         </PersistGate>
       </ReduxProvider>
-    </div>
+    </>
   )
 }
 

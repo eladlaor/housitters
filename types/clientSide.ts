@@ -11,11 +11,9 @@ export type HousitterProps = {
   avatarUrl: string | null
 }
 
-export type Availability = {
-  startDate: string
-  endDate: string
-}
+/* Redux types */
 
+/* post slice */
 export type ImageData = {
   url: string
   id: number
@@ -47,13 +45,12 @@ export interface ReviewsOnSelectedUserProps {
 export interface HousePreviewProps {
   landlordId: string
   title: string
+  description: string
   location: string
-  housitterAvailability?: Availability[]
-  postAvailability: Availability
   dogs: number
   cats: number
   imagesUrls: ImageData[]
-  addMissingDetailsHandler?: MouseEventHandler<HTMLButtonElement>
+  addMissingDetailsHandler: MouseEventHandler<HTMLButtonElement> | null
 }
 
 export interface MessageSenderProps {
@@ -63,6 +60,7 @@ export interface MessageSenderProps {
   senderFirstName: string
   senderLastName: string
   isChat: boolean
+  onUpdate?: Function
 }
 
 export type SignupFormProps = typeof SIGNUP_FORM_PROPS
@@ -72,6 +70,7 @@ export interface SignupForm {
   lastName: string
   email: string
   password: string
+  userType: string
   avatarUrl: string
   gender: string
 }
@@ -120,7 +119,6 @@ export type DefaultAvailablePostType = {
   landlordLastName: string
   title: string
   description: string
-  availability?: { startDate: Date; endDate: Date }
   location: string
   dogs: number
   cats: number
@@ -140,7 +138,7 @@ export interface Conversation {
           isReadByRecipient: boolean
           sentAt: string
           id: number
-        }
+        },
       ]
     | null
   unreadMessages: 0

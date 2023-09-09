@@ -2,12 +2,14 @@ import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { Button, Card, Modal } from 'react-bootstrap'
 import Picture from './Picture'
-import { TableNames, UserType } from '../utils/constants'
+import { TableNames, UserType, PageRoutes } from '../utils/constants'
 import { useSelector } from 'react-redux'
 import { selectPrimaryUseState } from '../slices/userSlice'
 import { ReviewsOnSelectedUserProps, SelectedUserReview } from '../types/clientSide'
 import RecommendationSender from './RecommendationSender'
 import { selectShowRecommendationFormModalState } from '../slices/recommendationSlice'
+import { useUser } from '@supabase/auth-helpers-react'
+import { useRouter } from 'next/router'
 
 export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps) {
   const supabaseClient = useSupabaseClient()
@@ -19,12 +21,14 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
   const currentUserType = useSelector(selectPrimaryUseState)
   const [isLoading, setIsLoading] = useState(false)
   const [showAllRecsModal, setShowAllRecsModal] = useState(false)
+  const user = useUser()
+  const router = useRouter()
 
   useEffect(() => {
     if (!selectedUserId) {
       return
     }
-    const loadData = async () => {
+    const asyncWrapper = async () => {
       let data
 
       if (currentUserType === UserType.Landlord) {
@@ -108,7 +112,7 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
       }
     }
 
-    loadData()
+    asyncWrapper()
   }, [showRecommendationFormModalState, showAllRecsModal])
 
   function handleCloseModal() {
@@ -118,8 +122,12 @@ export default function ReviewsOnSelectedUser(props: ReviewsOnSelectedUserProps)
 
   return (
     <div>
-      <Button variant="danger" onClick={() => setShowAllRecsModal(true)}>
-        See reviews
+      <Button
+        variant="outline-primary"
+        size="sm"
+        onClick={() => (user ? setShowAllRecsModal(true) : router.push(PageRoutes.Auth.Login))}
+      >
+        See details
       </Button>
       <div>
         {showAllRecsModal && (

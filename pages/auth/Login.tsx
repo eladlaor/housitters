@@ -1,106 +1,50 @@
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { UserType, PageRoutes } from '../../utils/constants'
+import { PageRoutes } from '../../utils/constants'
 import { useDispatch } from 'react-redux'
 import Image from 'next/image'
 
-import {
-  setIsLoggedState,
-  setFirstName,
-  setPrimaryUse,
-  setGenderState,
-  setAvatarUrl,
-  setIsOngoingOAuthState,
-} from '../../slices/userSlice'
+import { setIsLoggedState, setAvatarUrl } from '../../slices/userSlice'
 
 import logo from '../../public/images/logoRegularSize.jpg'
-
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
-import { FaGoogle } from 'react-icons/fa'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { Form, Button, Modal } from 'react-bootstrap'
 import PasswordInput from '../../components/Auth/PasswordInput'
 
 export default function LoginPage() {
-  const { error, supabaseClient } = useSessionContext()
+  const { error, isLoading, supabaseClient } = useSessionContext()
   const user = useUser()
+  console.log(`user in Login exists? ${user ? 'yes' : 'no'}`)
 
   const router = useRouter()
   const dispatch = useDispatch()
+  const [showLoginErrorModal, setShowLoginErrorModal] = useState(false)
+  const [loginErrorMessage, setLoginErrorMessage] = useState('')
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  // const [loadingDots, setLoadingDots] = useState('')
-  // const [isLoading, setIsLoading] = useState(false)
-
-  // for the sole purpose of the loadingDots state change
-  // useEffect(() => {
-  //   console.log('first use effect of login')
-  //   const interval = setInterval(() => {
-  //     if (isLoading) {
-  //       setLoadingDots((previousState) => (previousState === '...' ? '' : previousState + '.'))
-  //     }
-  //   }, 500)
-
-  //   return () => {
-  //     clearInterval(interval)
-  //   }
-  // }, [isLoading])
-
   useEffect(() => {
-    console.log('second use effect of login')
-
-    if (!user) {
-      return
-    }
-
-    if (error) {
-      alert(`login error: ${error.message}`)
-      debugger
-      return
-    }
-
-    async function loadUserData(userId: string) {
-      try {
-        let { data, error, status } = await supabaseClient
+    if (!isLoading && user) {
+      const asyncWrapper = async () => {
+        const { data, error } = await supabaseClient
           .from('profiles')
-          .select('first_name, primary_use, gender, avatar_url')
-          .eq('id', userId)
+          .select(`avatar_url`)
+          .eq('id', user.id)
           .single()
-
-        // TODO: HyperText Transfer Protocol (HTTP) 406 Not Acceptable client error response code indicates that the server cannot produce a response matching the list of acceptable values defined in the request's proactive content negotiation headers, and that the server is unwilling to supply a default representatio
-        if (error && status !== 406) {
+        if (error) {
           throw error
         }
-
         if (data) {
-          const { first_name, primary_use, gender, avatar_url } = data
-
-          dispatch(setIsLoggedState(true))
-          dispatch(setFirstName(first_name))
-          dispatch(setPrimaryUse(primary_use))
-          dispatch(setGenderState(gender))
-          dispatch(setAvatarUrl(avatar_url))
-
-          // TODO: shouldnt route in a loadUserData func.
-          if (primary_use === UserType.Housitter) {
-            router.push(`${PageRoutes.HousitterRoutes.Home}`)
-          } else if (primary_use === UserType.Landlord) {
-            router.push(`${PageRoutes.LandlordRoutes.Home}`)
-          }
+          dispatch(setAvatarUrl(data.avatar_url))
         }
-      } catch (e) {
-        alert(`error during login: ${e}`)
-        debugger
-        return
       }
-    }
 
-    loadUserData(user.id)
-  }, [user])
+      asyncWrapper()
+
+      router.push('/')
+    }
+  }, [user, isLoading])
 
   async function handleEmailLogin(e: any) {
     e.preventDefault()
@@ -112,13 +56,10 @@ export default function LoginPage() {
     })
 
     if (error) {
-      if (error.message.includes('invalid login credentials')) {
-        alert(
-          `${error.message}. A password recovery mecahnism will be added soon. In the meantime, try logging in via Google here above.`
-        )
-      } else {
-        alert(`login error: ${error.message}`)
-      }
+      setLoginErrorMessage(error.message)
+      setShowLoginErrorModal(true)
+    } else {
+      router.push('/')
     }
   }
 
@@ -126,49 +67,71 @@ export default function LoginPage() {
     router.push(PageRoutes.Auth.ForgotMyPassword)
   }
 
-  async function handleGoogleOAuthLogin(e: any) {
-    dispatch(setIsOngoingOAuthState(true))
-    supabaseClient.auth.signInWithOAuth({
-      provider: 'google',
-      // TODO: configure in google cloud
-      // options: {
-      //   redirectTo: 'http://localhost:3000/auth/Login',
-      // },
-    })
+  // async function handleGoogleOAuthLogin(e: any) {
+  //   dispatch(setIsOngoingOAuthState(true))
+  //   supabaseClient.auth.signInWithOAuth({
+  //     provider: 'google',
+  //     // TODO: configure in google cloud
+  //     // options: {
+  //     //   redirectTo: 'http://localhost:3000/auth/Login',
+  //     // },
+  //   })
+  // }
+
+  const handleCloseLoginErrorModal = () => {
+    setShowLoginErrorModal(false)
+  }
+
+  function renderLoginErrorHandler(loginErrorMessage: string) {
+    return (
+      <>
+        <Button variant="success" onClick={handleCloseLoginErrorModal}>
+          Check Typos
+        </Button>
+        <Button variant="primary" onClick={() => router.push(PageRoutes.Auth.Signup)}>
+          Sign Up
+        </Button>
+        <Button variant="danger" onClick={() => router.push(PageRoutes.Auth.ForgotMyPassword)}>
+          Forgot Password
+        </Button>
+      </>
+    )
   }
 
   return !user ? (
-    <div
-      className="container d-flex flex-column justify-content-center align-items-center"
-      style={{ height: '100vh' }}
-    >
-      <Form>
-        <Form.Group controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
+    <>
+      <div
+        className="container d-flex flex-column justify-content-center align-items-center"
+        style={{ height: '100vh', marginTop: '-10rem' }}
+      >
+        <img src="/logo.svg" style={{ marginBottom: '3rem', maxHeight: '28px' }} />
+        <Form>
+          <Form.Group controlId="formBasicEmail">
+            <Form.Label>Email address</Form.Label>
+            <Form.Control
+              autoFocus
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Group>
 
-        <Form.Group controlId="formBasicPassword" className="mt-2">
-          <Form.Label>Password</Form.Label>
-          <PasswordInput password={password} setPassword={setPassword} />
-        </Form.Group>
-        <Form.Group className="mt-3 d-flex justify-content-center align-items-center">
-          <Button
-            variant="primary"
-            type="submit"
-            style={{ width: '300px' }}
-            onClick={(e) => handleEmailLogin(e)}
-          >
-            Log in
-          </Button>
-        </Form.Group>
-      </Form>
-      {/* <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
+          <Form.Group controlId="formBasicPassword" className="mt-2">
+            <Form.Label>Password</Form.Label>
+            <PasswordInput password={password} setPassword={setPassword} />
+          </Form.Group>
+          <Form.Group className="mt-3 d-flex justify-content-center align-items-center">
+            <Button
+              variant="primary"
+              type="submit"
+              style={{ width: '300px' }}
+              onClick={(e) => handleEmailLogin(e)}
+            >
+              Log in
+            </Button>
+          </Form.Group>
+        </Form>
+        {/* <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
       <Button
         className="my-google-button mt-3 d-flex justify-content-center align-items-center"
         variant="outline-dark"
@@ -179,12 +142,22 @@ export default function LoginPage() {
           <FaGoogle />
         </div>
       </Button> */}
-      <div>
-        <Button variant="danger" size="sm" onClick={handleResetPassword} className="mt-3 w-100">
-          forgot my password
-        </Button>
+        <div>
+          <Button variant="link" size="sm" onClick={handleResetPassword} className="mt-3 w-100">
+            forgot my password
+          </Button>
+        </div>
       </div>
-    </div>
+      <Modal show={showLoginErrorModal} onHide={handleCloseLoginErrorModal}>
+        <Modal.Header>
+          <Modal.Title className="text-center w-100">Login Error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="d-flex justify-content-center">{loginErrorMessage}</Modal.Body>
+        <Modal.Footer className="d-flex justify-content-center">
+          {renderLoginErrorHandler(loginErrorMessage)}
+        </Modal.Footer>
+      </Modal>
+    </>
   ) : (
     <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
       {/* <h5>Loading{loadingDots}</h5> */}

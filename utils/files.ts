@@ -36,7 +36,7 @@ export function removeInvalidCharacters(fileName: string): string {
   const hebToEngRegex = new RegExp(Object.keys(hebrewToEnglishMap).join('|'), 'g')
   const noHebrewFileName = fileName.replace(hebToEngRegex, (match) => hebrewToEnglishMap[match])
 
-  const allInvalidFileNameCharacters = /[^a-zA-Z0-9]/g
+  const allInvalidFileNameCharacters = /[^a-zA-Z0-9\.]/g
   return noHebrewFileName.replace(allInvalidFileNameCharacters, '')
 }
 

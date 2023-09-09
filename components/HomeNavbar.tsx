@@ -1,80 +1,171 @@
-import { useUser } from '@supabase/auth-helpers-react'
-import { useSelector } from 'react-redux'
+import { useSessionContext, useSupabaseClient } from '@supabase/auth-helpers-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useRouter } from 'next/router'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
-import Picture from './Picture'
 import { PageRoutes, SignOutElementTypes, UserType } from '../utils/constants'
-
-import { selectAvatarUrlState, selectFirstNameState } from '../slices/userSlice'
-import SignOut from './Auth/SignOut'
-import UserSearcher from './UserSearcher'
 import Inbox from './Inbox'
 import Link from 'next/link'
-import Image from 'next/image'
+import { Button, Container } from 'react-bootstrap'
+import { getUrlFromSupabase } from '../utils/helpers'
+import { useEffect, useState } from 'react'
+import SignOut from './Auth/SignOut'
+import { selectAvatarUrlState, selectPrimaryUseState, setPrimaryUse } from '../slices/userSlice'
+interface Props {
+  className?: string
+}
 
-export default function HomeNavbar({ userType }: any) {
-  const user = useUser()
+export default function HomeNavbar({ className = '' }: Props) {
+  const { isLoading, session } = useSessionContext() // why preferred using session and not user?
+  const supabaseClient = useSupabaseClient()
   const avatarUrl = useSelector(selectAvatarUrlState)
+  const userType = useSelector(selectPrimaryUseState)
+  const dispatch = useDispatch()
+
+  const router = useRouter()
+  const classNames = className || ''
+  const [profile, setProfile] = useState({ name: '', picture: '' })
+  const [hasPost, setHasPost] = useState(false)
+  useEffect(() => {
+    if (!isLoading && session) {
+      const asyncWrapper = async () => {
+        const { error, data } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+
+        if (error) {
+          console.log('failed querying profiles in HomeNavbar. Error: ' + error)
+          debugger
+          return
+        }
+
+        if (data) {
+          console.log('profile avatara is ' + data.avatar_url)
+          setProfile({
+            picture: getUrlFromSupabase(data.avatar_url, 'avatars'),
+            name: data?.first_name,
+          })
+          dispatch(setPrimaryUse(data?.primary_use))
+        }
+
+        const { error: postsError, data: postsData } = await supabaseClient
+          .from('posts')
+          .select('*')
+          .eq('landlord_id', session.user.id)
+          .single()
+
+        if (postsError) {
+          console.log('failed querying posts in HomeNavbar. Error: ' + error)
+          debugger
+          return
+        }
+        if (postsData) {
+          setHasPost(true)
+        } else {
+          setHasPost(false)
+        }
+      }
+      asyncWrapper()
+    }
+  }, [isLoading, session, avatarUrl])
 
   return (
-    <Navbar bg="dark" variant="dark">
-      <Navbar.Brand
-        className="mr-auto"
-        href={
-          userType === UserType.Landlord
-            ? PageRoutes.LandlordRoutes.Home
-            : PageRoutes.HousitterRoutes.Home
-        }
-      >
-        <Image src="/images/logo.png" width="100" height="100" />
-      </Navbar.Brand>
-      <div className="navbar-items-wrapper">
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto">
-            <NavDropdown
-              title={
-                <div>
-                  {user && (
-                    <Picture
-                      isIntro={false}
-                      uid={user.id}
-                      url={avatarUrl}
-                      email={user.email as string}
-                      primaryUse={userType}
-                      size={80}
-                      width={80} // should persist dimensions of image upon upload
-                      height={80}
-                      disableUpload={true}
-                      bucketName="avatars"
-                      isAvatar={true}
-                      promptMessage=""
-                      isRounded={true}
-                    />
-                  )}
-                </div>
-              }
-            >
-              <NavDropdown.Item href="/Account">Edit Profile</NavDropdown.Item>
-              <SignOut elementType={SignOutElementTypes.NavDropdownItem} />
-            </NavDropdown>
-
-            <div className="navbar-item-align-center">
+    <Navbar bg="dark" variant="dark" className={classNames}>
+      <Container>
+        <Navbar.Brand href="/">
+          <img src="/logo-white.svg" style={{ marginTop: '-7px', maxHeight: '28px' }} />
+        </Navbar.Brand>
+        <div className="navbar-items-wrapper">
+          <Navbar.Collapse className="justify-content-between d-flex w-100">
+            <Nav className="ml-auto">
               <Nav.Item>
-                <Inbox />
-              </Nav.Item>
-              <Nav.Item>
-                <UserSearcher />
-              </Nav.Item>
-              <Nav.Item>
-                <Link href="/Favourites">
-                  <a className="nav-link">My Favourites</a>
+                <Link href={PageRoutes.LandlordRoutes.Home}>
+                  <a className="nav-link">Sitters</a>
                 </Link>
               </Nav.Item>
-            </div>
-          </Nav>
-        </Navbar.Collapse>
-      </div>
+              <Nav.Item>
+                <Link href={PageRoutes.HousitterRoutes.Home}>
+                  <a className="nav-link">Houses</a>
+                </Link>
+              </Nav.Item>
+            </Nav>
+
+            {session ? (
+              <Nav>
+                <Nav.Item>
+                  <Inbox />
+                </Nav.Item>
+                <Nav.Item>
+                  <Link href="/favourites">
+                    <a className="nav-link">Favourites</a>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <NavDropdown
+                    align="end"
+                    title={
+                      <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                        <img
+                          src={profile?.picture}
+                          style={{
+                            position: 'absolute',
+                            width: 30,
+                            height: 30,
+                            borderRadius: 1000,
+                          }}
+                        />
+
+                        <span style={{ paddingLeft: '40px' }}>{profile?.name}</span>
+                      </div>
+                    }
+                  >
+                    <NavDropdown.Item href={PageRoutes.Profile}>Edit Profile</NavDropdown.Item>
+                    {userType === UserType.Landlord &&
+                      (hasPost ? (
+                        <NavDropdown.Item href={PageRoutes.HousitterRoutes.EditHouse}>
+                          Edit House
+                        </NavDropdown.Item>
+                      ) : (
+                        <NavDropdown.Item href={PageRoutes.HousitterRoutes.EditHouse}>
+                          Add Your House
+                        </NavDropdown.Item>
+                      ))}
+                    <SignOut elementType={SignOutElementTypes.NavDropdownItem} />
+                  </NavDropdown>
+                </Nav.Item>
+              </Nav>
+            ) : (
+              <Nav>
+                <Nav.Item>
+                  <Link href="/about">
+                    <a className="nav-link">About</a>
+                  </Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button
+                    className="ms-4 me-4"
+                    variant="success"
+                    onClick={() => {
+                      router.push(PageRoutes.Auth.Login)
+                    }}
+                  >
+                    Login
+                  </Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button onClick={() => router.push('/auth/signup')} className="me-4">
+                    Free signup
+                  </Button>
+                </Nav.Item>
+              </Nav>
+            )}
+          </Navbar.Collapse>
+          <div className="navbar-item-align-center"></div>
+        </div>
+      </Container>
     </Navbar>
   )
 }

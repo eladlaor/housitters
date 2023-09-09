@@ -8,8 +8,14 @@ export const getURL = () => {
   return url.includes('http') ? url : `https://${url}`
 }
 
-export const toDateTime = (secs: number) => {
-  var t = new Date('1970-01-01T00:30:00Z') // Unix epoch start.
-  t.setSeconds(secs)
-  return t
+const { createClient } = require('@supabase/supabase-js')
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+)
+
+export const getUrlFromSupabase = (url: string, bucket: string) => {
+  const { data } = supabase.storage.from(bucket).getPublicUrl(url)
+  return data.publicUrl
 }

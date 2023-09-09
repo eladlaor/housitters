@@ -8,7 +8,7 @@ import {
 } from '../slices/landlordSlice'
 import { useSelector, useDispatch } from 'react-redux'
 import Form from 'react-bootstrap/Form'
-import { LocationIds, LocationDescriptions } from '../utils/constants'
+import { LocationIds, LocationDescriptions, LocationSelectionEventKeys } from '../utils/constants'
 import { FormCheckType } from 'react-bootstrap/esm/FormCheck'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
@@ -35,15 +35,11 @@ export default function LocationSelector({
   const [shouldShowCustomLocations, setShouldShowCustomLocations] = useState(showCustomLocations)
   const supabaseClient = useSupabaseClient()
   const user = useUser()
-  const isLogged = useSelector(selectIsLoggedState)
-
-  const EVENT_KEYS = {
-    ANYWHERE: 'anywhere',
-    CUSTOM_LOCATIONS: 'select areas',
-  }
 
   const [locationCurrentSelectionType, setLocationCurrentSelectionType] = useState(
-    showCustomLocations ? EVENT_KEYS.CUSTOM_LOCATIONS : EVENT_KEYS.ANYWHERE
+    showCustomLocations
+      ? LocationSelectionEventKeys.CustomLocations
+      : LocationSelectionEventKeys.Anywhere
   )
 
   useEffect(() => {
@@ -98,13 +94,13 @@ export default function LocationSelector({
   }
 
   async function handleHousitterSelectionType(e: any) {
-    if (e === EVENT_KEYS.ANYWHERE) {
+    if (e === LocationSelectionEventKeys.Anywhere) {
       let allLocationsSelected: string[] = []
       Object.values(LocationIds).forEach((location) => {
         allLocationsSelected.push(location)
       })
 
-      if (isLogged) {
+      if (user) {
         let { error } = await supabaseClient.from('housitters').upsert({
           user_id: user?.id,
           locations: allLocationsSelected,
@@ -117,9 +113,9 @@ export default function LocationSelector({
       }
       dispatch(setHousitterLocationsState(allLocationsSelected))
       setShouldShowCustomLocations(false)
-      setLocationCurrentSelectionType(EVENT_KEYS.ANYWHERE)
-    } else if (e === EVENT_KEYS.CUSTOM_LOCATIONS) {
-      if (isLogged) {
+      setLocationCurrentSelectionType(LocationSelectionEventKeys.Anywhere)
+    } else if (e === LocationSelectionEventKeys.CustomLocations) {
+      if (user) {
         let { error } = await supabaseClient.from('housitters').upsert({
           user_id: user?.id,
         })
@@ -132,7 +128,7 @@ export default function LocationSelector({
 
       dispatch(setHousitterLocationsState([]))
       setShouldShowCustomLocations(true)
-      setLocationCurrentSelectionType(EVENT_KEYS.CUSTOM_LOCATIONS)
+      setLocationCurrentSelectionType(LocationSelectionEventKeys.CustomLocations)
     }
   }
 
@@ -147,8 +143,12 @@ export default function LocationSelector({
             title={locationCurrentSelectionType}
             onSelect={handleHousitterSelectionType}
           >
-            {isHousitter && <Dropdown.Item eventKey={EVENT_KEYS.ANYWHERE}>Anywhere</Dropdown.Item>}
-            <Dropdown.Item eventKey={EVENT_KEYS.CUSTOM_LOCATIONS}>Select Areas</Dropdown.Item>
+            {isHousitter && (
+              <Dropdown.Item eventKey={LocationSelectionEventKeys.Anywhere}>Anywhere</Dropdown.Item>
+            )}
+            <Dropdown.Item eventKey={LocationSelectionEventKeys.CustomLocations}>
+              Select Areas
+            </Dropdown.Item>
           </DropdownButton>
         )}
         <div key={`default-${selectionType}`} className="mb-3">

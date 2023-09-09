@@ -9,17 +9,17 @@ export default function ImageCarousel({
   imagesData,
   title,
 }: {
-  imagesData: ImageData[]
+  imagesData: string[]
   title: string
 }) {
   return (
     <Carousel fade interval={2000}>
-      {imagesData.map((imageData, index) => (
+      {imagesData.map((url, index) => (
         <Carousel.Item
           key={index}
           style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
-          <Image src={imageData.url} width={500} height={500} key={index} />
+          <img src={url} width={500} height={500} key={index} />
 
           <Carousel.Caption>
             <h3>{title}</h3>

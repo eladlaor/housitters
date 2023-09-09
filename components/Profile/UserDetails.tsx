@@ -1,20 +1,23 @@
-import { Button, Form } from 'react-bootstrap'
+import { Button, Form, Container, Row, Col, Spinner } from 'react-bootstrap'
 import Picture from '../Picture'
 import { DbGenderTypes, PageRoutes, SIGNUP_FORM_PROPS, UserType } from '../../utils/constants'
 import PetsCounter from '../PetsCounter'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   selectAvatarUrlState,
   selectEmailState,
   selectFirstNameState,
   selectGenderState,
   selectLastNameState,
+  setAvatarUrl,
 } from '../../slices/userSlice'
 import { useState } from 'react'
 import CountAndUpdate from '../utils/CountAndUpdate'
 import { selectExperienceState, setExperienceState } from '../../slices/housitterSlice'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
+import { getUrlFromSupabase } from '../../utils/helpers'
 import { useRouter } from 'next/router'
+import { removeInvalidCharacters, resizeImage } from '../../utils/files'
 
 export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
   const firstName = useSelector(selectFirstNameState)
@@ -26,11 +29,34 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
   const avatarUrl = useSelector(selectAvatarUrlState)
   const router = useRouter()
   const experience = useSelector(selectExperienceState)
+  const [updatedAvatarPreviewUrl, setUpdatedAvatarPreviewUrl] = useState('')
+  const [isUploading, setIsUploading] = useState(false)
+  const dispatch = useDispatch()
 
   async function handleSubmit() {
     if (!user) {
       alert(`user did not load yet, please try again`)
       return
+    }
+
+    let newAvatarUrl: string | boolean = false
+    let newAvatar = (document.getElementById('avatarInput') as any).files[0]
+    if (newAvatar) {
+      const ext = newAvatar.name.split('.').pop()
+      const filename = crypto.randomUUID() + '.' + ext
+      const { data, error } = await supabaseClient.storage
+        .from('avatars')
+        .upload(filename, newAvatar)
+
+      if (error) {
+        console.log('failed downloading avatar. Error: ' + error)
+        debugger
+        return
+      }
+
+      if (data) {
+        newAvatarUrl = filename
+      }
     }
 
     const updatedProfile = {
@@ -39,7 +65,7 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
       last_name: form.lastName,
       gender: form.gender,
       email: form.email,
-      avatar_url: avatarUrl,
+      avatar_url: newAvatarUrl || avatarUrl,
     }
 
     const { error, data } = await supabaseClient.from('profiles').upsert(updatedProfile)
@@ -48,6 +74,9 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
       debugger
       return
     }
+
+    // this is done in order to make HomeNavbar re-render after changing the avatar, so the change would be reflected immediately
+    dispatch(setAvatarUrl(newAvatarUrl))
 
     if (isHousitter) {
       let { error: housitterUpsertError } = await supabaseClient.from('housitters').upsert({
@@ -73,7 +102,7 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
     }
 
     alert(`profile updated successfuly`)
-    router.push(isHousitter ? PageRoutes.HousitterRoutes.Home : PageRoutes.LandlordRoutes.Home)
+    router.push('/')
   }
 
   const initialFormState: any = {
@@ -94,103 +123,137 @@ export default function UserDetails({ isHousitter }: { isHousitter: boolean }) {
     })
   }
 
-  return (
-    <Form className="d-flex flex-column align-items-center">
-      <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
-        <Form.Label>First Name</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder=""
-          value={form.firstName}
-          onChange={(e) => {
-            setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
-        <Form.Label>Last Name</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder=""
-          value={form.lastName}
-          onChange={(e) => {
-            setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
-        <Form.Label>Email</Form.Label>
-        <Form.Control
-          type="email"
-          placeholder="Enter email"
-          value={form.email}
-          onChange={(e) => {
-            setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
-          }}
-        />
-      </Form.Group>
-      {!isHousitter && (
-        <Form.Group>
-          <Form.Label>Pets</Form.Label>
-          <PetsCounter />
-          <hr />
-        </Form.Group>
-      )}
-      {isHousitter && (
-        <Form.Group>
-          <Form.Label className="mb-2">Experience</Form.Label>
-          <Form.Text className="mb-2" muted></Form.Text>
-          <CountAndUpdate valueToCount={experience} reduxReducer={setExperienceState} />
-          <hr />
-        </Form.Group>
-      )}
-      <Form.Group>
-        <Form.Label>Gender</Form.Label>
-        <Form.Select
-          value={form.gender}
-          onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
-        >
-          <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>
-          <option value={DbGenderTypes.Female}>{DbGenderTypes.Female}</option>
-          <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
-          <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
-        </Form.Select>
-        <hr />
-      </Form.Group>
+  // TODO: I should move it to utils as its being reused
+  async function handleAvatarUpdate(event: any) {
+    setIsUploading(true)
+    try {
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('You must select an image to upload.')
+      }
 
-      <Form.Group>
-        <Picture
-          isIntro={true}
-          uid=""
-          primaryUse={UserType.Landlord}
-          url={avatarUrl}
-          size={100}
-          width={100} // should persist dimensions of image upon upload
-          height={100}
-          disableUpload={false}
-          bucketName="avatars"
-          isAvatar={true}
-          promptMessage="Profile Picture"
-          email={form.email}
-          isRounded={true}
-        />
-      </Form.Group>
-      {/* {!isIntro && (
-        <Form.Group>
-          <Form.Label>Birthday</Form.Label>
-          <Form.Control></Form.Control>
-        </Form.Group>
-      )} */}
-      <Button
-        variant="primary"
-        type="submit"
-        onClick={(e) => {
-          e.preventDefault()
-          handleSubmit()
-        }}
-      >
-        Submit
-      </Button>
-    </Form>
+      for (const file of event.target.files) {
+        const fileName = removeInvalidCharacters(file.name)
+        const resizedImage = await resizeImage(file, 1920, 1080)
+
+        let { error: uploadError } = await supabaseClient.storage
+          .from('avatars')
+          .upload(`${user?.id}-${fileName}`, resizedImage, { upsert: true })
+
+        if (uploadError) {
+          alert(`error in UserDetails trying to upload an image to storage ` + uploadError)
+          throw uploadError
+        }
+
+        setUpdatedAvatarPreviewUrl(fileName)
+      }
+    } catch (e: any) {
+      console.log(`failed selecting new image for post: ${e}`)
+      debugger
+    }
+    setIsUploading(false)
+  }
+
+  return (
+    <Container className="mt-4">
+      <h1>Profile Editor</h1>
+      <Form>
+        <Row>
+          <Col>
+            <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
+              <Form.Label>First Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder=""
+                value={form.firstName}
+                onChange={(e) => {
+                  setFormField(SIGNUP_FORM_PROPS.FIRST_NAME, e.target.value)
+                }}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
+              <Form.Label>Last Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder=""
+                value={form.lastName}
+                onChange={(e) => {
+                  setFormField(SIGNUP_FORM_PROPS.LAST_NAME, e.target.value)
+                }}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={form.email}
+                onChange={(e) => {
+                  setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
+                }}
+              />
+            </Form.Group>
+            {!isHousitter && (
+              <Form.Group>
+                <Form.Label>Pets</Form.Label>
+                <PetsCounter />
+                <hr />
+              </Form.Group>
+            )}
+            {isHousitter && (
+              <Form.Group>
+                <Form.Label className="mb-2">Experience</Form.Label>
+                <Form.Text className="mb-2" muted></Form.Text>
+                <CountAndUpdate valueToCount={experience} reduxReducer={setExperienceState} />
+                <hr />
+              </Form.Group>
+            )}
+            <Form.Group>
+              <Form.Label>Gender</Form.Label>
+              <Form.Select
+                value={form.gender}
+                onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
+              >
+                <option value={DbGenderTypes.Male}>{DbGenderTypes.Male}</option>
+                <option value={DbGenderTypes.Female}>{DbGenderTypes.Female}</option>
+                <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
+                <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
+              </Form.Select>
+              <hr />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group>
+              <h5>Current picture</h5>
+              {isUploading ? (
+                <Spinner />
+              ) : (
+                <img
+                  src={
+                    updatedAvatarPreviewUrl
+                      ? getUrlFromSupabase(user?.id + '-' + updatedAvatarPreviewUrl, 'avatars')
+                      : getUrlFromSupabase(avatarUrl, 'avatars')
+                  }
+                  style={{ width: '10rem', height: '10rem', borderRadius: '1000px' }}
+                />
+              )}
+              <h5>Update picture</h5>
+              <input id="avatarInput" type="file" onChange={handleAvatarUpdate} />
+            </Form.Group>
+          </Col>
+        </Row>
+
+        <Button
+          style={{ float: 'right' }}
+          variant="primary"
+          type="submit"
+          onClick={(e) => {
+            e.preventDefault()
+            handleSubmit()
+          }}
+        >
+          Submit
+        </Button>
+      </Form>
+    </Container>
   )
 }

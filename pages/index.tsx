@@ -1,12 +1,10 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { persistor } from '../store'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { NavbarItems, PageRoutes, UserType } from '../utils/constants'
-import Image from 'next/image'
+import { PageRoutes, UserType } from '../utils/constants'
 import cuteDog from '../public/images/leika.jpg'
-import SignupTeaser from '../components/Auth/SignupTeaser'
 import {
   selectIsOngoingOAuthState,
   selectPrimaryUseState,
@@ -22,7 +20,7 @@ import { settersToInitialStates as landlordSettersToInitialStates } from '../sli
 import { settersToInitialStates as inboxSettersToInitialStates } from '../slices/inboxSlice'
 import { settersToInitialStates as recommendationsSettersToInitialStates } from '../slices/recommendationSlice'
 
-import Button from 'react-bootstrap/Button'
+import { Button, Row, Col, Container } from 'react-bootstrap'
 import Footer from '../components/Footer'
 
 export default function Home() {
@@ -30,10 +28,10 @@ export default function Home() {
   const user = useUser()
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
-  const userType = useSelector(selectPrimaryUseState)
   const isOngoingOAuth = useSelector(selectIsOngoingOAuthState)
+  const userType = useSelector(selectPrimaryUseState)
 
-  async function userClearState() {
+  async function clearUserState() {
     await persistor.purge()
 
     for (const attributeSetterAndInitialState of userSettersToInitialStates) {
@@ -67,64 +65,94 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const handleSuccessfulOAuth = async (userId: string) => {
-      const { error, data } = await supabaseClient
-        .from('profiles')
-        .select('primary_use')
-        .eq('id', userId)
-        .single()
-      if (error) {
-        alert(`error while querying user profile after fresh login: ${error.message}`)
-        debugger
-        return
-      }
-      if (data) {
-        dispatch(setPrimaryUse(data.primary_use))
-        dispatch(setIsOngoingOAuthState(false))
-        if (userType === UserType.Housitter) {
-          router.push(`${PageRoutes.HousitterRoutes.Home}`)
-        } else {
-          router.push(`${PageRoutes.LandlordRoutes.Home}`)
+    if (user) {
+      const asyncWrapper = async () => {
+        let query = await supabaseClient
+          .from('profiles')
+          .select(`primary_use`)
+          .eq('id', user.id)
+          .single()
+
+        let { data, error } = await query
+
+        if (error) {
+          console.log('error when querying user type: ' + error.message)
+        }
+
+        if (data) {
+          dispatch(setPrimaryUse(data.primary_use))
+          router.push({
+            pathname:
+              data.primary_use === UserType.Housitter
+                ? PageRoutes.HousitterRoutes.Home
+                : PageRoutes.LandlordRoutes.Home,
+            query: { userType: data.primary_use },
+          })
         }
       }
-    }
 
-    if (user) {
-      if (isOngoingOAuth) {
-        handleSuccessfulOAuth(user.id)
-      } else {
-        console.log('signing out from index')
-        supabaseClient.auth.signOut()
-        userClearState()
-      }
+      asyncWrapper()
+    } else {
+      clearUserState()
     }
   }, [user])
 
-  return (
-    <div className="d-flex flex-column vh-100">
-      <div className="d-flex align-items-center justify-content-center vh-100">
-        <Image src={cuteDog} alt="some-pic" layout="fill" objectFit="cover" />
+  function handleFind(isHousitter: boolean) {
+    if (user) {
+      router.push(isHousitter ? PageRoutes.HousitterRoutes.Home : PageRoutes.LandlordRoutes.Home)
+    } else {
+      router.push({
+        pathname: PageRoutes.Intro,
+        query: { userType: isHousitter ? UserType.Housitter : UserType.Landlord },
+      })
+    }
+  }
 
-        <div className="position-relative">
-          <div className="text-center d-flex justify-content-between mx-auto signup-teasers-container">
-            <div className="w-50 pr-2">
-              <SignupTeaser userType={UserType.Housitter} />
-            </div>
-            <div className="w-50 pl-2">
-              <SignupTeaser userType={UserType.Landlord} />
-            </div>
-          </div>
-          <Button
-            className="d-flex align-items-center justify-content-center mt-4 signin-button"
-            variant="lg"
-            onClick={() => {
-              router.push(PageRoutes.Auth.Login)
-            }}
+  return (
+    <div
+      className="d-flex flex-column vh-100"
+      style={{
+        marginTop: '-1.5rem',
+        backgroundImage: `url("${cuteDog.src}")`,
+        backgroundSize: 'cover',
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+        backgroundBlendMode: 'lighten',
+      }}
+    >
+      <Container className="d-flex align-items-center justify-content-center vh-100">
+        <Row>
+          <Col xs={12} md={9}>
+            <h1 style={{ fontWeight: 700, fontSize: '6rem' }}>Housitters</h1>
+            <p style={{ fontSize: '2rem' }}>
+              Make your next trip stress-free with our house-sitting community. Connect with
+              reliable sitters who provide security, companionship, and a personalized touch to
+              ensure your home and furry friends receive the attention they deserve.
+            </p>
+          </Col>
+          <Col
+            xs={12}
+            md={3}
+            className=" d-flex flex-column align-items-center justify-content-center"
           >
-            already registered? sign in
-          </Button>
-        </div>
-      </div>
+            <Button size="lg" className="w-100" onClick={() => handleFind(false)}>
+              find a sitter
+            </Button>
+            <p
+              style={{
+                fontSize: '2rem',
+                marginTop: '2rem',
+                marginBottom: '2rem',
+                fontStyle: 'italic',
+              }}
+            >
+              ~ or ~
+            </p>
+            <Button size="lg" className="w-100" onClick={() => handleFind(true)}>
+              find a house
+            </Button>
+          </Col>
+        </Row>
+      </Container>
       <Footer />
     </div>
   )

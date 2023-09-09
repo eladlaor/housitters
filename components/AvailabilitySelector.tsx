@@ -16,8 +16,8 @@ import moment from 'moment'
 import { Button } from 'react-bootstrap'
 
 const EVENT_KEYS = {
-  ANYTIME: 'anytime',
-  CUSTOM_RANGE: 'custom range',
+  ANYTIME: 'Anytime',
+  CUSTOM_RANGE: 'Custom range',
 }
 
 export default function AvailabilitySelector({
@@ -29,6 +29,16 @@ export default function AvailabilitySelector({
   index: number
   updateDbInstantly: boolean
 }) {
+  try {
+    new Date(period.startDate)
+  } catch {
+    period.startDate = new Date().toISOString().substring(0, 10)
+  }
+  try {
+    new Date(period.endDate)
+  } catch {
+    period.endDate = new Date().toISOString().substring(0, 10)
+  }
   const supabaseClient = useSupabaseClient()
   const user = useUser()
   const dispatch = useDispatch()
@@ -48,7 +58,7 @@ export default function AvailabilitySelector({
       return
     }
 
-    const loadData = async () => {
+    const asyncWrapper = async () => {
       const { data: availableDates, error } = await supabaseClient
         .from('available_dates')
         .select('start_date, end_date')
@@ -83,7 +93,7 @@ export default function AvailabilitySelector({
       }
     }
 
-    loadData()
+    asyncWrapper()
   }, [user])
 
   async function handleDatesChange(changedDate: Date, isStart: boolean) {
@@ -144,7 +154,7 @@ export default function AvailabilitySelector({
     dispatch(setAvailability(availabilityToModify))
   }
 
-  async function handleSelectionType(e: any) {
+  async function handleSelectionType(e: string | null) {
     let modifiedAvailability = [...availability]
     if (e === EVENT_KEYS.CUSTOM_RANGE) {
       setshouldShowCustomSelection(true)
@@ -214,7 +224,6 @@ export default function AvailabilitySelector({
     })
 
     if (updateDbInstantly) {
-      console.log('UPDATING IN ADD AVAILABILITY from index: ' + indexToAdd)
       let { error: datesUpdateError } = await supabaseClient.from('available_dates').upsert({
         user_id: user?.id,
         start_date: formattedStartDate,
@@ -227,7 +236,6 @@ export default function AvailabilitySelector({
         alert(datesUpdateError.message)
         throw datesUpdateError
       }
-      console.log('SUCCESSFULLY UPDATED IN ADD AVAILABILITY')
     }
 
     dispatch(setAvailability(modifiedAvailability))
@@ -238,8 +246,6 @@ export default function AvailabilitySelector({
     modifiedAvailability.splice(index, 1)
 
     if (updateDbInstantly) {
-      console.log('removing for index: ' + index)
-
       let { error: deletionError } = await supabaseClient
         .from('available_dates')
         .delete()
@@ -250,7 +256,6 @@ export default function AvailabilitySelector({
         alert(deletionError.message)
         throw deletionError
       }
-      console.log('successfully removed available_dates row for index: ' + index)
     }
 
     dispatch(setAvailability(modifiedAvailability))

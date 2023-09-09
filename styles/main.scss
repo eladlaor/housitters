@@ -1,15 +1,32 @@
-@import "bootstrap/dist/css/bootstrap.css";
+$white: #ffffff;
+$enable-shadows: true;
+$enable-gradients: true;
+
+$theme-colors: (
+  'light': #cae7ec,
+  'dark': #0d000d,
+  'primary': #35478a,
+  'secondary': #bb3335,
+  'info': #a6c169,
+  'success': #2fa667,
+  'warning': #e2cc2e,
+  'danger': #ef2619,
+);
+
+@import '~bootstrap/scss/bootstrap';
+@import 'react-datepicker/dist/react-datepicker.css';
+
 /* importing it here means i choose to override bootstrap with the following, instead of it overriding the following */
 
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Open Sans', sans-serif;}
+  font-family: Arial;
+}
 
 .btn {
   width: 150px;
 }
-
 
 button,
 .button {
@@ -34,19 +51,9 @@ a:visited {
   text-decoration: none;
 }
 
-a {
-  text-decoration: none;
-  color: white
-}
-
-a:hover {
-  color: black
-}
-
 .front-page-buttons a:link {
   text-decoration: none;
 }
-
 
 .front-page-buttons {
   --bs-link-color: white;
@@ -75,25 +82,22 @@ a:hover {
 }
 
 .housitter-card {
-  background-color: blue
+  background-color: blue;
 }
 
 .sidebar-filter {
-  flex: 1;
-  position: sticky;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  margin-top: 70px;
-  border-left: 2px solid #15570f; 
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  top: 0
-}
+  border-left: 2px solid #15570f;
+  margin-top: 1.5rem;
+  padding: 1rem;
 
-.sidebar-filter hr {
-  border: solid;
-  width: 100%;
+  h4 {
+    margin-top: 2rem;
+    font-weight: bold;
+
+    &:first-of-type {
+      margin-top: 0rem;
+    }
+  }
 }
 
 .sidebar-filter .sorter-filter {
@@ -114,7 +118,6 @@ a:hover {
   font-size: 18px;
   font-weight: bold;
   color: #333;
-
 }
 
 .sidebar-filter .card-title svg {
@@ -128,10 +131,8 @@ a:hover {
   color: #333; /* Customize the color as per your preference */
 }
 
-
-
 .password-toggle-button {
-  position: relative; 
+  position: relative;
   width: 50px;
 }
 
@@ -155,7 +156,7 @@ a:hover {
 
 .sender-message {
   align-self: flex-end;
-  background-color: #DCF8C6;
+  background-color: #dcf8c6;
   padding: 8px;
   border-radius: 8px;
   margin-bottom: 8px;
@@ -163,7 +164,7 @@ a:hover {
 
 .recipient-message {
   align-self: flex-start;
-  background-color: #E8E8E8;
+  background-color: #e8e8e8;
   padding: 8px;
   border-radius: 8px;
   margin-bottom: 8px;
@@ -199,7 +200,7 @@ a:hover {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  min-height: 0; 
+  min-height: 0;
 }
 
 .sender-message,
@@ -227,17 +228,17 @@ a:hover {
 }
 
 .selected-conversation {
-  background-color: #E8E8E8; /* Adjust this color as you need */
+  background-color: #e8e8e8; /* Adjust this color as you need */
 }
 
 .inbox-column:hover {
-  background-color: #F8F8F8; /* Adjust this color as you need */
+  background-color: #f8f8f8; /* Adjust this color as you need */
   cursor: pointer;
 }
 
 .navbar-item-align-center {
   display: flex;
-  justify-content: center ;
+  justify-content: center;
   align-items: center;
 }
 
@@ -246,7 +247,6 @@ a:hover {
   justify-content: space-between;
   width: 100%;
 }
-
 
 .custom-form-select {
   color: #343a40; /* Dark colored text for contrast */
@@ -257,7 +257,7 @@ a:hover {
   border-radius: 5px;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23235485" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
   background-repeat: no-repeat;
-  background-position: right .75rem center; /* position the background image to the right and vertically center */
+  background-position: right 0.75rem center; /* position the background image to the right and vertically center */
   background-size: 8px 10px; /* size of your background image, you can adjust as needed */
   text-align: center;
 }
@@ -283,19 +283,19 @@ a:hover {
   border-radius: 50%;
 }
 
-
-.house-preview:hover {
-  color: blue
-}
-
 .house-preview {
-  color: black
-}
+  img {
+    height: 12rem;
+    object-fit: cover;
+  }
 
-.get-house-details {
-  background-color: lightseagreen;
+  .image-details {
+    position: absolute;
+    right: 0.5rem;
+    text-align: right;
+    top: 0.5rem;
+  }
 }
-
 
 .house-page {
   display: flex;
@@ -358,12 +358,6 @@ a:hover {
   margin-top: 20px;
 }
 
-.add-to-favourites {
-  position: absolute; 
-  top: 0; 
-  right: 0;
-}
-
 .added-to-favourites-toast {
   position: fixed;
   top: 50%;
@@ -371,12 +365,6 @@ a:hover {
   transform: translate(-50%, -50%);
   z-index: 2;
 }
-
-.add-to-favourites-icon {
-  display: flex;
-  height: 3rem;
-}
-
 /*
 heart icon
 */
@@ -387,7 +375,7 @@ heart icon
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 30px
+  margin: 30px;
 }
 
 .heart-icon.favourited {
@@ -396,9 +384,15 @@ heart icon
 }
 
 @keyframes favourited-animation {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .favourite-message {
@@ -408,14 +402,22 @@ heart icon
 }
 
 @keyframes favourite-message-animation {
-  0% { opacity: 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 #signout-via-dropdown {
-  color: black
+  color: black;
 }
 
 .counter-container {
@@ -449,19 +451,18 @@ heart icon
   z-index: 2;
 }
 
-
 .z-index-3 {
   z-index: 3;
 }
 
 .footer {
   background-color: #000;
-  color: #fff; 
-  padding: 10px; 
+  color: #fff;
+  padding: 10px;
   position: relative;
   z-index: 2;
-  text-align: center;  
-  font-size: 0.7rem;  
+  text-align: center;
+  font-size: 0.7rem;
 }
 
 .rotate {
@@ -479,4 +480,12 @@ heart icon
 
 .alert-trimmed {
   max-width: fit-content;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+
+  input {
+    width: 100%;
+  }
 }

@@ -178,7 +178,9 @@ export default function Picture({
         // TODO: not the best naming method, i should change it
 
         if (uploadError) {
-          alert(`error in housitters/Intro trying to upload an avatar to avatars ` + uploadError)
+          console.log(
+            `error in housitters/intro trying to upload an avatar to avatars ` + uploadError
+          )
           debugger
           throw uploadError
         }

@@ -12,10 +12,7 @@ import {
 import { API_ROUTES, UserType } from '../../utils/constants'
 import { MessageSenderProps } from '../../types/clientSide'
 
-import Button from 'react-bootstrap/Button'
-import Modal from 'react-bootstrap/Modal'
-import Form from 'react-bootstrap/Form'
-import Spinner from 'react-bootstrap/Spinner'
+import { Button, Modal, Form, Spinner, Row, Col } from 'react-bootstrap'
 
 // TODO: probably a better way to type the props, lets find out.
 export default function MessageSender(props: MessageSenderProps) {
@@ -30,6 +27,7 @@ export default function MessageSender(props: MessageSenderProps) {
     senderFirstName,
     senderLastName,
     isChat,
+    onUpdate,
   } = props
 
   const [showEmailModal, setShowEmailModal] = useState(false)
@@ -120,6 +118,7 @@ export default function MessageSender(props: MessageSenderProps) {
       setIsSendingInProgress(false)
       setShowEmailModal(false)
 
+      onUpdate()
       alert(response.data.message)
     } catch (error) {
       setIsSendingInProgress(false)
@@ -130,36 +129,34 @@ export default function MessageSender(props: MessageSenderProps) {
   }
 
   return isChat ? (
-    <div>
-      {/*might want to use the Input component from react-chat */}
-      <Form>
-        <Form.Group controlId="chat-message">
-          <Form.Control
-            size="lg"
-            as="textarea"
-            placeholder="type message"
-            value={messageContent}
-            onChange={(e) => {
-              setMessageContent(e.target.value)
-            }}
-            // this is a fix to the strange fact that the onChange handler - in this case only (not when !isChat) - is not triggered when the space key is pressed.
-            onKeyDown={(e) => {
-              if (e.key === ' ') {
-                setMessageContent(messageContent + ' ')
-              }
-            }}
-          />
-        </Form.Group>
-        <Button
-          variant="success"
-          type="submit"
-          onClick={(e: any) => handleSendEmail(e)}
-          disabled={isSendingInProgress}
-        >
-          {isSendingInProgress ? <Spinner animation="border" role="status"></Spinner> : 'Send'}
-        </Button>
-      </Form>
-    </div>
+    <Form>
+      <Row>
+        <Col>
+          <Form.Group controlId="chat-message">
+            <Form.Control
+              size="lg"
+              as="textarea"
+              placeholder="Type your message here..."
+              value={messageContent}
+              onChange={(e) => {
+                setMessageContent(e.target.value)
+              }}
+            />
+          </Form.Group>
+        </Col>
+        <Col xs="auto">
+          <Button
+            style={{ width: 'auto', height: '100%' }}
+            variant="success"
+            type="submit"
+            onClick={(e: any) => handleSendEmail(e)}
+            disabled={isSendingInProgress}
+          >
+            {isSendingInProgress ? <Spinner animation="border" role="status"></Spinner> : 'Send'}
+          </Button>
+        </Col>
+      </Row>
+    </Form>
   ) : (
     <></>
   )

@@ -26,37 +26,11 @@ export default function SidebarFilter({
 }) {
   const availabaility = useSelector(selectAvailabilityState)
   return (
-    <Card className="sidebar-filter">
-      <div className="sorter-filter">
-        <h4>Sort by:</h4>
-      </div>
-      <div>
-        <Sorter
-          sortingProperties={Object.values(
-            isHousitter ? SortingProperties.HousitterDashboard : SortingProperties.LandlordDashboard
-          )}
-          sortElementsHandler={sortElementsHandler}
-        />
-        <hr />
-      </div>
-      {isHousitter && (
-        <>
-          <div className="sorter-filter">
-            <h4>Filter by:</h4>
-          </div>
-          Location:
-          <LocationSelector
-            isHousitter={isHousitter}
-            showCustomLocations={showCustomLocations}
-            selectionType={selectionType as FormCheckType}
-            updateDbInstantly={true}
-          />
-        </>
+    <Sorter
+      sortingProperties={Object.values(
+        isHousitter ? SortingProperties.HousitterDashboard : SortingProperties.LandlordDashboard
       )}
-      Dates:
-      {availabaility.map((period, index) => (
-        <AvailabilitySelector period={period} index={index} key={index} updateDbInstantly={true} />
-      ))}
-    </Card>
+      sortElementsHandler={sortElementsHandler}
+    />
   )
 }
