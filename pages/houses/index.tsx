@@ -1,22 +1,30 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+
 import {
   SortingProperties,
   LocationDescriptions,
   LocationSelectionEventKeys,
+  PageRoutes,
+  UserType,
 } from '../../utils/constants'
 
 import { ImageData } from '../../types/clientSide'
 import SidebarFilter from '../../components/SidebarFilter'
 import DatePicker from 'react-datepicker'
 import HousePreview from '../../components/HousePreview'
-import { Row, Col, Alert, Container, Card, Dropdown } from 'react-bootstrap'
+import { Row, Col, Alert, Container, Card, Dropdown, Accordion } from 'react-bootstrap'
 import { useRouter } from 'next/router'
+import { selectIsActiveState } from '../../slices/createPostSlice'
+import { selectPrimaryUseState } from '../../slices/userSlice'
 
 export default function Home() {
   const supabase = useSupabaseClient()
   const user = useUser()
   const router = useRouter()
+  const isActivePost = useSelector(selectIsActiveState)
+  const userType = useSelector(selectPrimaryUseState)
 
   const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
   const [startDate, endDate] = dateRange
@@ -264,6 +272,33 @@ export default function Home() {
 
       <Row>
         <Col md={3}>
+          <Card className="sidebar-filter">
+            {userType === UserType.Landlord && isActivePost ? (
+              <div>
+                <Accordion>
+                  <Accordion.Item eventKey="0">
+                    <Accordion.Header>My Post</Accordion.Header>
+                    <Accordion.Body></Accordion.Body>
+                  </Accordion.Item>
+                </Accordion>
+              </div>
+            ) : (
+              <>
+                <p style={{ marginBottom: 0 }}>
+                  💡 Try&nbsp;
+                  <strong
+                    onClick={() => {
+                      router.push(PageRoutes.HousitterRoutes.EditHouse)
+                    }}
+                    style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                  >
+                    completing your post
+                  </strong>
+                  &nbsp;to increase your chances of finding a sitter!
+                </p>
+              </>
+            )}
+          </Card>
           <Card className="sidebar-filter">
             <h4>Dates</h4>
             <DatePicker

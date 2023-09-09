@@ -48,7 +48,7 @@ export default function Home() {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
   const router = useRouter()
-  const userType = router.query.userType
+  const userType = router.query.userType // TODO: what if the user navigates here directly not via login. This value should be retrieved from db.
 
   const dispatch = useDispatch()
   const firstName = useSelector(selectFirstNameState)
