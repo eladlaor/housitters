@@ -16,7 +16,7 @@ export default function IntroNavbar({ navbarItems }: { navbarItems: NavbarItem[]
             {navbarItems.map((item, index) => (
               <Nav.Item key={index}>
                 <Link
-                  href={router.pathname === '/About' ? `#${item.href}` : `/About#${item.href}`}
+                  href={router.pathname === '/about' ? `#${item.href}` : `/about#${item.href}`}
                   passHref
                 >
                   <Nav.Link>{item.text}</Nav.Link>
