@@ -118,7 +118,7 @@ export default function MessageSender(props: MessageSenderProps) {
       setIsSendingInProgress(false)
       setShowEmailModal(false)
 
-      onUpdate()
+      onUpdate && onUpdate()
       alert(response.data.message)
     } catch (error) {
       setIsSendingInProgress(false)

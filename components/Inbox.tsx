@@ -12,16 +12,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelopeOpenText } from '@fortawesome/free-solid-svg-icons'
 import ChatModal from './Contact/ChatModal'
 
-const groupByKey = (list, key) =>
+const groupByKey = (list: any[], key: string) =>
   list.reduce((hash, obj) => ({ ...hash, [obj[key]]: (hash[obj[key]] || []).concat(obj) }), {})
 
-const oppositeType = (userType) => (userType === 'landlord' ? 'housitter' : 'landlord')
+const oppositeType = (userType: string) => (userType === 'landlord' ? 'housitter' : 'landlord')
 
 export default function Inbox() {
   const user = useUser()
   const supabaseClient = useSupabaseClient()
 
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState([] as any[])
   const [chatWithUser, setChatWithUser] = useState('')
   const currentUserType = useSelector(selectPrimaryUseState)
   const usersContacted = useSelector(selectUsersContactedState)
@@ -141,7 +141,9 @@ export default function Inbox() {
                   {
                     messages
                       .filter((m) => m[oppositeType(currentUserType)].id === recipientId)
-                      .sort((a, b) => a.a < b.a)[0].message_content
+                      // ascending
+                      .sort((a: { a: number }, b: { a: number }) => (a.a < b.a ? -1 : 1))[0]
+                      .message_content
                   }
                 </div>
               </div>

@@ -6,7 +6,6 @@ import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 
 import { Database } from '../types/supabase'
-import PublicProfile from './PublicProfile'
 import { DbGenderTypes, UserType } from '../utils/constants'
 
 export default function UserSearcher() {
@@ -105,7 +104,7 @@ export default function UserSearcher() {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <PublicProfile
+            {/* <PublicProfile
               firstName={selectedSearchedUser.first_name as string}
               lastName={selectedSearchedUser.last_name as string}
               userId={selectedSearchedUser.id}
@@ -113,7 +112,7 @@ export default function UserSearcher() {
               email={selectedSearchedUser.email}
               avatarUrl={selectedSearchedUser.avatar_url as string}
               aboutMe={null}
-            />
+            /> */}
           </Modal.Body>
         </Modal>
       )}

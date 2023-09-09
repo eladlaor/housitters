@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button'
 import { useSessionContext, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Modal from 'react-bootstrap/Modal'
 import { selectPrimaryUseState } from '../../slices/userSlice'
+import { MessageType } from 'react-chat-elements'
 
 export default function ChatModal({ recipientId, update }: { recipientId: string; update: any }) {
   const { session } = useSessionContext() // why preferred using session and not user?
@@ -15,47 +16,68 @@ export default function ChatModal({ recipientId, update }: { recipientId: string
   const [userLastName, setUserLastName] = useState('')
   const [recipientFirstName, setRecipientFirstName] = useState('')
   const [recipientLastName, setRecipientLastName] = useState('')
-  const [conversation, setConversation] = useState([])
+  const [conversation, setConversation] = useState<Array<any>>([])
 
   const handleClose = () => update(0)
 
-  const getMessages = () => {
-    supabaseClient
+  const getMessages = async () => {
+    const { error, data } = await supabaseClient
       .from('messages')
       .select(`id, created_at, message_content, sent_by`)
       .in('landlord_id', [recipientId, session?.user.id])
       .in('housitter_id', [recipientId, session?.user.id])
       .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setConversation(data)
-      })
+
+    if (error) {
+      console.log(`error in getMessages. Error: ${error}`)
+      debugger
+      return
+    }
+
+    if (data) {
+      setConversation(data)
+    }
   }
 
   useEffect(() => {
     if (recipientId) {
-      supabaseClient
-        .from('profiles')
-        .select('first_name, last_name')
-        .eq('id', session?.user.id)
-        .single()
-        .then(({ data }) => {
-          setUserFirstName(data.first_name)
-          setUserLastName(data.last_name)
-        })
+      const setNames = async () => {
+        const { error, data } = await supabaseClient
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', session?.user.id)
+          .single()
 
-      supabaseClient
-        .from('profiles')
-        .select('first_name, last_name')
-        .eq('id', recipientId)
-        .single()
-        .then(({ data }) => {
-          setRecipientFirstName(data.first_name)
-          setRecipientLastName(data.last_name)
-        })
+        if (error) {
+          console.log(`error in getMessages. Error: ${error}`)
+          debugger
+          return
+        }
 
-      getMessages()
+        if (data) {
+          setUserFirstName(data?.first_name)
+          setUserLastName(data?.last_name)
+        }
 
-      async function updateRead() {
+        const { error: recipientError, data: recipientData } = await supabaseClient
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', recipientId)
+          .single()
+
+        if (error) {
+          console.log(`error in getMessages. Error: ${error}`)
+          debugger
+          return
+        }
+
+        if (data) {
+          setRecipientFirstName(data?.first_name)
+          setRecipientLastName(data?.last_name)
+        }
+      }
+
+      const updateRead = async () => {
         await supabaseClient
           .from('messages')
           .update({ is_read_by_recipient: true })
@@ -63,6 +85,9 @@ export default function ChatModal({ recipientId, update }: { recipientId: string
           .in('housitter_id', [recipientId, session?.user.id])
           .neq('sent_by', currentUserType)
       }
+
+      setNames()
+      getMessages()
       updateRead()
     }
   }, [recipientId])
