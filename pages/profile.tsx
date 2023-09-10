@@ -114,22 +114,22 @@ export default function Account() {
 
         const availability = await getAvailabilityFromDb()
         dispatch(setAvailability(availability))
-      }
 
-      if (isHousitter) {
-        const { error: housitterError, data: housitterData } = await supabaseClient
-          .from('housitters')
-          .select('about_me, experience')
-          .eq('user_id', user.id)
-          .single()
+        if (isHousitter) {
+          const { error: housitterError, data: housitterData } = await supabaseClient
+            .from('housitters')
+            .select('about_me, experience')
+            .eq('user_id', user.id)
+            .single()
 
-        if (housitterError) {
-          return handleError(housitterError.message, 'getProfile')
-        }
+          if (housitterError) {
+            return handleError(housitterError.message, 'getProfile')
+          }
 
-        if (housitterData) {
-          setFormField(EditProfileProps.AboutMe, housitterData.about_me)
-          dispatch(setExperienceState(housitterData.experience)) // with redux because it's being set in CountAndUpdate
+          if (housitterData) {
+            setFormField(EditProfileProps.AboutMe, housitterData.about_me)
+            dispatch(setExperienceState(housitterData.experience)) // with redux because it's being set in CountAndUpdate
+          }
         }
       }
     } catch (error) {
