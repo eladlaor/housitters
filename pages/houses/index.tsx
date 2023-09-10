@@ -17,7 +17,8 @@ import HousePreview from '../../components/HousePreview'
 import { Row, Col, Alert, Container, Card, Dropdown, Accordion } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import { selectIsActiveState } from '../../slices/createPostSlice'
-import { selectPrimaryUseState } from '../../slices/userSlice'
+import { selectAvailabilityState, selectPrimaryUseState } from '../../slices/userSlice'
+import AvailabilitySelector from '../../components/AvailabilitySelector'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -30,6 +31,7 @@ export default function Home() {
   const [startDate, endDate] = dateRange
   const [location, setLocation] = useState(LocationSelectionEventKeys.Anywhere as string)
   const [availablePosts, setAvailablePosts] = useState([] as any[])
+  const availability = useSelector(selectAvailabilityState)
 
   useEffect(() => {
     if (!user) {
@@ -302,7 +304,7 @@ export default function Home() {
 
           <Card className="sidebar-filter">
             <h4>Dates</h4>
-            <DatePicker
+            {/* <DatePicker
               className="w-100"
               selectsRange={true}
               startDate={startDate}
@@ -312,10 +314,19 @@ export default function Home() {
                 setDateRange(update)
               }}
               isClearable={true}
-            />
+            /> */}
+            {availability.map((period, index) => (
+              <AvailabilitySelector
+                className="w-100"
+                key={index}
+                period={period}
+                index={index}
+                updateDbInstantly={true}
+              />
+            ))}
             <h4>Location</h4>
             <Dropdown>
-              <Dropdown.Toggle variant="success" className="w-100">
+              <Dropdown.Toggle variant="success">
                 {location !== LocationSelectionEventKeys.Anywhere
                   ? LocationDescriptions[location]
                   : LocationSelectionEventKeys.Anywhere}

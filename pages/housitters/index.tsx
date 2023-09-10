@@ -43,6 +43,8 @@ import Accordion from 'react-bootstrap/Accordion'
 import { ImageData } from '../../types/clientSide'
 
 import { blobToBuffer } from '../../utils/files'
+import { handleError } from '../../utils/helpers'
+import AvailabilitySelector from '../../components/AvailabilitySelector'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -93,7 +95,7 @@ export default function Home() {
     if (!user) {
       router.push('/')
     } else {
-      const asyncWrapper = async () => {
+      const getData = async () => {
         let query = supabaseClient
           .from('profiles')
           .select(
@@ -107,14 +109,10 @@ export default function Home() {
         let { data: housitterData, error: housitterError } = await query
 
         if (housitterError) {
-          console.log(
-            'error when querying housitters from profiles in landlords home' +
-              housitterError.message
-          )
+          return handleError(housitterError.message, 'housitters.index.useEffect')
         }
 
         let availableHousitter: DbAvailableHousitter
-
         let availableHousitters: (typeof availableHousitter)[] = []
 
         if (housitterData) {
@@ -165,7 +163,7 @@ export default function Home() {
         }
       }
 
-      asyncWrapper().catch((e) => {
+      getData().catch((e) => {
         console.log(e.message)
       })
     }
@@ -337,8 +335,8 @@ export default function Home() {
             </Card>
           )}
           <Card className="sidebar-filter">
-            <h4>Dates</h4>
-            <DatePicker
+            <h4>Dates updated</h4>
+            {/* <DatePicker
               className="w-100"
               selectsRange={true}
               startDate={startDate}
@@ -348,10 +346,18 @@ export default function Home() {
                 setDateRange(update)
               }}
               isClearable={true}
-            />
+            /> */}
+            {availability.map((period, index) => (
+              <AvailabilitySelector
+                key={index}
+                period={period}
+                index={index}
+                updateDbInstantly={true}
+              />
+            ))}
             <h4>Location</h4>
             <Dropdown>
-              <Dropdown.Toggle variant="success" className="w-100">
+              <Dropdown.Toggle variant="success">
                 {location ? LocationDescriptions[location] : 'Anywhere'}
               </Dropdown.Toggle>
 

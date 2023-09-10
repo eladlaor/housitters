@@ -21,6 +21,7 @@ import {
   selectEmailState,
   selectGenderState,
   selectLastNameState,
+  selectAvailabilityState,
 } from '../slices/userSlice'
 
 import {
@@ -34,6 +35,7 @@ import PetsCounter from '../components/PetsCounter'
 import CountAndUpdate from '../components/utils/CountAndUpdate'
 import { getUrlFromSupabase, handleError } from '../utils/helpers'
 import { selectPetsState } from '../slices/landlordSlice'
+import AvailabilitySelector from '../components/AvailabilitySelector'
 
 export default function Account() {
   const supabaseClient = useSupabaseClient<Database>()
@@ -53,6 +55,7 @@ export default function Account() {
   const primary_use = useSelector(selectPrimaryUseState)
   const isHousitter = primary_use === UserType.Housitter
   const pets = useSelector(selectPetsState)
+  const availability = useSelector(selectAvailabilityState)
 
   const initialFormState: any = {
     firstName,
@@ -344,7 +347,6 @@ export default function Account() {
             </Col>
             <Col>
               <Form.Group>
-                <h5>Current picture</h5>
                 {isUploading ? (
                   <Spinner />
                 ) : (
@@ -357,8 +359,19 @@ export default function Account() {
                     style={{ width: '10rem', height: '10rem', borderRadius: '1000px' }}
                   />
                 )}
-                <h5>Update picture</h5>
+                <h5 className="mt-3">Update picture</h5>
                 <input id="avatarInput" type="file" onChange={handleAvatarUpdate} />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label className="mt-2">Dates</Form.Label>
+                {availability.map((period, index) => (
+                  <AvailabilitySelector
+                    key={index}
+                    period={period}
+                    index={index}
+                    updateDbInstantly={true}
+                  />
+                ))}
               </Form.Group>
             </Col>
           </Row>

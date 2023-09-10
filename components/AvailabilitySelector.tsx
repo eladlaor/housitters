@@ -24,10 +24,12 @@ export default function AvailabilitySelector({
   period,
   index,
   updateDbInstantly,
+  className,
 }: {
   period: any
   index: number
   updateDbInstantly: boolean
+  className?: string
 }) {
   try {
     new Date(period.startDate)
@@ -278,8 +280,9 @@ export default function AvailabilitySelector({
         <div>
           {shouldShowCustomSelection && (
             <div>
-              <p>start Date:</p>
+              <p className="mb-0 mt-3">start Date:</p>
               <DatePicker
+                className={className ? className : ''}
                 selected={new Date(period.startDate)}
                 openToDate={new Date()}
                 onChange={(date: Date) => handleDatesChange(date, true)}
@@ -290,7 +293,7 @@ export default function AvailabilitySelector({
 
         {shouldShowCustomSelection && (
           <div>
-            <p>end Date:</p>
+            <p className="mb-0 mt-3">end Date:</p>
             <DatePicker
               selected={
                 new Date(period.endDate).getFullYear() == 1970
@@ -303,7 +306,7 @@ export default function AvailabilitySelector({
           </div>
         )}
       </div>
-      <div>
+      <div className="mt-3">
         {shouldShowCustomSelection && index === availability.length - 1 && (
           <Button onClick={addAvailabilitySelector}>add period</Button>
         )}
@@ -319,7 +322,7 @@ export default function AvailabilitySelector({
             </div>
           )}
       </div>
-      <br />
+      <hr />
     </div>
   )
 }
