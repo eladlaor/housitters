@@ -1,6 +1,6 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import {
   SortingProperties,
@@ -8,6 +8,7 @@ import {
   LocationSelectionEventKeys,
   PageRoutes,
   UserType,
+  LocationIds,
 } from '../../utils/constants'
 
 import { ImageData } from '../../types/clientSide'
@@ -19,6 +20,12 @@ import { useRouter } from 'next/router'
 import { selectIsActiveState } from '../../slices/createPostSlice'
 import { selectAvailabilityState, selectPrimaryUseState } from '../../slices/userSlice'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
+import LocationSelector from '../../components/LocationSelector'
+import { arraysContainSameElements, handleError } from '../../utils/helpers'
+import {
+  selectLocationsState as selectHousitterLocationsState,
+  setLocationsState as setHousitterLocationsState,
+} from '../../slices/housitterSlice'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -29,14 +36,20 @@ export default function Home() {
 
   const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
   const [startDate, endDate] = dateRange
-  const [location, setLocation] = useState(LocationSelectionEventKeys.Anywhere as string)
+
+  const [landlordLocation, setLandlordLocation] = useState('Anywhere')
+
+  const housitterLocations = useSelector(selectHousitterLocationsState)
+
   const [availablePosts, setAvailablePosts] = useState([] as any[])
   const availability = useSelector(selectAvailabilityState)
+  const [isHousitter, setIsHousitter] = useState(userType === UserType.Housitter)
 
   useEffect(() => {
     if (!user) {
-      router.push('/')
+      return
     } else {
+      setIsHousitter(userType === UserType.Housitter)
       const asyncWrapper = async () => {
         // if (user && !isLogged) {
         //   // I'm not sure you need this, check what happens after sign in
@@ -189,8 +202,12 @@ export default function Home() {
           )
           .eq('is_active', true)
 
-        if (location !== LocationSelectionEventKeys.Anywhere) {
-          postsQuery = postsQuery.eq('landlords.location', location)
+        if (isHousitter) {
+          if (!housitterLocations.find((loc: string) => loc === 'Anywhere')) {
+            postsQuery = postsQuery.in('landlords.location', housitterLocations)
+          }
+        } else {
+          postsQuery = postsQuery.eq('landlords.location', landlordLocation)
         }
 
         let { data: postsData, error: postsError } = await postsQuery
@@ -249,7 +266,7 @@ export default function Home() {
 
       asyncWrapper()
     }
-  }, [user, location, startDate, endDate, dateRange])
+  }, [user, availability, userType, landlordLocation, housitterLocations])
 
   function sortPosts(sortByProperty: string, sortOrder: string) {
     let sortedPosts: any[] = [...availablePosts]
@@ -325,25 +342,41 @@ export default function Home() {
               />
             ))}
             <h4>Location</h4>
-            <Dropdown>
-              <Dropdown.Toggle variant="success">
-                {location !== LocationSelectionEventKeys.Anywhere
-                  ? LocationDescriptions[location]
-                  : LocationSelectionEventKeys.Anywhere}
-              </Dropdown.Toggle>
+            {isHousitter ? (
+              <LocationSelector
+                selectionType={isHousitter ? 'checkbox' : 'radio'}
+                isHousitter={isHousitter}
+                showCustomLocations={
+                  isHousitter
+                    ? housitterLocations.length > 0 &&
+                      housitterLocations.length < Object.values(LocationIds).length
+                    : true
+                }
+                updateDbInstantly={true}
+              />
+            ) : (
+              <Dropdown>
+                <Dropdown.Toggle variant="success">
+                  {landlordLocation !== 'Anywhere'
+                    ? LocationDescriptions[landlordLocation]
+                    : 'Anywhere'}
+                </Dropdown.Toggle>
 
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setLocation(LocationSelectionEventKeys.Anywhere)}>
-                  Anywhere
-                </Dropdown.Item>
-                <Dropdown.Divider />
-                {Object.entries(LocationDescriptions).map(([key, value]) => (
-                  <Dropdown.Item key={key} onClick={() => setLocation(key)}>
-                    {value}
+                <Dropdown.Menu>
+                  <Dropdown.Item
+                    onClick={() => setLandlordLocation(LocationSelectionEventKeys.Anywhere)}
+                  >
+                    Anywhere
                   </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
+                  <Dropdown.Divider />
+                  {Object.entries(LocationDescriptions).map(([key, value]) => (
+                    <Dropdown.Item key={key} onClick={() => setLandlordLocation(key)}>
+                      {value}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
             <h4>Sort</h4>
 
             <SidebarFilter

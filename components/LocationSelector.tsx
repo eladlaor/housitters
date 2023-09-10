@@ -14,7 +14,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import { selectIsLoggedState } from '../slices/userSlice'
+import { handleError } from '../utils/helpers'
 
 export default function LocationSelector({
   selectionType,
@@ -24,7 +24,7 @@ export default function LocationSelector({
 }: {
   selectionType: FormCheckType
   isHousitter: boolean
-  showCustomLocations: boolean
+  showCustomLocations?: boolean
   updateDbInstantly: boolean
 }) {
   const dispatch = useDispatch()
@@ -43,9 +43,49 @@ export default function LocationSelector({
   )
 
   useEffect(() => {
-    if (locations === '') {
-      dispatch(setlandlordLocationState(LocationIds.TelAviv))
+    if (!user) {
+      return
     }
+
+    const getLocationData = async () => {
+      if (isHousitter) {
+        const { data, error } = await supabaseClient
+          .from('housitters')
+          .select('locations')
+          .eq('user_id', user.id)
+          .single()
+        if (error) {
+          return handleError(error.message, ' ')
+        }
+
+        if (data) {
+          let modifiedLocations = Array.isArray(data.locations) ? data.locations : [data.locations]
+          setShouldShowCustomLocations(
+            modifiedLocations.length > 0 &&
+              modifiedLocations.length < Object.values(LocationIds).length
+          )
+
+          dispatch(setHousitterLocationsState(modifiedLocations))
+        } else {
+          const { data, error } = await supabaseClient
+            .from('landlords')
+            .select('location')
+            .eq('user_id', user.id)
+            .single()
+          if (error) {
+            return handleError(error.message, 'houses.index.useEffect: get landlord location')
+          }
+
+          if (data) {
+            if (data.location !== location) {
+              dispatch(setlandlordLocationState(location))
+            }
+          }
+        }
+      }
+    }
+
+    getLocationData()
   }, [])
 
   async function handleLandlordSelectedLocation(e: any) {
