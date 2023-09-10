@@ -120,6 +120,7 @@ export default function Account() {
         const { error: housitterError, data: housitterData } = await supabaseClient
           .from('housitters')
           .select('about_me, experience')
+          .eq('user_id', user.id)
           .single()
 
         if (housitterError) {
@@ -127,8 +128,8 @@ export default function Account() {
         }
 
         if (housitterData) {
-          setFormField(EditProfileProps.Experience, housitterData.experience)
           setFormField(EditProfileProps.AboutMe, housitterData.about_me)
+          dispatch(setExperienceState(housitterData.experience)) // with redux because it's being set in CountAndUpdate
         }
       }
     } catch (error) {
@@ -211,6 +212,7 @@ export default function Account() {
       let { error: housitterUpsertError } = await supabaseClient.from('housitters').upsert({
         user_id: user?.id,
         experience,
+        about_me: form.aboutMe,
       })
 
       if (housitterUpsertError) {
@@ -326,6 +328,17 @@ export default function Account() {
                   <option value={DbGenderTypes.NonBinary}>{DbGenderTypes.NonBinary}</option>
                   <option value={DbGenderTypes.Unknown}>{DbGenderTypes.Unknown}</option>
                 </Form.Select>
+                <hr />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>About Me</Form.Label>
+                <Form.Control
+                  size="sm"
+                  as="textarea"
+                  rows={5}
+                  value={form.aboutMe}
+                  onChange={(e) => setFormField(EditProfileProps.AboutMe, e.target.value)}
+                ></Form.Control>
                 <hr />
               </Form.Group>
             </Col>
