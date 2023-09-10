@@ -42,6 +42,17 @@ export const SIGNUP_FORM_PROPS = {
   GENDER: 'gender',
 }
 
+export const EditProfileProps = {
+  FirstName: 'firstName',
+  LastName: 'lastName',
+  Email: 'email',
+  Dogs: 'dogs',
+  Cats: 'cats',
+  Gender: 'gender',
+  AboutMe: 'aboutMe',
+  Experience: 'experience',
+}
+
 /* Location Selector */
 
 export const LocationIds = {

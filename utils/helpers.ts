@@ -19,3 +19,9 @@ export const getUrlFromSupabase = (url: string, bucket: string) => {
   const { data } = supabase.storage.from(bucket).getPublicUrl(url)
   return data.publicUrl
 }
+
+export const handleError = (errorMessage: string, thrownFromFunctionName: string) => {
+  console.log(`Error in ${thrownFromFunctionName}. Error: ${errorMessage}`)
+  debugger
+  return
+}

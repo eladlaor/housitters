@@ -5,19 +5,55 @@ import { Database } from '../types/supabase'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCat, faDog } from '@fortawesome/free-solid-svg-icons'
+import { useEffect, useState } from 'react'
+import { handleError } from '../utils/helpers'
 
 export default function PetsCounter() {
   const dispatch = useDispatch()
   const pets = useSelector(selectPetsState)
 
-  const incrementPet = async (petType: any) => {
+  const user = useUser()
+  const supabaseClient = useSupabaseClient()
+
+  useEffect(() => {
+    if (!user) {
+      return
+    }
+
+    const loadPets = async () => {
+      const { error: landlordError, data: landlordData } = await supabaseClient
+        .from('pets')
+        .select('dogs, cats')
+        .eq('user_id', user.id)
+        .single()
+
+      if (landlordError) {
+        return handleError(landlordError.message, 'getProfile')
+      }
+
+      if (landlordData) {
+        const pets = {
+          dogs: landlordData.dogs,
+          cats: landlordData.cats,
+        }
+
+        console.log(pets.dogs)
+
+        dispatch(setPetsState(pets))
+      }
+    }
+
+    loadPets()
+  }, [])
+
+  const incrementPet = async (petType: string) => {
     let modifiedPets = JSON.parse(JSON.stringify(pets))
     modifiedPets[petType] = modifiedPets[petType] + 1
 
     dispatch(setPetsState(modifiedPets))
   }
 
-  const decrementPet = async (petType: any) => {
+  const decrementPet = async (petType: string) => {
     let modifiedPets = JSON.parse(JSON.stringify(pets))
     const petCount = modifiedPets[petType]
     if (petCount != 0) {
