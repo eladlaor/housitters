@@ -141,9 +141,8 @@ export default function Inbox() {
                   {
                     messages
                       .filter((m) => m[oppositeType(currentUserType)].id === recipientId)
-                      // ascending
-                      .sort((a: { a: number }, b: { a: number }) => (a.a < b.a ? -1 : 1))[0]
-                      .message_content
+                      // descending
+                      .sort((a, b) => b.created_at - a.created_at)[0].message_content
                   }
                 </div>
               </div>
