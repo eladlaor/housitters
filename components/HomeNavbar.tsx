@@ -43,7 +43,6 @@ export default function HomeNavbar({ className = '' }: Props) {
         }
 
         if (data) {
-          console.log('profile avatar is ' + data.avatar_url)
           setProfile({
             picture: getUrlFromSupabase(data.avatar_url, 'avatars'),
             name: data?.first_name,

@@ -105,7 +105,6 @@ export default function EditHouse() {
     setDateRanges(ranges)
   }
 
-  // TODO: fix
   function removeDateRange(index: number) {
     const ranges = [...dateRanges]
     ranges.splice(index, 1)
@@ -264,29 +263,14 @@ export default function EditHouse() {
                       <Col>
                         <DatePicker
                           selectsRange={true}
-                          startDate={start}
-                          endDate={end}
+                          startDate={end?.getFullYear() === 1970 ? null : start}
+                          endDate={end?.getFullYear() === 1970 ? null : end}
                           placeholderText="Anytime"
                           onChange={(value) => {
                             updateDateRange(index, value)
                           }}
                           isClearable={true}
                         />
-                      </Col>
-                      <Col xs="auto">
-                        <Button className="w-auto" onClick={() => {}} variant="primary-outline">
-                          Anytime
-                        </Button>
-                      </Col>
-                      <Col xs="auto">
-                        <Button
-                          className="w-auto"
-                          disabled={!index}
-                          onClick={() => removeDateRange(index)}
-                          variant="primary-outline"
-                        >
-                          ❌
-                        </Button>
                       </Col>
                     </Row>
                   </div>
@@ -309,11 +293,12 @@ export default function EditHouse() {
               <Form.Label>Where</Form.Label>
 
               <Form.Select
+                value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 aria-label="Default select example"
               >
                 {Object.entries(LocationDescriptions).map(([key, value]) => (
-                  <option key={key} selected={key == location} value={key}>
+                  <option key={key} value={key}>
                     {value}
                   </option>
                 ))}
