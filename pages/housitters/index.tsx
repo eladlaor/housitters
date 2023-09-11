@@ -335,7 +335,7 @@ export default function Home() {
             </Card>
           )}
           <Card className="sidebar-filter">
-            <h4>Dates updated</h4>
+            <h4>Dates</h4>
             {/* <DatePicker
               className="w-100"
               selectsRange={true}

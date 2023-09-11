@@ -346,12 +346,6 @@ export default function Home() {
               <LocationSelector
                 selectionType={isHousitter ? 'checkbox' : 'radio'}
                 isHousitter={isHousitter}
-                showCustomLocations={
-                  isHousitter
-                    ? housitterLocations.length > 0 &&
-                      housitterLocations.length < Object.values(LocationIds).length
-                    : true
-                }
                 updateDbInstantly={true}
               />
             ) : (

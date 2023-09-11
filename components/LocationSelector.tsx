@@ -36,11 +36,7 @@ export default function LocationSelector({
   const supabaseClient = useSupabaseClient()
   const user = useUser()
 
-  const [locationCurrentSelectionType, setLocationCurrentSelectionType] = useState(
-    showCustomLocations
-      ? LocationSelectionEventKeys.CustomLocations
-      : LocationSelectionEventKeys.Anywhere
-  )
+  const [locationCurrentSelectionType, setLocationCurrentSelectionType] = useState('')
 
   useEffect(() => {
     if (!user) {
@@ -60,9 +56,16 @@ export default function LocationSelector({
 
         if (data) {
           let modifiedLocations = Array.isArray(data.locations) ? data.locations : [data.locations]
-          setShouldShowCustomLocations(
+
+          const modifiedShouldShow =
             modifiedLocations.length > 0 &&
-              modifiedLocations.length < Object.values(LocationIds).length
+            modifiedLocations.length < Object.values(LocationIds).length
+
+          setShouldShowCustomLocations(modifiedShouldShow)
+          setLocationCurrentSelectionType(
+            modifiedShouldShow
+              ? LocationSelectionEventKeys.CustomLocations
+              : LocationSelectionEventKeys.Anywhere
           )
 
           dispatch(setHousitterLocationsState(modifiedLocations))
@@ -140,30 +143,28 @@ export default function LocationSelector({
         allLocationsSelected.push(location)
       })
 
-      if (user) {
-        let { error } = await supabaseClient.from('housitters').upsert({
-          user_id: user?.id,
-          locations: allLocationsSelected,
-        })
+      let { error } = await supabaseClient.from('housitters').upsert({
+        user_id: user?.id,
+        locations: allLocationsSelected,
+      })
 
-        if (error) {
-          alert('error updating locations from filter to db' + error)
-          throw error
-        }
+      if (error) {
+        alert('error updating locations from filter to db' + error)
+        throw error
       }
+
       dispatch(setHousitterLocationsState(allLocationsSelected))
       setShouldShowCustomLocations(false)
+      console.log('calling set state to anywhere')
       setLocationCurrentSelectionType(LocationSelectionEventKeys.Anywhere)
     } else if (e === LocationSelectionEventKeys.CustomLocations) {
-      if (user) {
-        let { error } = await supabaseClient.from('housitters').upsert({
-          user_id: user?.id,
-        })
+      let { error } = await supabaseClient.from('housitters').upsert({
+        user_id: user?.id,
+      })
 
-        if (error) {
-          alert('error updating locations from filter to db' + error)
-          throw error
-        }
+      if (error) {
+        alert('error updating locations from filter to db' + error)
+        throw error
       }
 
       dispatch(setHousitterLocationsState([]))
@@ -174,6 +175,8 @@ export default function LocationSelector({
 
   // TODO: to display properly, would need to search the array every time.
   // change hard coded ids to the enum.
+
+  console.log('locationCurrentSelection ' + locationCurrentSelectionType)
   return (
     <>
       <Form>
