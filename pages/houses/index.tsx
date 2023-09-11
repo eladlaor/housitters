@@ -38,7 +38,7 @@ export default function Home() {
   const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
   const [startDate, endDate] = dateRange
 
-  const [landlordLocation, setLandlordLocation] = useState('Anywhere')
+  const [landlordLocation, setLandlordLocation] = useState(LocationSelectionEventKeys.Anywhere)
 
   const housitterLocations = useSelector(selectHousitterLocationsState)
 
@@ -204,11 +204,15 @@ export default function Home() {
           .eq('is_active', true)
 
         if (isHousitter) {
-          if (!housitterLocations.find((loc: string) => loc === 'Anywhere')) {
+          if (
+            !housitterLocations.find((loc: string) => loc === LocationSelectionEventKeys.Anywhere)
+          ) {
             postsQuery = postsQuery.in('landlords.location', housitterLocations)
           }
         } else {
-          postsQuery = postsQuery.eq('landlords.location', landlordLocation)
+          if (landlordLocation !== LocationSelectionEventKeys.Anywhere) {
+            postsQuery = postsQuery.eq('landlords.location', landlordLocation)
+          }
         }
 
         let { data: postsData, error: postsError } = await postsQuery
@@ -354,11 +358,10 @@ export default function Home() {
                 ) : (
                   <Dropdown>
                     <Dropdown.Toggle variant="success">
-                      {landlordLocation !== 'Anywhere'
+                      {landlordLocation !== LocationSelectionEventKeys.Anywhere
                         ? LocationDescriptions[landlordLocation]
-                        : 'Anywhere'}
+                        : LocationSelectionEventKeys.Anywhere}
                     </Dropdown.Toggle>
-
                     <Dropdown.Menu>
                       <Dropdown.Item
                         onClick={() => setLandlordLocation(LocationSelectionEventKeys.Anywhere)}

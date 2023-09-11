@@ -6,7 +6,11 @@ import {
   selectPrimaryUseState,
 } from '../../slices/userSlice'
 
-import { LocationDescriptions, SortingProperties } from '../../utils/constants'
+import {
+  LocationDescriptions,
+  LocationSelectionEventKeys,
+  SortingProperties,
+} from '../../utils/constants'
 import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
 import { UserType, PageRoutes } from '../../utils/constants'
 import { Card, Dropdown } from 'react-bootstrap'
@@ -316,7 +320,9 @@ export default function Home() {
                 <h4>Location</h4>
                 <Dropdown>
                   <Dropdown.Toggle variant="success">
-                    {location ? LocationDescriptions[location] : 'Anywhere'}
+                    {location
+                      ? LocationDescriptions[location]
+                      : LocationSelectionEventKeys.Anywhere}
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
