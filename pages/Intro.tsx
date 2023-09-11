@@ -29,7 +29,7 @@ export default function Intro() {
       setIsHousitter(userType === UserType.Housitter)
       setIsLoading(false)
     }
-  }, [router.isReady])
+  }, [router.isReady, userType])
 
   function handleFind() {
     setShowSignupOrLoginModal(true)

@@ -75,12 +75,24 @@ export default function HomeNavbar({ className = '' }: Props) {
           <Navbar.Collapse className="justify-content-between d-flex w-100">
             <Nav className="ml-auto">
               <Nav.Item>
-                <Link href={PageRoutes.LandlordRoutes.Home}>
+                <Link
+                  href={
+                    session
+                      ? PageRoutes.HousitterRoutes.Home
+                      : `${PageRoutes.Intro}?userType=${UserType.Landlord}`
+                  }
+                >
                   <a className="nav-link">Sitters</a>
                 </Link>
               </Nav.Item>
               <Nav.Item>
-                <Link href={PageRoutes.HousitterRoutes.Home}>
+                <Link
+                  href={
+                    session
+                      ? PageRoutes.HousitterRoutes.Home
+                      : `${PageRoutes.Intro}?userType=${UserType.Housitter}`
+                  }
+                >
                   <a className="nav-link">Houses</a>
                 </Link>
               </Nav.Item>
