@@ -1,18 +1,18 @@
 import { useUser, useSessionContext } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { PageRoutes } from '../../utils/constants'
+import { PageRoutes, UserType } from '../../utils/constants'
 import { useDispatch } from 'react-redux'
 import Image from 'next/image'
 
-import { setIsLoggedState, setAvatarUrl } from '../../slices/userSlice'
+import { setAvatarUrl } from '../../slices/userSlice'
 
 import logo from '../../public/images/logoRegularSize.jpg'
 import { Form, Button, Modal } from 'react-bootstrap'
 import PasswordInput from '../../components/Auth/PasswordInput'
 
 export default function LoginPage() {
-  const { error, isLoading, supabaseClient } = useSessionContext()
+  const { isLoading, supabaseClient } = useSessionContext()
   const user = useUser()
 
   const router = useRouter()
@@ -28,7 +28,7 @@ export default function LoginPage() {
       const asyncWrapper = async () => {
         const { data, error } = await supabaseClient
           .from('profiles')
-          .select(`avatar_url`)
+          .select(`avatar_url, primary_use`)
           .eq('id', user.id)
           .single()
         if (error) {
@@ -36,12 +36,17 @@ export default function LoginPage() {
         }
         if (data) {
           dispatch(setAvatarUrl(data.avatar_url))
+          router.push(
+            `${
+              data.primary_use === UserType.Housitter
+                ? PageRoutes.HousitterRoutes.Home
+                : PageRoutes.LandlordRoutes.Home
+            }`
+          )
         }
       }
 
       asyncWrapper()
-
-      router.push('/')
     }
   }, [user, isLoading])
 
@@ -81,7 +86,7 @@ export default function LoginPage() {
     setShowLoginErrorModal(false)
   }
 
-  function renderLoginErrorHandler(loginErrorMessage: string) {
+  function renderLoginErrorHandler() {
     return (
       <>
         <Button variant="success" onClick={handleCloseLoginErrorModal}>
@@ -153,7 +158,7 @@ export default function LoginPage() {
         </Modal.Header>
         <Modal.Body className="d-flex justify-content-center">{loginErrorMessage}</Modal.Body>
         <Modal.Footer className="d-flex justify-content-center">
-          {renderLoginErrorHandler(loginErrorMessage)}
+          {renderLoginErrorHandler()}
         </Modal.Footer>
       </Modal>
     </>
