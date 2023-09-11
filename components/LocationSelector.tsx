@@ -176,7 +176,6 @@ export default function LocationSelector({
   // TODO: to display properly, would need to search the array every time.
   // change hard coded ids to the enum.
 
-  console.log('locationCurrentSelection ' + locationCurrentSelectionType)
   return (
     <>
       <Form>

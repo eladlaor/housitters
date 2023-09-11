@@ -78,7 +78,7 @@ export default function HomeNavbar({ className = '' }: Props) {
                 <Link
                   href={
                     session
-                      ? PageRoutes.HousitterRoutes.Home
+                      ? PageRoutes.LandlordRoutes.Home
                       : `${PageRoutes.Intro}?userType=${UserType.Landlord}`
                   }
                 >
@@ -152,7 +152,6 @@ export default function HomeNavbar({ className = '' }: Props) {
                 <Nav.Item>
                   <Button
                     className="ms-4 me-4"
-                    variant="success"
                     onClick={() => {
                       router.push(PageRoutes.Auth.Login)
                     }}
@@ -161,8 +160,12 @@ export default function HomeNavbar({ className = '' }: Props) {
                   </Button>
                 </Nav.Item>
                 <Nav.Item>
-                  <Button onClick={() => router.push('/auth/signup')} className="me-4">
-                    Free signup
+                  <Button
+                    variant="success"
+                    onClick={() => router.push(PageRoutes.Auth.Signup)}
+                    className="me-4"
+                  >
+                    Signup
                   </Button>
                 </Nav.Item>
               </Nav>

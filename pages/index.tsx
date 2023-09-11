@@ -135,7 +135,7 @@ export default function Home() {
             className=" d-flex flex-column align-items-center justify-content-center"
           >
             <Button size="lg" className="w-100" onClick={() => handleFind(false)}>
-              find a sitter
+              Find a Sitter
             </Button>
             <p
               style={{
@@ -144,11 +144,9 @@ export default function Home() {
                 marginBottom: '2rem',
                 fontStyle: 'italic',
               }}
-            >
-              ~ or ~
-            </p>
+            ></p>
             <Button size="lg" className="w-100" onClick={() => handleFind(true)}>
-              find a house
+              Find a House
             </Button>
           </Col>
         </Row>

@@ -45,6 +45,7 @@ import { ImageData } from '../../types/clientSide'
 import { blobToBuffer } from '../../utils/files'
 import { handleError } from '../../utils/helpers'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
+import Footer from '../../components/Footer'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -301,42 +302,44 @@ export default function Home() {
   }
 
   return (
-    <Container>
-      <h2>Looking for a house-sitter?</h2>
-      <h5>There are currently {housitters.length} available sitters for you.</h5>
+    <div>
+      <div className="content-wrapper">
+        <Container>
+          <h2>Looking for a house-sitter?</h2>
+          <h5>There are currently {housitters.length} available sitters for you.</h5>
 
-      <Row>
-        <Col md={3}>
-          {userType === UserType.Landlord && (
-            <Card className="sidebar-filter">
-              {isActivePost ? (
-                <div>
-                  <Accordion>
-                    <Accordion.Item eventKey="0">
-                      <Accordion.Header>My Post</Accordion.Header>
-                      <Accordion.Body></Accordion.Body>
-                    </Accordion.Item>
-                  </Accordion>
-                </div>
-              ) : (
-                <p style={{ marginBottom: 0 }}>
-                  💡 Try&nbsp;
-                  <strong
-                    onClick={() => {
-                      router.push(PageRoutes.HousitterRoutes.EditHouse)
-                    }}
-                    style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
-                  >
-                    completing your post
-                  </strong>
-                  &nbsp;to increase your chances of finding a sitter!
-                </p>
+          <Row>
+            <Col md={3}>
+              {userType === UserType.Landlord && (
+                <Card className="sidebar-filter">
+                  {isActivePost ? (
+                    <div>
+                      <Accordion>
+                        <Accordion.Item eventKey="0">
+                          <Accordion.Header>My Post</Accordion.Header>
+                          <Accordion.Body></Accordion.Body>
+                        </Accordion.Item>
+                      </Accordion>
+                    </div>
+                  ) : (
+                    <p style={{ marginBottom: 0 }}>
+                      💡 Try&nbsp;
+                      <strong
+                        onClick={() => {
+                          router.push(PageRoutes.HousitterRoutes.EditHouse)
+                        }}
+                        style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                      >
+                        completing your post
+                      </strong>
+                      &nbsp;to increase your chances of finding a sitter!
+                    </p>
+                  )}
+                </Card>
               )}
-            </Card>
-          )}
-          <Card className="sidebar-filter">
-            <h4>Dates</h4>
-            {/* <DatePicker
+              <Card className="sidebar-filter">
+                <h4>Dates</h4>
+                {/* <DatePicker
               className="w-100"
               selectsRange={true}
               startDate={startDate}
@@ -347,74 +350,78 @@ export default function Home() {
               }}
               isClearable={true}
             /> */}
-            {availability.map((period, index) => (
-              <AvailabilitySelector
-                key={index}
-                period={period}
-                index={index}
-                updateDbInstantly={true}
-              />
-            ))}
-            <h4>Location</h4>
-            <Dropdown>
-              <Dropdown.Toggle variant="success">
-                {location ? LocationDescriptions[location] : 'Anywhere'}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setLocation(null)}>Anywhere</Dropdown.Item>
-                <Dropdown.Divider />
-                {Object.entries(LocationDescriptions).map(([key, value]) => (
-                  <Dropdown.Item key={key} onClick={() => setLocation(key)}>
-                    {value}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-            <h4>Sort</h4>
-            <SidebarFilter
-              isHousitter={false}
-              showCustomLocations={true}
-              selectionType="radio"
-              sortElementsHandler={sortHousitters}
-            />
-          </Card>
-        </Col>
-
-        <Col md={9} style={{ paddingRight: '30px' }}>
-          <Row>
-            {housitters.length == 0 ? (
-              <p style={{ marginTop: '2rem', fontSize: '1.5rem', textAlign: 'center' }}>
-                😢
-                <br />
-                Sorry, but there are no sitters matching your search. Please try adjusting your
-                filters.
-              </p>
-            ) : (
-              housitters.map(
-                (
-                  sitter: any,
-                  index: number // TODO: type 'sitter' with a new type of Db housitterdata
-                ) => (
-                  <AvailableHousitter
-                    housitterId={sitter.housitterId}
-                    firstName={sitter.firstName}
-                    lastName={sitter.lastName}
-                    experience={sitter.experience}
-                    about_me={
-                      sitter.about_me
-                        ? sitter.about_me
-                        : `${sitter.firstName} didn't write a bio yet`
-                    }
-                    avatarUrl={sitter.avatarUrl}
+                {availability.map((period, index) => (
+                  <AvailabilitySelector
                     key={index}
+                    period={period}
+                    index={index}
+                    updateDbInstantly={true}
                   />
-                )
-              )
-            )}
+                ))}
+                <h4>Location</h4>
+                <Dropdown>
+                  <Dropdown.Toggle variant="success">
+                    {location ? LocationDescriptions[location] : 'Anywhere'}
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={() => setLocation(null)}>Anywhere</Dropdown.Item>
+                    <Dropdown.Divider />
+                    {Object.entries(LocationDescriptions).map(([key, value]) => (
+                      <Dropdown.Item key={key} onClick={() => setLocation(key)}>
+                        {value}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+                <hr />
+                <h4>Sort</h4>
+                <SidebarFilter
+                  isHousitter={false}
+                  showCustomLocations={true}
+                  selectionType="radio"
+                  sortElementsHandler={sortHousitters}
+                />
+              </Card>
+            </Col>
+
+            <Col md={9} style={{ paddingRight: '30px' }}>
+              <Row>
+                {housitters.length == 0 ? (
+                  <p style={{ marginTop: '2rem', fontSize: '1.5rem', textAlign: 'center' }}>
+                    😢
+                    <br />
+                    Sorry, but there are no sitters matching your search. Please try adjusting your
+                    filters.
+                  </p>
+                ) : (
+                  housitters.map(
+                    (
+                      sitter: any,
+                      index: number // TODO: type 'sitter' with a new type of Db housitterdata
+                    ) => (
+                      <AvailableHousitter
+                        housitterId={sitter.housitterId}
+                        firstName={sitter.firstName}
+                        lastName={sitter.lastName}
+                        experience={sitter.experience}
+                        about_me={
+                          sitter.about_me
+                            ? sitter.about_me
+                            : `${sitter.firstName} didn't write a bio yet`
+                        }
+                        avatarUrl={sitter.avatarUrl}
+                        key={index}
+                      />
+                    )
+                  )
+                )}
+              </Row>
+            </Col>
           </Row>
-        </Col>
-      </Row>
-    </Container>
+        </Container>
+      </div>
+      <Footer />
+    </div>
   )
 }

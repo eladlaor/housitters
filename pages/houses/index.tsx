@@ -26,6 +26,7 @@ import {
   selectLocationsState as selectHousitterLocationsState,
   setLocationsState as setHousitterLocationsState,
 } from '../../slices/housitterSlice'
+import Footer from '../../components/Footer'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -285,43 +286,45 @@ export default function Home() {
   }
 
   return (
-    <Container>
-      <h2>Looking for a great house?</h2>
-      <h5>Let's find a cute pet for you to feel at home with.</h5>
+    <div>
+      <div className="content-wrapper">
+        <Container>
+          <h2>Looking for a great house?</h2>
+          <h5>Let's find a cute pet for you to feel at home with.</h5>
 
-      <Row>
-        <Col md={3}>
-          {userType === UserType.Landlord && (
-            <Card className="sidebar-filter">
-              {isActivePost ? (
-                <div>
-                  <Accordion>
-                    <Accordion.Item eventKey="0">
-                      <Accordion.Header>My Post</Accordion.Header>
-                      <Accordion.Body></Accordion.Body>
-                    </Accordion.Item>
-                  </Accordion>
-                </div>
-              ) : (
-                <p style={{ marginBottom: 0 }}>
-                  💡 Try&nbsp;
-                  <strong
-                    onClick={() => {
-                      router.push(PageRoutes.HousitterRoutes.EditHouse)
-                    }}
-                    style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
-                  >
-                    completing your post
-                  </strong>
-                  &nbsp;to increase your chances of finding a sitter!
-                </p>
+          <Row>
+            <Col md={3}>
+              {userType === UserType.Landlord && (
+                <Card className="sidebar-filter">
+                  {isActivePost ? (
+                    <div>
+                      <Accordion>
+                        <Accordion.Item eventKey="0">
+                          <Accordion.Header>My Post</Accordion.Header>
+                          <Accordion.Body></Accordion.Body>
+                        </Accordion.Item>
+                      </Accordion>
+                    </div>
+                  ) : (
+                    <p style={{ marginBottom: 0 }}>
+                      💡 Try&nbsp;
+                      <strong
+                        onClick={() => {
+                          router.push(PageRoutes.HousitterRoutes.EditHouse)
+                        }}
+                        style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                      >
+                        completing your post
+                      </strong>
+                      &nbsp;to increase your chances of finding a sitter!
+                    </p>
+                  )}
+                </Card>
               )}
-            </Card>
-          )}
 
-          <Card className="sidebar-filter">
-            <h4>Dates</h4>
-            {/* <DatePicker
+              <Card className="sidebar-filter">
+                <h4>Dates</h4>
+                {/* <DatePicker
               className="w-100"
               selectsRange={true}
               startDate={startDate}
@@ -332,98 +335,102 @@ export default function Home() {
               }}
               isClearable={true}
             /> */}
-            {availability.map((period, index) => (
-              <AvailabilitySelector
-                className="w-100"
-                key={index}
-                period={period}
-                index={index}
-                updateDbInstantly={true}
-              />
-            ))}
-            <h4>Location</h4>
-            {isHousitter ? (
-              <LocationSelector
-                selectionType={isHousitter ? 'checkbox' : 'radio'}
-                isHousitter={isHousitter}
-                updateDbInstantly={true}
-              />
-            ) : (
-              <Dropdown>
-                <Dropdown.Toggle variant="success">
-                  {landlordLocation !== 'Anywhere'
-                    ? LocationDescriptions[landlordLocation]
-                    : 'Anywhere'}
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  <Dropdown.Item
-                    onClick={() => setLandlordLocation(LocationSelectionEventKeys.Anywhere)}
-                  >
-                    Anywhere
-                  </Dropdown.Item>
-                  <Dropdown.Divider />
-                  {Object.entries(LocationDescriptions).map(([key, value]) => (
-                    <Dropdown.Item key={key} onClick={() => setLandlordLocation(key)}>
-                      {value}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            )}
-            <h4>Sort</h4>
-
-            <SidebarFilter
-              isHousitter={true}
-              showCustomLocations={false}
-              selectionType="checkbox"
-              sortElementsHandler={sortPosts}
-            />
-          </Card>
-        </Col>
-        <Col md={9}>
-          <Row
-          // className={
-          //   availablePosts.length === 0
-          //     ? 'h-100 align-items-center justify-content-center '
-          //     : ''
-          // }
-          // style={availablePosts.length === 0 ? { minHeight: '300px' } : {}}
-          >
-            {availablePosts.length === 0 ? (
-              <Alert variant="info" className="text-center alert-trimmed mx-auto">
-                There are currently no available houses for these settings.
-                <br className="mb-2" />
-                Try broader dates or locations.
-              </Alert>
-            ) : (
-              availablePosts.map((post: any, index: number) => (
-                <Col key={index} md={4} className="mt-4">
-                  <HousePreview
-                    landlordId={post.landlordId}
-                    title={post.title}
-                    description={post.description}
-                    location={post.location}
-                    dogs={post.dogs}
-                    cats={post.cats}
+                {availability.map((period, index) => (
+                  <AvailabilitySelector
+                    className="w-100"
                     key={index}
-                    imagesUrls={
-                      post.imagesUrls
-                        ? post.imagesUrls.map((imageData: ImageData) => ({
-                            url: imageData.url,
-                            id: imageData.id,
-                          }))
-                        : []
-                    }
-                    addMissingDetailsHandler={null}
+                    period={period}
+                    index={index}
+                    updateDbInstantly={true}
                   />
-                </Col>
-              ))
-            )}
+                ))}
+                <h4 className="mt-0">Location</h4>
+                {isHousitter ? (
+                  <LocationSelector
+                    selectionType={isHousitter ? 'checkbox' : 'radio'}
+                    isHousitter={isHousitter}
+                    updateDbInstantly={true}
+                  />
+                ) : (
+                  <Dropdown>
+                    <Dropdown.Toggle variant="success">
+                      {landlordLocation !== 'Anywhere'
+                        ? LocationDescriptions[landlordLocation]
+                        : 'Anywhere'}
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        onClick={() => setLandlordLocation(LocationSelectionEventKeys.Anywhere)}
+                      >
+                        Anywhere
+                      </Dropdown.Item>
+                      <Dropdown.Divider />
+                      {Object.entries(LocationDescriptions).map(([key, value]) => (
+                        <Dropdown.Item key={key} onClick={() => setLandlordLocation(key)}>
+                          {value}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
+                <hr />
+
+                <h4 className="mt-0">Sort</h4>
+                <SidebarFilter
+                  isHousitter={true}
+                  showCustomLocations={false}
+                  selectionType="checkbox"
+                  sortElementsHandler={sortPosts}
+                />
+              </Card>
+            </Col>
+            <Col md={9}>
+              <Row
+              // className={
+              //   availablePosts.length === 0
+              //     ? 'h-100 align-items-center justify-content-center '
+              //     : ''
+              // }
+              // style={availablePosts.length === 0 ? { minHeight: '300px' } : {}}
+              >
+                {availablePosts.length === 0 ? (
+                  <Alert variant="info" className="text-center alert-trimmed mx-auto">
+                    There are currently no available houses for these settings.
+                    <br className="mb-2" />
+                    Try broader dates or locations.
+                  </Alert>
+                ) : (
+                  availablePosts.map((post: any, index: number) => (
+                    <Col key={index} md={4} className="mt-4">
+                      <HousePreview
+                        landlordId={post.landlordId}
+                        title={post.title}
+                        description={post.description}
+                        location={post.location}
+                        dogs={post.dogs}
+                        cats={post.cats}
+                        key={index}
+                        imagesUrls={
+                          post.imagesUrls
+                            ? post.imagesUrls.map((imageData: ImageData) => ({
+                                url: imageData.url,
+                                id: imageData.id,
+                              }))
+                            : []
+                        }
+                        addMissingDetailsHandler={null}
+                      />
+                    </Col>
+                  ))
+                )}
+              </Row>
+            </Col>
           </Row>
-        </Col>
-      </Row>
-    </Container>
+        </Container>
+      </div>
+      <Footer />
+    </div>
   )
 }
 

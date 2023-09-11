@@ -455,11 +455,17 @@ heart icon
   z-index: 3;
 }
 
+.content-wrapper {
+  padding-bottom: 80px; 
+}
+
 .footer {
   background-color: #000;
   color: #fff;
   padding: 10px;
-  position: relative;
+  position: fixed;  
+  bottom: 0;        
+  width: 100%;
   z-index: 2;
   text-align: center;
   font-size: 0.7rem;

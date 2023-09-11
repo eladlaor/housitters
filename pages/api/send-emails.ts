@@ -7,7 +7,8 @@ const sendEmail = async (
   recipientEmail: string,
   senderFirstName: string,
   senderLastName: string,
-  message: string
+  message: string,
+  senderEmail?: string
 ) => {
   // Configure Nodemailer with SendGrid transport
   const transporter = nodemailer.createTransport({
@@ -20,7 +21,7 @@ const sendEmail = async (
 
   // Compose the email message
   const mailOptions = {
-    from: 'eladlaor88@gmail.com', // TODO: must change this to be from 'housitters.com'
+    from: senderEmail || 'eladlaor88@gmail.com', // TODO: must change this to be from 'housitters.com'
     to: recipientEmail,
     subject: `You got a new message from ${senderFirstName} ${senderLastName}`,
     text: message,
@@ -29,7 +30,7 @@ const sendEmail = async (
   try {
     // Send the email using Nodemailer
 
-    console.log(`sending this email: to - ${recipientEmail}.  text: ${message}`)
+    console.log(`sending this email: to ${recipientEmail}. text: ${message}`)
 
     await transporter.sendMail(mailOptions)
     console.log('Email sent successfully')
