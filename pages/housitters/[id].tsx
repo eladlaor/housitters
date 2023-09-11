@@ -6,16 +6,18 @@ import ContactFoundUser from '../../components/Contact/ContactFoundUser'
 import { getUrlFromSupabase } from '../../utils/helpers'
 import { Card, Container, Row, Col, Spinner } from 'react-bootstrap'
 import DateDisplayer from '../../components/utils/DateDisplayer'
+import RecommendationSender from '../../components/RecommendationSender'
 
 export default function PublicProfile() {
   const router = useRouter()
 
   const supabaseClient = useSupabaseClient()
-  const { id } = router.query
+  const { id } = router.query as { id: string }
 
   const [profile, setProfile] = useState({} as any)
   const [reviews, setReviews] = useState([] as any[])
   const [availability, setAvailbility] = useState([] as any[])
+  const [wasNewReviewSubmitted, setWasNewReviewSubmitted] = useState(false)
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -47,7 +49,7 @@ export default function PublicProfile() {
     }
 
     asyncWrapper()
-  }, [id])
+  }, [id, wasNewReviewSubmitted])
 
   return (
     <div>
@@ -113,7 +115,7 @@ export default function PublicProfile() {
 
             <h3>Reviews</h3>
             {reviews && reviews.length === 0 && (
-              <p>There are currently no reviews for this house.</p>
+              <p>There are currently no reviews for this sitter.</p>
             )}
             {reviews &&
               reviews.map((review, index) => (
@@ -141,6 +143,13 @@ export default function PublicProfile() {
                   </Col>
                 </Row>
               ))}
+            <RecommendationSender
+              reviewedUserId={id}
+              reviewedUserFirstName={profile.first_name}
+              reviewedUserLastName={profile.last_name}
+              reviewedUserType={UserType.Housitter}
+              setWasNewReviewSubmitted={setWasNewReviewSubmitted}
+            />
           </Col>
           <Col xs={12} md={3}>
             <Card>

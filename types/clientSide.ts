@@ -80,6 +80,7 @@ export interface RecommendationFormProps {
   reviewedUserFirstName: string
   reviewedUserLastName: string
   reviewedUserType: string
+  setWasNewReviewSubmitted?: Function
 }
 
 export interface ClosedSit {
@@ -138,7 +139,7 @@ export interface Conversation {
           isReadByRecipient: boolean
           sentAt: string
           id: number
-        },
+        }
       ]
     | null
   unreadMessages: 0

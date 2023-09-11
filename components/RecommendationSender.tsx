@@ -24,7 +24,13 @@ import { useState } from 'react'
 import CountAndUpdate from './utils/CountAndUpdate'
 
 export default function RecommendationSender(props: RecommendationFormProps) {
-  const { reviewedUserId, reviewedUserFirstName, reviewedUserLastName, reviewedUserType } = props
+  const {
+    reviewedUserId,
+    reviewedUserFirstName,
+    reviewedUserLastName,
+    reviewedUserType,
+    setWasNewReviewSubmitted,
+  } = props
 
   const supabaseClient = useSupabaseClient()
   const user = useUser()
@@ -47,14 +53,18 @@ export default function RecommendationSender(props: RecommendationFormProps) {
   async function handleSubmit(e: any) {
     e.preventDefault()
 
+    const review = {
+      recommended_user_id: reviewedUserId,
+      recommended_by_user_id: user!.id, // TODO: how to make sure i'll always have this value here as useUser is async
+      start_month: new Date(startMonth),
+      duration,
+      sit_included: sitIncluded,
+      description,
+    }
+
     if (reviewedUserType === UserType.Housitter) {
       const { error } = await supabaseClient.from(TableNames.ReviewsOnHousitters).upsert({
-        recommended_user_id: reviewedUserId,
-        recommended_by_user_id: user!.id, // TODO: how to make sure i'll always have this value here as useUser is async
-        start_month: new Date(startMonth),
-        duration,
-        sit_included: sitIncluded,
-        description,
+        ...review,
       } as Partial<Database['public']['Tables']['reviews_on_housitters']>)
 
       if (error) {
@@ -64,12 +74,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
       }
     } else if (reviewedUserType === UserType.Landlord) {
       const { error } = await supabaseClient.from(TableNames.ReviewsOnLandlords).upsert({
-        recommended_user_id: reviewedUserId,
-        recommended_by_user_id: user!.id, // TODO: how to make sure i'll always have this value here as useUser is async
-        start_month: new Date(startMonth),
-        duration,
-        sit_included: sitIncluded,
-        description,
+        ...review,
       } as Partial<Database['public']['Tables']['reviews_on_housitters']>)
 
       if (error) {
@@ -89,6 +94,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
 
     setSelectedUserToRecommendId('')
     dispatch(setShowRecommendationFormModalState(false))
+    setWasNewReviewSubmitted && setWasNewReviewSubmitted(true)
   }
 
   function handleSelectedUserToRecommend(e: any) {
@@ -127,12 +133,13 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                   value={format(startOfMonth(new Date(startMonth)), 'MM/yyyy')}
                 />
               </Form.Group>
+              <Form.Label className="mt-2">how many days?</Form.Label>
 
               {reviewedUserType === UserType.Housitter && (
                 <CountAndUpdate valueToCount={duration} reduxReducer={setDurationState} />
               )}
               <Form.Group controlId="sit-included">
-                <Form.Label>what did the sit include</Form.Label>
+                <Form.Label className="mt-2">what did the sit include</Form.Label>
                 <Form.Control
                   type="text"
                   value={sitIncluded}
@@ -142,7 +149,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                 />
               </Form.Group>
               <Form.Group controlId="description"></Form.Group>
-              <Form.Label>How was it?</Form.Label>
+              <Form.Label className="mt-2">How was it?</Form.Label>
               <Form.Control
                 className="text-end"
                 size="sm"
