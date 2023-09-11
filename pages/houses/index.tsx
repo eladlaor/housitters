@@ -12,7 +12,6 @@ import {
 } from '../../utils/constants'
 
 import { ImageData } from '../../types/clientSide'
-import SidebarFilter from '../../components/SidebarFilter'
 import DatePicker from 'react-datepicker'
 import HousePreview from '../../components/HousePreview'
 import { Row, Col, Alert, Container, Card, Dropdown, Accordion } from 'react-bootstrap'
@@ -27,6 +26,7 @@ import {
   setLocationsState as setHousitterLocationsState,
 } from '../../slices/housitterSlice'
 import Footer from '../../components/Footer'
+import Sorter from '../../components/Sorter'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -377,10 +377,8 @@ export default function Home() {
                 <hr />
 
                 <h4 className="mt-0">Sort</h4>
-                <SidebarFilter
-                  isHousitter={true}
-                  showCustomLocations={false}
-                  selectionType="checkbox"
+                <Sorter
+                  sortingProperties={Object.values(SortingProperties.HousitterDashboard)}
                   sortElementsHandler={sortPosts}
                 />
               </Card>
@@ -433,5 +431,3 @@ export default function Home() {
     </div>
   )
 }
-
-// TODO: have the SidebarFilter accept props for location and props for availability

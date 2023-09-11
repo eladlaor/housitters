@@ -52,21 +52,19 @@ export default function Sorter(props: {
           </div>
         </div>
 
-        {sortingProperties.map((property, index) => (
-          <div key={index}>
-            <Form.Check
-              type="radio"
-              value={property}
-              checked={selectedSortingProperty === property}
-              onChange={handleSelection}
-              inline
-              name="sortOption"
-              id={`radio-${property}`}
-              label={property}
-            />
-            <br />
-          </div>
-        ))}
+        <div className="d-flex justify-content-center">
+          <Form.Select
+            value={selectedSortingProperty}
+            onChange={handleSelection}
+            aria-label="Sort by"
+          >
+            {sortingProperties.map((property, index) => (
+              <option key={index} value={property}>
+                {property}
+              </option>
+            ))}
+          </Form.Select>
+        </div>
       </Form>
     </div>
   )

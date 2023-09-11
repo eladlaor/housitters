@@ -2,27 +2,22 @@ import { useRouter } from 'next/router'
 import {
   selectAvatarUrlState,
   selectFirstNameState,
-  selectIsLoggedState,
   selectLastNameState,
-  setAvatarUrl,
-  setFirstName,
+  selectPrimaryUseState,
 } from '../../slices/userSlice'
 
-import { LocationDescriptions } from '../../utils/constants'
-import { ClosedSit, DbAvailableHousitter, DefaultAvailablePostType } from '../../types/clientSide'
-import { UserType, DefaultFavouriteUser, PageRoutes } from '../../utils/constants'
-import { Button, Form, Modal, Card, Dropdown } from 'react-bootstrap'
+import { LocationDescriptions, SortingProperties } from '../../utils/constants'
+import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
+import { UserType, PageRoutes } from '../../utils/constants'
+import { Card, Dropdown } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
-import DatePicker from 'react-datepicker'
 import { selectAvailabilityState } from '../../slices/userSlice'
 import {
   selectClosedSitsState,
   selectLocationState,
   selectPetsState,
   setClosedSitsState,
-  setLocationState,
-  setPetsState,
 } from '../../slices/landlordSlice'
 import {
   selectImagesUrlsState,
@@ -36,9 +31,7 @@ import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favo
 import { Col, Container, Row } from 'react-bootstrap'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
-import Image from 'next/image'
 
-import SidebarFilter from '../../components/SidebarFilter'
 import Accordion from 'react-bootstrap/Accordion'
 import { ImageData } from '../../types/clientSide'
 
@@ -46,26 +39,21 @@ import { blobToBuffer } from '../../utils/files'
 import { handleError } from '../../utils/helpers'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import Footer from '../../components/Footer'
+import Sorter from '../../components/Sorter'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
   const router = useRouter()
-  const userType = router.query.userType // TODO: what if the user navigates here directly not via login. This value should be retrieved from db.
+  const userType = router.query.userType || useSelector(selectPrimaryUseState)
 
   const dispatch = useDispatch()
-  const firstName = useSelector(selectFirstNameState)
-  const lastName = useSelector(selectLastNameState)
-  const avatarUrl = useSelector(selectAvatarUrlState)
   const availability = useSelector(selectAvailabilityState)
 
   const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
   const [startDate, endDate] = dateRange
   const [location, setLocation] = useState(null as null | string)
 
-  const [showNewPostModal, setShowNewPostModal] = useState(false)
-  const [showFoundSitterModal, setShowFoundSitterModal] = useState(false)
-  const [postPreviewDataUrls, setPostPreviewDataUrls] = useState([] as ImageData[])
   const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
   const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
   const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
@@ -170,43 +158,10 @@ export default function Home() {
     }
   }, [user, availability, location, isActivePost, dateRange])
 
-  // async function handleShowNewPostModal() {
-  //   if (fileNames.length > 0) {
-  //     await loadPostPreviewImages()
-  //   }
-  //   setShowNewPostModal(true)
+  // function handleFoundSitter(e: any) {
+  //   e.preventDefault()
+  //   setShowFoundSitterModal(true)
   // }
-
-  function handleCloseNoewPostModal() {
-    setPostPreviewDataUrls([])
-    setShowNewPostModal(false)
-  }
-
-  // TODO: should paramterize to load any kind of image
-  async function loadPostPreviewImages() {
-    let previews: ImageData[] = []
-    const downloadPromises = fileNames.map(async (fileName) => {
-      let { error, data: imageData } = await supabaseClient.storage
-        .from('posts')
-        .download(`${user?.id}-${fileName.url}`)
-      if (error) {
-        console.log(`failed downloading preview image: ${error.message}`)
-        throw error
-      } else if (imageData) {
-        const buffer = await blobToBuffer(imageData)
-        const previewDataUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`
-        previews.push({ url: previewDataUrl, id: fileName.id })
-      }
-    })
-
-    await Promise.all(downloadPromises)
-    setPostPreviewDataUrls(previews)
-  }
-
-  function handleFoundSitter(e: any) {
-    e.preventDefault()
-    setShowFoundSitterModal(true)
-  }
 
   function handleSelectedFoundSitter(e: any) {
     e.preventDefault()
@@ -224,39 +179,39 @@ export default function Home() {
     }, 0)
   }
 
-  async function handleConfirmSitterSelection(e: any) {
-    e.preventDefault()
-    let confirmedClosedSitsToUpdate: ClosedSit[] = []
+  // async function handleConfirmSitterSelection(e: any) {
+  //   e.preventDefault()
+  //   let confirmedClosedSitsToUpdate: ClosedSit[] = []
 
-    // for...of will ensure that each iteration will begin after the previous async operation completed
-    for (const startDate of preConfirmedSelectionOfClosedSitsPerSitter.startDates) {
-      const { error } = await supabaseClient.from('closed_sits').upsert({
-        landlord_id: user?.id,
-        housitter_id: selectedHousitterId,
-        start_date: startDate,
-      })
+  //   // for...of will ensure that each iteration will begin after the previous async operation completed
+  //   for (const startDate of preConfirmedSelectionOfClosedSitsPerSitter.startDates) {
+  //     const { error } = await supabaseClient.from('closed_sits').upsert({
+  //       landlord_id: user?.id,
+  //       housitter_id: selectedHousitterId,
+  //       start_date: startDate,
+  //     })
 
-      if (error) {
-        console.log(`error upserting closed sit for date:${startDate}. Error: ${error.message}`)
-        debugger
-        throw error
-      }
+  //     if (error) {
+  //       console.log(`error upserting closed sit for date:${startDate}. Error: ${error.message}`)
+  //       debugger
+  //       throw error
+  //     }
 
-      confirmedClosedSitsToUpdate.push({
-        housitterId: selectedHousitterId,
-        housitterAvatarUrl: '',
-        housitterFirstName: '',
-        housitterLastName: '',
-        startDate: startDate,
-      })
-    }
+  //     confirmedClosedSitsToUpdate.push({
+  //       housitterId: selectedHousitterId,
+  //       housitterAvatarUrl: '',
+  //       housitterFirstName: '',
+  //       housitterLastName: '',
+  //       startDate: startDate,
+  //     })
+  //   }
 
-    dispatch(setClosedSitsState(confirmedClosedSitsToUpdate))
-    setPreConfirmedSelectionOfClosedSitsPerSitter({ housitterId: '', startDates: [] })
+  //   dispatch(setClosedSitsState(confirmedClosedSitsToUpdate))
+  //   setPreConfirmedSelectionOfClosedSitsPerSitter({ housitterId: '', startDates: [] })
 
-    console.log(`successfuly closed sit`)
-    setShowFoundSitterModal(false)
-  }
+  //   console.log(`successfuly closed sit`)
+  //   setShowFoundSitterModal(false)
+  // }
 
   function sortHousitters(sortByProperty: string, sortOrder: string) {
     let sortedHousitters: any[] = [...housitters]
@@ -376,10 +331,9 @@ export default function Home() {
                 </Dropdown>
                 <hr />
                 <h4>Sort</h4>
-                <SidebarFilter
-                  isHousitter={false}
-                  showCustomLocations={true}
-                  selectionType="radio"
+
+                <Sorter
+                  sortingProperties={Object.values(SortingProperties.LandlordDashboard)}
                   sortElementsHandler={sortHousitters}
                 />
               </Card>
