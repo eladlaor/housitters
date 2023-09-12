@@ -45,7 +45,6 @@ export interface ReviewsOnSelectedUserProps {
 export interface HousePreviewProps {
   landlordId: string
   title: string
-  description: string
   location: string
   dogs: number
   cats: number

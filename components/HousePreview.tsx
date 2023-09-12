@@ -1,44 +1,27 @@
-import { Button, ListGroup, Modal, Badge, Col, Row, Spinner } from 'react-bootstrap'
+import { Button, Modal, Badge, Col, Row, Spinner } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import Card from 'react-bootstrap/Card'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faCalendar,
-  faCalendarCheck,
-  faCat,
-  faDog,
-  faDoorOpen,
-} from '@fortawesome/free-solid-svg-icons'
+import { faCat, faDog } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import { useSupabaseClient } from '@supabase/auth-helpers-react'
 import Image from 'next/image'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  selectAvatarUrlState,
-  selectIsLoggedState,
-  selectPrimaryUseState,
-} from '../slices/userSlice'
+import { selectAvatarUrlState, selectPrimaryUseState } from '../slices/userSlice'
 import ContactFoundUser from './Contact/ContactFoundUser'
-import { LocationDescriptions, UserType, DefaultFavouriteUser } from '../utils/constants'
+import { LocationDescriptions } from '../utils/constants'
 import { ImageData } from '../types/clientSide'
-import Picture from './Picture'
 import { selectClosedSitsState, setClosedSitsState } from '../slices/landlordSlice'
-import { HousePreviewProps, ClosedSit } from '../types/clientSide'
-import {
-  selectLandlordAvatarUrlState,
-  setLandlordFirstNameState,
-  setLandlordLastNameState,
-} from '../slices/availablePostsSlice'
-import { RootState } from '../store'
-import DateDisplayer from './utils/DateDisplayer'
-import { getUrlFromSupabase } from '../utils/helpers'
-import Link from 'next/link'
+import { HousePreviewProps } from '../types/clientSide'
+
+import { getUrlFromSupabase, handleError } from '../utils/helpers'
+
+import { countDays } from '../utils/dates'
 
 export default function HousePreview({
   landlordId,
   title,
-  description,
   location,
   dogs,
   cats,
@@ -51,16 +34,13 @@ export default function HousePreview({
 
   const [postPicturesFullUrl, setPostPicturesFullUrl] = useState([] as ImageData[])
   const [showModal, setShowModal] = useState(false)
-  const userType = useSelector(selectPrimaryUseState)
-  const avatarUrl = useSelector(selectAvatarUrlState)
 
-  const closedSits = useSelector(selectClosedSitsState)
+  // const closedSits = useSelector(selectClosedSitsState)
+
+  const [dateRanges, setDateRanges] = useState([] as { startDate: string; endDate: string }[])
+  const [duration, setDuration] = useState(1)
 
   const [landlordAvatarUrl, setLandlordAvatarUrlState] = useState('')
-
-  function handleModalOpen() {
-    setShowModal(true)
-  }
 
   function handleModalClose() {
     setShowModal(false)
@@ -68,66 +48,85 @@ export default function HousePreview({
 
   useEffect(() => {
     if (landlordId) {
-      const asyncWrapper = async () => {
-        let query = await supabaseClient
+      const loadData = async () => {
+        let profilesQuery = await supabaseClient
           .from('profiles')
           .select(`avatar_url`)
           .eq('id', landlordId)
           .single()
 
-        const { error, data } = await query
+        const { error, data } = await profilesQuery
         if (error) {
-          console.log(error)
-          debugger
-          return
+          return handleError(error.message, 'HousePreview.useEffect')
         }
 
         if (data) {
           setLandlordAvatarUrlState(data.avatar_url)
         }
+
+        const availabailityQuery = await supabaseClient
+          .from('available_dates')
+          .select(`start_date, end_date`)
+          .eq(`user_id`, landlordId)
+
+        const { error: availabilityError, data: availabilityData } = await availabailityQuery
+        if (availabilityError) {
+          return handleError(availabilityError.message, 'HousePreview.useEffect')
+        }
+
+        if (availabilityData) {
+          let durationInDays = 0
+          let modifiedDateRanges = [] as { startDate: string; endDate: string }[]
+          for (const period of availabilityData) {
+            durationInDays = durationInDays + countDays(period.start_date, period.end_date)
+            modifiedDateRanges.push({ startDate: period.start_date, endDate: period.end_date })
+          }
+          setDateRanges(modifiedDateRanges)
+          setDuration(durationInDays)
+        }
       }
 
-      asyncWrapper()
+      loadData()
     }
   }, [landlordId])
 
-  function isClosedPeriod(currentPeriodStartDate: string) {
-    return closedSits.find((closedSit) => closedSit.startDate === currentPeriodStartDate)
-  }
+  // function isClosedPeriod(currentPeriodStartDate: string) {
+  //   return closedSits.find((closedSit) => closedSit.startDate === currentPeriodStartDate)
+  // }
 
-  async function handleMySitterCancelled(
-    e: React.FormEvent<HTMLFormElement>,
-    props: {
-      housitterId: string
-      landlordId: string
-      startDate: string
-    }
-  ) {
-    const { housitterId, landlordId, startDate } = props
+  // async function handleMySitterCancelled(
+  //   e: React.FormEvent<HTMLFormElement>,
+  //   props: {
+  //     housitterId: string
+  //     landlordId: string
+  //     startDate: string
+  //   }
+  // ) {
+  //   const { housitterId, landlordId, startDate } = props
 
-    const { error } = await supabaseClient
-      .from('closed_sits')
-      .delete()
-      .eq('housitter_id', housitterId)
-      .eq('landlord_id', landlordId)
-      .eq('start_date', startDate)
+  //   const { error } = await supabaseClient
+  //     .from('closed_sits')
+  //     .delete()
+  //     .eq('housitter_id', housitterId)
+  //     .eq('landlord_id', landlordId)
+  //     .eq('start_date', startDate)
 
-    if (error) {
-      alert(`error removing closed sit from db: ${error.message}`)
-      debugger
-      throw error
-    }
+  //   if (error) {
+  //     alert(`error removing closed sit from db: ${error.message}`)
+  //     debugger
+  //     throw error
+  //   }
 
-    const modifiedClosedSits = [...closedSits]
-    const indexOfRemovedSit = modifiedClosedSits.findIndex(
-      (closedSit) => closedSit.startDate === startDate
-    )
+  //   const modifiedClosedSits = [...closedSits]
+  //   const indexOfRemovedSit = modifiedClosedSits.findIndex(
+  //     (closedSit) => closedSit.startDate === startDate
+  //   )
 
-    modifiedClosedSits.splice(indexOfRemovedSit, 1)
-    dispatch(setClosedSitsState(modifiedClosedSits))
+  //   modifiedClosedSits.splice(indexOfRemovedSit, 1)
+  //   dispatch(setClosedSitsState(modifiedClosedSits))
 
-    // TODO: add logic to send an email to housitters.com with the reason for cancellation, and if you feel it is too short notice and irresponsible we give the sitter a yellow card
-  }
+  //   // TODO: add logic to send an email to housitters.com with the reason for cancellation, and if you feel it is too short notice and irresponsible we give the sitter a yellow card
+  // }
 
   return (
     <Card className="house-preview">
@@ -157,6 +156,11 @@ export default function HousePreview({
             <FontAwesomeIcon icon={faCat} /> {cats}
           </Badge>
         )}
+        <br />
+        {duration !== 0 &&
+          dateRanges?.map((period, index) => <Badge key={index}>{period.startDate}</Badge>)}
+        {duration !== 0 && <br />}
+        <Badge>{duration ? `${duration} days` : 'flexible'}</Badge>
       </div>
       <Card.Body>
         <Card.Title>{title}</Card.Title>

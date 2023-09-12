@@ -407,7 +407,6 @@ export default function Home() {
                       <HousePreview
                         landlordId={post.landlordId}
                         title={post.title}
-                        description={post.description}
                         location={post.location}
                         dogs={post.dogs}
                         cats={post.cats}
