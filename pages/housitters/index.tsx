@@ -1,45 +1,21 @@
 import { useRouter } from 'next/router'
-import {
-  selectAvatarUrlState,
-  selectFirstNameState,
-  selectLastNameState,
-  selectPrimaryUseState,
-} from '../../slices/userSlice'
+import { selectPrimaryUseState } from '../../slices/userSlice'
 
 import {
   LocationDescriptions,
   LocationSelectionEventKeys,
   SortingProperties,
 } from '../../utils/constants'
-import { ClosedSit, DbAvailableHousitter } from '../../types/clientSide'
+import { DbAvailableHousitter } from '../../types/clientSide'
 import { UserType, PageRoutes } from '../../utils/constants'
-import { Card, Dropdown } from 'react-bootstrap'
+import { Button, Card, Dropdown } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { selectAvailabilityState } from '../../slices/userSlice'
-import {
-  selectClosedSitsState,
-  selectLocationState,
-  selectPetsState,
-  setClosedSitsState,
-} from '../../slices/landlordSlice'
-import {
-  selectImagesUrlsState,
-  selectDescriptionState,
-  selectIsActiveState,
-  selectTitleState,
-} from '../../slices/createPostSlice'
-
-import { selectAllFavouriteUsers, setAllFavouriteUsers } from '../../slices/favouritesSlice'
 
 import { Col, Container, Row } from 'react-bootstrap'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
-
-import Accordion from 'react-bootstrap/Accordion'
-import { ImageData } from '../../types/clientSide'
-
-import { blobToBuffer } from '../../utils/files'
 import { handleError } from '../../utils/helpers'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import Footer from '../../components/Footer'
@@ -60,7 +36,7 @@ export default function Home() {
 
   const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
   const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
-  const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
+  // const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
   const [
     preConfirmedSelectionOfClosedSitsPerSitter,
     setPreConfirmedSelectionOfClosedSitsPerSitter,
@@ -72,17 +48,8 @@ export default function Home() {
     startDates: string[]
   })
 
-  const isActivePost = useSelector(selectIsActiveState)
-  const title = useSelector(selectTitleState)
-  const description = useSelector(selectDescriptionState)
-  const fileNames = useSelector(selectImagesUrlsState)
-  const oldLocation = useSelector(selectLocationState)
-  const pets = useSelector(selectPetsState)
-  const closedSits = useSelector(selectClosedSitsState)
-
-  const isAfterSignup = router.query.isAfterSignup
-
-  const favouriteUsers = useSelector(selectAllFavouriteUsers)
+  // const isActivePost = useSelector(selectIsActiveState)
+  const [isPostComplete, setIsPostComplete] = useState(true)
 
   useEffect(() => {
     if (!user) {
@@ -153,6 +120,23 @@ export default function Home() {
           }
 
           setHousitters(availableHousitters)
+
+          if (userType === UserType.Landlord) {
+            const { error, data } = await supabaseClient
+              .from('posts')
+              .select('title, description, images_urls')
+              .eq('landlord_id', user.id)
+              .single()
+
+            if (error) {
+              return handleError(error.message, 'housitters.index.useEffect')
+            }
+
+            if (!data?.title || !data?.description || !data?.images_urls) {
+              console.log('here')
+              setIsPostComplete(false)
+            }
+          }
         }
       }
 
@@ -160,28 +144,28 @@ export default function Home() {
         console.log(e.message)
       })
     }
-  }, [user, availability, location, isActivePost, dateRange])
+  }, [user, availability, location, dateRange])
 
   // function handleFoundSitter(e: any) {
   //   e.preventDefault()
   //   setShowFoundSitterModal(true)
   // }
 
-  function handleSelectedFoundSitter(e: any) {
-    e.preventDefault()
+  // function handleSelectedFoundSitter(e: any) {
+  //   e.preventDefault()
 
-    setIsThereAnySelectedSitter(true)
+  //   setIsThereAnySelectedSitter(true)
 
-    // knowingly, this is a bit of a strange workaround, but it seems that even though the order of operations are fine, still - the checkbox 'checked' prop is not able to successfuly get the 'true' value in isThisSelectedSitter.
-    const sitterId = e.target.value
-    setTimeout(() => {
-      setSelectedHousitterId(sitterId)
-      setPreConfirmedSelectionOfClosedSitsPerSitter({
-        housitterId: sitterId,
-        startDates: [...preConfirmedSelectionOfClosedSitsPerSitter.startDates],
-      })
-    }, 0)
-  }
+  //   // knowingly, this is a bit of a strange workaround, but it seems that even though the order of operations are fine, still - the checkbox 'checked' prop is not able to successfuly get the 'true' value in isThisSelectedSitter.
+  //   const sitterId = e.target.value
+  //   setTimeout(() => {
+  //     setSelectedHousitterId(sitterId)
+  //     setPreConfirmedSelectionOfClosedSitsPerSitter({
+  //       housitterId: sitterId,
+  //       startDates: [...preConfirmedSelectionOfClosedSitsPerSitter.startDates],
+  //     })
+  //   }, 0)
+  // }
 
   // async function handleConfirmSitterSelection(e: any) {
   //   e.preventDefault()
@@ -271,27 +255,27 @@ export default function Home() {
             <Col md={3}>
               {userType === UserType.Landlord && (
                 <Card className="sidebar-filter">
-                  {isActivePost ? (
-                    <div>
-                      <Accordion>
-                        <Accordion.Item eventKey="0">
-                          <Accordion.Header>My Post</Accordion.Header>
-                          <Accordion.Body></Accordion.Body>
-                        </Accordion.Item>
-                      </Accordion>
-                    </div>
+                  {isPostComplete ? (
+                    <Button
+                      onClick={() => {
+                        router.push(PageRoutes.LandlordRoutes.EditHouse)
+                      }}
+                    >
+                      Edit Post
+                    </Button>
                   ) : (
                     <p style={{ marginBottom: 0 }}>
-                      💡 Try&nbsp;
+                      💡
                       <strong
                         onClick={() => {
-                          router.push(PageRoutes.HousitterRoutes.EditHouse)
+                          router.push(PageRoutes.LandlordRoutes.EditHouse)
                         }}
                         style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
                       >
-                        completing your post
+                        complete your post
                       </strong>
-                      &nbsp;to increase your chances of finding a sitter!
+                      <br />
+                      to increase your chances of finding a sitter!
                     </p>
                   )}
                 </Card>
@@ -368,7 +352,7 @@ export default function Home() {
                         about_me={
                           sitter.about_me
                             ? sitter.about_me
-                            : `${sitter.firstName} didn't write a bio yet`
+                            : `${sitter.firstName} didn't write a description yet.`
                         }
                         avatarUrl={sitter.avatarUrl}
                         key={index}

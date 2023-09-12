@@ -8,15 +8,12 @@ import {
   LocationSelectionEventKeys,
   PageRoutes,
   UserType,
-  LocationIds,
 } from '../../utils/constants'
 
 import { ImageData } from '../../types/clientSide'
-import DatePicker from 'react-datepicker'
 import HousePreview from '../../components/HousePreview'
-import { Row, Col, Alert, Container, Card, Dropdown, Accordion } from 'react-bootstrap'
+import { Row, Col, Alert, Container, Card, Dropdown, Accordion, Button } from 'react-bootstrap'
 import { useRouter } from 'next/router'
-import { selectIsActiveState } from '../../slices/createPostSlice'
 import { selectAvailabilityState, selectPrimaryUseState } from '../../slices/userSlice'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import LocationSelector from '../../components/LocationSelector'
@@ -32,11 +29,10 @@ export default function Home() {
   const supabase = useSupabaseClient()
   const user = useUser()
   const router = useRouter()
-  const isActivePost = useSelector(selectIsActiveState)
   const userType = useSelector(selectPrimaryUseState)
 
-  const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
-  const [startDate, endDate] = dateRange
+  // const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
+  const [isPostComplete, setIsPostComplete] = useState(true)
 
   const [landlordLocation, setLandlordLocation] = useState(LocationSelectionEventKeys.Anywhere)
 
@@ -218,9 +214,7 @@ export default function Home() {
         let { data: postsData, error: postsError } = await postsQuery
 
         if (postsError) {
-          console.log(postsError.message)
-          debugger
-          throw postsError
+          return handleError(postsError.message, 'houses.index.useEffect.postsError')
         } else if (postsData) {
           // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
           // let postsFilteredByPeriod = postsData.filter((post) => {
@@ -261,11 +255,16 @@ export default function Home() {
               }
             }
 
+            if (post.landlord_id === user.id) {
+              if (!post?.title || !post?.description || !post?.images_urls) {
+                setIsPostComplete(false)
+              }
+            }
+
             return parsedAvailabePost
           })
 
           setAvailablePosts(parsedAvailablePosts)
-          // }
         }
       }
 
@@ -300,27 +299,27 @@ export default function Home() {
             <Col md={3}>
               {userType === UserType.Landlord && (
                 <Card className="sidebar-filter">
-                  {isActivePost ? (
-                    <div>
-                      <Accordion>
-                        <Accordion.Item eventKey="0">
-                          <Accordion.Header>My Post</Accordion.Header>
-                          <Accordion.Body></Accordion.Body>
-                        </Accordion.Item>
-                      </Accordion>
-                    </div>
+                  {isPostComplete ? (
+                    <Button
+                      onClick={() => {
+                        router.push(PageRoutes.LandlordRoutes.EditHouse)
+                      }}
+                    >
+                      Edit Post
+                    </Button>
                   ) : (
                     <p style={{ marginBottom: 0 }}>
-                      💡 Try&nbsp;
+                      💡
                       <strong
                         onClick={() => {
-                          router.push(PageRoutes.HousitterRoutes.EditHouse)
+                          router.push(PageRoutes.LandlordRoutes.EditHouse)
                         }}
                         style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
                       >
-                        completing your post
+                        complete your post
                       </strong>
-                      &nbsp;to increase your chances of finding a sitter!
+                      <br />
+                      to increase your chances of finding a sitter
                     </p>
                   )}
                 </Card>

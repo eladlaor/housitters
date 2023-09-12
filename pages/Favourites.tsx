@@ -85,7 +85,9 @@ export default function Favourites() {
             lastName={favUser.lastName}
             experience={favUser.experience}
             about_me={
-              favUser.about_me ? favUser.about_me : `${favUser.firstName} didn't write a bio yet`
+              favUser.about_me
+                ? favUser.about_me
+                : `${favUser.firstName} didn't write a description yet`
             }
             avatarUrl={favUser.avatarUrl}
             key={index}

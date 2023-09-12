@@ -129,11 +129,11 @@ export default function HomeNavbar({ className = '' }: Props) {
                     <NavDropdown.Item href={PageRoutes.Profile}>Edit Profile</NavDropdown.Item>
                     {userType === UserType.Landlord &&
                       (hasPost ? (
-                        <NavDropdown.Item href={PageRoutes.HousitterRoutes.EditHouse}>
-                          Edit House
+                        <NavDropdown.Item href={PageRoutes.LandlordRoutes.EditHouse}>
+                          Edit Post
                         </NavDropdown.Item>
                       ) : (
-                        <NavDropdown.Item href={PageRoutes.HousitterRoutes.EditHouse}>
+                        <NavDropdown.Item href={PageRoutes.LandlordRoutes.EditHouse}>
                           Add Your House
                         </NavDropdown.Item>
                       ))}

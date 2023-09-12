@@ -259,7 +259,7 @@ export default function Signup() {
           images_urls: null,
           is_active: true,
           landlord_id: userId,
-          title: 'available house',
+          title: `${form.firstName} ${form.lastName}`,
         }
 
         const { error: newPostError } = await supabaseClient.from('posts').upsert(defaultPost)
@@ -275,7 +275,7 @@ export default function Signup() {
           landlordAvatarUrl: avatarUrl,
           landlordFirstName: form.firstName,
           landlordLastName: form.lastName,
-          title: 'available house',
+          title: `${form.firstName} ${form.lastName}`,
           description: `a description hasn't been written yet`,
           location: landlordLocation,
           dogs: pets.dogs,

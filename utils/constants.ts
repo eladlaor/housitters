@@ -12,11 +12,11 @@ export const PageRoutes = {
   Intro: '/intro',
   HousitterRoutes: {
     Home: '/houses',
-    EditHouse: '/houses/edit',
     Account: '/housitters/housitter-account',
   },
   LandlordRoutes: {
     Home: '/housitters',
+    EditHouse: '/houses/edit',
   },
   Auth: {
     Login: '/auth/login',

@@ -67,13 +67,13 @@ export default function SignOut({ elementType }: SignOutProps) {
           case SignOutElementTypes.Button:
             return (
               <Button onClick={handleSignOutClick} variant="danger" id="signout-via-dropdown">
-                Sign out
+                Sign Out
               </Button>
             )
           case SignOutElementTypes.NavDropdownItem:
             return (
               <NavDropdown.Item href="#" onClick={handleSignOutClick} id="signout-via-dropdown">
-                Sign out
+                Sign Out
               </NavDropdown.Item>
             )
           default:
