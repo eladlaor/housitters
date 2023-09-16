@@ -124,9 +124,8 @@ export default function Home() {
           <Col xs={12} md={9}>
             <h1 style={{ fontWeight: 700, fontSize: '6rem' }}>Housitters</h1>
             <p style={{ fontSize: '2rem' }}>
-              Make your next trip stress-free with our house-sitting community. Connect with
-              reliable sitters who provide security, companionship, and a personalized touch to
-              ensure your home and furry friends receive the attention they deserve.
+              Connect with reliable sitters to ensure your furry loved ones get the care they
+              deserve.
             </p>
           </Col>
           <Col

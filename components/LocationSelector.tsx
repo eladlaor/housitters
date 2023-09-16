@@ -40,6 +40,7 @@ export default function LocationSelector({
 
   useEffect(() => {
     if (!user) {
+      setLocationCurrentSelectionType(LocationSelectionEventKeys.Anywhere)
       return
     }
 
@@ -143,28 +144,29 @@ export default function LocationSelector({
         allLocationsSelected.push(location)
       })
 
-      let { error } = await supabaseClient.from('housitters').upsert({
-        user_id: user?.id,
-        locations: allLocationsSelected,
-      })
+      if (updateDbInstantly) {
+        let { error } = await supabaseClient.from('housitters').upsert({
+          user_id: user?.id,
+          locations: allLocationsSelected,
+        })
 
-      if (error) {
-        alert('error updating locations from filter to db' + error)
-        throw error
+        if (error) {
+          return handleError(error.message, 'LocationSelector.handleHousitterSelectionType')
+        }
       }
 
       dispatch(setHousitterLocationsState(allLocationsSelected))
       setShouldShowCustomLocations(false)
-      console.log('calling set state to anywhere')
       setLocationCurrentSelectionType(LocationSelectionEventKeys.Anywhere)
     } else if (e === LocationSelectionEventKeys.CustomLocations) {
-      let { error } = await supabaseClient.from('housitters').upsert({
-        user_id: user?.id,
-      })
+      if (updateDbInstantly) {
+        let { error } = await supabaseClient.from('housitters').upsert({
+          user_id: user?.id,
+        })
 
-      if (error) {
-        alert('error updating locations from filter to db' + error)
-        throw error
+        if (error) {
+          return handleError(error.message, 'LocationSelector.handleHousitterSelectionType')
+        }
       }
 
       dispatch(setHousitterLocationsState([]))
