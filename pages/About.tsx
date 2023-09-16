@@ -20,22 +20,7 @@ export default function About() {
         </p>
       </section>
 
-      <section id="about-me">
-        <h2>About Me</h2>
-        <p>
-          Hi, I'm Elad Laor, the founder of Housitters. Like many people, I've always had a deep
-          love for animals and a strong sense of community. However, I often found it challenging to
-          find trustworthy individuals to care for my pets and home while I was away. This struggle
-          inspired me to create this platform, a place where house owners can find reliable sitters
-          and build meaningful connections within their local community.
-        </p>
-        <p>
-          I believe that by fostering a sense of trust, mutual respect, and shared responsibility,
-          we can create a network of individuals who support each other in their house-sitting
-          needs. Housitters aims to bring people together, ensuring that both house owners and
-          sitters have a positive and rewarding experience every time.
-        </p>
-      </section>
+      <section id="about-me"></section>
 
       <section id="faq">
         <h2>Frequently Asked Questions</h2>
@@ -50,40 +35,12 @@ export default function About() {
               and finding the right fit for both parties.
             </p>
           </li>
-          <li>
-            <h3>Is it safe to use Housitters?</h3>
-            <p>
-              Yes, we prioritize safety and security. All members are required to complete a
-              thorough verification process, including identity verification and background checks.
-              We also provide a review system, allowing users to share their experiences and provide
-              feedback. While we take these precautions, it's still important to exercise caution
-              and trust your instincts when interacting with others.
-            </p>
-          </li>
-          <li>
-            <h3>Do I have to pay to use Housitters?</h3>
-            <p>
-              Creating an account and browsing listings is free. However, we offer premium features
-              and additional benefits through our paid membership plans. These plans provide
-              enhanced visibility for your listings and access to exclusive community events and
-              resources.
-            </p>
-          </li>
+          <li></li>
+          <li></li>
         </ul>
       </section>
 
-      <section id="contact-us">
-        <h2>Contact Us</h2>
-        <p>
-          We'd love to hear from you! If you have any questions, suggestions, or feedback, please
-          don't hesitate to reach out to us. Our dedicated support team is here to assist you.
-        </p>
-        <p>
-          You can contact us by email at{' '}
-          <a href="mailto:info@housitters.com">info@housitters.com</a> or by using the contact form
-          below:
-        </p>
-      </section>
+      <section id="contact-us"></section>
     </Container>
   )
 }
