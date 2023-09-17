@@ -214,7 +214,7 @@ export default function Signup() {
       if (!isHousitter) {
         const newlandlord = {
           user_id: userId,
-          location: landlordLocation,
+          location: landlordLocation || LocationIds.TelAviv,
         }
 
         let { error: landlordError } = await supabaseClient.from('landlords').upsert(newlandlord)
@@ -287,7 +287,7 @@ export default function Signup() {
       } else if (UserType.Housitter) {
         const newHousitter = {
           user_id: userId,
-          locations: housitterLocations,
+          locations: housitterLocations || [LocationIds.TelAviv],
           experience,
           updated_at: new Date(),
         }
