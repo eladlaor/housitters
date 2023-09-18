@@ -148,20 +148,20 @@ export const SwrUniqueCachingKeys = {
 
 export const SortingProperties = {
   HousitterDashboard: {
-    PetsQuantity: 'number of pets',
     Duration: 'duration',
-    Reviews: 'number of reviews',
+    PetsQuantity: 'number of pets',
   },
   LandlordDashboard: {
-    FirstName: 'first name',
     Experience: 'experience',
-    Reviews: 'number of reviews',
+    FirstName: 'first name',
   },
 }
 
 export const SortingPropertiesForHandler = {
   [SortingProperties.LandlordDashboard.FirstName]: 'firstName',
   [SortingProperties.LandlordDashboard.Experience]: 'experience',
+  [SortingProperties.HousitterDashboard.Duration]: 'duration',
+  [SortingProperties.HousitterDashboard.PetsQuantity]: 'number of pets',
 }
 
 export const SignupErrorMessages = {

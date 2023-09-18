@@ -1,6 +1,6 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import {
   SortingProperties,
@@ -18,13 +18,14 @@ import { useRouter } from 'next/router'
 import { selectAvailabilityState, selectPrimaryUseState } from '../../slices/userSlice'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import LocationSelector from '../../components/LocationSelector'
-import { arraysContainSameElements, handleError } from '../../utils/helpers'
+import {  handleError } from '../../utils/helpers'
 import {
   selectLocationsState as selectHousitterLocationsState,
   setLocationsState as setHousitterLocationsState,
 } from '../../slices/housitterSlice'
 import Footer from '../../components/Footer'
 import Sorter from '../../components/Sorter'
+import { countDays } from '../../utils/dates'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -217,19 +218,16 @@ export default function Home() {
         if (postsError) {
           return handleError(postsError.message, 'houses.index.useEffect.postsError')
         } else if (postsData) {
-          // I can compare lengths and see how many relevant posts outside the dates I'm looking for. not necessarily a good feature.
-          // let postsFilteredByPeriod = postsData.filter((post) => {
-          //   return (post?.landlords as any).profiles?.available_dates.some((postPeriod: any) => {
-          //     for (const housitterAvailabilitySelector of housitterAvailableDates) {
-          //       return (
-          //         housitterAvailabilitySelector.endDate.startsWith('1970') ||
-          //         new Date(postPeriod.end_date).getFullYear().toString() === '1970' ||
-          //         (housitterAvailabilitySelector.startDate <= postPeriod.start_date &&
-          //           housitterAvailabilitySelector.endDate >= postPeriod.end_date)
-          //       )
-          //     }
-          //   })
-          // })
+          const { error: availabilityError, data: availabilityData } = await supabase
+            .from('available_dates')
+            .select(`start_date, end_date, user_id`)
+            .eq('user_type', UserType.Landlord)
+          if (availabilityError) {
+            return handleError(
+              availabilityError.message,
+              'houses.index.useEffect query availability'
+            )
+          }
 
           const parsedAvailablePosts = postsData.map((post) => {
             let parsedAvailabePost = {
@@ -243,6 +241,21 @@ export default function Home() {
                   }))
                 : '',
             } as any
+
+            if (availabilityData) {
+              const matchedAvailabilityData = availabilityData.filter(
+                (availability) => availability.user_id === parsedAvailabePost.landlordId
+              )
+
+              let durationInDays = 0
+              let modifiedDateRanges = [] as { startDate: string; endDate: string }[]
+              for (const period of matchedAvailabilityData) {
+                durationInDays = durationInDays + countDays(period.start_date, period.end_date)
+                modifiedDateRanges.push({ startDate: period.start_date, endDate: period.end_date })
+              }
+              parsedAvailabePost.duration = durationInDays
+              parsedAvailabePost.dateRanges = modifiedDateRanges
+            }
 
             let landlordFullName: string = ''
             if (post.landlords) {
@@ -286,7 +299,6 @@ export default function Home() {
 
   function sortPosts(sortByProperty: string, sortOrder: string) {
     let sortedPosts: any[] = [...availablePosts]
-
     switch (sortByProperty) {
       case SortingProperties.HousitterDashboard.PetsQuantity:
         if (sortOrder === 'asc') {
@@ -295,6 +307,12 @@ export default function Home() {
           sortedPosts.sort((a, b) => b.dogs + b.cats - (a.dogs + a.cats))
         }
         break
+      case SortingProperties.HousitterDashboard.Duration:
+        if (sortOrder === 'asc') {
+          sortedPosts.sort((a, b) => a.duration - b.duration)
+        } else {
+          sortedPosts.sort((a, b) => b.duration - a.duration)
+        }
     }
 
     setAvailablePosts(sortedPosts)
@@ -431,6 +449,8 @@ export default function Home() {
                             : []
                         }
                         addMissingDetailsHandler={null}
+                        duration={post.duration}
+                        dateRanges={post.dateRanges}
                       />
                     </Col>
                   ))

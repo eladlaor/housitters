@@ -50,6 +50,8 @@ export interface HousePreviewProps {
   cats: number
   imagesUrls: ImageData[]
   addMissingDetailsHandler: MouseEventHandler<HTMLButtonElement> | null
+  duration: number
+  dateRanges: { startDate: string; endDate: string }[]
 }
 
 export interface MessageSenderProps {

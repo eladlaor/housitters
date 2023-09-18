@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import { BsArrowUp, BsArrowDown } from 'react-icons/bs'
 import { SortingPropertiesForHandler } from '../utils/constants'
@@ -9,7 +9,7 @@ export default function Sorter(props: {
 }) {
   const { sortingProperties, sortElementsHandler } = props
 
-  const [selectedSortingProperty, setSelectedSortingProperty] = useState('first name')
+  const [selectedSortingProperty, setSelectedSortingProperty] = useState(sortingProperties[0])
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
   function handleSelection(e: any) {

@@ -27,6 +27,8 @@ export default function HousePreview({
   cats,
   imagesUrls,
   addMissingDetailsHandler,
+  duration,
+  dateRanges,
 }: HousePreviewProps) {
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
@@ -37,8 +39,7 @@ export default function HousePreview({
 
   // const closedSits = useSelector(selectClosedSitsState)
 
-  const [dateRanges, setDateRanges] = useState([] as { startDate: string; endDate: string }[])
-  const [duration, setDuration] = useState(1)
+  // const [dateRanges, setDateRanges] = useState([] as { startDate: string; endDate: string }[])
 
   const [landlordAvatarUrl, setLandlordAvatarUrlState] = useState('')
 
@@ -62,27 +63,6 @@ export default function HousePreview({
 
         if (data) {
           setLandlordAvatarUrlState(data.avatar_url)
-        }
-
-        const availabailityQuery = await supabaseClient
-          .from('available_dates')
-          .select(`start_date, end_date`)
-          .eq(`user_id`, landlordId)
-
-        const { error: availabilityError, data: availabilityData } = await availabailityQuery
-        if (availabilityError) {
-          return handleError(availabilityError.message, 'HousePreview.useEffect')
-        }
-
-        if (availabilityData) {
-          let durationInDays = 0
-          let modifiedDateRanges = [] as { startDate: string; endDate: string }[]
-          for (const period of availabilityData) {
-            durationInDays = durationInDays + countDays(period.start_date, period.end_date)
-            modifiedDateRanges.push({ startDate: period.start_date, endDate: period.end_date })
-          }
-          setDateRanges(modifiedDateRanges)
-          setDuration(durationInDays)
         }
       }
 
