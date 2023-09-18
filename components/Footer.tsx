@@ -65,18 +65,17 @@ export default function Footer() {
   return (
     <div className="footer text-center text-sm">
       <div>
-        This is a work in progress, we'd appreciate your feedback. {'  '}
         <strong
           onClick={() => setShowContactModal(true)}
           style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
         >
-          Contact us.
+          Contact The Site's Developer
         </strong>
       </div>
       <Modal show={showContactModal} onHide={() => setShowContactModal(false)}>
         <Modal.Header className="d-flex justify-content-between" closeButton>
           <div className="flex-grow-1 text-center mt-1 mb-0">
-            <h3>Let's be in touch</h3>
+            <h3>your feedback is appreciated</h3>
           </div>
         </Modal.Header>
         <Modal.Body>

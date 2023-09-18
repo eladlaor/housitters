@@ -8,6 +8,7 @@ import {
   LocationSelectionEventKeys,
   PageRoutes,
   UserType,
+  NoDescriptionDefaultMessage,
 } from '../../utils/constants'
 
 import { ImageData } from '../../types/clientSide'
@@ -243,7 +244,12 @@ export default function Home() {
                 : '',
             } as any
 
+            let landlordFullName: string = ''
             if (post.landlords) {
+              landlordFullName = `${(post.landlords as any).profiles?.first_name} ${
+                (post.landlords as any).profiles?.last_name
+              }`
+
               if (Array.isArray(post.landlords)) {
                 parsedAvailabePost.location = post.landlords[0] ? post.landlords[0].location : ''
                 parsedAvailabePost.dogs = (post.landlords as any).profiles?.pets?.dogs
@@ -256,7 +262,13 @@ export default function Home() {
             }
 
             if (post.landlord_id === user.id) {
-              if (!post?.title || !post?.description || !post?.images_urls) {
+              if (
+                !post?.title ||
+                post?.title === landlordFullName ||
+                !post?.description ||
+                post?.description === NoDescriptionDefaultMessage ||
+                !post?.images_urls
+              ) {
                 setIsPostComplete(false)
               }
             }
@@ -293,7 +305,7 @@ export default function Home() {
       <div className="content-wrapper">
         <Container>
           <h2>Looking for a great house?</h2>
-          <h5>Let's find a cute pet for you to feel at home with.</h5>
+          <h5>There are {availablePosts.length} available houses for these dates and locations.</h5>
 
           <Row>
             <Col md={3}>

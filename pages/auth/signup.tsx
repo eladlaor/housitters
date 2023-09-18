@@ -3,6 +3,7 @@ import {
   DbGenderTypes,
   LocationIds,
   MandatorySignupFields,
+  NoDescriptionDefaultMessage,
   PageRoutes,
   SIGNUP_FORM_PROPS,
   SignupErrorFeedbacks,
@@ -214,7 +215,7 @@ export default function Signup() {
       if (!isHousitter) {
         const newlandlord = {
           user_id: userId,
-          location: landlordLocation || LocationIds.TelAviv,
+          location: landlordLocation || LocationIds.Center,
         }
 
         let { error: landlordError } = await supabaseClient.from('landlords').upsert(newlandlord)
@@ -255,7 +256,7 @@ export default function Signup() {
 
         const defaultPost: Partial<Database['public']['Tables']['posts']['Row']> = {
           created_at: new Date().toISOString(),
-          description: `a description hasn't been written yet`,
+          description: NoDescriptionDefaultMessage,
           images_urls: null,
           is_active: true,
           landlord_id: userId,
@@ -287,7 +288,7 @@ export default function Signup() {
       } else if (UserType.Housitter) {
         const newHousitter = {
           user_id: userId,
-          locations: housitterLocations || [LocationIds.TelAviv],
+          locations: housitterLocations || [LocationIds.Center],
           experience,
           updated_at: new Date(),
         }

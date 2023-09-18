@@ -58,29 +58,17 @@ export const EditProfileProps = {
 export const LocationIds = {
   Abroad: 'abroad',
   North: 'north',
-  Haifa: 'haifa',
-  PardesHana: 'pardes_hana',
-  Hasharon: 'hasharon',
-  TelAviv: 'tel_aviv',
-  NearTa: 'near_ta',
+  Center: 'center',
   Jerusalem: 'jerusalem',
-  RishonToAshkelon: 'rishon_ashkelon',
-  AshkelonToBash: 'ashkelon_bash',
-  Eilat: 'eilat',
+  South: 'south',
 }
 
 export const LocationDescriptions = {
   [LocationIds.Abroad]: 'Outside Israel',
-  [LocationIds.North]: 'Northern than Haifa',
-  [LocationIds.Haifa]: 'Haifa and around',
-  [LocationIds.PardesHana]: 'Pardes-hana and around',
-  [LocationIds.Hasharon]: 'Hasharon',
-  [LocationIds.TelAviv]: 'Tel Aviv',
-  [LocationIds.NearTa]: 'Near Tel Aviv',
+  [LocationIds.North]: 'North Israel',
+  [LocationIds.Center]: 'Central Israel',
   [LocationIds.Jerusalem]: 'Jerusalem',
-  [LocationIds.RishonToAshkelon]: 'Between Rishon and Ashkelon',
-  [LocationIds.AshkelonToBash]: 'Ashkelon to Bash',
-  [LocationIds.Eilat]: 'Eilat',
+  [LocationIds.South]: 'South Israel',
 }
 
 export const LocationSelectionEventKeys = {
@@ -145,6 +133,8 @@ export const DefaultAvailablePost = {
     },
   ] as ImageData[],
 }
+
+export const NoDescriptionDefaultMessage = `a description hasn't been written yet`
 
 export const DefaultFavouriteUser = {
   favouriteUserType: '',

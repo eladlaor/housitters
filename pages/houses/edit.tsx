@@ -1,5 +1,5 @@
 import { Container, Button, Form, FormControl, Row, InputGroup, Col } from 'react-bootstrap'
-import { LocationDescriptions, PageRoutes, UserType } from '../../utils/constants'
+import { LocationDescriptions, LocationIds, PageRoutes, UserType } from '../../utils/constants'
 import DatePicker from 'react-datepicker'
 import AvailabilitySelector from '../../components/AvailabilitySelector'
 import { useSupabaseClient, useSessionContext, useUser } from '@supabase/auth-helpers-react'
@@ -293,7 +293,7 @@ export default function EditHouse() {
               <Form.Label>Where</Form.Label>
 
               <Form.Select
-                value={location}
+                value={location || ''}
                 onChange={(e) => setLocation(e.target.value)}
                 aria-label="Default select example"
               >
