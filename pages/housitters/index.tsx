@@ -24,6 +24,7 @@ import Sorter from '../../components/Sorter'
 export default function Home() {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
+  const userId = user?.id
   const router = useRouter()
   const userType = router.query.userType || useSelector(selectPrimaryUseState)
 
@@ -52,7 +53,7 @@ export default function Home() {
   const [isPostComplete, setIsPostComplete] = useState(true)
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       router.push('/')
     } else {
       const getData = async () => {
@@ -125,7 +126,7 @@ export default function Home() {
             const { error, data } = await supabaseClient
               .from('posts')
               .select('title, description, images_urls')
-              .eq('landlord_id', user.id)
+              .eq('landlord_id', userId)
               .single()
 
             if (error) {
@@ -144,7 +145,7 @@ export default function Home() {
         console.log(e.message)
       })
     }
-  }, [user, availability, location, dateRange])
+  }, [userId, availability, location, dateRange])
 
   // function handleFoundSitter(e: any) {
   //   e.preventDefault()

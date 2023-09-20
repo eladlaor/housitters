@@ -14,6 +14,7 @@ import { PageRoutes, UserType } from '../utils/constants'
 export default function Favourites() {
   const supabaseClient = useSupabaseClient()
   const { session, isLoading } = useSessionContext()
+  const userId = session?.user?.id
   const favouriteUsers = useSelector(selectAllFavouriteUsers)
   const router = useRouter()
   const userType = useSelector(selectPrimaryUseState)
@@ -21,7 +22,7 @@ export default function Favourites() {
   const [favouriteUsersDetails, setFavouriteUsersDetails] = useState([] as any)
 
   useEffect(() => {
-    if (!isLoading && !session) {
+    if (!isLoading && !userId) {
       router.push('/auth/login')
     }
 

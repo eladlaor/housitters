@@ -14,6 +14,7 @@ export default function EditHouse() {
   const { isLoading, session } = useSessionContext()
   const router = useRouter()
   const user = useUser()
+  const userId = user?.id
 
   const [availability, setAvailability] = useState([])
   const [title, setTitle] = useState('')
@@ -26,14 +27,14 @@ export default function EditHouse() {
   const [dateRanges, setDateRanges] = useState([[null, null]] as [null | Date, null | Date][])
 
   useEffect(() => {
-    if (!isLoading && !session) {
+    if (!isLoading && !userId) {
       router.push('/')
     }
-    if (!isLoading && session) {
+    if (!isLoading && userId) {
       supabaseClient
         .from('posts')
         .select('*')
-        .eq('landlord_id', session.user.id)
+        .eq('landlord_id', userId)
         .single()
         .then(({ data }) => {
           setTitle(data?.title)
@@ -44,7 +45,7 @@ export default function EditHouse() {
       supabaseClient
         .from('landlords')
         .select('*')
-        .eq('user_id', session.user.id)
+        .eq('user_id', userId)
         .single()
         .then(({ data }) => {
           setLocation(data?.location)
@@ -53,7 +54,7 @@ export default function EditHouse() {
       supabaseClient
         .from('available_dates')
         .select('*')
-        .eq('user_id', session.user.id)
+        .eq('user_id', userId)
         .then(({ data }) => {
           if (data)
             setDateRanges(data.map((row) => [new Date(row.start_date), new Date(row.end_date)]))
@@ -62,7 +63,7 @@ export default function EditHouse() {
       supabaseClient
         .from('pets')
         .select('*')
-        .eq('user_id', session.user.id)
+        .eq('user_id', userId)
         .single()
         .then(({ data }) => {
           setDogs(data?.dogs)
@@ -86,7 +87,7 @@ export default function EditHouse() {
     const endDateDb = new Date(moment(value[1] ? value[1] : new Date(0)).format('YYYY-MM-DD'))
 
     const availabilityToUpsert = {
-      user_id: session!.user.id,
+      user_id: userId,
       start_date: startDateDb,
       end_date: endDateDb,
       period_index: index,
@@ -114,7 +115,7 @@ export default function EditHouse() {
   async function handleSubmit(e: any) {
     e.preventDefault()
     let { error: postUploadError } = await supabaseClient.from('posts').upsert({
-      landlord_id: session!.user.id,
+      landlord_id: userId,
       title,
       description,
       images_urls: imageUrls,
@@ -128,7 +129,7 @@ export default function EditHouse() {
     }
 
     let { error: petUploadError } = await supabaseClient.from('pets').upsert({
-      user_id: session!.user.id,
+      user_id: userId,
       dogs,
       cats,
     })
@@ -144,7 +145,7 @@ export default function EditHouse() {
       .update({
         location,
       })
-      .eq('user_id', session!.user.id)
+      .eq('user_id', userId)
 
     if (error) {
       console.log(error)

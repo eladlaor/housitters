@@ -14,6 +14,7 @@ import PasswordInput from '../../components/Auth/PasswordInput'
 export default function LoginPage() {
   const { isLoading, supabaseClient } = useSessionContext()
   const user = useUser()
+  const userId = user?.id
 
   const router = useRouter()
   const dispatch = useDispatch()
@@ -24,12 +25,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
 
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && userId) {
       const asyncWrapper = async () => {
         const { data, error } = await supabaseClient
           .from('profiles')
           .select(`avatar_url, primary_use`)
-          .eq('id', user.id)
+          .eq('id', userId)
           .single()
         if (error) {
           throw error
@@ -48,7 +49,7 @@ export default function LoginPage() {
 
       asyncWrapper()
     }
-  }, [user, isLoading])
+  }, [userId, isLoading])
 
   async function handleEmailLogin(e: any) {
     e.preventDefault()

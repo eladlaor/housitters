@@ -40,6 +40,7 @@ import AvailabilitySelector from '../components/AvailabilitySelector'
 export default function Account() {
   const supabaseClient = useSupabaseClient<Database>()
   const user = useUser()
+  const userId = user?.id
   const dispatch = useDispatch()
 
   const [loading, setLoading] = useState(true)
@@ -76,12 +77,12 @@ export default function Account() {
   }
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       return
     }
 
     getProfile()
-  }, [user])
+  }, [userId])
 
   async function getProfile() {
     try {

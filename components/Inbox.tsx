@@ -19,6 +19,7 @@ const oppositeType = (userType: string) => (userType === 'landlord' ? 'housitter
 
 export default function Inbox() {
   const user = useUser()
+  const userId = user?.id
   const supabaseClient = useSupabaseClient()
 
   const [messages, setMessages] = useState([] as any[])
@@ -26,6 +27,9 @@ export default function Inbox() {
   const currentUserType = useSelector(selectPrimaryUseState)
   const usersContacted = useSelector(selectUsersContactedState)
   useEffect(() => {
+    if (!userId) {
+      return
+    }
     async function loadInboxData() {
       const { error, data } = await supabaseClient
         .from('messages')
@@ -36,7 +40,7 @@ export default function Inbox() {
     landlord:landlord_id ( first_name, last_name, id ),
     landlord_profile:landlord_id ( avatar_url )`
         )
-        .eq(currentUserType === UserType.Landlord ? 'landlord_id' : 'housitter_id', user?.id)
+        .eq(currentUserType === UserType.Landlord ? 'landlord_id' : 'housitter_id', userId)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -48,7 +52,7 @@ export default function Inbox() {
     }
 
     loadInboxData()
-  }, [user, currentUserType, usersContacted, chatWithUser])
+  }, [userId, currentUserType, usersContacted, chatWithUser])
 
   return (
     <NavDropdown

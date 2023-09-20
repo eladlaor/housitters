@@ -10,6 +10,7 @@ import { DbGenderTypes, UserType } from '../utils/constants'
 
 export default function UserSearcher() {
   const user = useUser()
+  const userId = user?.id
   const supabaseClient = useSupabaseClient()
 
   type Profiles = Database['public']['Tables']['profiles']['Row']
@@ -51,7 +52,7 @@ export default function UserSearcher() {
   }
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       return
     }
 
@@ -62,7 +63,7 @@ export default function UserSearcher() {
         .select(
           'id, first_name, last_name, primary_use, username, social_media_url, email, birthday, avatar_url'
         )
-        .neq('id', user!.id)
+        .neq('id', userId)
 
       if (error) {
         alert(`failed loading profiles: ${error.message}`)
@@ -76,7 +77,7 @@ export default function UserSearcher() {
     }
 
     loadProfiles()
-  }, [user, searchFilter])
+  }, [userId, searchFilter])
 
   return (
     <div className="search-container">

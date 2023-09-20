@@ -35,6 +35,7 @@ export default function LocationSelector({
   const [shouldShowCustomLocations, setShouldShowCustomLocations] = useState(showCustomLocations)
   const supabaseClient = useSupabaseClient()
   const user = useUser()
+  const userId = user?.id
 
   const [locationCurrentSelectionType, setLocationCurrentSelectionType] = useState('')
 
@@ -49,7 +50,7 @@ export default function LocationSelector({
         const { data, error } = await supabaseClient
           .from('housitters')
           .select('locations')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .single()
         if (error) {
           return handleError(error.message, ' ')
@@ -74,7 +75,7 @@ export default function LocationSelector({
           const { data, error } = await supabaseClient
             .from('landlords')
             .select('location')
-            .eq('user_id', user.id)
+            .eq('user_id', userId)
             .single()
           if (error) {
             return handleError(error.message, 'houses.index.useEffect: get landlord location')

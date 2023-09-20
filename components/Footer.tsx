@@ -9,6 +9,7 @@ export default function Footer() {
   const [showContactModal, setShowContactModal] = useState(false)
   const supabaseClient = useSupabaseClient()
   const user = useUser()
+  const userId = user?.id
 
   const [messageContent, setMessageContent] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -16,7 +17,7 @@ export default function Footer() {
   const [email, setEmail] = useState('')
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       return
     }
 
@@ -24,7 +25,7 @@ export default function Footer() {
       const { error, data } = await supabaseClient
         .from('profiles')
         .select(`email, first_name, last_name`)
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
       if (error) {
         return handleError(error.message, 'footer.getData')
@@ -38,7 +39,7 @@ export default function Footer() {
     }
 
     getData()
-  }, [user])
+  }, [userId])
 
   const sendFeedbackEmail = async () => {
     debugger

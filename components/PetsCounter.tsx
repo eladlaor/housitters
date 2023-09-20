@@ -13,10 +13,11 @@ export default function PetsCounter() {
   const pets = useSelector(selectPetsState)
 
   const user = useUser()
+  const userId = user?.id
   const supabaseClient = useSupabaseClient()
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       return
     }
 
@@ -24,7 +25,7 @@ export default function PetsCounter() {
       const { error: landlordError, data: landlordData } = await supabaseClient
         .from('pets')
         .select('dogs, cats')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .single()
 
       if (landlordError) {

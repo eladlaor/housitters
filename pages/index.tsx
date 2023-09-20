@@ -26,6 +26,8 @@ import Footer from '../components/Footer'
 export default function Home() {
   const router = useRouter()
   const user = useUser()
+  const userId = user?.id
+
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
   const isOngoingOAuth = useSelector(selectIsOngoingOAuthState)
@@ -65,12 +67,12 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       const asyncWrapper = async () => {
         let query = await supabaseClient
           .from('profiles')
           .select(`primary_use`)
-          .eq('id', user.id)
+          .eq('id', userId)
           .single()
 
         let { data, error } = await query
@@ -95,10 +97,10 @@ export default function Home() {
     } else {
       clearUserState()
     }
-  }, [user])
+  }, [userId])
 
   function handleFind(isHousitter: boolean) {
-    if (user) {
+    if (userId) {
       router.push(isHousitter ? PageRoutes.HousitterRoutes.Home : PageRoutes.LandlordRoutes.Home)
     } else {
       router.push({

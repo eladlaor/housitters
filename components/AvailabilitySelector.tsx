@@ -43,6 +43,7 @@ export default function AvailabilitySelector({
   }
   const supabaseClient = useSupabaseClient()
   const user = useUser()
+  const userId = user?.id
   const dispatch = useDispatch()
   const availability = useSelector(selectAvailabilityState)
   const primaryUse = useSelector(selectPrimaryUseState)
@@ -56,7 +57,7 @@ export default function AvailabilitySelector({
   )
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       return
     }
 
@@ -64,7 +65,7 @@ export default function AvailabilitySelector({
       const { data: availableDates, error } = await supabaseClient
         .from('available_dates')
         .select('start_date, end_date')
-        .eq('user_id', user?.id)
+        .eq('user_id', userId)
 
       if (error) {
         alert(error.message)
@@ -96,7 +97,7 @@ export default function AvailabilitySelector({
     }
 
     asyncWrapper()
-  }, [user])
+  }, [userId])
 
   async function handleDatesChange(changedDate: Date, isStart: boolean) {
     // all formatting can be done at the end

@@ -30,6 +30,7 @@ import { countDays } from '../../utils/dates'
 export default function Home() {
   const supabase = useSupabaseClient()
   const user = useUser()
+  const userId = user?.id
   const router = useRouter()
   const userType = useSelector(selectPrimaryUseState)
 
@@ -45,7 +46,7 @@ export default function Home() {
   const [isHousitter, setIsHousitter] = useState(userType === UserType.Housitter)
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       return
     } else {
       setIsHousitter(userType === UserType.Housitter)
@@ -274,7 +275,7 @@ export default function Home() {
               }
             }
 
-            if (post.landlord_id === user.id) {
+            if (post.landlord_id === userId) {
               if (
                 !post?.title ||
                 post?.title === landlordFullName ||
@@ -295,7 +296,7 @@ export default function Home() {
 
       asyncWrapper()
     }
-  }, [user, availability, userType, landlordLocation, housitterLocations])
+  }, [userId, availability, userType, landlordLocation, housitterLocations])
 
   function sortPosts(sortByProperty: string, sortOrder: string) {
     let sortedPosts: any[] = [...availablePosts]
