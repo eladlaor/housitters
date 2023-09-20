@@ -1,4 +1,4 @@
-import { useSessionContext, useSupabaseClient } from '@supabase/auth-helpers-react'
+import { useSessionContext, useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import Nav from 'react-bootstrap/Nav'
@@ -11,15 +11,16 @@ import { Button, Container } from 'react-bootstrap'
 import { getUrlFromSupabase } from '../utils/helpers'
 import { useEffect, useState } from 'react'
 import SignOut from './Auth/SignOut'
-import { selectAvatarUrlState, selectPrimaryUseState, setPrimaryUse } from '../slices/userSlice'
+import { selectPrimaryUseState, setPrimaryUse } from '../slices/userSlice'
 interface Props {
   className?: string
 }
 
 export default function HomeNavbar({ className = '' }: Props) {
-  const { isLoading, session } = useSessionContext() // why preferred using session and not user?
+  const { isLoading } = useSessionContext() // why preferred using session and not user?
   const supabaseClient = useSupabaseClient()
-  const avatarUrl = useSelector(selectAvatarUrlState)
+  const user = useUser()
+  const userId = user?.id
   const userType = useSelector(selectPrimaryUseState)
   const dispatch = useDispatch()
 
@@ -28,12 +29,12 @@ export default function HomeNavbar({ className = '' }: Props) {
   const [profile, setProfile] = useState({ name: '', picture: '' })
   const [hasPost, setHasPost] = useState(false)
   useEffect(() => {
-    if (!isLoading && session) {
+    if (!isLoading && userId) {
       const asyncWrapper = async () => {
         const { error, data } = await supabaseClient
           .from('profiles')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('id', userId)
           .single()
 
         if (error) {
@@ -50,19 +51,21 @@ export default function HomeNavbar({ className = '' }: Props) {
           dispatch(setPrimaryUse(data?.primary_use))
         }
 
-        supabaseClient
-          .from('posts')
-          .select('*')
-          .eq('landlord_id', session.user.id)
-          .single()
-          .then(({ data }) => {
-            if (data) setHasPost(true)
-            else setHasPost(false)
-          })
+        if (userType === UserType.Landlord) {
+          supabaseClient
+            .from('posts')
+            .select('*')
+            .eq('landlord_id', userId)
+            .single()
+            .then(({ data }) => {
+              if (data) setHasPost(true)
+              else setHasPost(false)
+            })
+        }
       }
       asyncWrapper()
     }
-  }, [isLoading, session, avatarUrl])
+  }, [isLoading, userId])
 
   return (
     <Navbar bg="dark" variant="dark" className={classNames}>
@@ -76,7 +79,7 @@ export default function HomeNavbar({ className = '' }: Props) {
               <Nav.Item>
                 <Link
                   href={
-                    session
+                    user
                       ? PageRoutes.LandlordRoutes.Home
                       : `${PageRoutes.Intro}?userType=${UserType.Landlord}`
                   }
@@ -87,7 +90,7 @@ export default function HomeNavbar({ className = '' }: Props) {
               <Nav.Item>
                 <Link
                   href={
-                    session
+                    user
                       ? PageRoutes.HousitterRoutes.Home
                       : `${PageRoutes.Intro}?userType=${UserType.Housitter}`
                   }
@@ -97,7 +100,7 @@ export default function HomeNavbar({ className = '' }: Props) {
               </Nav.Item>
             </Nav>
 
-            {session ? (
+            {user ? (
               <Nav>
                 <Nav.Item>
                   <Inbox />
