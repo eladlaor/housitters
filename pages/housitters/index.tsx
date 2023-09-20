@@ -26,9 +26,9 @@ export default function Home() {
   const user = useUser()
   const userId = user?.id
   const router = useRouter()
-  const userType = router.query.userType || useSelector(selectPrimaryUseState)
+  const userTypeRedux = useSelector(selectPrimaryUseState)
+  const userType = router.query.userType || userTypeRedux
 
-  const dispatch = useDispatch()
   const availability = useSelector(selectAvailabilityState)
 
   const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
@@ -134,7 +134,6 @@ export default function Home() {
             }
 
             if (!data?.title || !data?.description || !data?.images_urls) {
-              console.log('here')
               setIsPostComplete(false)
             }
           }
@@ -146,61 +145,6 @@ export default function Home() {
       })
     }
   }, [userId, availability, location, dateRange])
-
-  // function handleFoundSitter(e: any) {
-  //   e.preventDefault()
-  //   setShowFoundSitterModal(true)
-  // }
-
-  // function handleSelectedFoundSitter(e: any) {
-  //   e.preventDefault()
-
-  //   setIsThereAnySelectedSitter(true)
-
-  //   // knowingly, this is a bit of a strange workaround, but it seems that even though the order of operations are fine, still - the checkbox 'checked' prop is not able to successfuly get the 'true' value in isThisSelectedSitter.
-  //   const sitterId = e.target.value
-  //   setTimeout(() => {
-  //     setSelectedHousitterId(sitterId)
-  //     setPreConfirmedSelectionOfClosedSitsPerSitter({
-  //       housitterId: sitterId,
-  //       startDates: [...preConfirmedSelectionOfClosedSitsPerSitter.startDates],
-  //     })
-  //   }, 0)
-  // }
-
-  // async function handleConfirmSitterSelection(e: any) {
-  //   e.preventDefault()
-  //   let confirmedClosedSitsToUpdate: ClosedSit[] = []
-
-  //   // for...of will ensure that each iteration will begin after the previous async operation completed
-  //   for (const startDate of preConfirmedSelectionOfClosedSitsPerSitter.startDates) {
-  //     const { error } = await supabaseClient.from('closed_sits').upsert({
-  //       landlord_id: user?.id,
-  //       housitter_id: selectedHousitterId,
-  //       start_date: startDate,
-  //     })
-
-  //     if (error) {
-  //       console.log(`error upserting closed sit for date:${startDate}. Error: ${error.message}`)
-  //       debugger
-  //       throw error
-  //     }
-
-  //     confirmedClosedSitsToUpdate.push({
-  //       housitterId: selectedHousitterId,
-  //       housitterAvatarUrl: '',
-  //       housitterFirstName: '',
-  //       housitterLastName: '',
-  //       startDate: startDate,
-  //     })
-  //   }
-
-  //   dispatch(setClosedSitsState(confirmedClosedSitsToUpdate))
-  //   setPreConfirmedSelectionOfClosedSitsPerSitter({ housitterId: '', startDates: [] })
-
-  //   console.log(`successfuly closed sit`)
-  //   setShowFoundSitterModal(false)
-  // }
 
   function sortHousitters(sortByProperty: string, sortOrder: string) {
     let sortedHousitters: any[] = [...housitters]
