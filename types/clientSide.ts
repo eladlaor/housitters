@@ -149,3 +149,5 @@ export interface Conversation {
 export interface Conversations {
   [key: string]: Conversation
 }
+
+export type DatePickerSelection = [Date | null, Date | null]
