@@ -1,23 +1,22 @@
 import { useRouter } from 'next/router'
 import { selectPrimaryUseState } from '../../slices/userSlice'
+import DatePicker from 'react-datepicker'
 
 import {
   LocationDescriptions,
   LocationSelectionEventKeys,
   SortingProperties,
 } from '../../utils/constants'
-import { DbAvailableHousitter } from '../../types/clientSide'
+import { DatePickerSelection, DbAvailableHousitter } from '../../types/clientSide'
 import { UserType, PageRoutes } from '../../utils/constants'
 import { Button, Card, Dropdown } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
-import { selectAvailabilityState } from '../../slices/userSlice'
 
 import { Col, Container, Row } from 'react-bootstrap'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import AvailableHousitter from '../../components/AvailableHousitter'
 import { handleError } from '../../utils/helpers'
-import AvailabilitySelector from '../../components/AvailabilitySelector'
 import Footer from '../../components/Footer'
 import Sorter from '../../components/Sorter'
 
@@ -28,8 +27,6 @@ export default function Home() {
   const router = useRouter()
   const userTypeRedux = useSelector(selectPrimaryUseState)
   const userType = router.query.userType || userTypeRedux
-
-  const availability = useSelector(selectAvailabilityState)
 
   const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
   const [startDate, endDate] = dateRange
@@ -51,6 +48,35 @@ export default function Home() {
 
   // const isActivePost = useSelector(selectIsActiveState)
   const [isPostComplete, setIsPostComplete] = useState(true)
+
+  const [availabilityFilter, setAvailabilityFilter] = useState([
+    [null, null],
+  ] as DatePickerSelection[])
+
+  useEffect(() => {
+    if (!userId) {
+      return
+    }
+
+    const loadAvailability = async () => {
+      const { error: availabilityError, data: availabilityData } = await supabaseClient
+        .from('available_dates')
+        .select(`start_date, end_date, user_id`)
+        .eq('user_id', userId)
+      if (availabilityError) {
+        return handleError(
+          availabilityError.message,
+          'housitters.index.useEffect availability query'
+        )
+      }
+      if (availabilityData) {
+        setAvailabilityFilter(
+          availabilityData.map((row) => [new Date(row.start_date), new Date(row.end_date)])
+        )
+      }
+    }
+    loadAvailability()
+  }, [userId])
 
   useEffect(() => {
     if (!userId) {
@@ -78,20 +104,41 @@ export default function Home() {
 
         if (housitterData) {
           for (const housitter of housitterData) {
-            let currentSitterAvailability: any[] = []
-            currentSitterAvailability = (
+            let parsedSitterAvailability: { startDate: Date; endDate: Date }[] = []
+            parsedSitterAvailability = (
               housitter.available_dates as { start_date: string; end_date: string }[]
             ).map(({ start_date, end_date }: { start_date: string; end_date: string }) => ({
               startDate: new Date(start_date),
               endDate: new Date(end_date),
             }))
 
+            let isSitterAvailableInFilterDates = false
+            for (const sitterAvailabilityPeriod of parsedSitterAvailability) {
+              const sitterStartDate = sitterAvailabilityPeriod.startDate
+              const sitterEndDate = sitterAvailabilityPeriod.endDate
+              isSitterAvailableInFilterDates = availabilityFilter.some(
+                ([startDateFilter, endDateFilter]) => {
+                  return (
+                    endDateFilter?.getFullYear() === 1970 ||
+                    (startDateFilter &&
+                      sitterStartDate >= startDateFilter &&
+                      endDateFilter &&
+                      sitterEndDate <= endDateFilter)
+                  )
+                }
+              )
+            }
+
+            if (!isSitterAvailableInFilterDates) {
+              continue
+            }
+
             availableHousitter = {
               firstName: housitter.first_name,
               lastName: housitter.last_name,
               housitterId: housitter.id,
               avatarUrl: housitter.avatar_url,
-              availability: currentSitterAvailability,
+              availability: parsedSitterAvailability,
               locations: [],
               experience: 0,
               about_me: '',
@@ -144,7 +191,7 @@ export default function Home() {
         console.log(e.message)
       })
     }
-  }, [userId, availability, location, dateRange])
+  }, [userId, availabilityFilter, location, dateRange])
 
   function sortHousitters(sortByProperty: string, sortOrder: string) {
     let sortedHousitters: any[] = [...housitters]
@@ -189,6 +236,28 @@ export default function Home() {
     }, 0)
   }
 
+  function handleAvailabilityFilterChange(index: number, updatedRange: DatePickerSelection) {
+    const modifiedAvailabilityFilter = [...availabilityFilter]
+    const [updatedStartDate, updatedEndDate] = updatedRange
+    if (!updatedStartDate && !updatedEndDate) {
+      // the Anytime case
+      updatedRange = [new Date(), new Date(0)]
+    }
+    modifiedAvailabilityFilter[index] = updatedRange
+
+    setAvailabilityFilter(modifiedAvailabilityFilter)
+  }
+
+  function addAvailabilityFilterRange() {
+    setAvailabilityFilter([...availabilityFilter, [new Date(), new Date(0)]])
+  }
+
+  function removeAvailabilityFilterRange(index: number) {
+    const ranges = [...availabilityFilter]
+    ranges.splice(index, 1)
+    setAvailabilityFilter(ranges)
+  }
+
   return (
     <div>
       <div className="content-wrapper">
@@ -227,24 +296,40 @@ export default function Home() {
               )}
               <Card className="sidebar-filter">
                 <h4>Dates</h4>
-                {/* <DatePicker
-              className="w-100"
-              selectsRange={true}
-              startDate={startDate}
-              endDate={endDate}
-              placeholderText="Anytime"
-              onChange={(update) => {
-                setDateRange(update)
-              }}
-              isClearable={true}
-            /> */}
-                {availability.map((period, index) => (
-                  <AvailabilitySelector
-                    key={index}
-                    period={period}
-                    index={index}
-                    updateDbInstantly={true}
-                  />
+                {availabilityFilter.map(([startDate, endDate], index) => (
+                  <div key={index}>
+                    <DatePicker
+                      selectsRange={true}
+                      startDate={endDate?.getFullYear() === 1970 ? null : startDate}
+                      endDate={endDate?.getFullYear() === 1970 ? null : endDate}
+                      placeholderText="Anytime"
+                      isClearable={true}
+                      onChange={(update) => {
+                        handleAvailabilityFilterChange(index, update)
+                      }}
+                    />
+                    {index === availabilityFilter.length - 1 && (
+                      <div style={{ textAlign: 'right' }}>
+                        {availabilityFilter.length > 1 && (
+                          <Button
+                            variant="danger"
+                            className="w-100"
+                            onClick={() => removeAvailabilityFilterRange(index)}
+                          >
+                            Remove Range
+                          </Button>
+                        )}
+                        <Button
+                          variant="warning"
+                          className="mt-4 w-100"
+                          onClick={addAvailabilityFilterRange}
+                        >
+                          Add Range
+                        </Button>
+                      </div>
+                    )}
+                    <hr className="mt-4" />
+                  </div>
                 ))}
                 <h4>Location</h4>
                 <Dropdown>

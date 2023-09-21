@@ -53,7 +53,6 @@ export default function Home() {
     }
 
     const loadAvailability = async () => {
-      console.log(userId)
       const { error: availabilityError, data: availabilityData } = await supabase
         .from('available_dates')
         .select(`start_date, end_date, user_id`)
@@ -184,11 +183,11 @@ export default function Home() {
               const postEndDate = new Date(postRange.endDate)
               return availabilityFilter.some(([startDateFilter, endDateFilter]) => {
                 return (
+                  endDateFilter?.getFullYear() === 1970 ||
                   (startDateFilter &&
                     postStartDate >= startDateFilter &&
                     endDateFilter &&
-                    postEndDate <= endDateFilter) ||
-                  endDateFilter?.getFullYear() === 1970
+                    postEndDate <= endDateFilter)
                 )
               })
             })
@@ -304,7 +303,6 @@ export default function Home() {
                             className="w-100"
                             onClick={() => removeAvailabilityFilterRange(index)}
                           >
-                            {' '}
                             Remove Range
                           </Button>
                         )}
