@@ -14,6 +14,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 import { Button } from 'react-bootstrap'
+import { handleError } from '../utils/helpers'
 
 const EVENT_KEYS = {
   ANYTIME: 'Anytime',
@@ -169,7 +170,6 @@ export default function AvailabilitySelector({
 
       const formattedAnytimeDate = moment(new Date(0)).format('YYYY-MM-DD')
       if (updateDbInstantly) {
-        // TODO: aware that I'm removing first element and then inserting, rather than updating it.
         const removalPromises = modifiedAvailability.map(async (period: any, index: number) => {
           let { error: deletionError } = await supabaseClient
             .from('available_dates')
@@ -178,8 +178,7 @@ export default function AvailabilitySelector({
             .eq('user_id', user?.id)
 
           if (deletionError) {
-            alert(deletionError.message)
-            throw deletionError
+            return handleError(deletionError.message, 'AvailabilitySelector delete operation')
           }
         })
 

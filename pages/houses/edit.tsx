@@ -1,13 +1,13 @@
 import { Container, Button, Form, FormControl, Row, InputGroup, Col } from 'react-bootstrap'
 import { LocationDescriptions, LocationIds, PageRoutes, UserType } from '../../utils/constants'
 import DatePicker from 'react-datepicker'
-import AvailabilitySelector from '../../components/AvailabilitySelector'
 import { useSupabaseClient, useSessionContext, useUser } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
 import { removeInvalidCharacters, resizeImage } from '../../utils/files'
 import { useRouter } from 'next/router'
 import moment from 'moment'
-import { getUrlFromSupabase } from '../../utils/helpers'
+import { getUrlFromSupabase, handleError } from '../../utils/helpers'
+import { DatePickerSelection } from '../../types/clientSide'
 
 export default function EditHouse() {
   const supabaseClient = useSupabaseClient()
@@ -16,7 +16,6 @@ export default function EditHouse() {
   const user = useUser()
   const userId = user?.id
 
-  const [availability, setAvailability] = useState([])
   const [title, setTitle] = useState('')
   const [location, setLocation] = useState('')
   const [description, setDescription] = useState('')
@@ -24,7 +23,7 @@ export default function EditHouse() {
   const [cats, setCats] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [imageUrls, setImageUrls] = useState<string[]>([])
-  const [dateRanges, setDateRanges] = useState([[null, null]] as [null | Date, null | Date][])
+  const [dateRanges, setDateRanges] = useState([[null, null]] as DatePickerSelection[])
 
   useEffect(() => {
     if (!isLoading && !userId) {
@@ -72,19 +71,23 @@ export default function EditHouse() {
     }
   }, [isLoading, session])
 
-  function addDateRange() {
-    setDateRanges([...dateRanges, [null, null]])
-  }
-
-  // TODO: not finished yet: fix the remove period button
-  // TODO: add the Anytime support
-  // update in db in order to keep track of additional periods after re-render
-  async function updateDateRange(index: number, value: [null | Date, null | Date]) {
+  async function updateDateRange(index: number, updatedRange: [null | Date, null | Date]) {
     const ranges = [...dateRanges]
-    ranges[index] = value
 
-    const startDateDb = new Date(moment(value[0] ? value[0] : new Date()).format('YYYY-MM-DD'))
-    const endDateDb = new Date(moment(value[1] ? value[1] : new Date(0)).format('YYYY-MM-DD'))
+    const [updatedStartDate, updatedEndDate] = updatedRange
+    if (!updatedStartDate && !updatedEndDate) {
+      // the Anytime case
+      updatedRange = [new Date(), new Date(0)]
+    }
+
+    ranges[index] = updatedRange
+
+    const startDateDb = new Date(
+      moment(updatedRange[0] ? updatedRange[0] : new Date()).format('YYYY-MM-DD')
+    )
+    const endDateDb = new Date(
+      moment(updatedRange[1] ? updatedRange[1] : new Date(0)).format('YYYY-MM-DD')
+    )
 
     const availabilityToUpsert = {
       user_id: userId,
@@ -106,7 +109,16 @@ export default function EditHouse() {
     setDateRanges(ranges)
   }
 
-  function removeDateRange(index: number) {
+  async function removeDateRange(index: number) {
+    let { error: deletionError } = await supabaseClient
+      .from('available_dates')
+      .delete()
+      .eq('period_index', index)
+      .eq('user_id', user?.id)
+
+    if (deletionError) {
+      return handleError(deletionError.message, 'AvailabilitySelector delete operation')
+    }
     const ranges = [...dateRanges]
     ranges.splice(index, 1)
     setDateRanges(ranges)
@@ -194,6 +206,10 @@ export default function EditHouse() {
     setImageUrls(images)
   }
 
+  function addDateRange() {
+    setDateRanges([...dateRanges, [new Date(), new Date(0)]])
+  }
+
   return (
     <Container>
       <h1>Edit post</h1>
@@ -272,23 +288,28 @@ export default function EditHouse() {
                           }}
                           isClearable={true}
                         />
+                        {index === dateRanges.length - 1 && (
+                          <div style={{ textAlign: 'right' }}>
+                            {dateRanges.length > 1 && (
+                              <Button
+                                variant="danger"
+                                className="mt-4 w-100"
+                                onClick={() => removeDateRange(index)}
+                              >
+                                Remove Range
+                              </Button>
+                            )}
+                            <Button variant="warning" className="mt-4 w-100" onClick={addDateRange}>
+                              Add Range
+                            </Button>
+                          </div>
+                        )}
                       </Col>
                     </Row>
+                    <hr />
                   </div>
                 ))}
               <br />
-              <div style={{ textAlign: 'right' }}>
-                <Button onClick={addDateRange}>Add another range</Button>
-              </div>
-
-              {availability.map((period, index) => (
-                <AvailabilitySelector
-                  key={index}
-                  period={period}
-                  index={index}
-                  updateDbInstantly={true}
-                />
-              ))}
             </Form.Group>
             <Form.Group>
               <Form.Label>Where</Form.Label>

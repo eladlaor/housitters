@@ -137,8 +137,9 @@ export default function HousePreview({
           </Badge>
         )}
         <br />
-        {duration !== 0 &&
-          dateRanges?.map((period, index) => <Badge key={index}>{period.startDate}</Badge>)}
+        {duration !== 0 && dateRanges.length > 0 && (
+          <Badge>{dateRanges.length > 1 ? 'Multiple Periods' : dateRanges[0].startDate}</Badge>
+        )}
         {duration !== 0 && <br />}
         <Badge>{duration ? `${duration} days` : 'flexible'}</Badge>
       </div>
