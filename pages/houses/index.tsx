@@ -16,8 +16,7 @@ import { DatePickerSelection, ImageData } from '../../types/clientSide'
 import HousePreview from '../../components/HousePreview'
 import { Row, Col, Alert, Container, Card, Dropdown, Accordion, Button } from 'react-bootstrap'
 import { useRouter } from 'next/router'
-import { selectAvailabilityState, selectPrimaryUseState } from '../../slices/userSlice'
-import AvailabilitySelector from '../../components/AvailabilitySelector'
+import { selectPrimaryUseState } from '../../slices/userSlice'
 import LocationSelector from '../../components/LocationSelector'
 import { handleError } from '../../utils/helpers'
 import {
@@ -185,10 +184,11 @@ export default function Home() {
               const postEndDate = new Date(postRange.endDate)
               return availabilityFilter.some(([startDateFilter, endDateFilter]) => {
                 return (
-                  startDateFilter &&
-                  postStartDate >= startDateFilter &&
-                  endDateFilter &&
-                  postEndDate <= endDateFilter
+                  (startDateFilter &&
+                    postStartDate >= startDateFilter &&
+                    endDateFilter &&
+                    postEndDate <= endDateFilter) ||
+                  endDateFilter?.getFullYear() === 1970
                 )
               })
             })
@@ -204,6 +204,11 @@ export default function Home() {
 
   function handleAvailabilityFilterChange(index: number, updatedRange: DatePickerSelection) {
     const modifiedAvailabilityFilter = [...availabilityFilter]
+    const [updatedStartDate, updatedEndDate] = updatedRange
+    if (!updatedStartDate && !updatedEndDate) {
+      // the Anytime case
+      updatedRange = [new Date(), new Date(0)]
+    }
     modifiedAvailabilityFilter[index] = updatedRange
 
     setAvailabilityFilter(modifiedAvailabilityFilter)
