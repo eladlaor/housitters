@@ -214,6 +214,16 @@ export default function Home() {
     setAvailabilityFilter(modifiedAvailabilityFilter)
   }
 
+  function addAvailabilityFilterRange() {
+    setAvailabilityFilter([...availabilityFilter, [new Date(), new Date(0)]])
+  }
+
+  function removeAvailabilityFilterRange(index: number) {
+    const ranges = [...availabilityFilter]
+    ranges.splice(index, 1)
+    setAvailabilityFilter(ranges)
+  }
+
   function sortPosts(sortByProperty: string, sortOrder: string) {
     let sortedPosts: any[] = [...availablePosts]
     switch (sortByProperty) {
@@ -286,9 +296,31 @@ export default function Home() {
                         handleAvailabilityFilterChange(index, update)
                       }}
                     />
+                    {index === availabilityFilter.length - 1 && (
+                      <div style={{ textAlign: 'right' }}>
+                        {availabilityFilter.length > 1 && (
+                          <Button
+                            variant="danger"
+                            className="w-100"
+                            onClick={() => removeAvailabilityFilterRange(index)}
+                          >
+                            {' '}
+                            Remove Range
+                          </Button>
+                        )}
+                        <Button
+                          variant="warning"
+                          className="mt-4 w-100"
+                          onClick={addAvailabilityFilterRange}
+                        >
+                          Add Range
+                        </Button>
+                      </div>
+                    )}
+                    <hr className="mt-4" />
                   </div>
                 ))}
-                <h4 className="mt-0">Location</h4>
+                <h4 className="mt-2">Location</h4>
                 {isHousitter ? (
                   <LocationSelector
                     selectionType={isHousitter ? 'checkbox' : 'radio'}
