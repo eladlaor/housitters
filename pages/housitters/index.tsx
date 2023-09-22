@@ -395,7 +395,7 @@ export default function Home() {
                         firstName={sitter.firstName}
                         lastName={sitter.lastName}
                         experience={sitter.experience}
-                        about_me={
+                        aboutMeText={
                           sitter.about_me
                             ? sitter.about_me
                             : `${sitter.firstName} didn't write a description yet.`

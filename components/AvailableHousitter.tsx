@@ -1,18 +1,21 @@
 import Card from 'react-bootstrap/Card'
 import { useRouter } from 'next/router'
-import { HousitterProps } from '../types/clientSide'
+import { HousitterProps, MaxAboutMeTextLength } from '../types/clientSide'
 import { PageRoutes, UserType } from '../utils/constants'
 import { useSelector } from 'react-redux'
 import { selectUsersContactedState } from '../slices/userSlice'
 import { Row, Col, Button, Badge, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import ContactFoundUser from './Contact/ContactFoundUser'
 import AddToFavourites from './Contact/AddToFavourites'
-import { getUrlFromSupabase } from '../utils/helpers'
+import { getUrlFromSupabase, truncateText } from '../utils/helpers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
+
 export default function AvailableHousitter(props: HousitterProps) {
   const router = useRouter()
-  const { housitterId, firstName, lastName, avatarUrl, experience } = props
+  const { housitterId, firstName, lastName, avatarUrl, experience, aboutMeText } = props
+
+  const truncatedAboutMeObject = truncateText(aboutMeText || '', MaxAboutMeTextLength)
 
   const usersContacted = useSelector(selectUsersContactedState)
 
@@ -59,21 +62,6 @@ export default function AvailableHousitter(props: HousitterProps) {
                 }}
               />
             )}
-            {/* <Picture */}
-            {/*   uid={props.housitterId} */}
-            {/*   email="" // basically should use housitter email but it doesnt matter here as the filename is alreay saved */}
-            {/*   url={avatarUrl} */}
-            {/*   isIntro={false} */}
-            {/*   primaryUse={UserType.Housitter} */}
-            {/*   size={120} */}
-            {/*   width={100} // should persist dimensions of image upon upload */}
-            {/*   height={100} */}
-            {/*   disableUpload={true} */}
-            {/*   bucketName="avatars" */}
-            {/*   isAvatar={true} */}
-            {/*   promptMessage="" */}
-            {/*   isRounded={true} */}
-            {/* /> */}
           </Col>
           <Col>
             <div>
@@ -103,7 +91,23 @@ export default function AvailableHousitter(props: HousitterProps) {
             </div>
           </Col>
           <Col>
-            <Card.Text className="center-element">{props.about_me}</Card.Text>
+            <Card.Text className="center-element" style={{ display: 'inline' }}>
+              <span>{truncatedAboutMeObject.truncatedText}</span>
+              {truncatedAboutMeObject.wasTruncated && (
+                <span
+                  style={{
+                    cursor: 'pointer',
+                    color: 'blue',
+                  }}
+                  onClick={() => {
+                    router.push(`${PageRoutes.LandlordRoutes.Home}/${housitterId}`)
+                  }}
+                >
+                  <br />
+                  See More
+                </span>
+              )}
+            </Card.Text>
           </Col>
           <Col style={{ textAlign: 'right' }}>
             <Button

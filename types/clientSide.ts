@@ -7,7 +7,7 @@ export type HousitterProps = {
   lastName: string
   experience?: number | null
   age?: number
-  about_me?: string
+  aboutMeText?: string
   avatarUrl: string | null
 }
 
@@ -152,3 +152,5 @@ export interface Conversations {
 }
 
 export type DatePickerSelection = [Date | null, Date | null]
+
+export const MaxAboutMeTextLength = 80
