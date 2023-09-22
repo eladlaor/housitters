@@ -153,12 +153,12 @@ export const SortingProperties = {
   },
   LandlordDashboard: {
     Experience: 'experience',
-    FirstName: 'first name',
+    Gender: 'gender',
   },
 }
 
 export const SortingPropertiesForHandler = {
-  [SortingProperties.LandlordDashboard.FirstName]: 'firstName',
+  [SortingProperties.LandlordDashboard.Gender]: 'gender',
   [SortingProperties.LandlordDashboard.Experience]: 'experience',
   [SortingProperties.HousitterDashboard.Duration]: 'duration',
   [SortingProperties.HousitterDashboard.PetsQuantity]: 'number of pets',

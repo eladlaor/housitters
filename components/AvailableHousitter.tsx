@@ -1,28 +1,47 @@
 import Card from 'react-bootstrap/Card'
 import { useRouter } from 'next/router'
 import { HousitterProps } from '../types/clientSide'
-import Picture from './Picture'
 import { PageRoutes, UserType } from '../utils/constants'
-import ReviewsOnSelectedUser from './ReviewsOnSelectedUser'
 import { useSelector } from 'react-redux'
-import {
-  selectFirstNameState,
-  selectLastNameState,
-  selectUsersContactedState,
-} from '../slices/userSlice'
-import { Row, Col, Button } from 'react-bootstrap'
+import { selectUsersContactedState } from '../slices/userSlice'
+import { Row, Col, Button, Badge, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import ContactFoundUser from './Contact/ContactFoundUser'
 import AddToFavourites from './Contact/AddToFavourites'
 import { getUrlFromSupabase } from '../utils/helpers'
-
-// TODO: should probably rename to Housitter in order to reuse in search results for specific sitter.
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
 export default function AvailableHousitter(props: HousitterProps) {
   const router = useRouter()
-  const landlordFirstName = useSelector(selectFirstNameState)
-  const landlordLastName = useSelector(selectLastNameState)
   const { housitterId, firstName, lastName, avatarUrl, experience } = props
 
   const usersContacted = useSelector(selectUsersContactedState)
+
+  function ExperienceTooltip() {
+    return (
+      <>
+        <Badge>Experience: {experience}</Badge>
+
+        <OverlayTrigger
+          key="bottom"
+          placement="bottom"
+          overlay={
+            <Tooltip id={`tooltip-bottom`}>
+              The number refers to completed house-sits reported by this sitter.
+            </Tooltip>
+          }
+        >
+          <FontAwesomeIcon
+            icon={faQuestionCircle}
+            style={{
+              marginLeft: '5px',
+              cursor: 'pointer',
+              color: 'green',
+            }}
+          />
+        </OverlayTrigger>
+      </>
+    )
+  }
 
   return (
     <Card className="w-100 mt-4">
@@ -61,7 +80,7 @@ export default function AvailableHousitter(props: HousitterProps) {
               <Card.Title style={{ fontWeight: 'bold' }}>
                 {firstName} {lastName}
               </Card.Title>
-              Experience: {experience} house{experience === 1 ? '' : 's'}
+              <ExperienceTooltip />
               {(() => {
                 let foundSitter = usersContacted.find((user) => user.userId === housitterId)
                 if (foundSitter) {

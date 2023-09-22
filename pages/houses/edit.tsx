@@ -212,7 +212,7 @@ export default function EditHouse() {
 
   return (
     <Container>
-      <h1>Edit post</h1>
+      <h1>Edit My Post</h1>
       <Form>
         <Row>
           <Col>

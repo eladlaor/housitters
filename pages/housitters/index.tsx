@@ -33,7 +33,7 @@ export default function Home() {
   const [location, setLocation] = useState(null as null | string)
 
   const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
-  const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
+  // const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
   // const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
   const [
     preConfirmedSelectionOfClosedSitsPerSitter,
@@ -86,7 +86,7 @@ export default function Home() {
         let query = supabaseClient
           .from('profiles')
           .select(
-            `id, first_name, last_name, avatar_url, housitters!inner (
+            `id, first_name, last_name, avatar_url, gender, housitters!inner (
             id, locations, experience, about_me
           ), available_dates!inner (user_id, start_date, end_date)`
           )
@@ -142,6 +142,7 @@ export default function Home() {
               locations: [],
               experience: 0,
               about_me: '',
+              gender: housitter.gender,
             }
 
             // shouldn't be an array, but due to some supabase inconsistency, this is here as a safeguard
@@ -195,46 +196,61 @@ export default function Home() {
 
   function sortHousitters(sortByProperty: string, sortOrder: string) {
     let sortedHousitters: any[] = [...housitters]
-    if (typeof sortedHousitters[0][sortByProperty] === 'string') {
-      if (sortOrder === 'asc') {
-        sortedHousitters.sort((a, b) => a[sortByProperty].localeCompare(b[sortByProperty]))
-      } else {
-        sortedHousitters.sort((a, b) => b[sortByProperty].localeCompare(a[sortByProperty]))
-      }
-    } else {
-      if (sortOrder === 'asc') {
-        sortedHousitters.sort((a, b) => a[sortByProperty] - b[sortByProperty])
-      } else {
+    if (sortByProperty === 'gender') {
+      sortedHousitters.sort((a, b) => {
+        switch (sortOrder) {
+          case 'desc':
+            return getOrderValue(a[sortByProperty]) - getOrderValue(b[sortByProperty])
+          default:
+            return getOrderValue(b[sortByProperty]) - getOrderValue(a[sortByProperty])
+        }
+      })
+    } else if (sortByProperty === 'experience') {
+      if (sortOrder === 'desc') {
         sortedHousitters.sort((a, b) => b[sortByProperty] - a[sortByProperty])
+      } else {
+        sortedHousitters.sort((a, b) => a[sortByProperty] - b[sortByProperty])
       }
     }
 
     setHousitters(sortedHousitters)
   }
 
-  async function handleBindSitterWithPeriod(e: any) {
-    e.preventDefault()
-
-    const preConfirmedStartPeriodsToModify = [
-      ...preConfirmedSelectionOfClosedSitsPerSitter.startDates,
-    ]
-    const selectedStartDate = e.target.value
-    const indexOfSelectedStartDate = preConfirmedStartPeriodsToModify.indexOf(selectedStartDate)
-
-    if (indexOfSelectedStartDate === -1) {
-      preConfirmedStartPeriodsToModify.push(selectedStartDate)
-    } else {
-      preConfirmedStartPeriodsToModify.splice(indexOfSelectedStartDate, 1)
+  function getOrderValue(gender: string): number {
+    switch (gender) {
+      case 'female':
+        return 1
+      case 'male':
+        return 2
+      case 'non-binary':
+      default:
+        return 3
     }
-
-    // again, strangely, the code seems to be structured properly in terms of order of operations, but still setTimeout seems to be the only solution for the race condition
-    setTimeout(() => {
-      setPreConfirmedSelectionOfClosedSitsPerSitter({
-        housitterId: selectedHousitterId,
-        startDates: preConfirmedStartPeriodsToModify,
-      })
-    }, 0)
   }
+
+  // async function handleBindSitterWithPeriod(e: any) {
+  //   e.preventDefault()
+
+  //   const preConfirmedStartPeriodsToModify = [
+  //     ...preConfirmedSelectionOfClosedSitsPerSitter.startDates,
+  //   ]
+  //   const selectedStartDate = e.target.value
+  //   const indexOfSelectedStartDate = preConfirmedStartPeriodsToModify.indexOf(selectedStartDate)
+
+  //   if (indexOfSelectedStartDate === -1) {
+  //     preConfirmedStartPeriodsToModify.push(selectedStartDate)
+  //   } else {
+  //     preConfirmedStartPeriodsToModify.splice(indexOfSelectedStartDate, 1)
+  //   }
+
+  //   // again, strangely, the code seems to be structured properly in terms of order of operations, but still setTimeout seems to be the only solution for the race condition
+  //   setTimeout(() => {
+  //     setPreConfirmedSelectionOfClosedSitsPerSitter({
+  //       housitterId: selectedHousitterId,
+  //       startDates: preConfirmedStartPeriodsToModify,
+  //     })
+  //   }, 0)
+  // }
 
   function handleAvailabilityFilterChange(index: number, updatedRange: DatePickerSelection) {
     const modifiedAvailabilityFilter = [...availabilityFilter]
@@ -275,7 +291,7 @@ export default function Home() {
                         router.push(PageRoutes.LandlordRoutes.EditHouse)
                       }}
                     >
-                      Edit Post
+                      Edit My Post
                     </Button>
                   ) : (
                     <p style={{ marginBottom: 0 }}>

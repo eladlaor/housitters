@@ -112,6 +112,7 @@ export interface DbAvailableHousitter {
   availability: { startDate: Date; endDate: Date }[]
   experience: number
   about_me: string
+  gender: string
 }
 
 export type DefaultAvailablePostType = {

@@ -261,7 +261,7 @@ export default function Home() {
                         router.push(PageRoutes.LandlordRoutes.EditHouse)
                       }}
                     >
-                      Edit Post
+                      Edit My Post
                     </Button>
                   ) : (
                     <p style={{ marginBottom: 0 }}>

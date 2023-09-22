@@ -37,7 +37,7 @@ export default function Sorter(props: {
               inline
               name="sortOrder"
               id="radio-asc"
-              label={<BsArrowUp />}
+              label={selectedSortingProperty === 'gender' ? '♂' : <BsArrowDown />}
             />
             <Form.Check
               type="radio"
@@ -47,7 +47,7 @@ export default function Sorter(props: {
               inline
               name="sortOrder"
               id="radio-desc"
-              label={<BsArrowDown />}
+              label={selectedSortingProperty === 'gender' ? '♀' : <BsArrowUp />}
             />
           </div>
         </div>
