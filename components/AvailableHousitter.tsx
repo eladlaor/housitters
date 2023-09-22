@@ -103,7 +103,7 @@ export default function AvailableHousitter(props: HousitterProps) {
                     router.push(`${PageRoutes.LandlordRoutes.Home}/${housitterId}`)
                   }}
                 >
-                  <br />
+                  {' '}
                   See More
                 </span>
               )}
