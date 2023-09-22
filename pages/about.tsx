@@ -18,7 +18,7 @@ export default function About() {
       <section id="about-me"></section>
 
       <section id="faq">
-        <h2>Frequently Asked Questions</h2>
+        <h2>FAQ</h2>
         <ul>
           <h3>How does Housitters.com work?</h3>
           <p>
