@@ -10,7 +10,7 @@ export default function About() {
           Welcome to Housitters, the premier platform that connects house owners with trusted
           house-sitters. We understand the importance of finding reliable and caring individuals to
           take care of your home and pets when you're away. Our website is dedicated to creating a
-          secure and easy-to-use environment where you can find the perfect sitter for your specific
+          safe and easy-to-use environment where you can find the perfect sitter for your specific
           needs.
         </p>
       </section>
