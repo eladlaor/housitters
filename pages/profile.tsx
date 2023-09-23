@@ -13,7 +13,6 @@ import {
   setPrimaryUse,
   setUsername,
   setBirthday,
-  setAvailability,
   setGenderState,
   setEmailState,
   selectFirstNameState,
@@ -21,7 +20,6 @@ import {
   selectEmailState,
   selectGenderState,
   selectLastNameState,
-  selectAvailabilityState,
 } from '../slices/userSlice'
 
 import {
@@ -35,7 +33,6 @@ import PetsCounter from '../components/PetsCounter'
 import CountAndUpdate from '../components/utils/CountAndUpdate'
 import { getUrlFromSupabase, handleError } from '../utils/helpers'
 import { selectPetsState } from '../slices/landlordSlice'
-import AvailabilitySelector from '../components/AvailabilitySelector'
 
 export default function Account() {
   const supabaseClient = useSupabaseClient<Database>()
@@ -56,7 +53,6 @@ export default function Account() {
   const primary_use = useSelector(selectPrimaryUseState)
   const isHousitter = primary_use === UserType.Housitter
   const pets = useSelector(selectPetsState)
-  const availability = useSelector(selectAvailabilityState)
 
   const initialFormState: any = {
     firstName,
@@ -116,9 +112,6 @@ export default function Account() {
           setFormField(EditProfileProps.Email, data.email)
         }
 
-        const availability = await getAvailabilityFromDb()
-        dispatch(setAvailability(availability))
-
         if (isHousitter) {
           const { error: housitterError, data: housitterData } = await supabaseClient
             .from('housitters')
@@ -141,33 +134,6 @@ export default function Account() {
       console.log(error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  // TODO: a getter should not set
-  async function getAvailabilityFromDb() {
-    if (!user) {
-      return
-    }
-
-    let { data: availableDates, error } = await supabaseClient
-      .from('available_dates')
-      .select('start_date, end_date')
-      .eq('user_id', user.id)
-
-    if (error) {
-      throw error
-    }
-
-    if (availableDates && availableDates.length > 0) {
-      const availableDatesAsReduxType = availableDates.map((date) => {
-        return {
-          startDate: date.start_date,
-          endDate: date.end_date,
-        }
-      })
-
-      return availableDatesAsReduxType
     }
   }
 
@@ -362,17 +328,6 @@ export default function Account() {
                 )}
                 <h5 className="mt-3">Update picture</h5>
                 <input id="avatarInput" type="file" onChange={handleAvatarUpdate} />
-              </Form.Group>
-              <Form.Group>
-                <Form.Label className="mt-2">Dates</Form.Label>
-                {availability.map((period, index) => (
-                  <AvailabilitySelector
-                    key={index}
-                    period={period}
-                    index={index}
-                    updateDbInstantly={true}
-                  />
-                ))}
               </Form.Group>
             </Col>
           </Row>
