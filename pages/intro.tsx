@@ -1,26 +1,30 @@
 import { LocationIds, PageRoutes, UserType } from '../utils/constants'
 import { useRouter } from 'next/router'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useEffect, useState } from 'react'
-import { selectAvailabilityState } from '../slices/userSlice'
+import { selectAvailabilityState, setAvailability } from '../slices/userSlice'
+import DatePicker from 'react-datepicker'
 
 import { selectLocationsState as housitterSelectLocationsState } from '../slices/housitterSlice'
 import { Button, Modal } from 'react-bootstrap'
 
-import AvailabilitySelector from '../components/AvailabilitySelector'
+// import AvailabilitySelector from '../components/AvailabilitySelector'
 import LocationSelector from '../components/LocationSelector'
 
 import React from 'react'
+import { DatePickerSelection } from '../types/clientSide'
+import moment from 'moment'
 
 export default function Intro() {
   const router = useRouter()
-
+  const dispatch = useDispatch()
   const userType = (router.query.userType || '') as string
   const [isHousitter, setIsHousitter] = useState(userType === UserType.Housitter)
   const [isLoading, setIsLoading] = useState(true)
   const [showSignupOrLoginModal, setShowSignupOrLoginModal] = useState(false)
 
   const availability = useSelector(selectAvailabilityState)
+  const [dateRanges, setDateRanges] = useState([[null, null]] as DatePickerSelection[])
   const housitterLocations = useSelector(housitterSelectLocationsState)
 
   useEffect(() => {
@@ -35,6 +39,49 @@ export default function Intro() {
     setShowSignupOrLoginModal(true)
   }
 
+  async function updateDateRange(index: number, updatedRange: [null | Date, null | Date]) {
+    const ranges = [...dateRanges]
+    const modifiedAvailability = [...availability]
+
+    const [updatedStartDate, updatedEndDate] = updatedRange
+    if (!updatedStartDate && !updatedEndDate) {
+      // the Anytime case
+      updatedRange = [new Date(), new Date(0)]
+    }
+
+    const formattedStartDate = moment(
+      new Date(updatedRange[0] ? updatedRange[0] : new Date())
+    ).format('MM-DD-YYYY')
+
+    const formattedEndDate = moment(
+      new Date(updatedRange[1] ? updatedRange[1] : new Date(0))
+    ).format('MM-DD-YYYY')
+
+    modifiedAvailability[index] = {
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
+    }
+
+    ranges[index] = updatedRange
+
+    setDateRanges(ranges)
+    dispatch(setAvailability(modifiedAvailability))
+  }
+
+  function addDateRange() {
+    setDateRanges([...dateRanges, [new Date(), new Date(0)]])
+  }
+
+  async function removeDateRange(index: number) {
+    const modifiedAvailability = [...availability]
+    const ranges = [...dateRanges]
+
+    modifiedAvailability.splice(index, 1)
+    ranges.splice(index, 1)
+    setDateRanges(ranges)
+    dispatch(setAvailability(modifiedAvailability))
+  }
+
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div>
@@ -47,14 +94,46 @@ export default function Intro() {
           </div>
           <div>
             <h3>When?</h3>
-            {availability.map((period, index) => (
+            {dateRanges &&
+              dateRanges.map(([start, end], index) => (
+                <div key={index}>
+                  <DatePicker
+                    selectsRange={true}
+                    startDate={end?.getFullYear() === 1970 ? null : start}
+                    endDate={end?.getFullYear() === 1970 ? null : end}
+                    placeholderText="enter another range"
+                    onChange={(value) => {
+                      updateDateRange(index, value)
+                    }}
+                    isClearable={true}
+                  />
+                  {index === dateRanges.length - 1 && (
+                    <div style={{ textAlign: 'right' }}>
+                      {dateRanges.length > 1 && (
+                        <Button
+                          variant="danger"
+                          className="mt-4 w-100"
+                          onClick={() => removeDateRange(index)}
+                        >
+                          Remove Range
+                        </Button>
+                      )}
+                      <Button variant="warning" className="mt-4 w-100" onClick={addDateRange}>
+                        Add Range
+                      </Button>
+                    </div>
+                  )}
+                  <hr />
+                </div>
+              ))}
+            {/* {availability.map((period, index) => (
               <AvailabilitySelector
                 key={index}
                 period={period}
                 index={index}
                 updateDbInstantly={false}
               />
-            ))}
+            ))} */}
           </div>
           <div>
             <h3>Where?</h3>
@@ -85,11 +164,10 @@ export default function Intro() {
       </div>
       <Modal show={showSignupOrLoginModal} onHide={() => setShowSignupOrLoginModal(false)}>
         <Modal.Header className="d-flex justify-content-center">
-          <Modal.Title>One More Step</Modal.Title>
+          <Modal.Title>
+            One More Step to Find Your Next {isHousitter ? 'House' : 'Sitter'}
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body className="d-flex justify-content-center">
-          Join the community to find your next {isHousitter ? 'houses' : 'sitters'}:
-        </Modal.Body>
         <Modal.Footer className="d-flex justify-content-center">
           <Button
             variant="success"
