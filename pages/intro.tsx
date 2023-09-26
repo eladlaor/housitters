@@ -101,13 +101,13 @@ export default function Intro() {
                     selectsRange={true}
                     startDate={end?.getFullYear() === 1970 ? null : start}
                     endDate={end?.getFullYear() === 1970 ? null : end}
-                    placeholderText="enter another range"
+                    placeholderText={dateRanges.length > 1 ? 'enter another range' : 'Anytime'}
                     onChange={(value) => {
                       updateDateRange(index, value)
                     }}
                     isClearable={true}
                   />
-                  {index === dateRanges.length - 1 && (
+                  {dateRanges.length > 1 && index === dateRanges.length - 1 && (
                     <div style={{ textAlign: 'right' }}>
                       {dateRanges.length > 1 && (
                         <Button
