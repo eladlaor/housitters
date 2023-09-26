@@ -8,7 +8,6 @@
    - [House-sitting Motivation](#house-sitting-motivation)
 3. [Usage and Features](#usage-and-features)
    - [Sign Up](#sign-up)
-   - [Housitter or Landlord?](#housitter-or-landlord)
    - [With Housitters.com, you can:](#with-housitterscom-you-can)
    - [Future Plans](#future-plans)
 
@@ -53,15 +52,16 @@ The interface varies according to the user type.
 
 ### With Housitters.com, you can:
 
-- Edit your profile and house post respective to your user type.
+- Create and edit a profile and a public post, respective to your user type.
+- Contact (or get contacted by) other registered members.
 - Filter searches for either houses or sitters:
   - By date (single range / multiple ranges / Anytime).
   - By location (house-sitters can search multiple locations, landlords are limited to one).
-- Sort searches according to relevant criteria.
+  - These search filters are separate from the date and location settings on your own public post.
+- Sort the results according to relevant criteria.
 - Bookmark favorite sitters or houses.
 - Post and read reviews on other users.
 - Get in touch with the site's developer (me:) for feedback or suggestions.
-- Contact other registered members.
 - Efficiently manage prior chats using a personal inbox.
 
 ### Future Plans

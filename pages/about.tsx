@@ -81,20 +81,14 @@ export default function About() {
         <h2>Usage</h2>
         <h3>Sign Up</h3>
         <p>
-          To explore pets, houses, and house-sitters, you first need to sign up. I've ensured
-          user-friendly and informative error messages for any unclear steps.
-        </p>
-
-        <h3>Housitter or Landlord?</h3>
-        <p>
-          Upon signing up, define yourself as either a <code>landlord</code> or a{' '}
-          <code>housitter</code>. <br />
+          To explore pets, houses, and house-sitters, you first need to sign up. Upon signing up,
+          define yourself as either a <code>landlord</code> or a <code>housitter</code>. <br />
           The interface varies according to the user type.
         </p>
-
         <h3>With Housitters.com, you can:</h3>
         <ul>
-          <li>Edit your profile and house post respective to your user type.</li>
+          <li>Create and edit a profile and a public post, respective to your user type.</li>
+          <li>Contact (or get contacted by) other registered members.</li>
           <li>
             Filter searches for either houses or sitters:
             <ul>
@@ -103,11 +97,18 @@ export default function About() {
                 By location (house-sitters can search multiple locations, landlords are limited to
                 one).
               </li>
+              <li>
+                These search filters are separate from the date and location settings on your own
+                public post.
+              </li>
             </ul>
           </li>
-          <li>Sort searches according to relevant criteria.</li>
+          <li>Sort the results according to relevant criteria.</li>
           <li>Bookmark favorite sitters or houses.</li>
-          <li>Post and read reviews on other users.</li>
+          <li>
+            Reviews: post and read reviews on other users, to make sure everybody's heading for a
+            good experience.
+          </li>
           <li>Get in touch with the site's developer (me:) for feedback or suggestions.</li>
           <li>Contact other registered members.</li>
           <li>Efficiently manage prior chats using a personal inbox.</li>
