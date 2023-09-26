@@ -3,11 +3,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { PageRoutes, UserType } from '../../utils/constants'
 import { useDispatch } from 'react-redux'
-import Image from 'next/image'
 
 import { setAvatarUrl } from '../../slices/userSlice'
 
-import logo from '../../public/images/logoRegularSize.jpg'
 import { Form, Button, Modal } from 'react-bootstrap'
 import PasswordInput from '../../components/Auth/PasswordInput'
 
@@ -53,7 +51,6 @@ export default function LoginPage() {
 
   async function handleEmailLogin(e: any) {
     e.preventDefault()
-    // setIsLoading(true)
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
@@ -71,17 +68,6 @@ export default function LoginPage() {
   async function handleResetPassword() {
     router.push(PageRoutes.Auth.ForgotMyPassword)
   }
-
-  // async function handleGoogleOAuthLogin(e: any) {
-  //   dispatch(setIsOngoingOAuthState(true))
-  //   supabaseClient.auth.signInWithOAuth({
-  //     provider: 'google',
-  //     // TODO: configure in google cloud
-  //     // options: {
-  //     //   redirectTo: 'http://localhost:3000/auth/Login',
-  //     // },
-  //   })
-  // }
 
   const handleCloseLoginErrorModal = () => {
     setShowLoginErrorModal(false)
@@ -136,17 +122,7 @@ export default function LoginPage() {
             </Button>
           </Form.Group>
         </Form>
-        {/* <h3 className=" mt-3 d-flex justify-content-center align-items-center">or</h3>
-      <Button
-        className="my-google-button mt-3 d-flex justify-content-center align-items-center"
-        variant="outline-dark"
-        onClick={(e) => handleGoogleOAuthLogin(e)}
-      >
-        <div className="space-between w-100">
-          log in with Google <br />
-          <FaGoogle />
-        </div>
-      </Button> */}
+
         <div>
           <Button variant="link" size="sm" onClick={handleResetPassword} className="mt-3 w-100">
             forgot my password
@@ -164,9 +140,6 @@ export default function LoginPage() {
       </Modal>
     </>
   ) : (
-    <div className="d-flex flex-column vh-100 justify-content-center align-items-center">
-      {/* <h5>Loading{loadingDots}</h5> */}
-      <Image src={logo} width="150" height="150" className="rotate" />
-    </div>
+    <></>
   )
 }

@@ -10,7 +10,6 @@ import Resizer from 'react-image-file-resizer'
 
 type Profiles = Database['public']['Tables']['profiles']['Row']
 
-// TODO: should unify the way i get props for each component
 export default function Picture({
   isIntro,
   uid,
@@ -30,7 +29,7 @@ export default function Picture({
   uid: string
   primaryUse: string
   url: Profiles['avatar_url']
-  size: number // TODO: can change this completely to different use: quality
+  size: number
   width: number
   height: number
   disableUpload: boolean
@@ -294,7 +293,6 @@ export default function Picture({
               type="file"
               name="file"
               accept="image/*"
-              /* TODO: disbaled=? */
             />
           ) : (
             <Button

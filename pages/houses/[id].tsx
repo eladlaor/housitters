@@ -26,7 +26,6 @@ export default function HouseDetails() {
       return
     }
 
-    // TODO: maybe better differentiate between the sitter/lord use cases, specifically for userFirstName
     const loadData = async () => {
       setPost(
         (
@@ -52,7 +51,6 @@ export default function HouseDetails() {
         .eq('user_id', landlordId)
       setAvailbility(dates as any[])
 
-      // Get reviews
       const { data: reviews } = await supabaseClient
         .from(TableNames.ReviewsOnLandlords)
         .select(

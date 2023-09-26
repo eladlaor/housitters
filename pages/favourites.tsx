@@ -1,13 +1,11 @@
-import Row from 'react-bootstrap/Row'
 import { useSelector } from 'react-redux'
 import { selectAllFavouriteUsers } from '../slices/favouritesSlice'
 import { useEffect, useState } from 'react'
 import { useSupabaseClient, useSessionContext } from '@supabase/auth-helpers-react'
-import { Button, Card, Container } from 'react-bootstrap'
+import { Button, Container } from 'react-bootstrap'
 
 import AvailableHousitter from '../components/AvailableHousitter'
-// import PublicProfile from '../components/PublicProfile'
-import { Router, useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { selectPrimaryUseState } from '../slices/userSlice'
 import { PageRoutes, UserType } from '../utils/constants'
 

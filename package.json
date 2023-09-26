@@ -49,13 +49,10 @@
     "@types/react-dom": "18.0.6",
     "@types/react-responsive-masonry": "^2.1.0",
     "@types/styled-components": "^5.1.26",
-    "autoprefixer": "^10.4.13",
     "eslint": "8.25.0",
     "eslint-config-next": "12.3.1",
-    "postcss": "^8.4.19",
     "react-image-file-resizer": "^0.4.8",
     "supabase": "^1.41.4",
-    "tailwindcss": "^3.2.4",
     "typescript": "4.8.4"
   }
 }

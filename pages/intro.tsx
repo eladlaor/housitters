@@ -8,7 +8,6 @@ import DatePicker from 'react-datepicker'
 import { selectLocationsState as housitterSelectLocationsState } from '../slices/housitterSlice'
 import { Button, Modal } from 'react-bootstrap'
 
-// import AvailabilitySelector from '../components/AvailabilitySelector'
 import LocationSelector from '../components/LocationSelector'
 
 import React from 'react'
@@ -126,14 +125,6 @@ export default function Intro() {
                   <hr />
                 </div>
               ))}
-            {/* {availability.map((period, index) => (
-              <AvailabilitySelector
-                key={index}
-                period={period}
-                index={index}
-                updateDbInstantly={false}
-              />
-            ))} */}
           </div>
           <div>
             <h3>Where?</h3>

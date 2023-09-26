@@ -3,7 +3,7 @@ export type Json =
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[]
 
 export interface Database {
@@ -83,24 +83,24 @@ export interface Database {
       favourites: {
         Row: {
           created_at: string | null
-          favourite_user_id: string | null
+          favourite_user_id: string
           favourite_user_type: string | null
           id: number
-          marked_by_user_id: string | null
+          marked_by_user_id: string
         }
         Insert: {
           created_at?: string | null
-          favourite_user_id?: string | null
+          favourite_user_id: string
           favourite_user_type?: string | null
           id?: number
-          marked_by_user_id?: string | null
+          marked_by_user_id: string
         }
         Update: {
           created_at?: string | null
-          favourite_user_id?: string | null
+          favourite_user_id?: string
           favourite_user_type?: string | null
           id?: number
-          marked_by_user_id?: string | null
+          marked_by_user_id?: string
         }
         Relationships: []
       }

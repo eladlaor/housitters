@@ -21,7 +21,6 @@ import LocationSelector from '../../components/LocationSelector'
 import { handleError } from '../../utils/helpers'
 import {
   selectLocationsState as selectHousitterLocationsState,
-  setLocationsState as setHousitterLocationsState,
 } from '../../slices/housitterSlice'
 import Footer from '../../components/Footer'
 import Sorter from '../../components/Sorter'
@@ -34,7 +33,6 @@ export default function Home() {
   const router = useRouter()
   const userType = useSelector(selectPrimaryUseState)
 
-  // const [dateRange, setDateRange] = useState([null, null] as (null | Date)[])
   const [isPostComplete, setIsPostComplete] = useState(true)
 
   const [landlordLocation, setLandlordLocation] = useState(LocationSelectionEventKeys.Anywhere)
@@ -357,14 +355,7 @@ export default function Home() {
               </Card>
             </Col>
             <Col md={9}>
-              <Row
-              // className={
-              //   availablePosts.length === 0
-              //     ? 'h-100 align-items-center justify-content-center '
-              //     : ''
-              // }
-              // style={availablePosts.length === 0 ? { minHeight: '300px' } : {}}
-              >
+              <Row>
                 {availablePosts.length === 0 ? (
                   <Alert variant="info" className="text-center alert-trimmed mx-auto">
                     There are currently no available houses for these settings.
@@ -389,7 +380,6 @@ export default function Home() {
                               }))
                             : []
                         }
-                        addMissingDetailsHandler={null}
                         duration={post.duration}
                         dateRanges={post.dateRanges}
                       />

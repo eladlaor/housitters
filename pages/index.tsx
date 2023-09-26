@@ -8,7 +8,6 @@ import cuteDog from '../public/images/leika.jpg'
 import {
   selectIsOngoingOAuthState,
   selectPrimaryUseState,
-  setIsOngoingOAuthState,
   setPrimaryUse,
   settersToInitialStates as userSettersToInitialStates,
 } from '../slices/userSlice'
@@ -30,7 +29,6 @@ export default function Home() {
 
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
-  const isOngoingOAuth = useSelector(selectIsOngoingOAuthState)
   const userType = useSelector(selectPrimaryUseState)
 
   async function clearUserState() {

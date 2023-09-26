@@ -175,50 +175,6 @@ export default function PublicProfile() {
           </Col>
         </Row>
       </Container>
-
-      {/*  */}
-      {/* <Picture */}
-      {/*   isIntro={false} */}
-      {/*   uid={userId} */}
-      {/*   primaryUse={primaryUse} */}
-      {/*   url={avatarUrl} */}
-      {/*   size={80} */}
-      {/*   width={50} */}
-      {/*   height={50} */}
-      {/*   disableUpload={true} */}
-      {/*   bucketName={'avatars'} */}
-      {/*   isAvatar={true} */}
-      {/*   promptMessage={''} */}
-      {/*   email={email ? email : ''} */}
-      {/*   isRounded={false} */}
-      {/* /> */}
-      {/* <hr /> */}
-      {/* <h3> */}
-      {/*   {firstName} {lastName} */}
-      {/* </h3> */}
-      {/* <hr /> */}
-      {/* {aboutMe ? aboutMe : `${firstName} didn't write a bio yet.`} */}
-      {/* <MessageSender */}
-      {/*   recipientFirstName={firstName} */}
-      {/*   recipientLastName={lastName} */}
-      {/*   recipientUserId={userId} */}
-      {/*   senderFirstName={currentUserFirstName} */}
-      {/*   senderLastName={currentUserLastName} */}
-      {/*   isChat={false} */}
-      {/* /> */}
-      {/* <hr /> */}
-      {/* <ReviewsOnSelectedUser */}
-      {/*   selectedUserId={userId} */}
-      {/*   selectedUserFirstName={firstName} */}
-      {/*   selectedUserLastName={lastName} */}
-      {/*   selectedUserType={primaryUse} */}
-      {/* /> */}
-      {/* <RecommendationSender */}
-      {/*   reviewedUserId={userId} */}
-      {/*   reviewedUserFirstName={firstName} */}
-      {/*   reviewedUserLastName={lastName} */}
-      {/*   reviewedUserType={primaryUse} */}
-      {/* />{' '} */}
     </div>
   )
 }
