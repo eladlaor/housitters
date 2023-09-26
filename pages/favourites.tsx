@@ -85,7 +85,7 @@ export default function Favourites() {
             firstName={favUser.firstName}
             lastName={favUser.lastName}
             experience={favUser.experience}
-            about_me={
+            aboutMeText={
               favUser.about_me
                 ? favUser.about_me
                 : `${favUser.firstName} didn't write a description yet`
