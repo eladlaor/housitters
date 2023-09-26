@@ -6,7 +6,6 @@ import {
   NoDescriptionDefaultMessage,
   PageRoutes,
   SIGNUP_FORM_PROPS,
-  SignupErrorFeedbacks,
   SignupErrorMessages,
   UserType,
 } from '../../utils/constants'
@@ -17,11 +16,9 @@ import { useEffect, useState } from 'react'
 import {
   selectAvailabilityState,
   selectAvatarUrlState,
-  selectPrimaryUseState,
   setAvailability,
   setAvatarUrl,
   setFirstName,
-  setIsLoggedState,
   setLastName,
   setPrimaryUse,
 } from '../../slices/userSlice'
@@ -315,8 +312,7 @@ export default function Signup() {
         })
       }
 
-      dispatch(setIsLoggedState(true))
-      alert(`Successfully created new ${userType}: ${form.firstName} ${form.lastName}`)
+      alert(`Welcome ${form.firstName} ${form.lastName}!`)
     }
 
     const homeProps = {

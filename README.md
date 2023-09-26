@@ -68,7 +68,7 @@ The interface varies according to the user type.
 
 - Add a Hebrew interface, with an option to select the site's language (default: according to the user's ip address).
 - Modify the location options to allow international users.
-- Introduce a user setting for receiving email notifications upon getting a message on the platform. A preliminary implementation exists, but due to potential spam concerns, I still have some figuring out to do, to ensure user satisfaction.
-- Add an easy "Invite a Friend" option.
+- Introduce a user setting for receiving email notifications upon getting a message on the platform. A preliminary implementation exists, but there are still potential spam concerns to handle.
+- Add an "Invite a Friend" option.
 - Improve the design.
 - Launch :)

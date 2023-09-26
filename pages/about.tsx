@@ -125,10 +125,10 @@ export default function About() {
           <li>Modify the location options to allow international users.</li>
           <li>
             Introduce a user setting for receiving email notifications upon getting a message on the
-            platform. A preliminary implementation exists, but due to potential spam concerns, I
-            still have some figuring out to do, to ensure user satisfaction.
+            platform. A preliminary implementation exists, but there are still potential spam
+            concerns to handle.
           </li>
-          <li>Add an easy "Invite a Friend" option.</li>
+          <li>Add an "Invite a Friend" option.</li>
           <li>Improve the design.</li>
           <li>Launch :)</li>
         </ul>

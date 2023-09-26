@@ -5,8 +5,6 @@ import {
   settersToInitialStates as userSettersToInitialStates,
   SettersToInitialStates,
   selectPrimaryUseState,
-  setIsLoggedState,
-  selectIsLoggedState,
 } from '../../slices/userSlice'
 import { settersToInitialStates as postSettersToInitialStates } from '../../slices/createPostSlice'
 import { settersToInitialStates as housitterSettersToInitialStates } from '../../slices/housitterSlice'
@@ -43,7 +41,6 @@ export default function SignOut({ elementType }: SignOutProps) {
   async function handleSignOutClick() {
     await persistor.purge()
     await supabaseClient.auth.signOut()
-    dispatch(setIsLoggedState(false))
 
     if (userType === UserType.Housitter) {
       clearState(housitterSettersToInitialStates)
