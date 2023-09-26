@@ -34,8 +34,6 @@ import {
 import { Button, Form, Modal, Spinner, Container } from 'react-bootstrap'
 import Picture from '../../components/Picture'
 import PetsCounter from '../../components/PetsCounter'
-import AvailabilitySelector from '../../components/AvailabilitySelector'
-import LocationSelector from '../../components/LocationSelector'
 import CountAndUpdate from '../../components/utils/CountAndUpdate'
 import { Database } from '../../types/supabase'
 import { setAvailablePosts } from '../../slices/availablePostsSlice'

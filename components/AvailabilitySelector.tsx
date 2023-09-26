@@ -1,11 +1,11 @@
+// DEPRECATED
+
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-
 import { useEffect, useState } from 'react'
-
 import {
   selectAvailabilityState,
   selectPrimaryUseState,

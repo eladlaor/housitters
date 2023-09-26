@@ -117,7 +117,7 @@ export default function EditHouse() {
       .eq('user_id', user?.id)
 
     if (deletionError) {
-      return handleError(deletionError.message, 'AvailabilitySelector delete operation')
+      return handleError(deletionError.message, 'edit remove date range from available_dates delete operation')
     }
     const ranges = [...dateRanges]
     ranges.splice(index, 1)
