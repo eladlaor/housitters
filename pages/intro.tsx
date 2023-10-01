@@ -1,7 +1,7 @@
 import { LocationIds, PageRoutes, UserType } from '../utils/constants'
 import { useRouter } from 'next/router'
 import { useSelector, useDispatch } from 'react-redux'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { selectAvailabilityState, setAvailability } from '../slices/userSlice'
 import DatePicker from 'react-datepicker'
 
@@ -13,6 +13,7 @@ import LocationSelector from '../components/LocationSelector'
 import React from 'react'
 import { DatePickerSelection } from '../types/clientSide'
 import moment from 'moment'
+import { isRangeAnytime } from '../utils/dates'
 
 export default function Intro() {
   const router = useRouter()
@@ -95,7 +96,7 @@ export default function Intro() {
             <h3>When?</h3>
             {dateRanges &&
               dateRanges.map(([start, end], index) => (
-                <div key={index}>
+                <div key={index} className="styled-datepicker">
                   <DatePicker
                     selectsRange={true}
                     startDate={end?.getFullYear() === 1970 ? null : start}
@@ -106,18 +107,22 @@ export default function Intro() {
                     }}
                     isClearable={true}
                   />
-                  {dateRanges.length > 1 && index === dateRanges.length - 1 && (
-                    <div style={{ textAlign: 'right' }}>
+                  {!isRangeAnytime(dateRanges[0]) && index === dateRanges.length - 1 && (
+                    <div className="styled-datepicker">
                       {dateRanges.length > 1 && (
                         <Button
                           variant="danger"
-                          className="mt-4 w-100"
+                          className="styled-datepicker"
                           onClick={() => removeDateRange(index)}
                         >
                           Remove Range
                         </Button>
                       )}
-                      <Button variant="warning" className="mt-4 w-100" onClick={addDateRange}>
+                      <Button
+                        variant="warning"
+                        className="styled-datepicker"
+                        onClick={addDateRange}
+                      >
                         Add Range
                       </Button>
                     </div>

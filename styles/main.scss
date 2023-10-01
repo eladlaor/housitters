@@ -495,3 +495,25 @@ heart icon
     width: 100%;
   }
 }
+
+.styled-datepicker input {
+  min-width: 150px;
+  width: auto;
+  background-color: #35478a; 
+  color: #fff; 
+  border-radius: 5px;  
+  font-size: 1rem;
+  height: 38px;  
+  line-height: 1.5;
+  border-radius: 0.375rem;;
+  border: 1px solid #ced4da;
+  padding: .375rem .75rem;
+}
+
+.styled-datepicker input::placeholder {
+  text-align: center;
+  color: #ffff; 
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 1;
+}

@@ -196,7 +196,7 @@ export default function LocationSelector({
             </Dropdown.Item>
           </DropdownButton>
         )}
-        <div key={`default-${selectionType}`} className="mb-3">
+        <div key={`default-${selectionType}`} className="mb-3 mt-3">
           {shouldShowCustomLocations ? (
             Object.values(LocationIds).map((loc) => (
               <Form.Check

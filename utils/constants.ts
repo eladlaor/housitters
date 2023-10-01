@@ -73,7 +73,7 @@ export const LocationDescriptions = {
 
 export const LocationSelectionEventKeys = {
   Anywhere: 'Anywhere',
-  CustomLocations: 'Select areas',
+  CustomLocations: 'Select Areas',
 }
 
 export const DbGenderTypes = {

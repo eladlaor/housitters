@@ -1,16 +1,13 @@
+import { DatePickerSelection } from '../types/clientSide'
+
 export function parseDateMultiRange(
   dateRange: string | null
 ): null | [{ startDate: string; endDate: string }] {
-  // TODO: type it with a name
-
-  // maybe regex
-  // does dateRange hold the same reference of the original obj ?
-
   if (!dateRange) {
     return null
   }
 
-  let modifiedAvailability: any = [] // TODO: change 'any' to the named availability type
+  let modifiedAvailability: any = []
 
   let startDate = dateRange.substring(2, 12)
   let endDate = dateRange.substring(13, 23)
@@ -44,4 +41,8 @@ export function countDays(startDate: string | Date, endDate: string | Date): num
   const daysDifference = Math.floor(timeDifference / millisecondsPerDay)
 
   return daysDifference
+}
+
+export function isRangeAnytime(dateRange: DatePickerSelection) {
+  return !dateRange[0] || (dateRange[1] && dateRange[1].getFullYear() === 1970)
 }
