@@ -71,7 +71,7 @@ export default function HomeNavbar({ className = '' }: Props) {
     <Navbar bg="dark" variant="dark" className={classNames}>
       <Container>
         <Navbar.Brand href="/">
-          <img src="/logo-white.svg" style={{ marginTop: '-7px', maxHeight: '28px' }} />
+          <img src="images/white-housitters-logo.png" className="navbar-logo" />
         </Navbar.Brand>
         <div className="navbar-items-wrapper">
           <Navbar.Collapse className="justify-content-between d-flex w-100">
