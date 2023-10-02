@@ -119,11 +119,11 @@ export default function Home() {
         backgroundBlendMode: 'lighten',
       }}
     >
-      <Container className="d-flex align-items-center justify-content-center vh-100">
+      <Container className="d-flex flex-column justify-content-center vh-100">
         <Row>
           <Col xs={12} md={9}>
             <h1 style={{ fontWeight: '700' }}>The Housitters WinWinWin Circle</h1>
-            <p style={{ fontSize: '2rem' }}>
+            <p style={{ fontSize: '1.8rem' }}>
               <span className="highlight-circle-members">Pets</span> get a{' '}
               <span style={{ fontWeight: 'bold' }}>win</span>dfall of fresh-smelling love, while
               they're away from their <span className="highlight-circle-members">Pet Parents</span>{' '}
@@ -134,22 +134,14 @@ export default function Home() {
               warming houses and <span className="highlight-circle-members">Pets</span>.
             </p>
           </Col>
-          <Col
-            xs={12}
-            md={3}
-            className=" d-flex flex-column align-items-center justify-content-center"
-          >
+        </Row>
+        <Row className="d-flex mt-2">
+          <Col xs={12} md={3}>
             <Button size="lg" className="w-100" onClick={() => handleFind(false)}>
               Find a Sitter
             </Button>
-            <p
-              style={{
-                fontSize: '2rem',
-                marginTop: '2rem',
-                marginBottom: '2rem',
-                fontStyle: 'italic',
-              }}
-            ></p>
+          </Col>
+          <Col xs={12} md={3}>
             <Button size="lg" className="w-100" onClick={() => handleFind(true)}>
               Find a House
             </Button>
