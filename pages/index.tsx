@@ -126,12 +126,13 @@ export default function Home() {
             <p style={{ fontSize: '1.8rem' }}>
               <span className="highlight-circle-members">Pets</span> get a{' '}
               <span style={{ fontWeight: 'bold' }}>win</span>dfall of fresh-smelling love, while
-              they're away from their <span className="highlight-circle-members">Pet Parents</span>{' '}
-              who get to spread their <span style={{ fontWeight: 'bold' }}>win</span>gs and travel
-              with peace of mind, knowing their loved ones are in the reliable hands of{' '}
+              they're away from their <br />{' '}
+              <span className="highlight-circle-members">Pet Parents</span> who get to spread their{' '}
+              <span style={{ fontWeight: 'bold' }}>win</span>gs and travel with peace of mind,
+              knowing their loved ones are in the reliable hands of <br />
               <span className="highlight-circle-members">House Sitters</span> who get a{' '}
-              <span style={{ fontWeight: 'bold' }}>win</span>dow to new experiences, meeting heart
-              warming houses and <span className="highlight-circle-members">Pets</span>.
+              <span style={{ fontWeight: 'bold' }}>win</span>dow to new experiences, <br /> meeting
+              heart warming houses and <span className="highlight-circle-members">Pets</span>.
             </p>
           </Col>
         </Row>
