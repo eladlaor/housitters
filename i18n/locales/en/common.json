@@ -1,0 +1,14 @@
+{
+    "homeNavbar": {
+        "language": "Language",
+        "sitters": "Sitters",
+        "houses": "Houses",
+        "about": "About",
+        "login": "Login",
+        "signup": "Signup"
+    },
+    "index": {
+        "findSitter": "Find a Sitter",
+        "findHouse": "Find a House"
+    }
+}

@@ -6,7 +6,6 @@ import { useRouter } from 'next/router'
 import { PageRoutes, UserType } from '../utils/constants'
 import cuteDog from '../public/images/leika.jpg'
 import {
-  selectIsOngoingOAuthState,
   selectPrimaryUseState,
   setPrimaryUse,
   settersToInitialStates as userSettersToInitialStates,
@@ -21,11 +20,13 @@ import { settersToInitialStates as recommendationsSettersToInitialStates } from 
 
 import { Button, Row, Col, Container } from 'react-bootstrap'
 import Footer from '../components/Footer'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
   const router = useRouter()
   const user = useUser()
   const userId = user?.id
+  const { t } = useTranslation()
 
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
@@ -139,12 +140,12 @@ export default function Home() {
         <Row className="d-flex mt-2">
           <Col xs={12} md={3}>
             <Button size="lg" className="w-100" onClick={() => handleFind(false)}>
-              Find a Sitter
+              {t('index.findSitter')}
             </Button>
           </Col>
           <Col xs={12} md={3}>
             <Button size="lg" className="w-100" onClick={() => handleFind(true)}>
-              Find a House
+              {t('index.findHouse')}
             </Button>
           </Col>
         </Row>

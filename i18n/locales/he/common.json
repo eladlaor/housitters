@@ -1,0 +1,14 @@
+{
+    "homeNavbar": {
+        "language": "שפה",
+        "sitters": "האוסיטרים.ות",
+        "houses": "בתים",
+        "about": "מה קורה פה",
+        "login": "התחברות",
+        "signup": "הרשמה"
+    },
+    "index": {
+        "findSitter": "מציאת האוסיטרים.ות",
+        "findHouse": "מציאת בתים"
+    }
+}
