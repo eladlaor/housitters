@@ -181,7 +181,7 @@ export default function HomeNavbar({ className = '' }: Props) {
                     {t('homeNavbar.signup')}
                   </Button>
                 </Nav.Item>
-                <NavDropdown title="Language" id="language-dropdown">
+                <NavDropdown title="Language" id="language-dropdown" className="language-dropdown">
                   <NavDropdown.Item
                     active={currentLocale === 'en'}
                     onClick={() => handleLocaleChange('en')}
