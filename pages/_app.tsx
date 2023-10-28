@@ -11,6 +11,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { library as fontLibrary } from '@fortawesome/fontawesome-svg-core'
 import { faEnvelopeOpenText, faMailBulk, faBoxOpen } from '@fortawesome/free-solid-svg-icons'
 import '../i18n'
+import { useRouter } from 'next/router'
 
 import Head from 'next/head'
 fontLibrary.add(faEnvelopeOpenText, faMailBulk, faBoxOpen)
@@ -22,6 +23,9 @@ function MyApp({
   initialSession: Session
 }>) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient())
+  const router = useRouter()
+  const { locale } = router
+  const direction = locale === 'he' ? 'rtl' : 'ltr' // determining the direction based on locale
 
   /* the following import is for this single purpose: 
   to import js only when the page is loaded on the browser,
@@ -37,17 +41,19 @@ function MyApp({
       <Head>
         <title>Housitters</title>
       </Head>
-      <ReduxProvider store={store}>
-        <PersistGate persistor={persistor}>
-          <SessionContextProvider
-            supabaseClient={supabaseClient}
-            initialSession={pageProps.initialSession}
-          >
-            <HomeNavbar className="mb-4" />
-            <Component {...pageProps} />
-          </SessionContextProvider>
-        </PersistGate>
-      </ReduxProvider>
+      <div dir={direction}>
+        <ReduxProvider store={store}>
+          <PersistGate persistor={persistor}>
+            <SessionContextProvider
+              supabaseClient={supabaseClient}
+              initialSession={pageProps.initialSession}
+            >
+              <HomeNavbar className="mb-4" />
+              <Component {...pageProps} />
+            </SessionContextProvider>
+          </PersistGate>
+        </ReduxProvider>
+      </div>
     </>
   )
 }
