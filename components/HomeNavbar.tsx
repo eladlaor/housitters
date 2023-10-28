@@ -123,7 +123,7 @@ export default function HomeNavbar({ className = '' }: Props) {
                 </Nav.Item>
                 <Nav.Item>
                   <Link href="/favourites">
-                    <a className="nav-link">Favourites</a>
+                    <a className="nav-link">{t('homeNavbar.favourites')}</a>
                   </Link>
                 </Nav.Item>
                 <Nav.Item>
@@ -145,7 +145,9 @@ export default function HomeNavbar({ className = '' }: Props) {
                       </div>
                     }
                   >
-                    <NavDropdown.Item href={PageRoutes.Profile}>Edit Profile</NavDropdown.Item>
+                    <NavDropdown.Item href={PageRoutes.Profile}>
+                      {t('homeNavbar.editProfile')}
+                    </NavDropdown.Item>
                     {userType === UserType.Landlord &&
                       (hasPost ? (
                         <NavDropdown.Item href={PageRoutes.LandlordRoutes.EditHouse}>

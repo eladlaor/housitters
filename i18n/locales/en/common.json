@@ -5,7 +5,11 @@
         "houses": "Houses",
         "about": "About",
         "login": "Login",
-        "signup": "Signup"
+        "signup": "Signup",
+        "inbox": "Inbox",
+        "favourites": "Favourites",
+        "editProfile": "Edit Profile",
+        "signOut": "Sign Out"
     },
     "index": {
         "findSitter": "Find a Sitter",

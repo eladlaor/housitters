@@ -5,7 +5,12 @@
         "houses": "בתים",
         "about": "מה קורה פה",
         "login": "התחברות",
-        "signup": "הרשמה"
+        "signup": "הרשמה",
+        "inbox": "התכתבויות",
+        "favourites": "מועדפים",
+        "editProfile": "עריכת פרופיל",
+        "signOut": "יציאה"
+
     },
     "index": {
         "findSitter": "מציאת האוסיטרס",
