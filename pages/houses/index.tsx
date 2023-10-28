@@ -19,12 +19,11 @@ import { useRouter } from 'next/router'
 import { selectPrimaryUseState } from '../../slices/userSlice'
 import LocationSelector from '../../components/LocationSelector'
 import { handleError } from '../../utils/helpers'
-import {
-  selectLocationsState as selectHousitterLocationsState,
-} from '../../slices/housitterSlice'
+import { selectLocationsState as selectHousitterLocationsState } from '../../slices/housitterSlice'
 import Footer from '../../components/Footer'
 import Sorter from '../../components/Sorter'
 import { countDays } from '../../utils/dates'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
   const supabase = useSupabaseClient()
@@ -44,6 +43,8 @@ export default function Home() {
   const [availabilityFilter, setAvailabilityFilter] = useState([
     [null, null],
   ] as DatePickerSelection[])
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!userId) {
@@ -246,8 +247,10 @@ export default function Home() {
     <div>
       <div className="content-wrapper">
         <Container>
-          <h2>Looking for a great house?</h2>
-          <h5>There are {availablePosts.length} available houses for these dates and locations.</h5>
+          <h2>{t('houses.title')}</h2>
+          <h5>
+            {t('houses.searchResultsStart')} {availablePosts.length} {t('houses.searchResultsEnd')}
+          </h5>
 
           <Row>
             <Col md={3}>
@@ -280,7 +283,7 @@ export default function Home() {
               )}
 
               <Card className="sidebar-filter">
-                <h4>Dates</h4>
+                <h4>{t('sidebarFilter.dates.fieldName')}</h4>
                 {availabilityFilter.map(([startDate, endDate], index) => (
                   <div key={index}>
                     <DatePicker
@@ -316,7 +319,7 @@ export default function Home() {
                     <hr className="mt-4" />
                   </div>
                 ))}
-                <h4 className="mt-2">Location</h4>
+                <h4 className="mt-2">{t('sidebarFilter.location.fieldName')}</h4>
                 {isHousitter ? (
                   <LocationSelector
                     selectionType={isHousitter ? 'checkbox' : 'radio'}
@@ -347,7 +350,7 @@ export default function Home() {
                 )}
                 <hr />
 
-                <h4 className="mt-0">Sort</h4>
+                <h4 className="mt-0">{t('sidebarFilter.sort.fieldName')}</h4>
                 <Sorter
                   sortingProperties={Object.values(SortingProperties.HousitterDashboard)}
                   sortElementsHandler={sortPosts}

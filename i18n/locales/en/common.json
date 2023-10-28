@@ -10,5 +10,29 @@
     "index": {
         "findSitter": "Find a Sitter",
         "findHouse": "Find a House"
+    },
+    "houses": {
+        "title": "Looking for a great house?",
+        "searchResultsStart": "There are",
+        "searchResultsEnd": "available houses for these dates and locations"
+    },
+    "sidebarFilter": {
+        "dates": {
+            "fieldName": "Dates",
+            "anytime": "Anytime",
+            "addRange": "Add Range"
+                },
+                "location": {
+                    "fieldName": "Location",
+                    "selectAreas": "Select Areas"
+                },
+        "sort": {
+            "fieldName": "Sort",
+            "duration": "duration",
+            "number of pets": "number of pets",
+            "gender": "gender",
+            "experience": "experience"
+
+        }
     }
 }

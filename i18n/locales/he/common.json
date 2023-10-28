@@ -10,5 +10,29 @@
     "index": {
         "findSitter": "מציאת האוסיטרס",
         "findHouse": "מציאת בתים"
-    }
+    },
+    "houses": {
+        "title": "בא לך למצוא האוסיט?",
+        "searchResultsStart": "יש",
+        "searchResultsEnd": "בתים פנויים עבור התאריכים והמיקומים שציינת"
+    },
+    "sidebarFilter": {
+        "dates": {
+            "fieldName": "תאריכים",
+            "anytime": "כל זמן",
+            "addRange": "הוספת טווח"
+                },
+                "location": {
+                    "fieldName": "מיקום",
+                    "selectAreas": "בחר אזורים"
+                },
+                "sort": {
+                    "fieldName": "סדר",
+                    "duration": "משך זמן",
+                    "number of pets": "מספר חיות",
+                    "gender": "מגדר",
+                    "experience": "ניסיון"
+            
+                }
+                }
 }
