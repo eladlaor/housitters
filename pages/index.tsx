@@ -21,12 +21,14 @@ import { settersToInitialStates as recommendationsSettersToInitialStates } from 
 import { Button, Row, Col, Container } from 'react-bootstrap'
 import Footer from '../components/Footer'
 import { useTranslation } from 'react-i18next'
+import localizedIntroText from '../components/utils/LocalizedIntroText'
 
 export default function Home() {
   const router = useRouter()
   const user = useUser()
   const userId = user?.id
   const { t } = useTranslation()
+  const { locale } = router
 
   const supabaseClient = useSupabaseClient()
   const dispatch = useDispatch()
@@ -123,18 +125,7 @@ export default function Home() {
       <Container className="d-flex flex-column justify-content-center vh-100">
         <Row>
           <Col xs={12} md={9}>
-            <h1 style={{ fontWeight: '700' }}>The Housitters WinWinWin Circle</h1>
-            <p style={{ fontSize: '1.8rem' }}>
-              <span className="highlight-circle-members">Pets</span> get a{' '}
-              <span style={{ fontWeight: 'bold' }}>win</span>dfall of fresh-smelling love, while
-              they're away from their <br />{' '}
-              <span className="highlight-circle-members">Pet Parents</span> who get to spread their{' '}
-              <span style={{ fontWeight: 'bold' }}>win</span>gs and travel with peace of mind,
-              knowing their loved ones are in the reliable hands of <br />
-              <span className="highlight-circle-members">House Sitters</span> who get a{' '}
-              <span style={{ fontWeight: 'bold' }}>win</span>dow to new experiences, <br /> meeting
-              heart warming houses and <span className="highlight-circle-members">Pets</span>.
-            </p>
+            {localizedIntroText(locale)}
           </Col>
         </Row>
         <Row className="d-flex mt-2">

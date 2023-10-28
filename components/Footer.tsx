@@ -68,9 +68,9 @@ export default function Footer() {
       <div>
         <strong
           onClick={() => setShowContactModal(true)}
-          style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+          style={{ color: 'white', textDecoration: 'underline', cursor: 'pointer' }}
         >
-          Contact The Site's Developer
+          Contact Us
         </strong>
       </div>
       <Modal show={showContactModal} onHide={() => setShowContactModal(false)}>
