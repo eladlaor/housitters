@@ -36,8 +36,9 @@
         "dates": {
             "fieldName": "תאריכים",
             "anytime": "כל זמן",
-            "addRange": "הוספת טווח"
-                },
+            "addRange": "הוספת טווח",
+            "removeRange": "מחיקת טווח"
+        },
         "location": {
             "fieldName": "מיקום",
             "selectAreas": "בחר אזורים",
@@ -64,5 +65,15 @@
         "addReviewFor": "משוב על",
         "submit": "שליחה",
         "fieldName": "משובים"
+    },
+    "housitterPreview": {
+        "contact": "יצירת קשר",
+        "details": "פרטים נוספים",
+        "experience": "ניסיון"
+    },
+    "housitters": {
+        "title": "רוצה למצוא האוסיטרס?",
+        "searchResultsStart": "יש",
+        "searchResultsEnd": "האוסיטרס פנויים עבור התאריכים והמיקומים שציינת"
     }
 }

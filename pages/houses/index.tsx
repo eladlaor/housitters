@@ -304,7 +304,7 @@ export default function Home() {
                             className="w-100"
                             onClick={() => removeAvailabilityFilterRange(index)}
                           >
-                            Remove Range
+                            {t('sidebarFilter.dates.removeRange')}
                           </Button>
                         )}
                         <Button
@@ -337,7 +337,7 @@ export default function Home() {
                       <Dropdown.Item
                         onClick={() => setLandlordLocation(LocationSelectionEventKeys.Anywhere)}
                       >
-                        Anywhere
+                        {t('sidebarFilter.location.anywhere')}
                       </Dropdown.Item>
                       <Dropdown.Divider />
                       {Object.entries(LocationDescriptions).map(([key, value]) => (

@@ -33,7 +33,7 @@ export default function Home() {
   const [startDate, endDate] = dateRange
   const [location, setLocation] = useState(null as null | string)
 
-  const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
+  const [housitters, setHousitters] = useState([{} as any]) // TODO: should type
   // const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
   // const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
   const [
@@ -47,7 +47,6 @@ export default function Home() {
     startDates: string[]
   })
 
-  // const isActivePost = useSelector(selectIsActiveState)
   const [isPostComplete, setIsPostComplete] = useState(true)
 
   const [availabilityFilter, setAvailabilityFilter] = useState([
@@ -281,8 +280,11 @@ export default function Home() {
     <div>
       <div className="content-wrapper">
         <Container>
-          <h2>Looking for a house-sitter?</h2>
-          <h5>There are currently {housitters.length} available sitters for you.</h5>
+          <h2>{t('housitters.title')}</h2>
+          <h5>
+            {t('housitters.searchResultsStart')} {housitters.length}{' '}
+            {t('housitters.searchResultsEnd')}
+          </h5>
 
           <Row>
             <Col md={3}>
@@ -314,14 +316,14 @@ export default function Home() {
                 </Card>
               )}
               <Card className="sidebar-filter">
-                <h4>Dates</h4>
+                <h4>{t('sidebarFilter.dates.fieldName')}</h4>
                 {availabilityFilter.map(([startDate, endDate], index) => (
                   <div key={index}>
                     <DatePicker
                       selectsRange={true}
                       startDate={endDate?.getFullYear() === 1970 ? null : startDate}
                       endDate={endDate?.getFullYear() === 1970 ? null : endDate}
-                      placeholderText="Anytime"
+                      placeholderText={t('sidebarFilter.dates.anytime')}
                       isClearable={true}
                       onChange={(update) => {
                         handleAvailabilityFilterChange(index, update)
@@ -335,7 +337,7 @@ export default function Home() {
                             className="w-100"
                             onClick={() => removeAvailabilityFilterRange(index)}
                           >
-                            Remove Range
+                            {t('sidebarFilter.dates.removeRange')}
                           </Button>
                         )}
                         <Button
@@ -350,26 +352,28 @@ export default function Home() {
                     <hr className="mt-4" />
                   </div>
                 ))}
-                <h4>Location</h4>
+                <h4>{t('sidebarFilter.location.fieldName')}</h4>
                 <Dropdown>
                   <Dropdown.Toggle variant="success">
                     {location
-                      ? LocationDescriptions[location]
-                      : LocationSelectionEventKeys.Anywhere}
+                      ? t(`sidebarFilter.location.descriptions.${LocationDescriptions[location]}`)
+                      : t(`sidebarFilter.location.anywhere`)}
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => setLocation(null)}>Anywhere</Dropdown.Item>
+                    <Dropdown.Item onClick={() => setLocation(null)}>
+                      {t('sidebarFilter.location.anywhere')}
+                    </Dropdown.Item>
                     <Dropdown.Divider />
                     {Object.entries(LocationDescriptions).map(([key, value]) => (
                       <Dropdown.Item key={key} onClick={() => setLocation(key)}>
-                        {value}
+                        {t(`sidebarFilter.location.descriptions.${value}`)}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
                 </Dropdown>
                 <hr />
-                <h4>Sort</h4>
+                <h4> {t('sidebarFilter.sort.fieldName')}</h4>
 
                 <Sorter
                   sortingProperties={Object.values(SortingProperties.LandlordDashboard)}

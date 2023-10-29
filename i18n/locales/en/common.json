@@ -36,7 +36,9 @@
         "dates": {
             "fieldName": "Dates",
             "anytime": "Anytime",
-            "addRange": "Add Range"
+            "addRange": "Add Range",
+            "removeRange": "Remove Range"
+
         },
         "location": {
             "fieldName": "Location",
@@ -64,5 +66,15 @@
         "addReviewFor": "Add a review for",
         "submit": "Submit Review",
         "fieldName": "Reviews"
+    },
+    "housitterPreview": {
+        "contact": "Contact",
+        "details": "Details",
+        "experience": "experience"
+    },
+    "housitters": {
+        "title": "Looking for a house sitter?",
+        "searchResultsStart": "There are",
+        "searchResultsEnd": "available sitters for these dates and locations"
     }
 }

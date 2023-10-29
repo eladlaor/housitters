@@ -10,19 +10,22 @@ import AddToFavourites from './Contact/AddToFavourites'
 import { getUrlFromSupabase, truncateText } from '../utils/helpers'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
+import { useTranslation } from 'react-i18next'
 
 export default function AvailableHousitter(props: HousitterProps) {
   const router = useRouter()
+  const { t } = useTranslation()
+
   const { housitterId, firstName, lastName, avatarUrl, experience, aboutMeText } = props
-
   const truncatedAboutMeObject = truncateText(aboutMeText || '', MaxAboutMeTextLength)
-
   const usersContacted = useSelector(selectUsersContactedState)
 
   function ExperienceTooltip() {
     return (
       <>
-        <Badge>Experience: {experience}</Badge>
+        <Badge>
+          {t('housitterPreview.experience')}: {experience}
+        </Badge>
 
         <OverlayTrigger
           key="bottom"
@@ -117,7 +120,7 @@ export default function AvailableHousitter(props: HousitterProps) {
                 router.push(`${PageRoutes.LandlordRoutes.Home}/${housitterId}`)
               }}
             >
-              Details
+              {t('housitterPreview.details')}
             </Button>
 
             <ContactFoundUser className="mt-2" recipientUserId={housitterId} />
