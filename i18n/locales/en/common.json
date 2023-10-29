@@ -18,7 +18,14 @@
     "houses": {
         "title": "Looking for a great house?",
         "searchResultsStart": "There are",
-        "searchResultsEnd": "available houses for these dates and locations"
+        "searchResultsEnd": "available houses for these dates and locations",
+        "housePreview": {
+            "multiplePeriods": "Multiple Periods",
+            "flexible": "Flexible",
+            "days": "days",
+            "contact": "Contact",
+            "details": "Details"
+        }
     },
     "sidebarFilter": {
         "dates": {

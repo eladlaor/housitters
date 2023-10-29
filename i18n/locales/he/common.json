@@ -18,7 +18,14 @@
     "houses": {
         "title": "בא לך למצוא האוסיט?",
         "searchResultsStart": "יש",
-        "searchResultsEnd": "בתים פנויים עבור התאריכים והמיקומים שציינת"
+        "searchResultsEnd": "בתים פנויים עבור התאריכים והמיקומים שציינת",
+        "housePreview": {
+            "multiplePeriods": "מספר תקופות",
+            "flexible": "גמיש",
+            "days": "ימים",
+            "contact": "יצירת קשר",
+            "details": "פרטים נוספים"
+        }
     },
     "sidebarFilter": {
         "dates": {
