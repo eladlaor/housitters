@@ -25,11 +25,19 @@
             "fieldName": "Dates",
             "anytime": "Anytime",
             "addRange": "Add Range"
-                },
-                "location": {
-                    "fieldName": "Location",
-                    "selectAreas": "Select Areas"
-                },
+        },
+        "location": {
+            "fieldName": "Location",
+            "selectAreas": "Select Areas",
+            "anywhere": "Anywhere",
+            "descriptions": {
+                "Outside Israel": "Outside Israel",
+                "North Israel": "North Israel",
+                "Central Israel": "Central Israel",
+                "Jerusalem": "Jerusalem",
+                "South Israel": "South Israel"
+            }
+        },
         "sort": {
             "fieldName": "Sort",
             "duration": "duration",

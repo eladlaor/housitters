@@ -14,6 +14,7 @@ import React from 'react'
 import { DatePickerSelection } from '../types/clientSide'
 import moment from 'moment'
 import { isRangeAnytime } from '../utils/dates'
+import { useTranslation } from 'react-i18next'
 
 export default function Intro() {
   const router = useRouter()
@@ -26,6 +27,8 @@ export default function Intro() {
   const availability = useSelector(selectAvailabilityState)
   const [dateRanges, setDateRanges] = useState([[null, null]] as DatePickerSelection[])
   const housitterLocations = useSelector(housitterSelectLocationsState)
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (router.isReady) {
@@ -123,7 +126,7 @@ export default function Intro() {
                         className="styled-datepicker"
                         onClick={addDateRange}
                       >
-                        Add Range
+                        {t('sidebarFilter.dates.addRange')}
                       </Button>
                     </div>
                   )}

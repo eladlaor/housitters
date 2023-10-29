@@ -19,6 +19,7 @@ import AvailableHousitter from '../../components/AvailableHousitter'
 import { handleError } from '../../utils/helpers'
 import Footer from '../../components/Footer'
 import Sorter from '../../components/Sorter'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -52,6 +53,8 @@ export default function Home() {
   const [availabilityFilter, setAvailabilityFilter] = useState([
     [null, null],
   ] as DatePickerSelection[])
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!userId) {
@@ -340,7 +343,7 @@ export default function Home() {
                           className="mt-4 w-100"
                           onClick={addAvailabilityFilterRange}
                         >
-                          Add Range
+                          {t('sidebarFilter.dates.addRange')}
                         </Button>
                       </div>
                     )}

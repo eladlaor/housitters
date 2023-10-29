@@ -15,6 +15,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 import { useEffect, useState } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { handleError } from '../utils/helpers'
+import { useTranslation } from 'react-i18next'
 
 export default function LocationSelector({
   selectionType,
@@ -27,17 +28,22 @@ export default function LocationSelector({
   showCustomLocations?: boolean
   updateDbInstantly: boolean
 }) {
+
+
+  const supabaseClient = useSupabaseClient()
+  const user = useUser()
+  const userId = user?.id
+
   const dispatch = useDispatch()
+  
   const locations = isHousitter
     ? useSelector(selectHousitterLocationsState)
     : useSelector(selectlandlordLocationState)
 
   const [shouldShowCustomLocations, setShouldShowCustomLocations] = useState(showCustomLocations)
-  const supabaseClient = useSupabaseClient()
-  const user = useUser()
-  const userId = user?.id
-
   const [locationCurrentSelectionType, setLocationCurrentSelectionType] = useState('')
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!user) {
@@ -185,14 +191,20 @@ export default function LocationSelector({
         {isHousitter && (
           <DropdownButton
             id="dropdown-basic-button"
-            title={locationCurrentSelectionType}
+            title={
+              locationCurrentSelectionType === LocationSelectionEventKeys.CustomLocations
+                ? t('sidebarFilter.location.selectAreas')
+                : t('sidebarFilter.location.anywhere')
+            }
             onSelect={handleHousitterSelectionType}
           >
             {isHousitter && (
-              <Dropdown.Item eventKey={LocationSelectionEventKeys.Anywhere}>Anywhere</Dropdown.Item>
+              <Dropdown.Item eventKey={LocationSelectionEventKeys.Anywhere}>
+                {t('sidebarFilter.location.anywhere')}
+              </Dropdown.Item>
             )}
             <Dropdown.Item eventKey={LocationSelectionEventKeys.CustomLocations}>
-              Select Areas
+              {t('sidebarFilter.location.selectAreas')}
             </Dropdown.Item>
           </DropdownButton>
         )}
@@ -203,7 +215,7 @@ export default function LocationSelector({
                 type={selectionType}
                 key={loc}
                 id={loc}
-                label={LocationDescriptions[loc]}
+                label={t(`sidebarFilter.location.descriptions.${LocationDescriptions[loc]}`)}
                 checked={
                   isHousitter
                     ? locations.indexOf(loc) !== -1

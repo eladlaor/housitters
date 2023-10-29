@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import moment from 'moment'
 import { getUrlFromSupabase, handleError } from '../../utils/helpers'
 import { DatePickerSelection } from '../../types/clientSide'
+import { useTranslation } from 'react-i18next'
 
 export default function EditHouse() {
   const supabaseClient = useSupabaseClient()
@@ -24,6 +25,7 @@ export default function EditHouse() {
   const [uploading, setUploading] = useState(false)
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [dateRanges, setDateRanges] = useState([[null, null]] as DatePickerSelection[])
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!isLoading && !userId) {
@@ -117,7 +119,10 @@ export default function EditHouse() {
       .eq('user_id', user?.id)
 
     if (deletionError) {
-      return handleError(deletionError.message, 'edit remove date range from available_dates delete operation')
+      return handleError(
+        deletionError.message,
+        'edit remove date range from available_dates delete operation'
+      )
     }
     const ranges = [...dateRanges]
     ranges.splice(index, 1)
@@ -300,7 +305,7 @@ export default function EditHouse() {
                               </Button>
                             )}
                             <Button variant="warning" className="mt-4 w-100" onClick={addDateRange}>
-                              Add Range
+                              {t('sidebarFilter.dates.addRange')}
                             </Button>
                           </div>
                         )}

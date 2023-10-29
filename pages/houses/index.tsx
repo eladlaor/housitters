@@ -290,7 +290,7 @@ export default function Home() {
                       selectsRange={true}
                       startDate={endDate?.getFullYear() === 1970 ? null : startDate}
                       endDate={endDate?.getFullYear() === 1970 ? null : endDate}
-                      placeholderText="Anytime"
+                      placeholderText={t('sidebarFilter.dates.anytime')}
                       isClearable={true}
                       onChange={(update) => {
                         handleAvailabilityFilterChange(index, update)
@@ -312,7 +312,7 @@ export default function Home() {
                           className="mt-4 w-100"
                           onClick={addAvailabilityFilterRange}
                         >
-                          Add Range
+                          {t('sidebarFilter.dates.addRange')}
                         </Button>
                       </div>
                     )}
