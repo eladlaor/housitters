@@ -25,6 +25,11 @@
             "days": "days",
             "contact": "Contact",
             "details": "Details"
+        },
+        "details": {
+            "hostedBy": "Hosted by",
+            "availability": "Availability",
+            "location": "location"
         }
     },
     "sidebarFilter": {
@@ -53,5 +58,11 @@
             "experience": "experience"
 
         }
+    },
+    "reviews": {
+        "addReview": "Add Review",
+        "addReviewFor": "Add a review for",
+        "submit": "Submit Review",
+        "fieldName": "Reviews"
     }
 }

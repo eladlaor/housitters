@@ -10,6 +10,7 @@ import DateDisplayer from '../../components/utils/DateDisplayer'
 import ContactFoundUser from '../../components/Contact/ContactFoundUser'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import RecommendationSender from '../../components/RecommendationSender'
+import { useTranslation } from 'react-i18next'
 
 export default function HouseDetails() {
   const supabaseClient = useSupabaseClient()
@@ -20,6 +21,7 @@ export default function HouseDetails() {
   const [post, setPost] = useState({} as any)
   const [reviews, setReviews] = useState([] as any[])
   const [wasNewReviewSubmitted, setWasNewReviewSubmitted] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!landlordId) {
@@ -83,7 +85,7 @@ export default function HouseDetails() {
             </Col>
             <Col>
               <h4>
-                Hosted by{' '}
+                {t('houses.details.hostedBy')}{' '}
                 <em>
                   {post?.landlords?.profiles?.first_name} {post?.landlords?.profiles?.last_name}
                 </em>
@@ -111,7 +113,7 @@ export default function HouseDetails() {
             )}
           </Row>
 
-          <h3>Reviews</h3>
+          <h3>{t('reviews.fieldName')}</h3>
           {reviews?.length === 0 && <p>There are currently no reviews for this house.</p>}
           <RecommendationSender
             reviewedUserId={landlordId}
@@ -137,7 +139,7 @@ export default function HouseDetails() {
                   <b>
                     {review.profiles.first_name} {review.profiles.last_name}
                   </b>
-                  , {review.start_month}, {review.duration} days
+                  , {review.start_month}
                 </h6>
                 <p>{review.description}</p>
                 <p>{review.sit_included}</p>
@@ -149,7 +151,7 @@ export default function HouseDetails() {
           <Card>
             <Card.Body>
               <ContactFoundUser className="w-100 mb-2" size="lg" recipientUserId={landlordId} />
-              <strong>Availability</strong>
+              <strong>{t('houses.details.availability')}</strong>
               <ul>
                 {availability?.map((period, index) => (
                   <li key={index}>
@@ -158,8 +160,15 @@ export default function HouseDetails() {
                 ))}
               </ul>
               <dl style={{ marginTop: '1rem' }}>
-                <dt>Location</dt>
-                <dd>{LocationDescriptions[post?.landlords?.location]}</dd>
+                <dt>{t('houses.details.location')}</dt>
+                <dd>
+                  {' '}
+                  {t(
+                    `sidebarFilter.location.descriptions.${
+                      LocationDescriptions[post?.landlords?.location]
+                    }`
+                  )}{' '}
+                </dd>
 
                 {!!post?.landlords?.profile?.pets?.dogs && (
                   <>

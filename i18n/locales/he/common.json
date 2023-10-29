@@ -25,6 +25,11 @@
             "days": "ימים",
             "contact": "יצירת קשר",
             "details": "פרטים נוספים"
+        },
+        "details": {
+            "hostedBy": "הבית של",
+            "availability": "זמינות",
+            "location": "מיקום"
         }
     },
     "sidebarFilter": {
@@ -53,5 +58,11 @@
             "experience": "ניסיון"
     
         }
+    },
+    "reviews": {
+        "addReview": "כתיבת משוב",
+        "addReviewFor": "משוב על",
+        "submit": "שליחה",
+        "fieldName": "משובים"
     }
 }

@@ -75,7 +75,14 @@ export default function HomeNavbar({ className = '' }: Props) {
 
   function handleLocaleChange(locale: string) {
     i18n.changeLanguage(locale)
-    router.push(router.pathname, undefined, { locale })
+    router.push(
+      {
+        pathname: router.pathname,
+        query: router.query,
+      },
+      undefined,
+      { locale }
+    )
   }
 
   return (
