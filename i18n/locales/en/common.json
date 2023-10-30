@@ -65,7 +65,12 @@
         "addReview": "Add Review",
         "addReviewFor": "Add a review for",
         "submit": "Submit Review",
-        "fieldName": "Reviews"
+        "fieldName": "Reviews",
+        "whenWasIt": "When was it?",
+        "howManyDays": "How many days?",
+        "whatIncluded": "What did the sit include?",
+        "howWas": "How was it?",
+        "noneYet": "No reviews yet"
     },
     "housitterPreview": {
         "contact": "Contact",
@@ -75,6 +80,22 @@
     "housitters": {
         "title": "Looking for a house sitter?",
         "searchResultsStart": "There are",
-        "searchResultsEnd": "available sitters for these dates and locations"
-    }
+        "searchResultsEnd": "available sitters for these dates and locations",
+        "details": {
+            "about": "About me",
+            "availability": "Availability",
+            "location": "Location",
+            "experience": "Experience",
+            "memberSince": "Member since"
+        }
+    },
+    "inbox": {
+        "noMessagesYet": "There are currently no messaegs in your inbox.",
+        "tryContacting": "Try contacting someone!",
+        "chatWith": "Chat with",
+        "close": "Close",
+        "send": "Send",
+        "type": "Type your message here..."
+    },
+    "socialMedia": { "fieldName": "Social Media", "unavailable": "Unavailable"}
 }

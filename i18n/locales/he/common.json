@@ -61,10 +61,15 @@
         }
     },
     "reviews": {
+        "fieldName": "משובים",
         "addReview": "כתיבת משוב",
         "addReviewFor": "משוב על",
         "submit": "שליחה",
-        "fieldName": "משובים"
+        "whenWasIt": "מתי זה היה?",
+        "howManyDays": "לכמה ימים?",
+        "whatIncluded": "מה השמירה כללה?",
+        "howWas": "איך היה?",
+        "noneYet": "אין משובים עדיין"
     },
     "housitterPreview": {
         "contact": "יצירת קשר",
@@ -74,6 +79,23 @@
     "housitters": {
         "title": "רוצה למצוא האוסיטרס?",
         "searchResultsStart": "יש",
-        "searchResultsEnd": "האוסיטרס פנויים עבור התאריכים והמיקומים שציינת"
-    }
+        "searchResultsEnd": "האוסיטרס פנויים עבור התאריכים והמיקומים שציינת",
+        "details": {
+            "about": "מי אני",
+            "availability": "זמינות",
+            "location": "מיקום",
+            "experience": "ניסיון",
+            "memberSince": "באתר מאז"
+        }
+    },
+    "inbox": {
+        "noMessagesYet": "אין לך עדיין התכתבויות.",
+        "tryContacting": "זמן טוב ליצור קשר ראשון",
+        "chatWith": "צ'אט עם",
+        "close": "סגירה",
+        "send": "שליחה",
+        "type": "כאן יוצרים קשר :)"
+    },
+    "socialMedia": { "fieldName": "רשת חברתית", "unavailable": "לא הוגדר על ידי ההאוסיטר עדיין"}
+
 }

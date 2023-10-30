@@ -1,8 +1,8 @@
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
-
+import { useRouter } from 'next/router'
 import {
   selectUsersContactedState,
   setUsersContactedState,
@@ -13,12 +13,15 @@ import { API_ROUTES, UserType } from '../../utils/constants'
 import { MessageSenderProps } from '../../types/clientSide'
 
 import { Button, Modal, Form, Spinner, Row, Col } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 
 // TODO: probably a better way to type the props, lets find out.
 export default function MessageSender(props: MessageSenderProps) {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
   const dispatch = useDispatch()
+  const { t } = useTranslation()
+  const router = useRouter()
 
   const {
     recipientFirstName,
@@ -37,6 +40,11 @@ export default function MessageSender(props: MessageSenderProps) {
   const [messageContent, setMessageContent] = useState('')
 
   const [isSendingInProgress, setIsSendingInProgress] = useState(false)
+
+  useEffect(() => {
+    const direction = router.locale === 'he' ? 'rtl' : 'ltr'
+    document.documentElement.setAttribute('dir', direction)
+  }, [router.locale])
 
   function handleCloseEmailModal() {
     setShowEmailModal(false)
@@ -136,7 +144,7 @@ export default function MessageSender(props: MessageSenderProps) {
             <Form.Control
               size="lg"
               as="textarea"
-              placeholder="Type your message here..."
+              placeholder={t('inbox.type')}
               value={messageContent}
               onChange={(e) => {
                 setMessageContent(e.target.value)
@@ -152,7 +160,11 @@ export default function MessageSender(props: MessageSenderProps) {
             onClick={(e: any) => handleSendEmail(e)}
             disabled={isSendingInProgress}
           >
-            {isSendingInProgress ? <Spinner animation="border" role="status"></Spinner> : 'Send'}
+            {isSendingInProgress ? (
+              <Spinner animation="border" role="status"></Spinner>
+            ) : (
+              t('inbox.send')
+            )}
           </Button>
         </Col>
       </Row>

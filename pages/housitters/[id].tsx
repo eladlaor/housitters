@@ -7,6 +7,7 @@ import { getUrlFromSupabase } from '../../utils/helpers'
 import { Card, Container, Row, Col, Spinner } from 'react-bootstrap'
 import DateDisplayer from '../../components/utils/DateDisplayer'
 import RecommendationSender from '../../components/RecommendationSender'
+import { useTranslation } from 'react-i18next'
 
 export default function PublicProfile() {
   const router = useRouter()
@@ -18,6 +19,7 @@ export default function PublicProfile() {
   const [reviews, setReviews] = useState([] as any[])
   const [availability, setAvailbility] = useState([] as any[])
   const [wasNewReviewSubmitted, setWasNewReviewSubmitted] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -75,35 +77,37 @@ export default function PublicProfile() {
                 <h1 style={{ margin: 0, fontWeight: 'bold' }}>
                   {profile.first_name} {profile.last_name}
                 </h1>
-                <span>👤 Member since {profile?.created_at?.substring(0, 10)}</span>
+                <span>
+                  👤 {t('housitters.details.memberSince')} {profile?.created_at?.substring(0, 10)}
+                </span>
               </Col>
               <Col>
                 <Row className="pt-2">
                   <Col>
-                    <dt>💪 Experience</dt>
-                    <dd>{profile.experience} years</dd>
+                    <dt>💪 {t('housitters.details.experience')}</dt>
+                    <dd>{profile.experience}</dd>
                   </Col>
                   <Col>
-                    <dt>🔗 Social media</dt>
+                    <dt>🔗 {t('socialMedia.fieldName')}</dt>
                     <dd>
                       {profile.social_media_url ? (
                         <a href={profile.social_media_url}>
                           {profile.social_media_url.split('/')[2]}
                         </a>
                       ) : (
-                        'Unavailable'
+                        t('socialMedia.unavailable')
                       )}
                     </dd>
                   </Col>
                 </Row>
               </Col>
             </Row>
-            <h3>About</h3>
+            <h3>{t('housitters.details.about')}</h3>
             <p>
               {profile.about_me ? profile.about_me : 'The user did not complete their profile yet.'}
             </p>
 
-            <h3>Availablity</h3>
+            <h3>{t('housitters.details.availability')}</h3>
             <ul>
               {availability &&
                 availability.map((period, index) => (
@@ -113,10 +117,8 @@ export default function PublicProfile() {
                 ))}
             </ul>
 
-            <h3>Reviews</h3>
-            {reviews && reviews.length === 0 && (
-              <p>There are currently no reviews for this sitter.</p>
-            )}
+            <h3>{t('reviews.fieldName')}</h3>
+            {reviews && reviews.length === 0 && <p>{t('reviews.noneYet')}</p>}
             {reviews &&
               reviews.map((review, index) => (
                 <Row key={index} style={{ marginTop: '1rem' }}>
@@ -160,12 +162,17 @@ export default function PublicProfile() {
                   recipientUserId={profile.user_id}
                 />
                 <br />
-                <h6 style={{ fontWeight: 'bold' }}>Locations</h6>
+                <h6 style={{ fontWeight: 'bold' }}>{t('housitters.details.location')}</h6>
                 <p>
                   {profile.locations &&
                     profile.locations.map((location: string, index: number) => (
                       <div key={index}>
-                        ✅ <span>{LocationDescriptions[location]}</span>
+                        ✅{' '}
+                        <span>
+                          {t(
+                            `sidebarFilter.location.descriptions.${LocationDescriptions[location]}`
+                          )}
+                        </span>
                         <br />
                       </div>
                     ))}

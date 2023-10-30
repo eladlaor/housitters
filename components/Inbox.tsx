@@ -79,8 +79,9 @@ export default function Inbox() {
     >
       {messages.length === 0 ? (
         <NavDropdown.Item disabled>
-          There are currently no messaegs in your inbox.
-          <br /> Try contacting someone! &#x1F642;
+          {t('inbox.noMessagesYet')}
+          <br /> {t('inbox.tryContacting')}
+          &#x1F642;
         </NavDropdown.Item>
       ) : (
         Object.keys(

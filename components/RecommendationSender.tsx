@@ -124,7 +124,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
           <Modal.Body>
             <Form>
               <Form.Group controlId="start-date">
-                <Form.Label>when was it?</Form.Label>
+                <Form.Label>{t('reviews.whenWasIt')}</Form.Label>
                 <DatePicker
                   selected={new Date()}
                   openToDate={new Date()}
@@ -135,13 +135,13 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                   value={format(startOfMonth(new Date(startMonth)), 'MM/yyyy')}
                 />
               </Form.Group>
-              <Form.Label className="mt-2">how many days?</Form.Label>
+              <Form.Label className="mt-2">{t('reviews.howManyDays')}</Form.Label>
 
               {reviewedUserType === UserType.Housitter && (
                 <CountAndUpdate valueToCount={duration} reduxReducer={setDurationState} />
               )}
               <Form.Group controlId="sit-included">
-                <Form.Label className="mt-2">what did the sit include</Form.Label>
+                <Form.Label className="mt-2">{t('reviews.whatIncluded')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={sitIncluded}
@@ -151,7 +151,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                 />
               </Form.Group>
               <Form.Group controlId="description"></Form.Group>
-              <Form.Label className="mt-2">How was it?</Form.Label>
+              <Form.Label className="mt-2">{t('reviews.howWas')}</Form.Label>
               <Form.Control
                 className="text-end"
                 size="sm"
