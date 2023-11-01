@@ -97,5 +97,61 @@
         "send": "Send",
         "type": "Type your message here..."
     },
-    "socialMedia": { "fieldName": "Social Media", "unavailable": "Unavailable"}
+    "socialMedia": { "fieldName": "Social Media", "unavailable": "Unavailable"},
+    "about": {
+            "title": "Housitters.com",
+            "tableOfContents": "Table of Contents",
+            "toc": {
+              "problem": "Problem Solved",
+              "motivation": "Motivation",
+              "usage": "Usage and Features",
+              "future": "Future Plans"
+            },
+            "problem": {
+              "title": "Problem Solved",
+              "paragraph1": "Facebook, we have a bone to pick with you! Nowadays, if you are a house-sitter or a pet-parent, the experience of finding what you're looking for is pretty gruesome.",
+              "paragraph2": "Services other than Housitters.com are currently either:",
+              "list": {
+                "item1": "Free but inconvenient: Facebook, allowing no search filters, displaying posts in non-chronological order.",
+                "item2": "Convenient but costly: similar house-sitting websites charge around 200 USD for a yearly subscription."
+              },
+              "paragraph3": "Housitters.com is the first house-sitting marketplace which is both free and user-friendly.",
+              "blockquote": "We can finally stop chasing our own tail :)"
+            },
+            "motivation": {
+                "description1": "I've been a house-sitter since April 2021. For a year, I wrote",
+                "description2": "a monthly personal blog about it in 'Haaretz',",
+                "description3": "one of Israel's prominent newspapers: Personally, my experience has been smooth, likely due to the exposure from my blog. I've received more house-sitting invitations than I could accept. However, as I was getting to know the house-sitting community, I recognized a common frustration with existing services. This presented a unique opportunity for me to both develop my coding skills and address a genuine problem in my community."
+                , "punch1": "Like",
+                    "punch2": "hitting two birds with one stone",
+                    "punch3": "racing two dogs with one ball."
+            },
+            "usage": {
+                "signUp": "Sign Up",
+                "signUpInfo1": "To explore pets, houses, and house-sitters, you first need to sign up. Upon signing up, define yourself as either a", 
+                "signUpInfo2": "landlord", 
+                "signUpInfo3": "or a" ,
+                "signUpInfo4": "housitter" ,
+                "signUpInfo5": "The interface varies according to the user type." ,
+                "withHousitters": "With Housitters.com, you can:",
+                "createProfile": "Create and edit a profile and a public post, respective to your user type.",
+                "contact": "Contact (or get contacted by) other registered members.",
+                "filter": "Filter searches for either houses or sitters:",
+                "byDate": "By date (single range / multiple ranges / Anytime).",
+                "byLocation": "   By location (house-sitters can search multiple locations, landlords are limited to one).",
+                "post": "These filters are separate from the dates and locations specified in your profile or public post, by which other users can find you in their search results.",
+                "sort": "Sort the results according to relevant criteria.",
+                "bookmark": "Bookmark favorite sitters or houses.",
+                "reviews": "Reviews: post and read reviews on other users, to make sure everybody's heading for a good experience.",
+                "getInTouch": "Get in touch with us for feedback or suggestions.",
+                "manage": "Efficiently manage prior chats using a personal inbox."
+            },
+            "futurePlans": {
+                "modify": "Modify the location options to allow international users.",
+                "friend": "Add an Invite a Friend option",
+                "notifications": "Introduce a user setting for receiving email notifications upon getting a message on the platform. A preliminary implementation exists, but there are still potential spam concerns to handle.",
+                "graphic": "Improve the graphic design.",
+                "launch": "Launch :)"
+            }
+    }
 }

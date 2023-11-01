@@ -1,136 +1,93 @@
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 export default function About() {
+  const { t } = useTranslation()
+
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>Housitters.com</h1>
+      <h1 style={styles.header}>{t('about.title')}</h1>
       <div>
-        <h2 style={styles.tableOfContents}>Table of Contents</h2>
+        <h2 style={styles.tableOfContents}>{t('about.tableOfContents')}</h2>
         <ul>
           <li>
-            <a href="#problem">Problem Solved</a>
+            <a href="#problem">{t('about.toc.problem')}</a>
           </li>
           <li>
-            <a href="#motivation">Personal Motivation</a>
+            <a href="#motivation">{t('about.toc.motivation')}</a>
           </li>
           <li>
-            <a href="#usage">Usage and Features</a>
+            <a href="#usage">{t('about.toc.usage')}</a>
           </li>
           <li>
-            <a href="#future">Future Plans</a>
+            <a href="#future">{t('about.toc.future')}</a>
           </li>
         </ul>
       </div>
 
       <section id="problem" style={styles.section}>
-        <h2>Problem Solved</h2>
-        <p>
-          Facebook, we have a bone to pick with you!
-          <br />
-          Nowadays, if you are a house-sitter or a pet-parent, the experience of finding what you're
-          looking for is pretty gruesome.
-        </p>
-        <p>Services other than Housitters.com are currently either:</p>
+        <h2>{t('about.problem.title')}</h2>
+        <p>{t('about.problem.paragraph1')}</p>
+        <p>{t('about.problem.paragraph2')}</p>
         <ul>
-          <li>
-            <strong>Free but inconvenient</strong>:<br /> Facebook, allowing no search filters,
-            displaying posts in non-chronological order.
-          </li>
-          <li>
-            <strong>Convenient but costly</strong>: <br />
-            similar house-sitting websites charge around 200 USD for a yearly subscription.
-          </li>
+          <li>{t('about.problem.list.item1')}</li>
+          <li>{t('about.problem.list.item2')}</li>
         </ul>
-        <p>
-          Housitters.com is the first house-sitting marketplace which is both free and
-          user-friendly.
-        </p>
-        <blockquote>We can finally stop chasing our own tail :)</blockquote>
+        <p>{t('about.problem.paragraph3')}</p>
+        <blockquote>{t('about.problem.blockquote')}</blockquote>
       </section>
 
       <section id="motivation" style={styles.section}>
-        <h2>Personal Motivation</h2>
-        <h3>Coding Motivation</h3>
+        <h2>{t('about.toc.motivation')}</h2>
         <p>
-          Since my work experience (in Codefresh) included only backend development, I wanted to
-          learn frontend by developing a real-world service. <br /> This was my way to gradually
-          acquire frontend skills, aiming to become a full-stack developer.
-        </p>
-
-        <h3>House-sitting Motivation</h3>
-        <p>
-          I've been a house-sitter since April 2021. For a year, I wrote{' '}
+          {t('about.motivation.description1')}{' '}
           <Link href="https://www.haaretz.co.il/blogs/eladlaor">
-            a monthly personal blog about it in "Haaretz",
+            {t('about.motivation.description2')}
           </Link>{' '}
-          one of Israel's most prominent newspapers:
-        </p>
-        <p>
-          Personally, my experience has been smooth, likely due to the exposure from my blog. I've
-          received more house-sitting invitations than I could accept. However, as I was getting to
-          know the house-sitting community, I recognized a common frustration with existing
-          services. This presented a unique opportunity for me to both develop my coding skills and
-          address a genuine problem in my community.
+          {t('about.motivation.description3')}
         </p>
         <blockquote>
-          Like <del>hitting two birds with one stone</del> racing two dogs with one ball.
+          {t('about.motivation.punch1')} <del> {t('about.motivation.punch2')}</del>{' '}
+          {t('about.motivation.punch3')}
         </blockquote>
       </section>
 
       <section id="usage" style={styles.section}>
-        <h2>Usage</h2>
-        <h3>Sign Up</h3>
+        <h2>{t('about.toc.usage')}</h2>
+        <h3>{t('about.usage.signUp')}</h3>
         <p>
-          To explore pets, houses, and house-sitters, you first need to sign up. Upon signing up,
-          define yourself as either a <code>landlord</code> or a <code>housitter</code>. <br />
-          The interface varies according to the user type.
+          {t('about.usage.signUpInfo1')}
+          <code> {t('about.usage.signUpInfo2')}</code> {t('about.usage.signUpInfo3')} <code></code>{' '}
+          {t('about.usage.signUpInfo4')}. {t('about.usage.signUpInfo5')}
         </p>
-        <h3>With Housitters.com, you can:</h3>
+        <h3> {t('about.usage.withHousitters')}</h3>
         <ul>
-          <li>Create and edit a profile and a public post, respective to your user type.</li>
-          <li>Contact (or get contacted by) other registered members.</li>
+          <li>{t('about.usage.createProfile')}</li>
+          <li>{t('about.usage.contact')}</li>
           <li>
-            Filter searches for either houses or sitters:
+            {t('about.usage.filter')}
             <ul>
-              <li>By date (single range / multiple ranges / Anytime).</li>
-              <li>
-                By location (house-sitters can search multiple locations, landlords are limited to
-                one).
-              </li>
-              <li>
-                These search filters are separate from the date and location settings on your own
-                public post.
-              </li>
+              <li>{t('about.usage.byDate')}</li>
+              <li>{t('about.usage.byLocation')}</li>
+              <li>{t('about.usage.post')}</li>
             </ul>
           </li>
-          <li>Sort the results according to relevant criteria.</li>
-          <li>Bookmark favorite sitters or houses.</li>
-          <li>
-            Reviews: post and read reviews on other users, to make sure everybody's heading for a
-            good experience.
-          </li>
-          <li>Get in touch with the site's developer (me:) for feedback or suggestions.</li>
-          <li>Contact other registered members.</li>
-          <li>Efficiently manage prior chats using a personal inbox.</li>
+          <li>{t('about.usage.sort')}</li>
+          <li>{t('about.usage.bookmark')}</li>
+          <li>{t('about.usage.reviews')}</li>
+          <li>{t('about.usage.getInTouch')}</li>
+          <li>{t('about.usage.manage')}</li>
         </ul>
       </section>
 
       <section id="future" style={styles.section}>
-        <h2>Future Plans</h2>
+        <h2>{t('about.toc.future')}</h2>
         <ul>
-          <li>
-            Add a Hebrew interface, with an option to select the site's language (default: according
-            to the user's ip address).
-          </li>
-          <li>Modify the location options to allow international users.</li>
-          <li>
-            Introduce a user setting for receiving email notifications upon getting a message on the
-            platform. A preliminary implementation exists, but there are still potential spam
-            concerns to handle.
-          </li>
-          <li>Add an "Invite a Friend" option.</li>
-          <li>Improve the design.</li>
-          <li>Launch :)</li>
+          <li>{t('about.futurePlans.modify')}</li>
+          <li>{t('about.futurePlans.friend')}</li>
+          <li>{t('about.futurePlans.notifications')}</li>
+          <li>{t('about.futurePlans.graphic')}</li>
+          <li>{t('about.futurePlans.launch')}</li>
         </ul>
       </section>
     </div>
