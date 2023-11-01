@@ -1,4 +1,42 @@
 {
+    "userType": {
+        "landlord": "landlord",
+        "housitter": "housitter"
+    },
+    "signup": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "password": "Password",
+        "userType": "User Type",
+        "pets": "Pets",
+        "experience": "Experience (optional)",
+        "experienceExplain": "approximately, in how many houses did you pet-sit?",
+        "gender": "Gender",
+        "profilePic": "Profile Picture",
+        "submit": "Submit",
+        "signupError": "Signup Error",
+        "replaceEmail": "Replace Email",
+        "signin": "Sign In",
+        "enterEmail": "Enter Email"
+    },
+    "login": {
+        "typos": "Check Typos",
+        "signup": "Sign Up",
+        "forgotPassword": "Forgot Password",
+        "password": "Password",
+        "login": "Log In",
+        "loginError": "Login Error",
+        "oneMoreStep": "One More Step to Find Your Next ",
+        "house": "House",
+        "sitter": "Sitter"
+    },
+    "forgotPassword": {
+        "part1": "If you signed up with this email,",
+        "part2": "You'll get a password reset link.",
+        "part3": "It might reach the Spam folder, so if you don't see it, check there :)",
+        "send": "Send"
+    },
     "homeNavbar": {
         "language": "Language",
         "sitters": "Sitters",
@@ -31,6 +69,26 @@
             "availability": "Availability",
             "location": "location"
         }
+    },
+    "intro": {
+        "part1": "let's find",
+        "sitterFind": " a woof over your head'",
+        "landlordFind": " a great housitter for you",
+        "when": "When?",
+        "where": "Where?",
+        "find": "Find"
+    },
+    "edit": {
+        "editPost": "Edit Post",
+        "title": "Title",
+        "description": "Description",
+        "pets": "Pets",
+        "where": "Where",
+        "uploadPics": "Upload Pics",
+        "uploading": "Uploading...",
+        "availability": "Availability",
+        "removeRange": "Remove Range",
+        "save": "Save"
     },
     "sidebarFilter": {
         "dates": {
@@ -87,7 +145,8 @@
             "location": "Location",
             "experience": "Experience",
             "memberSince": "Member since"
-        }
+        },
+        "noResults": "Sorry, but there are no sitters matching your search. If relevant, try broadning your date filter."
     },
     "inbox": {
         "noMessagesYet": "There are currently no messaegs in your inbox.",

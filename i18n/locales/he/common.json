@@ -1,4 +1,39 @@
 {
+    "userType": {
+        "landlord": "בעלבית",
+        "housitter": "האוסיטר"
+    },
+    "signup": {
+        "firstName": "שם פרטי",
+        "lastName": "שם משפחה",
+        "email": "אימייל",
+        "password": "סיסמה",
+        "userType": "סוג משתמש",
+        "pets": "חיות",
+        "experience": "ניסיון (אופציונלי)",
+        "experienceExplain": "פחות או יותר, בכמה בתים עשית האוסיטינג?",
+        "gender": "מגדר",
+        "profilePic": "תמונת פרופיל",
+        "submit": "שליחה",
+        "signupError": "שגיאת הרשמה",
+        "replaceEmail": "בחירת מייל חדש",
+        "signin": "התחברות",
+        "enterEmail": "כתובת מייל"
+    },
+    "login": {
+        "typos": "תיקון שגיאות הקלדה",
+        "signup": "הרשמה",
+        "forgotPassword": "שכחתי סיסמה",
+        "password": "סיסמה",
+        "login": "התחברות",
+        "loginError": "שגיאת התחברות"
+    },
+    "forgotPassword": {
+        "part1": "אם נרשמת עם האימייל הזה,",
+        "part2": "יגיע לתיבה שלך לינק איפוס סיסמה.",
+        "part3": "זה עלול להגיע לספאם, אז כדאי לבדוק גם שם :)",
+        "send": "שליחה"
+    },
     "homeNavbar": {
         "language": "שפה",
         "sitters": "האוסיטרס",
@@ -31,6 +66,30 @@
             "availability": "זמינות",
             "location": "מיקום"
         }
+    },
+    "intro": {
+        "part1": "הגיע הזמן למצוא",
+        "sitterFind": "  בית עם חיה מתוקה בשבילך",
+        "landlordFind": " האוסיטרס בשבילך",
+        "when": "מתי?",
+        "where": "איפה?",
+        "find": "מציאה",
+        "oneMoreStep": "עוד צעד אחד כדי למצוא לך ",
+        "house": "בית",
+        "sitter": "האוסיטר"
+
+    },
+    "edit": {
+        "editPost": "עריכת פוסט",
+        "title": "כותרת",
+        "description": "תיאור",
+        "pets": "חיות",
+        "where": "איפה",
+        "uploadPics": "העלאת תמונות",
+        "uploading": "מעלה...",
+        "availability": "זמינות",
+        "removeRange": "הסרת טווח",
+        "save": "שמירה"
     },
     "sidebarFilter": {
         "dates": {
@@ -86,7 +145,8 @@
             "location": "מיקום",
             "experience": "ניסיון",
             "memberSince": "באתר מאז"
-        }
+        },
+        "noResults": "אין האוסיטרס בתאריכים ובמיקום שביקשת. אם רלוונטי, כדאי להרחיב את התאריכים המבוקשים "
     },
     "inbox": {
         "noMessagesYet": "אין לך עדיין התכתבויות.",

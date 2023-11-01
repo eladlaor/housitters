@@ -34,18 +34,6 @@ export default function Home() {
   const [location, setLocation] = useState(null as null | string)
 
   const [housitters, setHousitters] = useState([{} as any]) // TODO: should type
-  // const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
-  // const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
-  const [
-    preConfirmedSelectionOfClosedSitsPerSitter,
-    setPreConfirmedSelectionOfClosedSitsPerSitter,
-  ] = useState({
-    housitterId: '',
-    startDates: [],
-  } as {
-    housitterId: string
-    startDates: string[]
-  })
 
   const [isPostComplete, setIsPostComplete] = useState(true)
 
@@ -230,30 +218,6 @@ export default function Home() {
     }
   }
 
-  // async function handleBindSitterWithPeriod(e: any) {
-  //   e.preventDefault()
-
-  //   const preConfirmedStartPeriodsToModify = [
-  //     ...preConfirmedSelectionOfClosedSitsPerSitter.startDates,
-  //   ]
-  //   const selectedStartDate = e.target.value
-  //   const indexOfSelectedStartDate = preConfirmedStartPeriodsToModify.indexOf(selectedStartDate)
-
-  //   if (indexOfSelectedStartDate === -1) {
-  //     preConfirmedStartPeriodsToModify.push(selectedStartDate)
-  //   } else {
-  //     preConfirmedStartPeriodsToModify.splice(indexOfSelectedStartDate, 1)
-  //   }
-
-  //   // again, strangely, the code seems to be structured properly in terms of order of operations, but still setTimeout seems to be the only solution for the race condition
-  //   setTimeout(() => {
-  //     setPreConfirmedSelectionOfClosedSitsPerSitter({
-  //       housitterId: selectedHousitterId,
-  //       startDates: preConfirmedStartPeriodsToModify,
-  //     })
-  //   }, 0)
-  // }
-
   function handleAvailabilityFilterChange(index: number, updatedRange: DatePickerSelection) {
     const modifiedAvailabilityFilter = [...availabilityFilter]
     const [updatedStartDate, updatedEndDate] = updatedRange
@@ -388,30 +352,24 @@ export default function Home() {
                   <p style={{ marginTop: '2rem', fontSize: '1.5rem', textAlign: 'center' }}>
                     😢
                     <br />
-                    Sorry, but there are no sitters matching your search. Please try adjusting your
-                    filters.
+                    {t('housitters.noResults')}
                   </p>
                 ) : (
-                  housitters.map(
-                    (
-                      sitter: any,
-                      index: number // TODO: type 'sitter' with a new type of Db housitterdata
-                    ) => (
-                      <AvailableHousitter
-                        housitterId={sitter.housitterId}
-                        firstName={sitter.firstName}
-                        lastName={sitter.lastName}
-                        experience={sitter.experience}
-                        aboutMeText={
-                          sitter.about_me
-                            ? sitter.about_me
-                            : `${sitter.firstName} didn't write a description yet.`
-                        }
-                        avatarUrl={sitter.avatarUrl}
-                        key={index}
-                      />
-                    )
-                  )
+                  housitters.map((sitter: any, index: number) => (
+                    <AvailableHousitter
+                      housitterId={sitter.housitterId}
+                      firstName={sitter.firstName}
+                      lastName={sitter.lastName}
+                      experience={sitter.experience}
+                      aboutMeText={
+                        sitter.about_me
+                          ? sitter.about_me
+                          : `${sitter.firstName} didn't write a description yet.`
+                      }
+                      avatarUrl={sitter.avatarUrl}
+                      key={index}
+                    />
+                  ))
                 )}
               </Row>
             </Col>

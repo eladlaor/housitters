@@ -91,12 +91,12 @@ export default function Intro() {
         <div className="position-absolute top-70 start-70 translate-middle text-center">
           <div>
             <h1 className="mb-4">
-              let's find
-              {isHousitter ? ' a woof over your head' : ' a great housitter for you'}
+              {t('intro.part1')}
+              {isHousitter ? t('intro.sitterFind') : t('intro.landlordFind')}
             </h1>
           </div>
           <div>
-            <h3>When?</h3>
+            <h3>{t('intro.when')}</h3>
             {dateRanges &&
               dateRanges.map(([start, end], index) => (
                 <div key={index} className="styled-datepicker">
@@ -104,7 +104,11 @@ export default function Intro() {
                     selectsRange={true}
                     startDate={end?.getFullYear() === 1970 ? null : start}
                     endDate={end?.getFullYear() === 1970 ? null : end}
-                    placeholderText={dateRanges.length > 1 ? 'enter another range' : 'Anytime'}
+                    placeholderText={
+                      dateRanges.length > 1
+                        ? t('sidebarFilter.dates.addRange')
+                        : t('sidebarFilter.dates.anytime')
+                    }
                     onChange={(value) => {
                       updateDateRange(index, value)
                     }}
@@ -118,7 +122,7 @@ export default function Intro() {
                           className="styled-datepicker"
                           onClick={() => removeDateRange(index)}
                         >
-                          Remove Range
+                          {t('sidebarFilter.dates.removeRange')}
                         </Button>
                       )}
                       <Button
@@ -135,7 +139,7 @@ export default function Intro() {
               ))}
           </div>
           <div>
-            <h3>Where?</h3>
+            <h3>{t('intro.where')}</h3>
             {!isLoading && (
               <LocationSelector
                 selectionType={isHousitter ? 'checkbox' : 'radio'}
@@ -156,7 +160,7 @@ export default function Intro() {
               onClick={handleFind}
               className="btn-lg rounded-pill w-50 mt-3"
             >
-              Find
+              {t('intro.find')}
             </Button>
           </div>
         </div>
@@ -164,7 +168,7 @@ export default function Intro() {
       <Modal show={showSignupOrLoginModal} onHide={() => setShowSignupOrLoginModal(false)}>
         <Modal.Header className="d-flex justify-content-center">
           <Modal.Title>
-            One More Step to Find Your Next {isHousitter ? 'House' : 'Sitter'}
+            {t('intro.oneMoreStep')} {isHousitter ? t('intro.house') : t('intro.sitter')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Footer className="d-flex justify-content-center">
@@ -172,13 +176,13 @@ export default function Intro() {
             variant="success"
             onClick={() => router.push({ pathname: PageRoutes.Auth.Login, query: { userType } })}
           >
-            Login
+            {t('login.login')}
           </Button>
           <Button
             variant="primary"
             onClick={() => router.push({ pathname: PageRoutes.Auth.Signup, query: { userType } })}
           >
-            Free Signup
+            {t('login.signup')}
           </Button>
         </Modal.Footer>
       </Modal>

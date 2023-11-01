@@ -204,6 +204,20 @@ export default function HomeNavbar({ className = '' }: Props) {
                     {t('homeNavbar.signup')}
                   </Button>
                 </Nav.Item>
+                <NavDropdown title="Language" id="language-dropdown" className="language-dropdown">
+                  <NavDropdown.Item
+                    active={currentLocale === 'en'}
+                    onClick={() => handleLocaleChange('en')}
+                  >
+                    <span className="flag-icon flag-icon-us"></span> English
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    active={currentLocale === 'he'}
+                    onClick={() => handleLocaleChange('he')}
+                  >
+                    <span className="flag-icon flag-icon-il"></span> עברית
+                  </NavDropdown.Item>
+                </NavDropdown>
               </Nav>
             )}
           </Navbar.Collapse>

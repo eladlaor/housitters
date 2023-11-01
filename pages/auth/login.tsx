@@ -8,11 +8,13 @@ import { setAvatarUrl } from '../../slices/userSlice'
 
 import { Form, Button, Modal } from 'react-bootstrap'
 import PasswordInput from '../../components/Auth/PasswordInput'
+import { useTranslation } from 'react-i18next'
 
 export default function LoginPage() {
   const { isLoading, supabaseClient } = useSessionContext()
   const user = useUser()
   const userId = user?.id
+  const { t } = useTranslation()
 
   const router = useRouter()
   const dispatch = useDispatch()
@@ -77,13 +79,13 @@ export default function LoginPage() {
     return (
       <>
         <Button variant="success" onClick={handleCloseLoginErrorModal}>
-          Check Typos
+          {t('login.typos')}
         </Button>
         <Button variant="primary" onClick={() => router.push(PageRoutes.Auth.Signup)}>
-          Sign Up
+          {t('login.signup')}
         </Button>
         <Button variant="danger" onClick={() => router.push(PageRoutes.Auth.ForgotMyPassword)}>
-          Forgot Password
+          {t('login.forgotPassword')}
         </Button>
       </>
     )
@@ -98,7 +100,7 @@ export default function LoginPage() {
         <img src="/logo.svg" style={{ marginBottom: '3rem', maxHeight: '28px' }} />
         <Form>
           <Form.Group controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
+            <Form.Label>{t('signup.email')}</Form.Label>
             <Form.Control
               autoFocus
               type="email"
@@ -108,7 +110,7 @@ export default function LoginPage() {
           </Form.Group>
 
           <Form.Group controlId="formBasicPassword" className="mt-2">
-            <Form.Label>Password</Form.Label>
+            <Form.Label> {t('login.password')}</Form.Label>
             <PasswordInput password={password} setPassword={setPassword} />
           </Form.Group>
           <Form.Group className="mt-3 d-flex justify-content-center align-items-center">
@@ -118,20 +120,20 @@ export default function LoginPage() {
               style={{ width: '300px' }}
               onClick={(e) => handleEmailLogin(e)}
             >
-              Log in
+              {t('login.login')}
             </Button>
           </Form.Group>
         </Form>
 
         <div>
           <Button variant="link" size="sm" onClick={handleResetPassword} className="mt-3 w-100">
-            forgot my password
+            {t('login.forgotPassword')}
           </Button>
         </div>
       </div>
       <Modal show={showLoginErrorModal} onHide={handleCloseLoginErrorModal}>
         <Modal.Header>
-          <Modal.Title className="text-center w-100">Login Error</Modal.Title>
+          <Modal.Title className="text-center w-100">{t('login.loginError')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex justify-content-center">{loginErrorMessage}</Modal.Body>
         <Modal.Footer className="d-flex justify-content-center">
