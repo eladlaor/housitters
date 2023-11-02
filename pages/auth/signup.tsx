@@ -332,8 +332,8 @@ export default function Signup() {
       {isSignupInProgress ? (
         <Spinner animation="border" role="status" />
       ) : (
-        <Form>
-          <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
+        <Form className="d-flex flex-column justify-content-center align-items-center">
+          <Form.Group className="mb-3 col-3  text-center" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
             <Form.Label>{t('signup.firstName')}</Form.Label>
             <Form.Control
               type="text"
@@ -344,7 +344,7 @@ export default function Signup() {
               }}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
+          <Form.Group className="mb-3  col-3  text-center" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
             <Form.Label>{t('signup.lastName')}</Form.Label>
             <Form.Control
               type="text"
@@ -355,7 +355,7 @@ export default function Signup() {
               }}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
+          <Form.Group className="mb-3 col-3  text-center" controlId={SIGNUP_FORM_PROPS.EMAIL}>
             <Form.Label>{t('signup.email')}</Form.Label>
             <Form.Control
               type="email"
@@ -365,7 +365,7 @@ export default function Signup() {
               }}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
+          <Form.Group className="mb-3 col-3  text-center" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
             <Form.Label>{t('signup.password')}</Form.Label>
             <div className="input-group">
               <Form.Control
@@ -390,7 +390,7 @@ export default function Signup() {
               <hr />
             </div>
           </Form.Group>
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-3 col-3  text-center">
             <Form.Label>{t('signup.userType')}</Form.Label>
             <Form.Select
               value={userType}
@@ -406,24 +406,23 @@ export default function Signup() {
             </Form.Select>
           </Form.Group>
           {!isHousitter && (
-            <Form.Group>
+            <Form.Group className="mb-2 col-3  text-center">
               <Form.Label>{t('signup.pets')}</Form.Label>
               <PetsCounter />
-              <hr />
             </Form.Group>
           )}
           {isHousitter && (
-            <Form.Group>
+            <Form.Group className="col-3">
               <Form.Label className="mb-2">{t('signup.experience')}</Form.Label>
               <br />
               <Form.Text className="mb-2" muted>
                 {t('signup.experienceExplain')}
               </Form.Text>
               <CountAndUpdate valueToCount={experience} reduxReducer={setExperienceState} />
-              <hr />
+              <hr className="col-3" />
             </Form.Group>
           )}
-          <Form.Group>
+          <Form.Group className="col-3 text-center">
             <Form.Label>{t('signup.gender')}</Form.Label>
             <Form.Select
               value={form.gender}
@@ -437,7 +436,7 @@ export default function Signup() {
             <hr />
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group className="col-3 text-center">
             <Picture
               isIntro={true}
               uid=""
