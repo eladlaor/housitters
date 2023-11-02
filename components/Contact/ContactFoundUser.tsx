@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Button } from 'react-bootstrap'
 import ChatModal from '../Contact/ChatModal'
-import { Router, useRouter } from 'next/router'
+import { useRouter } from 'next/router'
 import { useSessionContext } from '@supabase/auth-helpers-react'
+import { useTranslation } from 'react-i18next'
 
 export default function ContactFoundUser({
   recipientUserId,
@@ -13,8 +14,10 @@ export default function ContactFoundUser({
   className?: string
   size?: string
 }) {
-  const router = useRouter()
   const { session, isLoading } = useSessionContext()
+  const router = useRouter()
+  const { t } = useTranslation()
+
   const [chatWithUser, setChatWithUser] = useState('')
 
   const handleContactClick = () => {
@@ -33,7 +36,7 @@ export default function ContactFoundUser({
         variant="primary"
         onClick={handleContactClick}
       >
-        Contact
+        {t('houses.housePreview.contact')}
       </Button>
       <ChatModal recipientId={chatWithUser} update={setChatWithUser} />
     </>

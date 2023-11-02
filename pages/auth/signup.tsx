@@ -40,11 +40,13 @@ import { setAvailablePosts } from '../../slices/availablePostsSlice'
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { useTranslation } from 'react-i18next'
 
 export default function Signup() {
   const router = useRouter()
   const dispatch = useDispatch()
   const supabaseClient = useSupabaseClient()
+  const { t } = useTranslation()
 
   const [userType, setUserType] = useState((router.query.userType || UserType.Landlord) as string)
   const [isHousitter, setIsHousitter] = useState(userType === UserType.Housitter)
@@ -90,10 +92,10 @@ export default function Signup() {
         return (
           <>
             <Button variant="secondary" onClick={handleCloseSignupErrorModal}>
-              Replace Email
+              {t('signup.replaceEmail')}
             </Button>
             <Button variant="primary" onClick={() => router.push(PageRoutes.Auth.Login)}>
-              Sign In
+              {t('signup.signin')}
             </Button>
           </>
         )
@@ -330,9 +332,9 @@ export default function Signup() {
       {isSignupInProgress ? (
         <Spinner animation="border" role="status" />
       ) : (
-        <Form>
-          <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
-            <Form.Label>First Name</Form.Label>
+        <Form className="d-flex flex-column justify-content-center align-items-center">
+          <Form.Group className="mb-3 col-3  text-center" controlId={SIGNUP_FORM_PROPS.FIRST_NAME}>
+            <Form.Label>{t('signup.firstName')}</Form.Label>
             <Form.Control
               type="text"
               placeholder=""
@@ -342,8 +344,8 @@ export default function Signup() {
               }}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
-            <Form.Label>Last Name</Form.Label>
+          <Form.Group className="mb-3  col-3  text-center" controlId={SIGNUP_FORM_PROPS.LAST_NAME}>
+            <Form.Label>{t('signup.lastName')}</Form.Label>
             <Form.Control
               type="text"
               placeholder=""
@@ -353,23 +355,21 @@ export default function Signup() {
               }}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.EMAIL}>
-            <Form.Label>Email</Form.Label>
+          <Form.Group className="mb-3 col-3  text-center" controlId={SIGNUP_FORM_PROPS.EMAIL}>
+            <Form.Label>{t('signup.email')}</Form.Label>
             <Form.Control
               type="email"
-              placeholder="Enter email"
               value={form.email}
               onChange={(e) => {
                 setFormField(SIGNUP_FORM_PROPS.EMAIL, e.target.value)
               }}
             />
           </Form.Group>
-          <Form.Group className="mb-3" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
-            <Form.Label>Password</Form.Label>
+          <Form.Group className="mb-3 col-3  text-center" controlId={SIGNUP_FORM_PROPS.PASSWORD}>
+            <Form.Label>{t('signup.password')}</Form.Label>
             <div className="input-group">
               <Form.Control
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
                 value={form.password}
                 onChange={(e) => {
                   setFormField(SIGNUP_FORM_PROPS.PASSWORD, e.target.value)
@@ -390,8 +390,8 @@ export default function Signup() {
               <hr />
             </div>
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>User Type</Form.Label>
+          <Form.Group className="mb-3 col-3  text-center">
+            <Form.Label>{t('signup.userType')}</Form.Label>
             <Form.Select
               value={userType}
               onChange={(e) => {
@@ -401,30 +401,29 @@ export default function Signup() {
                 setUserType(updatedUserType)
               }}
             >
-              <option value={UserType.Landlord}>{UserType.Landlord}</option>
-              <option value={UserType.Housitter}>{UserType.Housitter}</option>
+              <option value={UserType.Landlord}>{t('userType.landlord')}</option>
+              <option value={UserType.Housitter}>{t('userType.housitter')}</option>
             </Form.Select>
           </Form.Group>
           {!isHousitter && (
-            <Form.Group>
-              <Form.Label>Pets</Form.Label>
+            <Form.Group className="mb-2 col-3  text-center">
+              <Form.Label>{t('signup.pets')}</Form.Label>
               <PetsCounter />
-              <hr />
             </Form.Group>
           )}
           {isHousitter && (
-            <Form.Group>
-              <Form.Label className="mb-2">Experience (optional)</Form.Label>
+            <Form.Group className="col-3">
+              <Form.Label className="mb-2">{t('signup.experience')}</Form.Label>
               <br />
               <Form.Text className="mb-2" muted>
-                approximately how many housits have you done
+                {t('signup.experienceExplain')}
               </Form.Text>
               <CountAndUpdate valueToCount={experience} reduxReducer={setExperienceState} />
-              <hr />
+              <hr className="col-3" />
             </Form.Group>
           )}
-          <Form.Group>
-            <Form.Label>Gender</Form.Label>
+          <Form.Group className="col-3 text-center">
+            <Form.Label>{t('signup.gender')}</Form.Label>
             <Form.Select
               value={form.gender}
               onChange={(e) => setFormField(SIGNUP_FORM_PROPS.GENDER, e.target.value)}
@@ -437,7 +436,7 @@ export default function Signup() {
             <hr />
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group className="col-3 text-center">
             <Picture
               isIntro={true}
               uid=""
@@ -449,19 +448,19 @@ export default function Signup() {
               disableUpload={false}
               bucketName="avatars"
               isAvatar={true}
-              promptMessage="Profile Picture"
+              promptMessage={t('signup.profilePic')}
               email={form.email}
               isRounded={true}
             />
           </Form.Group>
           <Button variant="primary" type="submit" onClick={handleSignup} className="mt-3">
-            Submit
+            {t('signup.submit')}
           </Button>
         </Form>
       )}
       <Modal show={showSignupErrorModal} onHide={handleCloseSignupErrorModal}>
         <Modal.Header>
-          <Modal.Title className="text-center w-100">Signup Error</Modal.Title>
+          <Modal.Title className="text-center w-100">{t('signup.signupError')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex justify-content-center">
           {signupErrorMessage === SignupErrorMessages.ExistingEmail

@@ -2,15 +2,19 @@ import { useEffect, useState } from 'react'
 import Form from 'react-bootstrap/Form'
 import { BsArrowUp, BsArrowDown } from 'react-icons/bs'
 import { SortingPropertiesForHandler } from '../utils/constants'
+import { useTranslation } from 'react-i18next'
+import { useRouter } from 'next/router'
 
 export default function Sorter(props: {
   sortingProperties: string[]
   sortElementsHandler: Function
 }) {
   const { sortingProperties, sortElementsHandler } = props
-
+  const { t } = useTranslation()
   const [selectedSortingProperty, setSelectedSortingProperty] = useState(sortingProperties[0])
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const router = useRouter()
+  const { locale } = router
 
   function handleSelection(e: any) {
     const sortByProperty = e.target.value
@@ -60,7 +64,7 @@ export default function Sorter(props: {
           >
             {sortingProperties.map((property, index) => (
               <option key={index} value={property}>
-                {property}
+                {t(`sidebarFilter.sort.${property}`)}
               </option>
             ))}
           </Form.Select>

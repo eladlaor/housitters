@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import moment from 'moment'
 import { getUrlFromSupabase, handleError } from '../../utils/helpers'
 import { DatePickerSelection } from '../../types/clientSide'
+import { useTranslation } from 'react-i18next'
 
 export default function EditHouse() {
   const supabaseClient = useSupabaseClient()
@@ -24,6 +25,7 @@ export default function EditHouse() {
   const [uploading, setUploading] = useState(false)
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [dateRanges, setDateRanges] = useState([[null, null]] as DatePickerSelection[])
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!isLoading && !userId) {
@@ -117,7 +119,10 @@ export default function EditHouse() {
       .eq('user_id', user?.id)
 
     if (deletionError) {
-      return handleError(deletionError.message, 'edit remove date range from available_dates delete operation')
+      return handleError(
+        deletionError.message,
+        'edit remove date range from available_dates delete operation'
+      )
     }
     const ranges = [...dateRanges]
     ranges.splice(index, 1)
@@ -212,12 +217,12 @@ export default function EditHouse() {
 
   return (
     <Container>
-      <h1>Edit My Post</h1>
+      <h1>{t('edit.editPost')}</h1>
       <Form>
         <Row>
           <Col>
             <Form.Group>
-              <Form.Label>Title</Form.Label>
+              <Form.Label>{t('edit.title')}</Form.Label>
               <FormControl
                 type="text"
                 value={title}
@@ -228,7 +233,7 @@ export default function EditHouse() {
             </Form.Group>
 
             <Form.Group className="mt-2">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>{t('edit.description')}</Form.Label>
               <Form.Control
                 size="sm"
                 as="textarea"
@@ -240,7 +245,7 @@ export default function EditHouse() {
               ></Form.Control>
             </Form.Group>
             <Form.Group className="mt-3">
-              <Form.Label>Upload some pics </Form.Label>
+              <Form.Label>{t('edit.uploadPics')}</Form.Label>
               <input
                 onChange={onPostImageSelection}
                 type="file"
@@ -249,7 +254,7 @@ export default function EditHouse() {
                 multiple
               />
 
-              {uploading && <p>Uploading... Please wait.</p>}
+              {uploading && <p>{t('edit.uploading')}</p>}
 
               {imageUrls?.map((url: string, index: number) => (
                 <div key={index}>
@@ -271,7 +276,7 @@ export default function EditHouse() {
           </Col>
           <Col>
             <Form.Group>
-              <Form.Label>Availability</Form.Label>
+              <Form.Label>{t('edit.availability')}</Form.Label>
 
               {dateRanges &&
                 dateRanges.map(([start, end], index) => (
@@ -296,11 +301,11 @@ export default function EditHouse() {
                                 className="mt-4 w-100"
                                 onClick={() => removeDateRange(index)}
                               >
-                                Remove Range
+                                {t('edit.removeRange')}
                               </Button>
                             )}
                             <Button variant="warning" className="mt-4 w-100" onClick={addDateRange}>
-                              Add Range
+                              {t('sidebarFilter.dates.addRange')}
                             </Button>
                           </div>
                         )}
@@ -312,7 +317,7 @@ export default function EditHouse() {
               <br />
             </Form.Group>
             <Form.Group>
-              <Form.Label>Where</Form.Label>
+              <Form.Label>{t('edit.where')}</Form.Label>
 
               <Form.Select
                 value={location || ''}
@@ -328,7 +333,7 @@ export default function EditHouse() {
             </Form.Group>
 
             <Form.Group>
-              <Form.Label>Pets</Form.Label>
+              <Form.Label>{t('edit.pets')}</Form.Label>
               <Row>
                 <Col>
                   <InputGroup>
@@ -359,7 +364,7 @@ export default function EditHouse() {
           </Col>
         </Row>
         <Button type="submit" onClick={(e) => handleSubmit(e)}>
-          Save
+          {t('edit.save')}
         </Button>
       </Form>
     </Container>

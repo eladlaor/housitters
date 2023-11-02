@@ -12,6 +12,9 @@ import { getUrlFromSupabase } from '../utils/helpers'
 import { useEffect, useState } from 'react'
 import SignOut from './Auth/SignOut'
 import { selectPrimaryUseState, setPrimaryUse } from '../slices/userSlice'
+import { useTranslation } from 'react-i18next'
+import 'flag-icon-css/css/flag-icons.min.css'
+
 interface Props {
   className?: string
 }
@@ -25,9 +28,12 @@ export default function HomeNavbar({ className = '' }: Props) {
   const dispatch = useDispatch()
 
   const router = useRouter()
+  const currentLocale = router.locale
   const classNames = className || ''
   const [profile, setProfile] = useState({ name: '', picture: '' })
   const [hasPost, setHasPost] = useState(false)
+  const { t, i18n } = useTranslation()
+
   useEffect(() => {
     if (!isLoading && userId) {
       const asyncWrapper = async () => {
@@ -67,6 +73,18 @@ export default function HomeNavbar({ className = '' }: Props) {
     }
   }, [isLoading, userId])
 
+  function handleLocaleChange(locale: string) {
+    i18n.changeLanguage(locale)
+    router.push(
+      {
+        pathname: router.pathname,
+        query: router.query,
+      },
+      undefined,
+      { locale }
+    )
+  }
+
   return (
     <Navbar bg="dark" variant="dark" className={classNames}>
       <Container>
@@ -84,7 +102,7 @@ export default function HomeNavbar({ className = '' }: Props) {
                       : `${PageRoutes.Intro}?userType=${UserType.Landlord}`
                   }
                 >
-                  <a className="nav-link">Sitters</a>
+                  <a className="nav-link">{t('homeNavbar.sitters')}</a>
                 </Link>
               </Nav.Item>
               <Nav.Item>
@@ -95,7 +113,12 @@ export default function HomeNavbar({ className = '' }: Props) {
                       : `${PageRoutes.Intro}?userType=${UserType.Housitter}`
                   }
                 >
-                  <a className="nav-link">Houses</a>
+                  <a className="nav-link">{t('homeNavbar.houses')}</a>
+                </Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Link href="/about">
+                  <a className="nav-link">{t('homeNavbar.about')}</a>
                 </Link>
               </Nav.Item>
             </Nav>
@@ -107,7 +130,7 @@ export default function HomeNavbar({ className = '' }: Props) {
                 </Nav.Item>
                 <Nav.Item>
                   <Link href="/favourites">
-                    <a className="nav-link">Favourites</a>
+                    <a className="nav-link">{t('homeNavbar.favourites')}</a>
                   </Link>
                 </Nav.Item>
                 <Nav.Item>
@@ -129,7 +152,9 @@ export default function HomeNavbar({ className = '' }: Props) {
                       </div>
                     }
                   >
-                    <NavDropdown.Item href={PageRoutes.Profile}>Edit Profile</NavDropdown.Item>
+                    <NavDropdown.Item href={PageRoutes.Profile}>
+                      {t('homeNavbar.editProfile')}
+                    </NavDropdown.Item>
                     {userType === UserType.Landlord &&
                       (hasPost ? (
                         <NavDropdown.Item href={PageRoutes.LandlordRoutes.EditHouse}>
@@ -143,14 +168,23 @@ export default function HomeNavbar({ className = '' }: Props) {
                     <SignOut elementType={SignOutElementTypes.NavDropdownItem} />
                   </NavDropdown>
                 </Nav.Item>
+                <NavDropdown title="Language" id="language-dropdown" className="language-dropdown">
+                  <NavDropdown.Item
+                    active={currentLocale === 'en'}
+                    onClick={() => handleLocaleChange('en')}
+                  >
+                    <span className="flag-icon flag-icon-us"></span> English
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    active={currentLocale === 'he'}
+                    onClick={() => handleLocaleChange('he')}
+                  >
+                    <span className="flag-icon flag-icon-il"></span> עברית
+                  </NavDropdown.Item>
+                </NavDropdown>
               </Nav>
             ) : (
               <Nav>
-                <Nav.Item>
-                  <Link href="/about">
-                    <a className="nav-link">About</a>
-                  </Link>
-                </Nav.Item>
                 <Nav.Item>
                   <Button
                     className="ms-4 me-4"
@@ -158,7 +192,7 @@ export default function HomeNavbar({ className = '' }: Props) {
                       router.push(PageRoutes.Auth.Login)
                     }}
                   >
-                    Login
+                    {t('homeNavbar.login')}
                   </Button>
                 </Nav.Item>
                 <Nav.Item>
@@ -167,9 +201,23 @@ export default function HomeNavbar({ className = '' }: Props) {
                     onClick={() => router.push(PageRoutes.Auth.Signup)}
                     className="me-4"
                   >
-                    Signup
+                    {t('homeNavbar.signup')}
                   </Button>
                 </Nav.Item>
+                <NavDropdown title="Language" id="language-dropdown" className="language-dropdown">
+                  <NavDropdown.Item
+                    active={currentLocale === 'en'}
+                    onClick={() => handleLocaleChange('en')}
+                  >
+                    <span className="flag-icon flag-icon-us"></span> English
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    active={currentLocale === 'he'}
+                    onClick={() => handleLocaleChange('he')}
+                  >
+                    <span className="flag-icon flag-icon-il"></span> עברית
+                  </NavDropdown.Item>
+                </NavDropdown>
               </Nav>
             )}
           </Navbar.Collapse>

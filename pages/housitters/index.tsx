@@ -19,6 +19,7 @@ import AvailableHousitter from '../../components/AvailableHousitter'
 import { handleError } from '../../utils/helpers'
 import Footer from '../../components/Footer'
 import Sorter from '../../components/Sorter'
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
   const supabaseClient = useSupabaseClient()
@@ -32,26 +33,15 @@ export default function Home() {
   const [startDate, endDate] = dateRange
   const [location, setLocation] = useState(null as null | string)
 
-  const [housitters, setHousitters] = useState([{} as any]) // TODO: lets improve this type
-  // const [selectedHousitterId, setSelectedHousitterId] = useState('' as string)
-  // const [isThereAnySelectedSitter, setIsThereAnySelectedSitter] = useState(false)
-  const [
-    preConfirmedSelectionOfClosedSitsPerSitter,
-    setPreConfirmedSelectionOfClosedSitsPerSitter,
-  ] = useState({
-    housitterId: '',
-    startDates: [],
-  } as {
-    housitterId: string
-    startDates: string[]
-  })
+  const [housitters, setHousitters] = useState([{} as any]) // TODO: should type
 
-  // const isActivePost = useSelector(selectIsActiveState)
   const [isPostComplete, setIsPostComplete] = useState(true)
 
   const [availabilityFilter, setAvailabilityFilter] = useState([
     [null, null],
   ] as DatePickerSelection[])
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!userId) {
@@ -228,30 +218,6 @@ export default function Home() {
     }
   }
 
-  // async function handleBindSitterWithPeriod(e: any) {
-  //   e.preventDefault()
-
-  //   const preConfirmedStartPeriodsToModify = [
-  //     ...preConfirmedSelectionOfClosedSitsPerSitter.startDates,
-  //   ]
-  //   const selectedStartDate = e.target.value
-  //   const indexOfSelectedStartDate = preConfirmedStartPeriodsToModify.indexOf(selectedStartDate)
-
-  //   if (indexOfSelectedStartDate === -1) {
-  //     preConfirmedStartPeriodsToModify.push(selectedStartDate)
-  //   } else {
-  //     preConfirmedStartPeriodsToModify.splice(indexOfSelectedStartDate, 1)
-  //   }
-
-  //   // again, strangely, the code seems to be structured properly in terms of order of operations, but still setTimeout seems to be the only solution for the race condition
-  //   setTimeout(() => {
-  //     setPreConfirmedSelectionOfClosedSitsPerSitter({
-  //       housitterId: selectedHousitterId,
-  //       startDates: preConfirmedStartPeriodsToModify,
-  //     })
-  //   }, 0)
-  // }
-
   function handleAvailabilityFilterChange(index: number, updatedRange: DatePickerSelection) {
     const modifiedAvailabilityFilter = [...availabilityFilter]
     const [updatedStartDate, updatedEndDate] = updatedRange
@@ -278,8 +244,11 @@ export default function Home() {
     <div>
       <div className="content-wrapper">
         <Container>
-          <h2>Looking for a house-sitter?</h2>
-          <h5>There are currently {housitters.length} available sitters for you.</h5>
+          <h2>{t('housitters.title')}</h2>
+          <h5>
+            {t('housitters.searchResultsStart')} {housitters.length}{' '}
+            {t('housitters.searchResultsEnd')}
+          </h5>
 
           <Row>
             <Col md={3}>
@@ -311,14 +280,14 @@ export default function Home() {
                 </Card>
               )}
               <Card className="sidebar-filter">
-                <h4>Dates</h4>
+                <h4>{t('sidebarFilter.dates.fieldName')}</h4>
                 {availabilityFilter.map(([startDate, endDate], index) => (
                   <div key={index}>
                     <DatePicker
                       selectsRange={true}
                       startDate={endDate?.getFullYear() === 1970 ? null : startDate}
                       endDate={endDate?.getFullYear() === 1970 ? null : endDate}
-                      placeholderText="Anytime"
+                      placeholderText={t('sidebarFilter.dates.anytime')}
                       isClearable={true}
                       onChange={(update) => {
                         handleAvailabilityFilterChange(index, update)
@@ -332,7 +301,7 @@ export default function Home() {
                             className="w-100"
                             onClick={() => removeAvailabilityFilterRange(index)}
                           >
-                            Remove Range
+                            {t('sidebarFilter.dates.removeRange')}
                           </Button>
                         )}
                         <Button
@@ -340,33 +309,35 @@ export default function Home() {
                           className="mt-4 w-100"
                           onClick={addAvailabilityFilterRange}
                         >
-                          Add Range
+                          {t('sidebarFilter.dates.addRange')}
                         </Button>
                       </div>
                     )}
                     <hr className="mt-4" />
                   </div>
                 ))}
-                <h4>Location</h4>
+                <h4>{t('sidebarFilter.location.fieldName')}</h4>
                 <Dropdown>
                   <Dropdown.Toggle variant="success">
                     {location
-                      ? LocationDescriptions[location]
-                      : LocationSelectionEventKeys.Anywhere}
+                      ? t(`sidebarFilter.location.descriptions.${LocationDescriptions[location]}`)
+                      : t(`sidebarFilter.location.anywhere`)}
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu>
-                    <Dropdown.Item onClick={() => setLocation(null)}>Anywhere</Dropdown.Item>
+                    <Dropdown.Item onClick={() => setLocation(null)}>
+                      {t('sidebarFilter.location.anywhere')}
+                    </Dropdown.Item>
                     <Dropdown.Divider />
                     {Object.entries(LocationDescriptions).map(([key, value]) => (
                       <Dropdown.Item key={key} onClick={() => setLocation(key)}>
-                        {value}
+                        {t(`sidebarFilter.location.descriptions.${value}`)}
                       </Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
                 </Dropdown>
                 <hr />
-                <h4>Sort</h4>
+                <h4> {t('sidebarFilter.sort.fieldName')}</h4>
 
                 <Sorter
                   sortingProperties={Object.values(SortingProperties.LandlordDashboard)}
@@ -381,30 +352,24 @@ export default function Home() {
                   <p style={{ marginTop: '2rem', fontSize: '1.5rem', textAlign: 'center' }}>
                     😢
                     <br />
-                    Sorry, but there are no sitters matching your search. Please try adjusting your
-                    filters.
+                    {t('housitters.noResults')}
                   </p>
                 ) : (
-                  housitters.map(
-                    (
-                      sitter: any,
-                      index: number // TODO: type 'sitter' with a new type of Db housitterdata
-                    ) => (
-                      <AvailableHousitter
-                        housitterId={sitter.housitterId}
-                        firstName={sitter.firstName}
-                        lastName={sitter.lastName}
-                        experience={sitter.experience}
-                        aboutMeText={
-                          sitter.about_me
-                            ? sitter.about_me
-                            : `${sitter.firstName} didn't write a description yet.`
-                        }
-                        avatarUrl={sitter.avatarUrl}
-                        key={index}
-                      />
-                    )
-                  )
+                  housitters.map((sitter: any, index: number) => (
+                    <AvailableHousitter
+                      housitterId={sitter.housitterId}
+                      firstName={sitter.firstName}
+                      lastName={sitter.lastName}
+                      experience={sitter.experience}
+                      aboutMeText={
+                        sitter.about_me
+                          ? sitter.about_me
+                          : `${sitter.firstName} didn't write a description yet.`
+                      }
+                      avatarUrl={sitter.avatarUrl}
+                      key={index}
+                    />
+                  ))
                 )}
               </Row>
             </Col>

@@ -22,6 +22,7 @@ import { startOfMonth, format } from 'date-fns'
 import { Database } from '../types/supabase'
 import { useState } from 'react'
 import CountAndUpdate from './utils/CountAndUpdate'
+import { useTranslation } from 'react-i18next'
 
 export default function RecommendationSender(props: RecommendationFormProps) {
   const {
@@ -35,6 +36,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
   const dispatch = useDispatch()
+  const { t } = useTranslation()
 
   const startMonth = useSelector(selectStartMonthState)
   const duration = useSelector(selectDurationState)
@@ -110,19 +112,19 @@ export default function RecommendationSender(props: RecommendationFormProps) {
   return (
     <div>
       <Button variant="warning" value={reviewedUserId} onClick={handleSelectedUserToRecommend}>
-        Recommend
+        {t('reviews.addReview')}
       </Button>
       {showRecommendationFormModal && selectedUserToRecommendId === reviewedUserId && (
         <Modal show={showRecommendationFormModal} onHide={handleCloseModal}>
           <Modal.Header closeButton>
             <Modal.Title>
-              Recommend {reviewedUserFirstName} {reviewedUserLastName}
+              {t('reviews.addReviewFor')} {reviewedUserFirstName} {reviewedUserLastName}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
               <Form.Group controlId="start-date">
-                <Form.Label>when was it?</Form.Label>
+                <Form.Label>{t('reviews.whenWasIt')}</Form.Label>
                 <DatePicker
                   selected={new Date()}
                   openToDate={new Date()}
@@ -133,13 +135,13 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                   value={format(startOfMonth(new Date(startMonth)), 'MM/yyyy')}
                 />
               </Form.Group>
-              <Form.Label className="mt-2">how many days?</Form.Label>
+              <Form.Label className="mt-2">{t('reviews.howManyDays')}</Form.Label>
 
               {reviewedUserType === UserType.Housitter && (
                 <CountAndUpdate valueToCount={duration} reduxReducer={setDurationState} />
               )}
               <Form.Group controlId="sit-included">
-                <Form.Label className="mt-2">what did the sit include</Form.Label>
+                <Form.Label className="mt-2">{t('reviews.whatIncluded')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={sitIncluded}
@@ -149,7 +151,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                 />
               </Form.Group>
               <Form.Group controlId="description"></Form.Group>
-              <Form.Label className="mt-2">How was it?</Form.Label>
+              <Form.Label className="mt-2">{t('reviews.howWas')}</Form.Label>
               <Form.Control
                 className="text-end"
                 size="sm"
@@ -161,7 +163,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                 }}
               />
               <Button variant="success" type="submit" onClick={(e) => handleSubmit(e)}>
-                Submit Recommendation
+                {t('reviews.submit')}
               </Button>
             </Form>
           </Modal.Body>

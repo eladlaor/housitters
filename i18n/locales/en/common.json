@@ -1,0 +1,216 @@
+{
+    "userType": {
+        "landlord": "landlord",
+        "housitter": "housitter"
+    },
+    "signup": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "password": "Password",
+        "userType": "User Type",
+        "pets": "Pets",
+        "experience": "Experience (optional)",
+        "experienceExplain": "approximately, in how many houses did you pet-sit?",
+        "gender": "Gender",
+        "profilePic": "Profile Picture",
+        "submit": "Submit",
+        "signupError": "Signup Error",
+        "replaceEmail": "Replace Email",
+        "signin": "Sign In",
+        "enterEmail": "Enter Email"
+    },
+    "login": {
+        "typos": "Check Typos",
+        "signup": "Sign Up",
+        "forgotPassword": "Forgot Password",
+        "password": "Password",
+        "login": "Log In",
+        "loginError": "Login Error",
+        "oneMoreStep": "One More Step to Find Your Next ",
+        "house": "House",
+        "sitter": "Sitter"
+    },
+    "forgotPassword": {
+        "part1": "If you signed up with this email,",
+        "part2": "You'll get a password reset link.",
+        "part3": "It might reach the Spam folder, so if you don't see it, check there :)",
+        "send": "Send"
+    },
+    "homeNavbar": {
+        "language": "Language",
+        "sitters": "Sitters",
+        "houses": "Houses",
+        "about": "About",
+        "login": "Login",
+        "signup": "Signup",
+        "inbox": "Inbox",
+        "favourites": "Favourites",
+        "editProfile": "Edit Profile",
+        "signOut": "Sign Out"
+    },
+    "index": {
+        "findSitter": "Find a Sitter",
+        "findHouse": "Find a House"
+    },
+    "houses": {
+        "title": "Looking for a great house?",
+        "searchResultsStart": "There are",
+        "searchResultsEnd": "available houses for these dates and locations",
+        "housePreview": {
+            "multiplePeriods": "Multiple Periods",
+            "flexible": "Flexible",
+            "days": "days",
+            "contact": "Contact",
+            "details": "Details"
+        },
+        "details": {
+            "hostedBy": "Hosted by",
+            "availability": "Availability",
+            "location": "location"
+        }
+    },
+    "intro": {
+        "part1": "let's find",
+        "sitterFind": " a woof over your head'",
+        "landlordFind": " a great housitter for you",
+        "when": "When?",
+        "where": "Where?",
+        "find": "Find"
+    },
+    "edit": {
+        "editPost": "Edit Post",
+        "title": "Title",
+        "description": "Description",
+        "pets": "Pets",
+        "where": "Where",
+        "uploadPics": "Upload Pics",
+        "uploading": "Uploading...",
+        "availability": "Availability",
+        "removeRange": "Remove Range",
+        "save": "Save"
+    },
+    "sidebarFilter": {
+        "dates": {
+            "fieldName": "Dates",
+            "anytime": "Anytime",
+            "addRange": "Add Range",
+            "removeRange": "Remove Range"
+
+        },
+        "location": {
+            "fieldName": "Location",
+            "selectAreas": "Select Areas",
+            "anywhere": "Anywhere",
+            "descriptions": {
+                "Outside Israel": "Outside Israel",
+                "North Israel": "North Israel",
+                "Central Israel": "Central Israel",
+                "Jerusalem": "Jerusalem",
+                "South Israel": "South Israel"
+            }
+        },
+        "sort": {
+            "fieldName": "Sort",
+            "duration": "duration",
+            "number of pets": "number of pets",
+            "gender": "gender",
+            "experience": "experience"
+
+        }
+    },
+    "reviews": {
+        "addReview": "Add Review",
+        "addReviewFor": "Add a review for",
+        "submit": "Submit Review",
+        "fieldName": "Reviews",
+        "whenWasIt": "When was it?",
+        "howManyDays": "How many days?",
+        "whatIncluded": "What did the sit include?",
+        "howWas": "How was it?",
+        "noneYet": "No reviews yet"
+    },
+    "housitterPreview": {
+        "contact": "Contact",
+        "details": "Details",
+        "experience": "experience"
+    },
+    "housitters": {
+        "title": "Looking for a house sitter?",
+        "searchResultsStart": "There are",
+        "searchResultsEnd": "available sitters for these dates and locations",
+        "details": {
+            "about": "About me",
+            "availability": "Availability",
+            "location": "Location",
+            "experience": "Experience",
+            "memberSince": "Member since"
+        },
+        "noResults": "Sorry, but there are no sitters matching your search. If relevant, try broadning your date filter."
+    },
+    "inbox": {
+        "noMessagesYet": "There are currently no messaegs in your inbox.",
+        "tryContacting": "Try contacting someone!",
+        "chatWith": "Chat with",
+        "close": "Close",
+        "send": "Send",
+        "type": "Type your message here..."
+    },
+    "socialMedia": { "fieldName": "Social Media", "unavailable": "Unavailable"},
+    "about": {
+            "title": "Housitters.com",
+            "tableOfContents": "Table of Contents",
+            "toc": {
+              "problem": "Problem Solved",
+              "motivation": "Motivation",
+              "usage": "Usage and Features",
+              "future": "Future Plans"
+            },
+            "problem": {
+              "title": "Problem Solved",
+              "paragraph1": "Facebook, we have a bone to pick with you! Nowadays, if you are a house-sitter or a pet-parent, the experience of finding what you're looking for is pretty gruesome.",
+              "paragraph2": "Services other than Housitters.com are currently either:",
+              "list": {
+                "item1": "Free but inconvenient: Facebook, allowing no search filters, displaying posts in non-chronological order.",
+                "item2": "Convenient but costly: similar house-sitting websites charge around 200 USD for a yearly subscription."
+              },
+              "paragraph3": "Housitters.com is the first house-sitting marketplace which is both free and user-friendly.",
+              "blockquote": "We can finally stop chasing our own tail :)"
+            },
+            "motivation": {
+                "description1": "I've been a house-sitter since April 2021. For a year, I wrote",
+                "description2": "a monthly personal blog about it in 'Haaretz',",
+                "description3": "one of Israel's prominent newspapers: Personally, my experience has been smooth, likely due to the exposure from my blog. I've received more house-sitting invitations than I could accept. However, as I was getting to know the house-sitting community, I recognized a common frustration with existing services. This presented a unique opportunity for me to both develop my coding skills and address a genuine problem in my community."
+                , "punch1": "Like",
+                    "punch2": "hitting two birds with one stone",
+                    "punch3": "racing two dogs with one ball."
+            },
+            "usage": {
+                "signUp": "Sign Up",
+                "signUpInfo1": "To explore pets, houses, and house-sitters, you first need to sign up. Upon signing up, define yourself as either a", 
+                "signUpInfo2": "landlord", 
+                "signUpInfo3": "or a" ,
+                "signUpInfo4": "housitter" ,
+                "signUpInfo5": "The interface varies according to the user type." ,
+                "withHousitters": "With Housitters.com, you can:",
+                "createProfile": "Create and edit a profile and a public post, respective to your user type.",
+                "contact": "Contact (or get contacted by) other registered members.",
+                "filter": "Filter searches for either houses or sitters:",
+                "byDate": "By date (single range / multiple ranges / Anytime).",
+                "byLocation": "   By location (house-sitters can search multiple locations, landlords are limited to one).",
+                "post": "These filters are separate from the dates and locations specified in your profile or public post, by which other users can find you in their search results.",
+                "sort": "Sort the results according to relevant criteria.",
+                "bookmark": "Bookmark favorite sitters or houses.",
+                "reviews": "Reviews: post and read reviews on other users, to make sure everybody's heading for a good experience.",
+                "getInTouch": "Get in touch with us for feedback or suggestions.",
+                "manage": "Efficiently manage prior chats using a personal inbox."
+            },
+            "futurePlans": {
+                "modify": "Modify the location options to allow international users.",
+                "friend": "Add an Invite a Friend option",
+                "notifications": "Introduce a user setting for receiving email notifications upon getting a message on the platform. A preliminary implementation exists, but there are still potential spam concerns to handle.",
+                "graphic": "Improve the graphic design.",
+                "launch": "Launch :)"
+            }
+    }
+}

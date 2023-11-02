@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useTransition } from 'react'
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import { NavDropdown } from 'react-bootstrap'
 
@@ -11,6 +11,7 @@ import Badge from 'react-bootstrap/Badge'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelopeOpenText } from '@fortawesome/free-solid-svg-icons'
 import ChatModal from './Contact/ChatModal'
+import { useTranslation } from 'react-i18next'
 
 const groupByKey = (list: any[], key: string) =>
   list.reduce((hash, obj) => ({ ...hash, [obj[key]]: (hash[obj[key]] || []).concat(obj) }), {})
@@ -26,6 +27,9 @@ export default function Inbox() {
   const [chatWithUser, setChatWithUser] = useState('')
   const currentUserType = useSelector(selectPrimaryUseState)
   const usersContacted = useSelector(selectUsersContactedState)
+
+  const { t } = useTranslation()
+
   useEffect(() => {
     if (!userId) {
       return
@@ -62,7 +66,7 @@ export default function Inbox() {
             icon={faEnvelopeOpenText}
             style={{ marginRight: '10px', marginLeft: '5px' }}
           />
-          Inbox
+          {t('homeNavbar.inbox')}
           <Badge pill bg="primary" style={{ marginLeft: '5px' }}>
             {
               messages.filter((m) => !m.is_read_by_recipient && m.sent_by !== currentUserType)
@@ -75,8 +79,9 @@ export default function Inbox() {
     >
       {messages.length === 0 ? (
         <NavDropdown.Item disabled>
-          There are currently no messaegs in your inbox.
-          <br /> Try contacting someone! &#x1F642;
+          {t('inbox.noMessagesYet')}
+          <br /> {t('inbox.tryContacting')}
+          &#x1F642;
         </NavDropdown.Item>
       ) : (
         Object.keys(

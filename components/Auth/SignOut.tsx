@@ -22,12 +22,14 @@ import { SignOutElementTypes } from '../../utils/constants'
 import { SignOutProps } from '../../types/clientSide'
 import { NavDropdown } from 'react-bootstrap'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 
 export default function SignOut({ elementType }: SignOutProps) {
   const { supabaseClient } = useSessionContext()
   const router = useRouter()
   const dispatch = useDispatch()
 
+  const { t } = useTranslation()
   const userType = useSelector(selectPrimaryUseState)
 
   const clearState = (settersToInitialState: SettersToInitialStates) => {
@@ -64,19 +66,19 @@ export default function SignOut({ elementType }: SignOutProps) {
           case SignOutElementTypes.Button:
             return (
               <Button onClick={handleSignOutClick} variant="danger" id="signout-via-dropdown">
-                Sign Out
+                {t('homeNavbar.signOut')}
               </Button>
             )
           case SignOutElementTypes.NavDropdownItem:
             return (
               <NavDropdown.Item href="#" onClick={handleSignOutClick} id="signout-via-dropdown">
-                Sign Out
+                {t('homeNavbar.signOut')}
               </NavDropdown.Item>
             )
           default:
             return (
               <Link href="#" onClick={handleSignOutClick} id="signout-via-dropdown">
-                Sign out
+                {t('homeNavbar.signOut')}
               </Link>
             )
         }

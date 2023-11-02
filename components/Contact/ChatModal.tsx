@@ -5,11 +5,15 @@ import Button from 'react-bootstrap/Button'
 import { useSessionContext, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Modal from 'react-bootstrap/Modal'
 import { selectPrimaryUseState } from '../../slices/userSlice'
-import { MessageType } from 'react-chat-elements'
+import { useTranslation } from 'react-i18next'
+import { useRouter } from 'next/router'
 
 export default function ChatModal({ recipientId, update }: { recipientId: string; update: any }) {
   const { session } = useSessionContext() // why preferred using session and not user?
   const supabaseClient = useSupabaseClient()
+  const { t } = useTranslation()
+
+  const router = useRouter()
   const currentUserType = useSelector(selectPrimaryUseState)
 
   const [userFirstName, setUserFirstName] = useState('')
@@ -17,8 +21,12 @@ export default function ChatModal({ recipientId, update }: { recipientId: string
   const [recipientFirstName, setRecipientFirstName] = useState('')
   const [recipientLastName, setRecipientLastName] = useState('')
   const [conversation, setConversation] = useState<Array<any>>([])
-
   const handleClose = () => update(0)
+
+  useEffect(() => {
+    const direction = router.locale === 'he' ? 'rtl' : 'ltr'
+    document.documentElement.setAttribute('dir', direction)
+  }, [router.locale])
 
   const getMessages = async () => {
     const { error, data } = await supabaseClient
@@ -96,7 +104,7 @@ export default function ChatModal({ recipientId, update }: { recipientId: string
     <Modal show={!!recipientId} onHide={handleClose}>
       <Modal.Header>
         <Modal.Title>
-          Chat with {recipientFirstName} {recipientLastName}
+          {t('inbox.chatWith')} {recipientFirstName} {recipientLastName}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -134,7 +142,7 @@ export default function ChatModal({ recipientId, update }: { recipientId: string
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
-          Close
+          {t('inbox.close')}
         </Button>
       </Modal.Footer>
     </Modal>

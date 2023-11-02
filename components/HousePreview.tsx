@@ -11,6 +11,7 @@ import { LocationDescriptions } from '../utils/constants'
 import { HousePreviewProps } from '../types/clientSide'
 
 import { getUrlFromSupabase, handleError } from '../utils/helpers'
+import { useTranslation } from 'react-i18next'
 
 export default function HousePreview({
   landlordId,
@@ -24,6 +25,7 @@ export default function HousePreview({
 }: HousePreviewProps) {
   const supabaseClient = useSupabaseClient()
   const router = useRouter()
+  const { t } = useTranslation()
 
   const [landlordAvatarUrl, setLandlordAvatarUrlState] = useState('')
 
@@ -65,7 +67,7 @@ export default function HousePreview({
         <Spinner />
       )}
       <div className="image-details">
-        <Badge>{LocationDescriptions[location]}</Badge>
+        <Badge>{t(`sidebarFilter.location.descriptions.${LocationDescriptions[location]}`)}</Badge>
         <br />
         {!!dogs && (
           <Badge>
@@ -80,10 +82,18 @@ export default function HousePreview({
         )}
         <br />
         {duration !== 0 && dateRanges.length > 0 && (
-          <Badge>{dateRanges.length > 1 ? 'Multiple Periods' : dateRanges[0].startDate}</Badge>
+          <Badge>
+            {dateRanges.length > 1
+              ? t('houses.housePreview.multiplePeriods')
+              : dateRanges[0].startDate}
+          </Badge>
         )}
         {duration !== 0 && <br />}
-        <Badge>{duration ? `${duration} days` : 'flexible'}</Badge>
+        <Badge>
+          {duration
+            ? `${duration} ${t('houses.housePreview.days')}`
+            : t('houses.housePreview.flexible')}
+        </Badge>
       </div>
       <Card.Body>
         <Card.Title>{title}</Card.Title>
@@ -97,7 +107,7 @@ export default function HousePreview({
                 router.push(`/houses/${landlordId}`)
               }}
             >
-              Details
+              {t('houses.housePreview.details')}
             </Button>
           </Col>
           <Col xs={6}>
