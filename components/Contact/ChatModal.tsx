@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/router'
 
 export default function ChatModal({ recipientId, update }: { recipientId: string; update: any }) {
-  const { session } = useSessionContext() // why preferred using session and not user?
+  const { session } = useSessionContext()
   const supabaseClient = useSupabaseClient()
   const { t } = useTranslation()
 

@@ -6,4 +6,9 @@ module.exports = {
     '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }], 
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  moduleNameMapper: {
+    '\\.css$': '<rootDir>/test-utils/jest-css-transform.js',
+  },
 };
+
+

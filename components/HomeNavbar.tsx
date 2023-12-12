@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function HomeNavbar({ className = '' }: Props) {
-  const { isLoading } = useSessionContext() // why preferred using session and not user?
+  const { isLoading } = useSessionContext()
   const supabaseClient = useSupabaseClient()
   const user = useUser()
   const userId = user?.id

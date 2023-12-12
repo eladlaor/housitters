@@ -24,7 +24,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "next.config.js"  ],
+, "next.config.js", "test-utils/jest-css-transform.js"  ],
   "exclude": [
     "node_modules"
   ]
