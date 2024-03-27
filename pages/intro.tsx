@@ -7,7 +7,6 @@ import DatePicker from 'react-datepicker'
 
 import { selectLocationsState as housitterSelectLocationsState } from '../slices/housitterSlice'
 import { Button, Modal } from 'react-bootstrap'
-
 import LocationSelector from '../components/LocationSelector'
 
 import React from 'react'
@@ -88,7 +87,7 @@ export default function Intro() {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div>
-        <div className="position-absolute top-70 start-70 translate-middle text-center">
+        <div className="position-absolute top-70 start-10 translate-middle text-center">
           <div>
             <h1 className="mb-4">
               {t('intro.part1')}
