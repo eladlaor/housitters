@@ -7,7 +7,6 @@ import DatePicker from 'react-datepicker'
 
 import { selectLocationsState as housitterSelectLocationsState } from '../slices/housitterSlice'
 import { Button, Modal } from 'react-bootstrap'
-
 import LocationSelector from '../components/LocationSelector'
 
 import React from 'react'
@@ -87,82 +86,72 @@ export default function Intro() {
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
-      <div>
-        <div className="position-absolute top-70 start-70 translate-middle text-center">
-          <div>
-            <h1 className="mb-4">
-              {t('intro.part1')}
-              {isHousitter ? t('intro.sitterFind') : t('intro.landlordFind')}
-            </h1>
-          </div>
-          <div>
-            <h3>{t('intro.when')}</h3>
-            {dateRanges &&
-              dateRanges.map(([start, end], index) => (
-                <div key={index} className="styled-datepicker">
-                  <DatePicker
-                    selectsRange={true}
-                    startDate={end?.getFullYear() === 1970 ? null : start}
-                    endDate={end?.getFullYear() === 1970 ? null : end}
-                    placeholderText={
-                      dateRanges.length > 1
-                        ? t('sidebarFilter.dates.addRange')
-                        : t('sidebarFilter.dates.anytime')
-                    }
-                    onChange={(value) => {
-                      updateDateRange(index, value)
-                    }}
-                    isClearable={true}
-                  />
-                  {!isRangeAnytime(dateRanges[0]) && index === dateRanges.length - 1 && (
-                    <div className="styled-datepicker">
-                      {dateRanges.length > 1 && (
-                        <Button
-                          variant="danger"
-                          className="styled-datepicker"
-                          onClick={() => removeDateRange(index)}
-                        >
-                          {t('sidebarFilter.dates.removeRange')}
-                        </Button>
-                      )}
+      <div className="text-center">
+        <div>
+          <h1 className="mb-4">
+            {t('intro.part1')}
+            {isHousitter ? t('intro.sitterFind') : t('intro.landlordFind')}
+          </h1>
+        </div>
+        <div>
+          <h3>{t('intro.when')}</h3>
+          {dateRanges &&
+            dateRanges.map(([start, end], index) => (
+              <div key={index} className="styled-datepicker">
+                <DatePicker
+                  selectsRange={true}
+                  startDate={end?.getFullYear() === 1970 ? null : start}
+                  endDate={end?.getFullYear() === 1970 ? null : end}
+                  placeholderText={
+                    dateRanges.length > 1
+                      ? t('sidebarFilter.dates.addRange')
+                      : t('sidebarFilter.dates.anytime')
+                  }
+                  onChange={(value) => {
+                    updateDateRange(index, value)
+                  }}
+                  isClearable={true}
+                />
+                {!isRangeAnytime(dateRanges[0]) && index === dateRanges.length - 1 && (
+                  <div className="styled-datepicker">
+                    {dateRanges.length > 1 && (
                       <Button
-                        variant="warning"
+                        variant="danger"
                         className="styled-datepicker"
-                        onClick={addDateRange}
+                        onClick={() => removeDateRange(index)}
                       >
-                        {t('sidebarFilter.dates.addRange')}
+                        {t('sidebarFilter.dates.removeRange')}
                       </Button>
-                    </div>
-                  )}
-                  <hr />
-                </div>
-              ))}
-          </div>
-          <div>
-            <h3>{t('intro.where')}</h3>
-            {!isLoading && (
-              <LocationSelector
-                selectionType={isHousitter ? 'checkbox' : 'radio'}
-                isHousitter={isHousitter}
-                showCustomLocations={
-                  isHousitter
-                    ? housitterLocations.length > 0 &&
-                      housitterLocations.length < Object.values(LocationIds).length
-                    : true
-                }
-                updateDbInstantly={false}
-              />
-            )}
-          </div>
-          <div>
-            <Button
-              variant="success"
-              onClick={handleFind}
-              className="btn-lg rounded-pill w-50 mt-3"
-            >
-              {t('intro.find')}
-            </Button>
-          </div>
+                    )}
+                    <Button variant="warning" className="styled-datepicker" onClick={addDateRange}>
+                      {t('sidebarFilter.dates.addRange')}
+                    </Button>
+                  </div>
+                )}
+                <hr />
+              </div>
+            ))}
+        </div>
+        <div>
+          <h3>{t('intro.where')}</h3>
+          {!isLoading && (
+            <LocationSelector
+              selectionType={isHousitter ? 'checkbox' : 'radio'}
+              isHousitter={isHousitter}
+              showCustomLocations={
+                isHousitter
+                  ? housitterLocations.length > 0 &&
+                    housitterLocations.length < Object.values(LocationIds).length
+                  : true
+              }
+              updateDbInstantly={false}
+            />
+          )}
+        </div>
+        <div>
+          <Button variant="success" onClick={handleFind} className="btn-lg rounded-pill w-50 mt-3">
+            {t('intro.find')}
+          </Button>
         </div>
       </div>
       <Modal show={showSignupOrLoginModal} onHide={() => setShowSignupOrLoginModal(false)}>
