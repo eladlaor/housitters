@@ -97,7 +97,6 @@ export default function LoginPage() {
         className="container d-flex flex-column justify-content-center align-items-center"
         style={{ height: '100vh', marginTop: '-10rem' }}
       >
-        <img src="/logo.svg" style={{ marginBottom: '3rem', maxHeight: '28px' }} />
         <Form>
           <Form.Group controlId="formBasicEmail">
             <Form.Label>{t('signup.email')}</Form.Label>

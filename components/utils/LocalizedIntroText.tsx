@@ -26,8 +26,9 @@ export default function localizedIntroText(locale: string | undefined) {
             <span className="highlight-circle-members">כלבים וחתולים</span> מקבלים יחס אישי ממישהו
             או מישהי שתא<span style={{ fontWeight: 'bold' }}>הב</span> אותם,
             <br />
-            <span className="highlight-circle-members">ההורים שלהם</span> מקבלים שלווה וידיעה שהבית
-            והחיות בידיים טובות,
+            <span className="highlight-circle-members">ההורים שלהם</span> מקבלים שלווה וידיעה ש
+            <span style={{ fontWeight: 'bold' }}>הב</span>
+            ית והחיות בידיים טובות,
             <br />
             <span className="highlight-circle-members">האוסיטרס</span> מקבלים חוויות חדשות ברחבי
             העולם, מישראל ועד אר<span style={{ fontWeight: 'bold' }}>הב</span>,
