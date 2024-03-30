@@ -116,11 +116,13 @@ export default function HomeNavbar({ className = '' }: Props) {
                   <a className="nav-link">{t('homeNavbar.houses')}</a>
                 </Link>
               </Nav.Item>
+              {/* 
               <Nav.Item>
                 <Link href="/about">
                   <a className="nav-link">{t('homeNavbar.about')}</a>
                 </Link>
               </Nav.Item>
+              */}
             </Nav>
 
             {user ? (
