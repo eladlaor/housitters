@@ -28,10 +28,10 @@ export default function ForgotMyPassword() {
     setIsLoading(false)
 
     if (error) {
-      setError(`Error sending password reset email: ${error.message}`)
+      setError(t('forgotPassword.errorMsg', { errorMessage: error.message }))
       setMessage('')
     } else {
-      setMessage('Password reset email sent successfully!')
+      setMessage(t('forgotPassword.successMsg'))
       setError('')
     }
   }

@@ -4,7 +4,8 @@ import { persistor } from '../store'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { PageRoutes, UserType } from '../utils/constants'
-import cuteDog from '../public/images/leika.jpg'
+import fourDogsHappy from '../public/images/quality-photos/fourDogsHappy.jpeg'
+
 import {
   selectPrimaryUseState,
   setPrimaryUse,
@@ -116,10 +117,10 @@ export default function Home() {
       className="d-flex flex-column vh-100"
       style={{
         marginTop: '-1.5rem',
-        backgroundImage: `url("${cuteDog.src}")`,
+        backgroundImage: `url("${fourDogsHappy.src}")`,
         backgroundSize: 'cover',
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
-        backgroundBlendMode: 'lighten',
+        backgroundPosition: 'center center',
       }}
     >
       <Container className="d-flex flex-column justify-content-center vh-100">

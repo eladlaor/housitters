@@ -35,7 +35,9 @@
         "part1": "If you signed up with this email,",
         "part2": "You'll get a password reset link.",
         "part3": "It might reach the Spam folder, so if you don't see it, check there :)",
-        "send": "Send"
+        "send": "Send",
+        "successMsg": "Password reset email sent successfully!",
+        "errorMsg": "Error sending password reset email: "
     },
     "homeNavbar": {
         "language": "Language",
