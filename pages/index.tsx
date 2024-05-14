@@ -5,9 +5,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { PageRoutes, UserType } from '../utils/constants'
 import fourDogsHappy from '../public/images/quality-photos/fourDogsHappy.jpeg'
-import dogBag from '../public/images/quality-photos/dogBag.jpg'
 import porchDog from '../public/images/quality-photos/home/porchDog.jpg'
-// import womanWithDog from '../public/images/quality-photos/womanWithDog.jpg'
 
 import {
   selectPrimaryUseState,
@@ -120,7 +118,7 @@ export default function Home() {
       <div
         className="d-flex flex-column vh-100"
         style={{
-          marginTop: '-1.5rem',
+          marginTop: '4rem',
           backgroundImage: `url("${fourDogsHappy.src}")`,
           backgroundSize: 'cover',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',

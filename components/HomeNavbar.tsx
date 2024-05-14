@@ -86,7 +86,7 @@ export default function HomeNavbar({ className = '' }: Props) {
   }
 
   return (
-    <Navbar bg="dark" variant="dark" className={classNames}>
+    <Navbar bg="dark" variant="dark" className={classNames} fixed="top">
       <Container>
         <Navbar.Brand href="/">
           <img src="images/white-housitters-logo.png" className="navbar-logo" />
