@@ -529,6 +529,12 @@ heart icon
   color: green
 }
 
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
 .navbar-logo {
   margin-top: -7px;
   max-height: 70px;

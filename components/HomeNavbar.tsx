@@ -29,7 +29,7 @@ export default function HomeNavbar({ className = '' }: Props) {
 
   const router = useRouter()
   const currentLocale = router.locale
-  const classNames = className || ''
+  const classNames = className || 'navbar'
   const [profile, setProfile] = useState({ name: '', picture: '' })
   const [hasPost, setHasPost] = useState(false)
   const { t, i18n } = useTranslation()

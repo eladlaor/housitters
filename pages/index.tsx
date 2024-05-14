@@ -118,7 +118,7 @@ export default function Home() {
       <div
         className="d-flex flex-column vh-100"
         style={{
-          marginTop: '4rem',
+          marginTop: '-1.5rem',
           backgroundImage: `url("${fourDogsHappy.src}")`,
           backgroundSize: 'cover',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',
