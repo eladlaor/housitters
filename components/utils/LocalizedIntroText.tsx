@@ -6,14 +6,14 @@ export default function localizedIntroText(locale: string | undefined) {
           <h1 style={{ fontWeight: '700' }}>The Housitters WinWinWin Circle</h1>
           <p style={{ fontSize: '1.8rem' }}>
             <span className="highlight-circle-members">Pets</span> get a{' '}
-            <span style={{ fontWeight: 'bold' }}>win</span>dfall of fresh-smelling love, while
+            <span style={{ fontWeight: 'bold' }}>win</span>dfall of fresh-smelling love while
             they're away from their <br />{' '}
-            <span className="highlight-circle-members">Pet Parents</span> who get to spread their{' '}
-            <span style={{ fontWeight: 'bold' }}>win</span>gs and travel with peace of mind, knowing
-            their loved ones are in the reliable hands of <br />
+            <span className="highlight-circle-members">Pet Parents</span> who spread their{' '}
+            <span style={{ fontWeight: 'bold' }}>win</span>gs getting peace of mind from reliable{' '}
+            <br />
             <span className="highlight-circle-members">House Sitters</span> who get a{' '}
-            <span style={{ fontWeight: 'bold' }}>win</span>dow to new experiences, <br /> meeting
-            heart warming houses and <span className="highlight-circle-members">Pets</span>.
+            <span style={{ fontWeight: 'bold' }}>win</span>dow to heart-warming houses and{' '}
+            <span className="highlight-circle-members">Pets</span>.
           </p>
         </>
       )
@@ -21,20 +21,18 @@ export default function localizedIntroText(locale: string | undefined) {
       return (
         <>
           <h1 style={{ fontWeight: '700' }}>הב הב הב: מעגל של אהבה</h1>
-
           <p style={{ fontSize: '1.8rem' }}>
-            <span className="highlight-circle-members">כלבים וחתולים</span> מקבלים יחס אישי ממישהו
-            או מישהי שתא<span style={{ fontWeight: 'bold' }}>הב</span> אותם,
+            <span className="highlight-circle-members">הכלבלב</span> נשאר בבית ומרגיש נא
+            <span style={{ fontWeight: 'bold' }}>הב</span>,
             <br />
-            <span className="highlight-circle-members">ההורים שלהם</span> מקבלים שלווה וידיעה ש
-            <span style={{ fontWeight: 'bold' }}>הב</span>
-            ית והחיות בידיים טובות,
+            <span className="highlight-circle-members">הוריו</span> מקבלים שלווה, תמונות וסרטונים
+            מכאן ועד אר
+            <span style={{ fontWeight: 'bold' }}>ה"ב</span>
+            ,
             <br />
-            <span className="highlight-circle-members">האוסיטרס</span> מקבלים חוויות חדשות ברחבי
-            העולם, מישראל ועד אר<span style={{ fontWeight: 'bold' }}>הב</span>,
-            <br />
-            מתארחים בבתים מגוונים ומארחים בתוך לבם מגוון{' '}
-            <span className="highlight-circle-members">כלבים וחתולים</span>.
+            <span className="highlight-circle-members">האוסיטרס</span> שומרים על{' '}
+            <span style={{ fontWeight: 'bold' }}>הב</span>ית החם, מארחים בליבם את{' '}
+            <span className="highlight-circle-members">הכלבלב</span>...
           </p>
         </>
       )

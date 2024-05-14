@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { PageRoutes, UserType } from '../utils/constants'
 import fourDogsHappy from '../public/images/quality-photos/fourDogsHappy.jpeg'
+import dogBag from '../public/images/quality-photos/dogBag.jpg'
+import porchDog from '../public/images/quality-photos/home/porchDog.jpg'
+// import womanWithDog from '../public/images/quality-photos/womanWithDog.jpg'
 
 import {
   selectPrimaryUseState,
@@ -113,35 +116,58 @@ export default function Home() {
   }
 
   return (
-    <div
-      className="d-flex flex-column vh-100"
-      style={{
-        marginTop: '-1.5rem',
-        backgroundImage: `url("${fourDogsHappy.src}")`,
-        backgroundSize: 'cover',
-        backgroundColor: 'rgba(255, 255, 255, 0.5)',
-        backgroundPosition: 'center center',
-      }}
-    >
-      <Container className="d-flex flex-column justify-content-center vh-100">
-        <Row>
-          <Col xs={12} md={9}>
+    <div>
+      <div
+        className="d-flex flex-column vh-100"
+        style={{
+          marginTop: '-1.5rem',
+          backgroundImage: `url("${fourDogsHappy.src}")`,
+          backgroundSize: 'cover',
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          backgroundPosition: 'center center',
+        }}
+      >
+        <Container className="d-flex flex-column justify-content-center vh-100">
+          <Row className="d-flex justify-content-center mt-2">
+            <Col xs={12} md={6} style={{ paddingLeft: '25%' }}>
+              <Button
+                variant="success"
+                size="lg"
+                className="w-100"
+                onClick={() => handleFind(true)}
+              >
+                {t('index.findHouse')}
+              </Button>
+            </Col>
+          </Row>
+          <Row className="d-flex justify-content-center mt-2">
+            <Col xs={12} md={6} style={{ paddingLeft: '25%', paddingBottom: '20%' }}>
+              <Button size="lg" className="w-100" onClick={() => handleFind(false)}>
+                {t('index.findSitter')}
+              </Button>
+            </Col>
+          </Row>
+        </Container>
+      </div>
+
+      <Container className="d-flex flex-column justify-content-center max-vh-100">
+        <Row className="mt-5 mb-5">
+          <Col xs={12} md={12} className="text-center">
             {localizedIntroText(locale)}
           </Col>
         </Row>
-        <Row className="d-flex mt-2">
-          <Col xs={12} md={3}>
-            <Button size="lg" className="w-100" onClick={() => handleFind(false)}>
-              {t('index.findSitter')}
-            </Button>
-          </Col>
-          <Col xs={12} md={3}>
-            <Button size="lg" className="w-100" onClick={() => handleFind(true)}>
-              {t('index.findHouse')}
-            </Button>
-          </Col>
-        </Row>
       </Container>
+      <div
+        className="d-flex flex-column vh-100"
+        style={{
+          marginTop: '-2rem',
+          backgroundImage: `url("${porchDog.src}")`,
+          backgroundSize: 'cover',
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          backgroundPosition: 'center center',
+        }}
+      ></div>
+
       <Footer />
     </div>
   )

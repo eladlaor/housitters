@@ -185,7 +185,6 @@ export default function Picture({
         }
 
         dispatch(setAvatarUrl(fileName))
-        console.log(`dispatched ${fileName} as avatarUrl to redux`)
 
         const buffer = await blobToBuffer(resizedImage)
 
