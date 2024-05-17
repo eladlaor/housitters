@@ -79,9 +79,9 @@ export default function ChatModal({ recipientId, update }: { recipientId: string
           return
         }
 
-        if (data) {
-          setRecipientFirstName(data?.first_name)
-          setRecipientLastName(data?.last_name)
+        if (recipientData) {
+          setRecipientFirstName(recipientData?.first_name)
+          setRecipientLastName(recipientData?.last_name)
         }
       }
 

@@ -135,11 +135,7 @@ export default function RecommendationSender(props: RecommendationFormProps) {
                   value={format(startOfMonth(new Date(startMonth)), 'MM/yyyy')}
                 />
               </Form.Group>
-              <Form.Label className="mt-2">{t('reviews.howManyDays')}</Form.Label>
 
-              {reviewedUserType === UserType.Housitter && (
-                <CountAndUpdate valueToCount={duration} reduxReducer={setDurationState} />
-              )}
               <Form.Group controlId="sit-included">
                 <Form.Label className="mt-2">{t('reviews.whatIncluded')}</Form.Label>
                 <Form.Control
